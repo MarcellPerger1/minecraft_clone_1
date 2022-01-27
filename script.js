@@ -1,4 +1,7 @@
 //https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Adding_2D_content_to_a_WebGL_context
+
+var rot = 0.0;
+
 function main() {
   if (!(gl = getGL())) {
     return;
@@ -8,28 +11,23 @@ function main() {
   const shProg = initShaderProgram(gl, vsSrc, fsSrc);
   const programInfo = getProgramInfo(shProg);
   const buffers = initBuffers(gl)
-  drawScene(gl, programInfo, buffers);
 
-
-  
+  var then = 0;
+  function render(now){
+    now *= 0.001;
+    deltaT = now - then;
+    then = now;
+    drawScene(gl, programInfo, buffers, deltaT);
+    requestAnimationFrame(render);
+  }
+  requestAnimationFrame(render);
 }
 
-function getProgramInfo(shaderProgram) {
-  const programInfo = {
-    program: shaderProgram,
-    attribLocations: {
-      vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
-      vertexColor: gl.getAttribLocation(shaderProgram, 'aVertexColor'),
-    },
-    uniformLocations: {
-      projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
-      modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
-    },
-  };
-  return programInfo;
-}
 
-function drawScene(gl, programInfo, buffers) {
+
+
+
+function drawScene(gl, programInfo, buffers, deltaT) {
   gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
   gl.clearDepth(1.0);                 // Clear everything
   gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -70,9 +68,11 @@ function drawScene(gl, programInfo, buffers) {
   mat4.translate(modelViewMatrix,     // destination matrix
                  modelViewMatrix,     // matrix to translate
                  [-0.0, 0.0, -6.0]);  // amount to translate
+  // (Math.PI/180)*
+  rot += deltaT;
   mat4.rotate(modelViewMatrix,
               modelViewMatrix,
-              (Math.PI/180)*0,
+              rot,
               [0.0, 0.0, 1.0])
 
   // Tell WebGL how to pull out the positions from the position
@@ -133,9 +133,27 @@ function drawScene(gl, programInfo, buffers) {
 
   {
     const offset = 0;
-    const vertexCount = 6;
+    const vertexCount = 4;
     gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
   }
+
+
+
+}
+
+function getProgramInfo(shaderProgram) {
+  const programInfo = {
+    program: shaderProgram,
+    attribLocations: {
+      vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+      vertexColor: gl.getAttribLocation(shaderProgram, 'aVertexColor'),
+    },
+    uniformLocations: {
+      projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
+      modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+    },
+  };
+  return programInfo;
 }
 
 function initBuffers(gl) {
@@ -150,14 +168,10 @@ function initBuffers(gl) {
   // Now create an array of positions for the square.
 
   const positions = [
-    
-    -0.5,  Math.sqrt(3)/2,
-    -1.0,  0.0,
-    0.5, Math.sqrt(3)/2,
-    -0.5, -Math.sqrt(3)/2,
-    1.0,  0.0,
-    0.5, -Math.sqrt(3)/2,
-    
+     1.0,  1.0,
+    -1.0,  1.0,
+     1.0, -1.0,
+    -1.0, -1.0,
   ];
 
   // Now pass the list of positions into WebGL to build the
@@ -166,16 +180,13 @@ function initBuffers(gl) {
   gl.bufferData(gl.ARRAY_BUFFER,
                 new Float32Array(positions),
                 gl.STATIC_DRAW);
-  // TODO sort out order
+
   const colors = [
     1.0,  1.0,  0.0,  1.0,    // yellow
     1.0,  0.0,  0.0,  1.0,    // red
     0.0,  1.0,  0.0,  1.0,    // green
-    1.0,  0.0,  1.0,  1.0,    // magenta
-    0.0,  1.0,  1.0,  1.0,    // cyan
     0.0,  0.0,  1.0,  1.0,    // blue
   ];
-
 
   const colorBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
