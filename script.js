@@ -6,11 +6,8 @@ function main() {
   if (!(gl = getGL())) {
     return;
   }
-  const vsSrc = loadSrc('vs');
-  const fsSrc = loadSrc('fs');
-  const shProg = initShaderProgram(gl, vsSrc, fsSrc);
-  const programInfo = getProgramInfo(shProg);
-  const buffers = initBuffers(gl)
+  const programInfo = initProgram();
+  const buffers = initBuffers(gl);
 
   var then = 0;
   function render(now){
@@ -139,6 +136,14 @@ function drawScene(gl, programInfo, buffers, deltaT) {
 
 
 
+}
+
+function initProgram(){
+  const vsSrc = loadSrc('vs');
+  const fsSrc = loadSrc('fs');
+  const shProg = initShaderProgram(gl, vsSrc, fsSrc);
+  const programInfo = getProgramInfo(shProg);
+  return programInfo;
 }
 
 function getProgramInfo(shaderProgram) {
