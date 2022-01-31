@@ -21,9 +21,6 @@ function main() {
 }
 
 
-
-
-
 function drawScene(gl, programInfo, buffers, deltaT) {
   gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
   gl.clearDepth(1.0);                 // Clear everything
@@ -114,8 +111,6 @@ function drawScene(gl, programInfo, buffers, deltaT) {
         programInfo.attribLocations.vertexColor);
   }
   
-
-
   // Tell WebGL to use our program when drawing
   gl.useProgram(programInfo.program);
 
@@ -165,7 +160,18 @@ function getProgramInfo(shaderProgram) {
 }
 
 function initBuffers(gl) {
+  positionBuffer = bufferPositions();
+  colorBuffer = bufferColors();
+  indexBuffer = bufferIndices();
 
+  return {
+    position: positionBuffer,
+    color: colorBuffer,
+    indices: indexBuffer,
+  };
+}
+
+function bufferPositions(){
   // Create a buffer for the square's positions.
   const positionBuffer = gl.createBuffer();
 
@@ -175,6 +181,17 @@ function initBuffers(gl) {
 
   // Now create an array of positions for the square.
 
+  const positions = getPositionData();
+  // Now pass the list of positions into WebGL to build the
+  // shape. We do this by creating a Float32Array from the
+  // JavaScript array, then use it to fill the current buffer.
+  gl.bufferData(gl.ARRAY_BUFFER,
+                new Float32Array(positions),
+                gl.STATIC_DRAW);
+  return positionBuffer;
+}
+
+function getPositionData(){
   const positions = [
   // Front face
   -1.0, -1.0,  1.0,
@@ -212,14 +229,42 @@ function initBuffers(gl) {
   -1.0,  1.0,  1.0,
   -1.0,  1.0, -1.0,
   ];
+  return positions;
+}
 
-  // Now pass the list of positions into WebGL to build the
-  // shape. We do this by creating a Float32Array from the
-  // JavaScript array, then use it to fill the current buffer.
-  gl.bufferData(gl.ARRAY_BUFFER,
-                new Float32Array(positions),
-                gl.STATIC_DRAW);
-  {
+function bufferIndices(){
+  // This array defines each face as two triangles, using the
+  // indices into the vertex array to specify each triangle's
+  // position.
+  const indices = [
+    0,  1,  2,      0,  2,  3,    // front
+    4,  5,  6,      4,  6,  7,    // back
+    8,  9,  10,     8,  10, 11,   // top
+    12, 13, 14,     12, 14, 15,   // bottom
+    16, 17, 18,     16, 18, 19,   // right
+    20, 21, 22,     20, 22, 23,   // left
+  ];
+
+  const indexBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+  // Now send the element array to GL
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,
+      new Uint16Array(indices), gl.STATIC_DRAW);
+  return indexBuffer;
+}
+
+
+function bufferColors(version=2){
+  colors = getColorData(version);
+  const colorBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+  return colorBuffer;
+}
+
+
+function getColorData(version=2){
+    {
     // same color faces
     const faceColors = [
       [1.0,  1.0,  1.0,  1.0],    // Front face: white
@@ -278,37 +323,7 @@ function initBuffers(gl) {
     }
   }
 
-  colors = colors2;
-  const colorBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
-
-  const indexBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-
-  // This array defines each face as two triangles, using the
-  // indices into the vertex array to specify each triangle's
-  // position.
-
-  const indices = [
-    0,  1,  2,      0,  2,  3,    // front
-    4,  5,  6,      4,  6,  7,    // back
-    8,  9,  10,     8,  10, 11,   // top
-    12, 13, 14,     12, 14, 15,   // bottom
-    16, 17, 18,     16, 18, 19,   // right
-    20, 21, 22,     20, 22, 23,   // left
-  ];
-
-  // Now send the element array to GL
-
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,
-      new Uint16Array(indices), gl.STATIC_DRAW);
-
-  return {
-    position: positionBuffer,
-    color: colorBuffer,
-    indices: indexBuffer,
-  };
+  return version == 2 ? colors2 : colors1;
 }
 
 addEventListener('load', main);
