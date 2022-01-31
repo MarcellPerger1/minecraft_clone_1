@@ -21,7 +21,9 @@
     varying lowp vec4 vColor;
     void main(void) {
       gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
-      vColor = aVertexColor;
+      //vColor = aVertexColor;
+      vColor = vec4(aVertexPosition.x/2.0+0.5,
+       aVertexPosition.y/2.0+0.5, aVertexPosition.z/2.0+0.5, 1.0);
     }
     </script>
     <script id="fs" type="glsl">

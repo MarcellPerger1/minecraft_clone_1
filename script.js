@@ -70,7 +70,7 @@ function drawScene(gl, programInfo, buffers, deltaT) {
   mat4.rotate(modelViewMatrix,
               modelViewMatrix,
               rot,
-              [0.0, 0.7, 1.0])
+              [0.0, 1.3, 1.0])
 
   // Tell WebGL how to pull out the positions from the position
   // buffer into the vertexPosition attribute.
@@ -184,13 +184,13 @@ function initBuffers(gl) {
    1.0,  1.0,  1.0,
   -1.0,  1.0,  1.0,
 
-  // Back face
+  // Back face  this
   -1.0, -1.0, -1.0,
-  -1.0,  1.0, -1.0,
+  -1.0,  1.0, -1.0,  
    1.0,  1.0, -1.0,
    1.0, -1.0, -1.0,
 
-  // Top face
+  // Top face  this
   -1.0,  1.0, -1.0,
   -1.0,  1.0,  1.0,
    1.0,  1.0,  1.0,
@@ -202,9 +202,9 @@ function initBuffers(gl) {
    1.0, -1.0,  1.0,
   -1.0, -1.0,  1.0,
 
-  // Right face
-   1.0, -1.0, -1.0,
-   1.0,  1.0, -1.0,
+  // Right face (yellow)  this
+   1.0, -1.0, -1.0,  // 
+   1.0,  1.0, -1.0,  // 1 1 -1 common
    1.0,  1.0,  1.0,
    1.0, -1.0,  1.0,
 
@@ -214,6 +214,7 @@ function initBuffers(gl) {
   -1.0,  1.0,  1.0,
   -1.0,  1.0, -1.0,
   ];
+  // 2:3, 3:4, 5:2
 
   // Now pass the list of positions into WebGL to build the
   // shape. We do this by creating a Float32Array from the
@@ -240,6 +241,7 @@ function initBuffers(gl) {
     }
   }
   {
+    // 2:3, 3:4, 5:2
     // full custom colors
     const colors2_nested = [
       // Front face
@@ -249,14 +251,14 @@ function initBuffers(gl) {
       [1.0,  1.0,  1.0,  1.0],
       // Back face
       [1.0,  0.0,  0.0,  1.0],
-      [1.0,  0.0,  0.0,  1.0],
-      [1.0,  0.0,  0.0,  1.0],
+      [1.0,  0.0,  0.0,  1.0],  // this
+      [1.0,  1.0,  0.0,  1.0],  // yellow
       [1.0,  0.0,  0.0,  1.0],
       // Top face
+      [1.0,  0.0,  0.0,  1.0],  // this
       [0.0,  1.0,  0.0,  1.0],
       [0.0,  1.0,  0.0,  1.0],
-      [0.0,  1.0,  0.0,  1.0],
-      [0.0,  1.0,  0.0,  1.0],
+      [1.0,  1.0,  0.0,  1.0],  // yellow
       // Bottom face
       [0.0,  0.0,  1.0,  1.0],
       [0.0,  0.0,  1.0,  1.0],
@@ -264,7 +266,7 @@ function initBuffers(gl) {
       [0.0,  0.0,  1.0,  1.0],
       // Right face
       [1.0,  1.0,  0.0,  1.0],
-      [1.0,  1.0,  0.0,  1.0],
+      [1.0,  1.0,  0.0,  1.0],  // yellow
       [1.0,  1.0,  0.0,  1.0],
       [1.0,  1.0,  0.0,  1.0],
       // Left face
