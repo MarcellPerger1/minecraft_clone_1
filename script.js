@@ -214,12 +214,6 @@ function initBuffers(gl) {
   -1.0,  1.0,  1.0,
   -1.0,  1.0, -1.0,
   ];
-  // const positions = [
-  //    1.0,  1.0,
-  //   -1.0,  1.0,
-  //    1.0, -1.0,
-  //   -1.0, -1.0,
-  // ];
 
   // Now pass the list of positions into WebGL to build the
   // shape. We do this by creating a Float32Array from the
@@ -227,27 +221,65 @@ function initBuffers(gl) {
   gl.bufferData(gl.ARRAY_BUFFER,
                 new Float32Array(positions),
                 gl.STATIC_DRAW);
-  
-  const faceColors = [
-    [1.0,  1.0,  1.0,  1.0],    // Front face: white
-    [1.0,  0.0,  0.0,  1.0],    // Back face: red
-    [0.0,  1.0,  0.0,  1.0],    // Top face: green
-    [0.0,  0.0,  1.0,  1.0],    // Bottom face: blue
-    [1.0,  1.0,  0.0,  1.0],    // Right face: yellow
-    [1.0,  0.0,  1.0,  1.0],    // Left face: purple
-  ];
-
-  // Convert the array of colors into a table for all the vertices.
-
-  var colors = [];
-
-  for (var j = 0; j < faceColors.length; ++j) {
-    const c = faceColors[j];
-
-    // Repeat each color four times for the four vertices of the face
-    colors = colors.concat(c, c, c, c);
+  {
+    // same color faces
+    const faceColors = [
+      [1.0,  1.0,  1.0,  1.0],    // Front face: white
+      [1.0,  0.0,  0.0,  1.0],    // Back face: red
+      [0.0,  1.0,  0.0,  1.0],    // Top face: green
+      [0.0,  0.0,  1.0,  1.0],    // Bottom face: blue
+      [1.0,  1.0,  0.0,  1.0],    // Right face: yellow
+      [1.0,  0.0,  1.0,  1.0],    // Left face: purple
+    ];
+    // Convert the array of colors into a table for all the vertices.
+    var colors1 = [];
+    for (var j = 0; j < faceColors.length; ++j) {
+      const c = faceColors[j];
+      // Repeat each color four times for the four vertices of the face
+      colors1 = colors1.concat(c, c, c, c);
+    }
+  }
+  {
+    // full custom colors
+    const colors2_nested = [
+      // Front face
+      [1.0,  1.0,  1.0,  1.0],
+      [1.0,  1.0,  1.0,  1.0],
+      [1.0,  1.0,  1.0,  1.0],
+      [1.0,  1.0,  1.0,  1.0],
+      // Back face
+      [1.0,  0.0,  0.0,  1.0],
+      [1.0,  0.0,  0.0,  1.0],
+      [1.0,  0.0,  0.0,  1.0],
+      [1.0,  0.0,  0.0,  1.0],
+      // Top face
+      [0.0,  1.0,  0.0,  1.0],
+      [0.0,  1.0,  0.0,  1.0],
+      [0.0,  1.0,  0.0,  1.0],
+      [0.0,  1.0,  0.0,  1.0],
+      // Bottom face
+      [0.0,  0.0,  1.0,  1.0],
+      [0.0,  0.0,  1.0,  1.0],
+      [0.0,  0.0,  1.0,  1.0],
+      [0.0,  0.0,  1.0,  1.0],
+      // Right face
+      [1.0,  1.0,  0.0,  1.0],
+      [1.0,  1.0,  0.0,  1.0],
+      [1.0,  1.0,  0.0,  1.0],
+      [1.0,  1.0,  0.0,  1.0],
+      // Left face
+      [1.0,  0.0,  1.0,  1.0],
+      [1.0,  0.0,  1.0,  1.0],
+      [1.0,  0.0,  1.0,  1.0],
+      [1.0,  0.0,  1.0,  1.0],
+    ]
+    var colors2 = [];
+    for (arr of colors2_nested){
+      colors2 = colors2.concat(...arr)
+    }
   }
 
+  colors = colors2;
   const colorBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
