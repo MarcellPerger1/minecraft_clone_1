@@ -67,10 +67,10 @@ function drawScene(gl, programInfo, buffers, deltaT) {
                  [-0.0, 0.0, -6.0]);  // amount to translate
   // (Math.PI/180)*
   rot += deltaT;
-  mat4.rotate(modelViewMatrix,
-              modelViewMatrix,
-              rot,
-              [0.0, 1.3, 1.0])
+  mat4.rotate(modelViewMatrix,  // dest
+              modelViewMatrix,  // src
+              rot,              // rotation (rad)
+              [0.4, 1.3, 1.0])  // axis
 
   // Tell WebGL how to pull out the positions from the position
   // buffer into the vertexPosition attribute.
@@ -117,11 +117,9 @@ function drawScene(gl, programInfo, buffers, deltaT) {
 
 
   // Tell WebGL to use our program when drawing
-
   gl.useProgram(programInfo.program);
 
   // Set the shader uniforms
-
   gl.uniformMatrix4fv(
       programInfo.uniformLocations.projectionMatrix,
       false,
@@ -184,13 +182,13 @@ function initBuffers(gl) {
    1.0,  1.0,  1.0,
   -1.0,  1.0,  1.0,
 
-  // Back face  this
+  // Back face
   -1.0, -1.0, -1.0,
   -1.0,  1.0, -1.0,  
    1.0,  1.0, -1.0,
    1.0, -1.0, -1.0,
 
-  // Top face  this
+  // Top face
   -1.0,  1.0, -1.0,
   -1.0,  1.0,  1.0,
    1.0,  1.0,  1.0,
@@ -202,9 +200,9 @@ function initBuffers(gl) {
    1.0, -1.0,  1.0,
   -1.0, -1.0,  1.0,
 
-  // Right face (yellow)  this
-   1.0, -1.0, -1.0,  // 
-   1.0,  1.0, -1.0,  // 1 1 -1 common
+  // Right face
+   1.0, -1.0, -1.0, 
+   1.0,  1.0, -1.0,
    1.0,  1.0,  1.0,
    1.0, -1.0,  1.0,
 
@@ -214,7 +212,6 @@ function initBuffers(gl) {
   -1.0,  1.0,  1.0,
   -1.0,  1.0, -1.0,
   ];
-  // 2:3, 3:4, 5:2
 
   // Now pass the list of positions into WebGL to build the
   // shape. We do this by creating a Float32Array from the
@@ -251,14 +248,14 @@ function initBuffers(gl) {
       [1.0,  1.0,  1.0,  1.0],
       // Back face
       [1.0,  0.0,  0.0,  1.0],
-      [1.0,  0.0,  0.0,  1.0],  // this
-      [1.0,  1.0,  0.0,  1.0],  // yellow
+      [1.0,  0.0,  0.0,  1.0], 
+      [1.0,  0.0,  0.0,  1.0],  
       [1.0,  0.0,  0.0,  1.0],
       // Top face
-      [1.0,  0.0,  0.0,  1.0],  // this
+      [0.0,  1.0,  0.0,  1.0], 
       [0.0,  1.0,  0.0,  1.0],
       [0.0,  1.0,  0.0,  1.0],
-      [1.0,  1.0,  0.0,  1.0],  // yellow
+      [0.0,  1.0,  0.0,  1.0],  
       // Bottom face
       [0.0,  0.0,  1.0,  1.0],
       [0.0,  0.0,  1.0,  1.0],
@@ -266,7 +263,7 @@ function initBuffers(gl) {
       [0.0,  0.0,  1.0,  1.0],
       // Right face
       [1.0,  1.0,  0.0,  1.0],
-      [1.0,  1.0,  0.0,  1.0],  // yellow
+      [1.0,  1.0,  0.0,  1.0],
       [1.0,  1.0,  0.0,  1.0],
       [1.0,  1.0,  0.0,  1.0],
       // Left face
