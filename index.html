@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
-    <title>replit</title>
+    <title>stuff_webgl_4</title>
     <link href="style.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
@@ -18,7 +18,7 @@
     attribute vec4 aVertexColor;
     uniform mat4 uModelViewMatrix;
     uniform mat4 uProjectionMatrix;
-    varying lowp vec4 vColor;
+    varying lowp vec4 vColor;  // this is then passed to the fragment shader
     void main(void) {
       gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
       //vColor = aVertexColor;
