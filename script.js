@@ -1,6 +1,8 @@
 //https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Adding_2D_content_to_a_WebGL_context
 
 var rot = 0.0;
+var pos = [0.0, 0.0, 0.0];
+
 
 // MAIN
 function main() {
@@ -9,6 +11,7 @@ function main() {
   }
   const programInfo = initProgram();
   const buffers = initBuffers(gl);
+  const image = loadTexture(gl, 'image.png');
 
   var then = 0;
   function render(now){
@@ -61,13 +64,13 @@ function getModelViewMatrix(deltaT){
 
   mat4.translate(modelViewMatrix,     // destination matrix
                  modelViewMatrix,     // matrix to translate
-                 [-0.0, 0.0, -6.0]);  // amount to translate
+                 [-0.0, -2.4, -15.0]);  // amount to translate
   // (Math.PI/180)*
   rot += deltaT;
   mat4.rotate(modelViewMatrix,  // dest
               modelViewMatrix,  // src
-              rot,              // rotation (rad)
-              [0.4, 1.3, 1.0])  // axis
+              30*(Math.PI/180),              // rotation (rad)
+              [0.0, 1.0, 0.0])  // axis
   return modelViewMatrix;
 }
 
