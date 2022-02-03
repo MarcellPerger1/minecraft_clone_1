@@ -15,22 +15,29 @@
       crossorigin="anonymous">
     </script>
     <!-- Shaders -->
-    <script id="vs" type="glsl">
-    attribute vec4 aVertexPosition;
-    attribute vec4 aVertexColor;
+    <script id="vs" type="glsl" src="vertex-shader.glsl">
+    </script>
+    <!--
+      attribute vec4 aVertexPosition;
+    attribute vec4 aTextureCoord;
+    //attribute vec4 aVertexColor;
+
     uniform mat4 uModelViewMatrix;
     uniform mat4 uProjectionMatrix;
-    varying lowp vec4 vColor;  // this is then passed to the fragment shader
+
+    // these are then passed to the fragment shader
+    varying highp vec4 vTextureCoord;
+    varying lowp vec4 vColor;
     void main(void) {
       gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
       vColor = aVertexColor;
     }
-    </script>
-    <script id="fs" type="glsl">
     varying lowp vec4 vColor;
     void main(void) {
       gl_FragColor = vColor;
     }
+     -->
+    <script id="fs" type="glsl" src="fragment-shader.glsl">
     </script>
     <!-- The code -->
     <script src="utils.js"></script>

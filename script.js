@@ -9,7 +9,8 @@ function main() {
   if (!(gl = getGL())) {
     return;
   }
-  const programInfo = initProgram();
+
+  const programInfo = initProgram(gl);
   const buffers = initBuffers(gl);
   const image = loadTexture(gl, 'image.png');
 
@@ -18,18 +19,26 @@ function main() {
     now *= 0.001;
     deltaT = now - then;
     then = now;
-    drawScene(gl, programInfo, buffers, deltaT);
+    drawScene(gl, programInfo, buffers, image, deltaT);
     requestAnimationFrame(render);
   }
   requestAnimationFrame(render);
 }
 addEventListener('load', main);
 
-function drawScene(gl, programInfo, buffers, deltaT) {
+function drawScene(gl, programInfo, buffers, texture, deltaT) {
   resetGlCanvas(gl);
   gl.useProgram(programInfo.program);
   setUniforms(gl, programInfo, deltaT);
   initArrayBuffers(gl, programInfo, buffers);
+  {
+    // Tell WebGL we want to affect texture unit 0
+    gl.activeTexture(gl.TEXTURE0);
+    // Bind the texture to texture unit 0
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    // Tell the shader we bound the texture to texture unit 0
+    gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
+  }
   drawElements(gl, buffers);
 }
 
@@ -109,11 +118,16 @@ function initArrayBuffers(gl, programInfo, buffers){
     programInfo.attribLocations.vertexPosition,
     3, gl.FLOAT
   );
+  // configVertexArrayBuffer(
+  //   gl, buffers.color,
+  //   programInfo.attribLocations.vertexColor,
+  //   4, gl.FLOAT
+  // );
   configVertexArrayBuffer(
-    gl, buffers.color,
-    programInfo.attribLocations.vertexColor,
-    4, gl.FLOAT
-  );
+    gl, buffers.textureCoord,
+    programInfo.attribLocations.textureCoord, 
+    2, gl.FLOAT);
+  
 }
 function configVertexArrayBuffer(gl, buffer, attribLoc,
                                  numComponents, type=null,
@@ -144,23 +158,26 @@ function drawElements(gl, buffers){
 }
 
 // SHADER PROGRAM //
-function initProgram(){
-  const vsSrc = loadSrc('vs');
-  const fsSrc = loadSrc('fs');
+function initProgram(gl){
+  const vsSrc = loadFile('vertex-shader.glsl');
+  const fsSrc = loadFile('fragment-shader.glsl');
   const shProg = initShaderProgram(gl, vsSrc, fsSrc);
   const programInfo = getProgramInfo(shProg);
   return programInfo;
 }
 function getProgramInfo(shaderProgram) {
+  
   const programInfo = {
     program: shaderProgram,
     attribLocations: {
       vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
-      vertexColor: gl.getAttribLocation(shaderProgram, 'aVertexColor'),
+      //vertexColor: gl.getAttribLocation(shaderProgram, 'aVertexColor'),
+      textureCoord: gl.getAttribLocation(shaderProgram, 'aTextureCoord'),
     },
     uniformLocations: {
       projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
       modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+      uSampler: gl.getUniformLocation(shaderProgram, 'uSampler'),
     },
   };
   return programInfo;
@@ -170,12 +187,14 @@ function getProgramInfo(shaderProgram) {
 // BUFFERS //
 function initBuffers(gl) {
   positionBuffer = bufferPositions(gl);
-  colorBuffer = bufferColors(gl);
+  textureCoordBuffer = bufferTextureCoords(gl);
+  //colorBuffer = bufferColors(gl);  
   indexBuffer = bufferIndices(gl);
 
   return {
     position: positionBuffer,
-    color: colorBuffer,
+    textureCoord: textureCoordBuffer,
+    // color: colorBuffer,
     indices: indexBuffer,
   };
 }
@@ -332,4 +351,50 @@ function getColorData(version=2){
 
   return version == 2 ? colors2 : colors1;
 }
+
+function bufferTextureCoords(gl){
+  const textureCoordBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
+  textureCoordinates = getTextureCoordData();
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinates),
+                gl.STATIC_DRAW);
+  return textureCoordBuffer;
+}
+
+function getTextureCoordData(){
+  const textureCoordinates = [
+    // Front
+    0.0,  1.0,
+    1.0,  1.0,
+    1.0,  0.0,
+    0.0,  0.0,
+    // Back
+    0.0,  0.0,
+    1.0,  0.0,
+    1.0,  1.0,
+    0.0,  1.0,
+    // Top
+    0.0,  0.0,
+    1.0,  0.0,
+    1.0,  1.0,
+    0.0,  1.0,
+    // Bottom
+    0.0,  0.0,
+    1.0,  0.0,
+    1.0,  1.0,
+    0.0,  1.0,
+    // Right
+    0.0,  0.0,
+    1.0,  0.0,
+    1.0,  1.0,
+    0.0,  1.0,
+    // Left
+    0.0,  0.0,
+    1.0,  0.0,
+    1.0,  1.0,
+    0.0,  1.0,
+  ];
+  return textureCoordinates;
+}
+
 
