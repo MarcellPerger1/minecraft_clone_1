@@ -12,21 +12,23 @@ function main() {
 
   const programInfo = initProgram(gl);
   const buffers = initBuffers(gl);
-  const image = loadTexture(gl, 'image.png');
+  var textures = {}
+  textures.grass = loadTexture(gl, 'grass.jpg');
+  textures.grass_top = loadTexture(gl, 'grass-top.jpg')
 
   var then = 0;
   function render(now){
     now *= 0.001;
     deltaT = now - then;
     then = now;
-    drawScene(gl, programInfo, buffers, image, deltaT);
+    drawScene(gl, programInfo, buffers, textures, deltaT);
     requestAnimationFrame(render);
   }
   requestAnimationFrame(render);
 }
 addEventListener('load', main);
 
-function drawScene(gl, programInfo, buffers, texture, deltaT) {
+function drawScene(gl, programInfo, buffers, textures, deltaT) {
   resetGlCanvas(gl);
   gl.useProgram(programInfo.program);
   setUniforms(gl, programInfo, deltaT);
@@ -35,11 +37,11 @@ function drawScene(gl, programInfo, buffers, texture, deltaT) {
     // Tell WebGL we want to affect texture unit 0
     gl.activeTexture(gl.TEXTURE0);
     // Bind the texture to texture unit 0
-    gl.bindTexture(gl.TEXTURE_2D, texture);
+    
     // Tell the shader we bound the texture to texture unit 0
     gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
   }
-  drawElements(gl, buffers);
+  drawElements(gl, buffers, textures);
 }
 
 function resetGlCanvas(gl){
@@ -147,14 +149,59 @@ function configVertexArrayBuffer(gl, buffer, attribLoc,
 }
 
 // ELEMENT BUFFER
-function drawElements(gl, buffers){
+function drawElements(gl, buffers, textures){
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
+
+  const type = gl.UNSIGNED_SHORT;
+  // gl.bindTexture(gl.TEXTURE_2D, textures.grass);
+  // gl.drawElements(gl.TRIANGLES, 6, type, 0);
+
+  // gl.bindTexture(gl.TEXTURE_2D, textures.grass);
+  // gl.drawElements(gl.TRIANGLES, 6, type, 6);
+
+  // gl.bindTexture(gl.TEXTURE_2D, textures.grass);
+  // gl.drawElements(gl.TRIANGLES, 6, type, 12);
+
+  // gl.bindTexture(gl.TEXTURE_2D, textures.grass);
+  // gl.drawElements(gl.TRIANGLES, 6, type, 18);
+
+  // gl.bindTexture(gl.TEXTURE_2D, textures.grass);
+  // gl.drawElements(gl.TRIANGLES, 6, type, 24);
+
+  // gl.bindTexture(gl.TEXTURE_2D, textures.grass);
+  // gl.drawElements(gl.TRIANGLES, 6, type, 30);
+
   {
-    const vertexCount = 36;
-    const type = gl.UNSIGNED_SHORT;
+    gl.bindTexture(gl.TEXTURE_2D, textures.grass);
+    const vertexCount = 12;
     const offset = 0;
     gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
   }
+  {
+    gl.bindTexture(gl.TEXTURE_2D, textures.grass_top);
+    const vertexCount = 6;
+    const offset = 24;
+    gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
+  }
+  {
+    gl.bindTexture(gl.TEXTURE_2D, textures.grass);
+    const vertexCount = 18;
+    const offset = 36;
+    gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
+  }
+  // {
+  //   gl.bindTexture(gl.TEXTURE_2D, textures.grass);
+  //   const vertexCount = 6;
+  //   const offset = 36;
+  //   gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
+  // }
+  // {
+  //   gl.bindTexture(gl.TEXTURE_2D, textures.grass);
+  //   const vertexCount = 24;
+  //   const type = gl.UNSIGNED_SHORT;
+  //   const offset = 12;
+  //   gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
+  // }
 }
 
 // SHADER PROGRAM //
@@ -389,10 +436,10 @@ function getTextureCoordData(){
     1.0,  1.0,
     0.0,  1.0,
     // Left
-    0.0,  0.0,
-    1.0,  0.0,
-    1.0,  1.0,
     0.0,  1.0,
+    1.0,  1.0,
+    1.0,  0.0,
+    0.0,  0.0,
   ];
   return textureCoordinates;
 }

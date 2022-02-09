@@ -14,31 +14,7 @@
       integrity="sha512-zhHQR0/H5SEBL3Wn6yYSaTTZej12z0hVZKOv3TwCUXT1z5qeqGcXJLLrbERYRScEDDpYIJhPC1fk31gqR783iQ=="
       crossorigin="anonymous">
     </script>
-    <!-- Shaders -->
-    <script id="vs" type="glsl" src="vertex-shader.glsl">
-    </script>
-    <!--
-      attribute vec4 aVertexPosition;
-    attribute vec4 aTextureCoord;
-    //attribute vec4 aVertexColor;
-
-    uniform mat4 uModelViewMatrix;
-    uniform mat4 uProjectionMatrix;
-
-    // these are then passed to the fragment shader
-    varying highp vec4 vTextureCoord;
-    varying lowp vec4 vColor;
-    void main(void) {
-      gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
-      vColor = aVertexColor;
-    }
-    varying lowp vec4 vColor;
-    void main(void) {
-      gl_FragColor = vColor;
-    }
-     -->
-    <script id="fs" type="glsl" src="fragment-shader.glsl">
-    </script>
+    <!-- Shaders (moved to own files) -->
     <!-- The code -->
     <script src="utils.js"></script>
     <script src="script.js"></script>
