@@ -5,7 +5,7 @@ attribute vec2 aTextureCoord;
 uniform mat4 uModelViewMatrix;
 uniform mat4 uProjectionMatrix;
 
-// these are then passed to the fragment shader
+// these are then passed to the fragment shader (interpolated between vertices)
 varying highp vec2 vTextureCoord;
 //varying lowp vec4 vColor;
 

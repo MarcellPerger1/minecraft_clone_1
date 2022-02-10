@@ -134,5 +134,8 @@ function loadFile(filePath) {
   if (xmlhttp.status==200) {
     result = xmlhttp.responseText;
   }
+  if(result==null){
+    alert("failed to load file", filePath)
+  }
   return result;
 }

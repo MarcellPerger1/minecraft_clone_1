@@ -1,7 +1,9 @@
 //https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Adding_2D_content_to_a_WebGL_context
 
 var rot = 0.0;
+const cubePos = [0.0, 2.4, 10.0];
 var pos = [0.0, 0.0, 0.0];
+var bgColor = [0.5, 0.86, 1.0, 1.0]
 
 
 // MAIN
@@ -9,7 +11,6 @@ function main() {
   if (!(gl = getGL())) {
     return;
   }
-
   const programInfo = initProgram(gl);
   const buffers = initBuffers(gl);
   var textures = {}
@@ -26,26 +27,34 @@ function main() {
   }
   requestAnimationFrame(render);
 }
-addEventListener('load', main);
+addEventLddistener('load', main);
+
+function keypress_handler(e){  
+  if(e.key == 'w'){
+    pos[2] += 1;
+  }
+  if(e.key == 's'){
+    pos[2] -= 1;
+  }
+  if(e.key == 'a'){
+    pos[0] += 1;
+  }
+  if(e.key == 'd'){
+    pos[0] -= 1;
+  }
+}
+addEventListener('keydown', keypress_handler);
 
 function drawScene(gl, programInfo, buffers, textures, deltaT) {
   resetGlCanvas(gl);
   gl.useProgram(programInfo.program);
   setUniforms(gl, programInfo, deltaT);
   initArrayBuffers(gl, programInfo, buffers);
-  {
-    // Tell WebGL we want to affect texture unit 0
-    gl.activeTexture(gl.TEXTURE0);
-    // Bind the texture to texture unit 0
-    
-    // Tell the shader we bound the texture to texture unit 0
-    gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
-  }
-  drawElements(gl, buffers, textures);
+  drawElements(gl, programInfo, buffers, textures);
 }
 
 function resetGlCanvas(gl){
-  gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
+  gl.clearColor(...bgColor);  // Clear to black, fully opaque
   gl.clearDepth(1.0);                 // Clear everything
   gl.enable(gl.DEPTH_TEST);           // Enable depth testing
   gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
@@ -72,10 +81,11 @@ function getModelViewMatrix(deltaT){
 
   // Now move the drawing position a bit to where we want to
   // start drawing the square.
-
+  amount = [pos[0]-cubePos[0], pos[1]-cubePos[1], pos[2]-cubePos[2]];
   mat4.translate(modelViewMatrix,     // destination matrix
                  modelViewMatrix,     // matrix to translate
-                 [-0.0, -2.4, -15.0]);  // amount to translate
+                 amount);  // amount to translate
+  //[-0.0, -2.4, -10.0]
   // (Math.PI/180)*
   rot += deltaT;
   mat4.rotate(modelViewMatrix,  // dest
@@ -149,27 +159,14 @@ function configVertexArrayBuffer(gl, buffer, attribLoc,
 }
 
 // ELEMENT BUFFER
-function drawElements(gl, buffers, textures){
+function drawElements(gl, programInfo, buffers, textures){
+  // Tell WebGL we want to affect texture unit 0
+  gl.activeTexture(gl.TEXTURE0);
+  // Tell the shader we bound the texture to texture unit 0
+  gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
 
   const type = gl.UNSIGNED_SHORT;
-  // gl.bindTexture(gl.TEXTURE_2D, textures.grass);
-  // gl.drawElements(gl.TRIANGLES, 6, type, 0);
-
-  // gl.bindTexture(gl.TEXTURE_2D, textures.grass);
-  // gl.drawElements(gl.TRIANGLES, 6, type, 6);
-
-  // gl.bindTexture(gl.TEXTURE_2D, textures.grass);
-  // gl.drawElements(gl.TRIANGLES, 6, type, 12);
-
-  // gl.bindTexture(gl.TEXTURE_2D, textures.grass);
-  // gl.drawElements(gl.TRIANGLES, 6, type, 18);
-
-  // gl.bindTexture(gl.TEXTURE_2D, textures.grass);
-  // gl.drawElements(gl.TRIANGLES, 6, type, 24);
-
-  // gl.bindTexture(gl.TEXTURE_2D, textures.grass);
-  // gl.drawElements(gl.TRIANGLES, 6, type, 30);
 
   {
     gl.bindTexture(gl.TEXTURE_2D, textures.grass);
@@ -180,13 +177,13 @@ function drawElements(gl, buffers, textures){
   {
     gl.bindTexture(gl.TEXTURE_2D, textures.grass_top);
     const vertexCount = 6;
-    const offset = 24;
+    const offset = 24; // 0 + 12*2 = 24
     gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
   }
   {
     gl.bindTexture(gl.TEXTURE_2D, textures.grass);
     const vertexCount = 18;
-    const offset = 36;
+    const offset = 36;  // 24 + 6*2 = 36
     gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
   }
   // {
@@ -196,12 +193,6 @@ function drawElements(gl, buffers, textures){
   //   gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
   // }
   // {
-  //   gl.bindTexture(gl.TEXTURE_2D, textures.grass);
-  //   const vertexCount = 24;
-  //   const type = gl.UNSIGNED_SHORT;
-  //   const offset = 12;
-  //   gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
-  // }
 }
 
 // SHADER PROGRAM //
@@ -416,10 +407,10 @@ function getTextureCoordData(){
     1.0,  0.0,
     0.0,  0.0,
     // Back
+    0.0,  1.0,
     0.0,  0.0,
     1.0,  0.0,
     1.0,  1.0,
-    0.0,  1.0,
     // Top
     0.0,  0.0,
     1.0,  0.0,
@@ -431,10 +422,10 @@ function getTextureCoordData(){
     1.0,  1.0,
     0.0,  1.0,
     // Right
+    0.0,  1.0,
     0.0,  0.0,
     1.0,  0.0,
     1.0,  1.0,
-    0.0,  1.0,
     // Left
     0.0,  1.0,
     1.0,  1.0,
