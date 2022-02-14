@@ -14,8 +14,8 @@ function main() {
   const programInfo = initProgram(gl);
   const buffers = initBuffers(gl);
   var textures = {}
-  textures.grass = loadTexture(gl, 'grass.jpg');
-  textures.grass_top = loadTexture(gl, 'grass-top.jpg')
+  textures.grass = loadTexture(gl, 'textures/grass-side-5.jpg');
+  textures.grass_top = loadTexture(gl, 'textures/grass-top-5.jpg')
 
   var then = 0;
   function render(now){
@@ -27,7 +27,7 @@ function main() {
   }
   requestAnimationFrame(render);
 }
-addEventLddistener('load', main);
+addEventListener('load', main);
 
 function keypress_handler(e){  
   if(e.key == 'w'){
@@ -197,8 +197,8 @@ function drawElements(gl, programInfo, buffers, textures){
 
 // SHADER PROGRAM //
 function initProgram(gl){
-  const vsSrc = loadFile('vertex-shader.glsl');
-  const fsSrc = loadFile('fragment-shader.glsl');
+  const vsSrc = loadFile('shaders/vertex-shader.glsl');
+  const fsSrc = loadFile('shaders/fragment-shader.glsl');
   const shProg = initShaderProgram(gl, vsSrc, fsSrc);
   const programInfo = getProgramInfo(shProg);
   return programInfo;
