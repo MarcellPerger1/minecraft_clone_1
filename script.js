@@ -3,12 +3,12 @@
 var rot = 0.0;
 const cubePos = [0.0, 2.4, 10.0];
 var pos = [0.0, 0.0, 0.0];
-var bgColor = [0.5, 0.86, 1.0, 1.0]
-
+var bgColor = [0.5, 0.86, 1.0, 1.0];
 
 // MAIN
 function main() {
-  if (!(gl = getGL())) {
+  var gl = getGL();
+  if (!gl) {
     return;
   }
   const programInfo = initProgram(gl);
@@ -20,7 +20,7 @@ function main() {
   var then = 0;
   function render(now){
     now *= 0.001;
-    deltaT = now - then;
+    var deltaT = now - then;
     then = now;
     drawScene(gl, programInfo, buffers, textures, deltaT);
     requestAnimationFrame(render);
@@ -56,6 +56,7 @@ function drawScene(gl, programInfo, buffers, textures, deltaT) {
 function resetGlCanvas(gl){
   gl.clearColor(...bgColor);  // Clear to black, fully opaque
   gl.clearDepth(1.0);                 // Clear everything
+  // NOTE: these 2 can just be called at the very start
   gl.enable(gl.DEPTH_TEST);           // Enable depth testing
   gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
 
@@ -81,7 +82,7 @@ function getModelViewMatrix(deltaT){
 
   // Now move the drawing position a bit to where we want to
   // start drawing the square.
-  amount = [pos[0]-cubePos[0], pos[1]-cubePos[1], pos[2]-cubePos[2]];
+  const amount = [pos[0]-cubePos[0], pos[1]-cubePos[1], pos[2]-cubePos[2]];
   mat4.translate(modelViewMatrix,     // destination matrix
                  modelViewMatrix,     // matrix to translate
                  amount);  // amount to translate
@@ -96,13 +97,13 @@ function getModelViewMatrix(deltaT){
 }
 
 function initProjectionMatrix(gl, programInfo){
-  const projectionMatrix = getProjectionMatrix();
+  const projectionMatrix = getProjectionMatrix(gl);
   gl.uniformMatrix4fv(
       programInfo.uniformLocations.projectionMatrix,
       false,
       projectionMatrix);
 }
-function getProjectionMatrix(){
+function getProjectionMatrix(gl){
   // Create a perspective matrix, a special matrix that is
   // used to simulate the distortion of perspective in a camera.
   // Our field of view is 45 degrees, with a width/height
@@ -200,11 +201,10 @@ function initProgram(gl){
   const vsSrc = loadFile('shaders/vertex-shader.glsl');
   const fsSrc = loadFile('shaders/fragment-shader.glsl');
   const shProg = initShaderProgram(gl, vsSrc, fsSrc);
-  const programInfo = getProgramInfo(shProg);
+  const programInfo = getProgramInfo(gl, shProg);
   return programInfo;
 }
-function getProgramInfo(shaderProgram) {
-  
+function getProgramInfo(gl, shaderProgram) {
   const programInfo = {
     program: shaderProgram,
     attribLocations: {
@@ -224,10 +224,10 @@ function getProgramInfo(shaderProgram) {
 
 // BUFFERS //
 function initBuffers(gl) {
-  positionBuffer = bufferPositions(gl);
-  textureCoordBuffer = bufferTextureCoords(gl);
+  const positionBuffer = bufferPositions(gl);
+  const textureCoordBuffer = bufferTextureCoords(gl);
   //colorBuffer = bufferColors(gl);  
-  indexBuffer = bufferIndices(gl);
+  const indexBuffer = bufferIndices(gl);
 
   return {
     position: positionBuffer,
@@ -393,7 +393,7 @@ function getColorData(version=2){
 function bufferTextureCoords(gl){
   const textureCoordBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
-  textureCoordinates = getTextureCoordData();
+  const textureCoordinates = getTextureCoordData();
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinates),
                 gl.STATIC_DRAW);
   return textureCoordBuffer;
