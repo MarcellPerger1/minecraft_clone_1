@@ -1,12 +1,14 @@
+import {RendererConfig} from './config.js';
+import {exportAs} from './utils.js';
+
 var rot = 0.0;
-const cubePos = [0.0, 2.4, 10.0];
+//const cubePos = [0.0, 2.4, 10.0];
 var pos = [0.0, 0.0, 0.0];
-var bgColor = [0.5, 0.86, 1.0, 1.0];
 // TODO: implement this so that it works 
 // because textures need a reload when they are loaded
 const dynamic = true;
 
-
+// TODO separate file for the controls!??
 function keypress_handler(e){  
   if(e.key == 'w'){
     pos[2] += 1;
@@ -90,23 +92,15 @@ class Renderer {
 
   // ARRAY BUFFERS
   initArrayBuffers(){
-    configVertexArrayBuffer(this.gl, this.buffers.position,
-                            this.programInfo.attribLocations.vertexPosition,
-                            3, this.gl.FLOAT)
-    configVertexArrayBuffer(this.gl, this.buffers.textureCoord,
-                            this.programInfo.attribLocations.textureCoord,
-                            2, this.gl.FLOAT)
-    //this.configVArrayBuffer('postion', 'vetexPostion', 3, this.gl.FLOAT);
-    //this.configVArrayBuffer('textureCoord', 'textureCoord', 2, this.gl.FLOAT);
+    this.configVArrayBuffer('position', 'vertexPosition', 3, this.gl.FLOAT);
+    this.configVArrayBuffer('textureCoord', 'textureCoord', 2, this.gl.FLOAT);
   }
 
   configVArrayBuffer(bufferName, attrLocName, numComponents,
                      type=null, normalize=false, stride=0, offset=0){
     let attrLoc = this.programInfo.attribLocations[attrLocName];
     let buffer = this.buffers[bufferName];
-    if(type==null){
-      type = this.gl.FLOAT;
-    }
+    type = type ?? this.gl.FLOAT;
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
     this.gl.vertexAttribPointer(
         attrLoc,
@@ -193,7 +187,9 @@ class Renderer {
   
     // Now move the drawing position a bit to where we want to
     // start drawing the square.
-    const amount = [pos[0]-cubePos[0], pos[1]-cubePos[1], pos[2]-cubePos[2]];
+    const amount = [pos[0]-this.cnf.cubePos[0],
+                    pos[1]-this.cnf.cubePos[1],
+                    pos[2]-this.cnf.cubePos[2]];
     mat4.translate(modelViewMatrix,     // destination matrix
                    modelViewMatrix,     // matrix to translate
                    amount);  // amount to translate
@@ -395,53 +391,12 @@ class Renderer {
 }
 
 
-class RendererConfig {
-  static DEFAULT = undefined;
-  // fields
-  bgColor;
-  vsPath;
-  fsPath;
-  grassTopPath;
-  grassSidePath;
-  rotate;
-
-  constructor(cnf = {}, ...args) {
-    cnf = cnf != undefined ? cnf : {};
-    Object.assign(this, cnf, ...args);
-    this.setDefaults();
-  }
-  getWithDefaults() {
-    // allows overriding default in subclasses
-    return new RendererConfig(classOf(this).DEFAULT, this);
-  }
-  setDefaults() {
-    // small hack to ensure that defaults dont override values
-    Object.assign(this, classOf(this).DEFAULT, this);
-  }
-}
-
-
-RendererConfig.DEFAULT = new RendererConfig({
-  bgColor: [0.5, 0.86, 1.0, 1.0],
-  vsPath: "/shaders/vertex-shader.glsl",
-  fsPath: "/shaders/fragment-shader.glsl",
-  grassTopPath: "textures/grass-top-5.jpg",
-  grassSidePath: "textures/grass-side-5.jpg",
-  rotate: false,
-})
-
-
-function classOf(v) {
-  return v.constructor;
-}
+exportAs(Renderer);
 
 
 
 
 
 
-addEventListener('load', function(){
-  window.renderer = new Renderer();
-  let r = renderer;
-  r.start();
-})
+
+
