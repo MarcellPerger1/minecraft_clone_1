@@ -4,6 +4,9 @@ var rot = 0.0;
 const cubePos = [0.0, 2.4, 10.0];
 var pos = [0.0, 0.0, 0.0];
 var bgColor = [0.5, 0.86, 1.0, 1.0];
+// TODO: implement this so that it works 
+// because textures need a reload when they are loaded
+const dynamic = true;
 
 // MAIN
 function main() {
@@ -27,7 +30,7 @@ function main() {
   }
   requestAnimationFrame(render);
 }
-addEventListener('load', main);
+//addEventListener('load', main);
 
 function keypress_handler(e){  
   if(e.key == 'w'){
@@ -89,12 +92,17 @@ function getModelViewMatrix(deltaT){
   //[-0.0, -2.4, -10.0]
   // (Math.PI/180)*
   rot += deltaT;
+  // 30*(Math.PI/180)
+  var rotation = ROTATE ? rot : 30*(Math.PI/180);
+  var axis = ROTATE ? [1.0, 1.0, 1.0] : [0.0, 1.0, 0.0]
   mat4.rotate(modelViewMatrix,  // dest
               modelViewMatrix,  // src
-              30*(Math.PI/180),              // rotation (rad)
-              [0.0, 1.0, 0.0])  // axis
+              rotation, // rotation (rad)
+              axis)  // axis
   return modelViewMatrix;
 }
+
+const ROTATE = false;
 
 function initProjectionMatrix(gl, programInfo){
   const projectionMatrix = getProjectionMatrix(gl);
@@ -398,7 +406,6 @@ function bufferTextureCoords(gl){
                 gl.STATIC_DRAW);
   return textureCoordBuffer;
 }
-
 function getTextureCoordData(){
   const textureCoordinates = [
     // Front
