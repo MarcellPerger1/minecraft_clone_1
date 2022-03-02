@@ -1,29 +1,12 @@
 import {RendererConfig} from './config.js';
-import {exportAs} from './utils.js';
+import {exportAs, expectValue, isString, sortCoords} from './utils.js';
 
-var rot = 0.0;
+// var rot = 0.0;
 //const cubePos = [0.0, 2.4, 10.0];
-var pos = [0.0, 0.0, 0.0];
+//var pos = [0.0, 0.0, 0.0];
 // TODO: implement this so that it works 
 // because textures need a reload when they are loaded
 const dynamic = true;
-
-// TODO separate file for the controls!??
-function keypress_handler(e){  
-  if(e.key == 'w'){
-    pos[2] += 1;
-  }
-  if(e.key == 's'){
-    pos[2] -= 1;
-  }
-  if(e.key == 'a'){
-    pos[0] += 1;
-  }
-  if(e.key == 'd'){
-    pos[0] -= 1;
-  }
-}
-addEventListener('keydown', keypress_handler);
 
 
 // TODO: switch to typescript? or use modules? or both!?
@@ -41,6 +24,8 @@ class Renderer {
     this.initTextures();
     this.then = 0;
     this.now = null;
+    this.camPos = this.cnf.camPos;
+    this.rot = 0.0;
   }
 
   initGL(){
@@ -70,10 +55,10 @@ class Renderer {
     if(now==null){
       return this.registerOnFrame();
     }
-    this.now = now;
+    this.now = now*0.001;
     this.deltaT = this.now - this.then;
     this.renderFrame();
-    this.then=now;
+    this.then=this.now;
     return this.registerOnFrame();
   }
   
@@ -87,6 +72,7 @@ class Renderer {
     this.gl.useProgram(this.programInfo.program);
     this.setUniforms();
     this.initArrayBuffers();
+    this.offset = 0;
     this.drawElements();
   }
 
@@ -98,8 +84,10 @@ class Renderer {
 
   configVArrayBuffer(bufferName, attrLocName, numComponents,
                      type=null, normalize=false, stride=0, offset=0){
-    let attrLoc = this.programInfo.attribLocations[attrLocName];
-    let buffer = this.buffers[bufferName];
+    let attrLoc = expectValue(
+      this.programInfo.attribLocations[attrLocName], 'attrLoc');
+    let buffer = expectValue(
+      this.buffers[bufferName], 'buffer');
     type = type ?? this.gl.FLOAT;
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
     this.gl.vertexAttribPointer(
@@ -119,26 +107,19 @@ class Renderer {
     this.gl.uniform1i(this.programInfo.uniformLocations.uSampler, 0);
     this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
   
-    const type = this.gl.UNSIGNED_SHORT;
-  
-    {
-      this.gl.bindTexture(this.gl.TEXTURE_2D, this.textures.grass_side);
-      const vertexCount = 12;
-      const offset = 0;
-      this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
+    this.drawNElements(12, 'grass_side');
+    this.drawNElements(6, 'grass_top');
+    this.drawNElements(18,'grass_side');
+  }
+
+  drawNElements(n, texture, type=null){
+    type = type ?? this.gl.UNSIGNED_SHORT;
+    if(isString(texture)){
+      texture = expectValue(this.textures[texture], 'texture(from str)');
     }
-    {
-      this.gl.bindTexture(this.gl.TEXTURE_2D, this.textures.grass_top);
-      const vertexCount = 6;
-      const offset = 24; // 0 + 12*2 = 24
-      this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
-    }
-    {
-      this.gl.bindTexture(this.gl.TEXTURE_2D, this.textures.grass_side);
-      const vertexCount = 18;
-      const offset = 36;  // 24 + 6*2 = 36
-      this.gl.drawElements(this.gl.TRIANGLES, vertexCount, type, offset);
-    }
+    this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+    this.gl.drawElements(this.gl.TRIANGLES, n, type, this.offset);
+    this.offset += 2*n;
   }
   
   // UNIFORMS
@@ -187,17 +168,17 @@ class Renderer {
   
     // Now move the drawing position a bit to where we want to
     // start drawing the square.
-    const amount = [pos[0]-this.cnf.cubePos[0],
-                    pos[1]-this.cnf.cubePos[1],
-                    pos[2]-this.cnf.cubePos[2]];
+    const amount = [this.camPos[0]-this.cnf.cubePos[0],
+                    this.camPos[1]-this.cnf.cubePos[1],
+                    this.camPos[2]-this.cnf.cubePos[2]];
     mat4.translate(modelViewMatrix,     // destination matrix
                    modelViewMatrix,     // matrix to translate
                    amount);  // amount to translate
     //[-0.0, -2.4, -10.0]
     // (Math.PI/180)*
-    rot += this.deltaT;
+    this.rot += this.deltaT;
     // 30*(Math.PI/180)
-    var rotation = this.cnf.rotate ? rot : 30*(Math.PI/180);
+    var rotation = this.cnf.rotate ? this.rot : 30*(Math.PI/180);
     var axis = this.cnf.rotate ? [1.0, 1.0, 1.0] : [0.0, 1.0, 0.0]
     mat4.rotate(modelViewMatrix,  // dest
                 modelViewMatrix,  // src
@@ -276,6 +257,12 @@ class Renderer {
   }
 
   // BUFFER DATA
+  posDataForCube(p0, p1){
+    sortCoords(p0, p1);
+    // TODO
+  }
+
+  
   getTextureCoordData(){
     const textureCoordinates = [
       // Front

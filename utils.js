@@ -4,7 +4,7 @@ function alertLog(...args){
 }
 
 function alertLogError(etype, ...args){
-  console.log(...args);
+  console.error(...args);
   var s = sum(args, '');
   alert(s);
   throw new etype(args);
