@@ -32,12 +32,10 @@ export class Renderer {
     this.makeBufferData();
     this.initArrayBuffers();
     this.initTextures();
-    this.last_error = this.gl.getError();
     this.then = 0;
     this.now = null;
     this.camPos = this.cnf.camPos;
-    this.rot = 0.0;
-    
+    this.cubeRot = 0.0;
   }
 
   initGL(){
@@ -46,12 +44,12 @@ export class Renderer {
       throw new Error("Failed to initiialise gl");
     }
     this.clearCanvas();
-    this.last_error = this.gl.getError();
+    this.checkGlFault();
   }
   initGLConfig(){
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.depthFunc(this.gl.LEQUAL);
-    this.last_error = this.gl.getError();
+    this.checkGlFault();
   }
   clearCanvas() {
     this.gl.clearColor(...this.cnf.bgColor);
@@ -89,8 +87,8 @@ export class Renderer {
   }
 
   addAllData(){
-    this.addCube([-1,-1,-1],[1,1,1], 'grass_top', 'grass_side', 'grass_bottom');
-    this.addCube([-4,-4,-4],[-5,-5,-5], 'grass_top', 'grass_side', 'grass_bottom');
+    this.addCube([-1,-1,-1],[0,0,0], 'grass_top', 'grass_side', 'grass_bottom');
+    this.addCube([-1,-1,-1],[-2,0,-2], 'grass_top', 'grass_side', 'grass_bottom');
   }
 
   initFrame(){
@@ -189,12 +187,6 @@ export class Renderer {
       projectionMatrix);
   }
   getProjectionMatrix(){
-    // Create a perspective matrix, a special matrix that is
-    // used to simulate the distortion of perspective in a camera.
-    // Our field of view is 45 degrees, with a width/height
-    // ratio that matches the display size of the canvas
-    // and we only want to see objects between 0.1 units
-    // and 100 units away from the camera.
     const fieldOfView = 45 * Math.PI / 180;   // in radians
     const aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
     const zNear = 0.1;
@@ -227,19 +219,9 @@ export class Renderer {
     mat4.translate(modelViewMatrix,     // destination matrix
                    modelViewMatrix,     // matrix to translate
                    amount);  // amount to translate
-    //[-0.0, -2.4, -10.0]
-    // (Math.PI/180)*
-    this.rot += this.deltaT;
-    // 30*(Math.PI/180)
-    var rotation = this.cnf.rotate ? this.rot : 30*(Math.PI/180);
-    var axis = this.cnf.rotate ? [1.0, 1.0, 1.0] : [0.0, 1.0, 0.0]
-    mat4.rotate(modelViewMatrix,  // dest
-                modelViewMatrix,  // src
-                rotation, // rotation (rad)
-                axis)  // axis
     return modelViewMatrix;
   }
-  
+
   // SHADER PROGRAM
   loadShaders() {
     const vsText = loadFile(this.cnf.vsPath);

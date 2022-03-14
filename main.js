@@ -23,7 +23,7 @@ function keypress_handler(r, e){
 
 
 addEventListener('load', function(){
-  let r = window.renderer = new Renderer({rotate: false});
+  let r = window.renderer = new Renderer();
   r.start();
   addEventListener('keydown', e => {keypress_handler(r, e);});
 });

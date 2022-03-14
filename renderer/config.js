@@ -9,7 +9,6 @@ export class RendererConfig {
   grassTopPath;
   grassSidePath;
   grassBottomPath;
-  rotate;
   cubePos;
   camPos;
 
@@ -31,8 +30,7 @@ RendererConfig.DEFAULT = new RendererConfig({
   grassTopPath: "./textures/grass-top.jpg",
   grassSidePath: "./textures/grass-side.jpg",
   grassBottomPath: "./textures/grass-bottom.png",
-  rotate: false,
-  cubePos: [0.0, 2.4, 10.0],
+  cubePos: [0.0, 0.4, 5.0],
   camPos: [0.0, 0.0, 0.0],
 });
 
