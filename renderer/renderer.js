@@ -1,43 +1,57 @@
+import {getGL, loadFile,
+        initShaderProgram,
+        loadTextureWithCallback} from '../utils.module.js';
+
 import {RendererConfig} from './config.js';
-import {exportAs, expectValue, isString, sortCoords} from './utils.js';
+import {exportAs, expectValue, isString,
+        sortCoords, glErrnoToMsg} from './utils.js';
+import {ElementBundler, VertexBundle} from './vertex_bundle.js';
 
 // var rot = 0.0;
 //const cubePos = [0.0, 2.4, 10.0];
 //var pos = [0.0, 0.0, 0.0];
 // TODO: implement this so that it works 
 // because textures need a reload when they are loaded
-const dynamic = true;
-
+// const dynamic = true;
+// https://www.toptal.com/game/video-game-physics-part-i-an-introduction-to-rigid-body-dynamics
 
 // TODO: switch to typescript? or use modules? or both!?
-class Renderer {
+export class Renderer {
   constructor(cnf, do_init = true) {
     this.cnf = new RendererConfig(cnf);
     if (do_init) { this.init(); }
   }
 
   init() {
+    this.nFaults = 0;
     this.initGL();
     this.initGLConfig();
     this.loadShaders();
-    this.initBuffers();
+    this.textures = {};
+    this.vertexData = new ElementBundler(this.gl, this.textures);
+    this.makeBufferData();
+    this.initArrayBuffers();
     this.initTextures();
+    this.last_error = this.gl.getError();
     this.then = 0;
     this.now = null;
     this.camPos = this.cnf.camPos;
     this.rot = 0.0;
+    
   }
 
   initGL(){
     this.gl = getGL();
     if(this.gl==null){
-      throw new Error("Filed to initiialise gl");
+      throw new Error("Failed to initiialise gl");
     }
     this.clearCanvas();
+    this.last_error = this.gl.getError();
   }
   initGLConfig(){
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.depthFunc(this.gl.LEQUAL);
+    this.last_error = this.gl.getError();
   }
   clearCanvas() {
     this.gl.clearColor(...this.cnf.bgColor);
@@ -68,16 +82,90 @@ class Renderer {
   }
   
   renderFrame(){
+    this.resetRender();
+    this.setUniforms();
+    {
+      let data = this.dataForCubeSides([-1,-1,-1],[1,1,1]);
+      this.vertexData.addData(
+        new VertexBundle(
+          data.position, data.textureCoord, data.indices
+        ),
+        'grass_side');
+      }
+    {
+      let data = this.dataForCubeTop([-1,-1,-1],[1,1,1]);
+      this.vertexData.addData(
+        new VertexBundle(
+          data.position, data.textureCoord, data.indices
+        ),
+        'grass_top'
+      );
+    }
+    {
+      let data = this.dataForCubeBottom([-1,-1,-1],[1,1,1]);
+      this.vertexData.addData(
+        new VertexBundle(
+          data.position, data.textureCoord, data.indices
+        ),
+        'grass_bottom'
+      );
+    }
+    {
+      let data = this.dataForCubeSides([-4,-4,-4],[-5,-5,-5]);
+      this.vertexData.addData(
+        new VertexBundle(
+          data.position, data.textureCoord, data.indices
+        ),
+        'grass_side');
+      }
+    {
+      let data = this.dataForCubeTop([-4,-4,-4],[-5,-5,-5]);
+      this.vertexData.addData(
+        new VertexBundle(
+          data.position, data.textureCoord, data.indices
+        ),
+        'grass_top'
+      );
+    }
+    {
+      let data = this.dataForCubeBottom([-4,-4,-4],[-5,-5,-5]);
+      this.vertexData.addData(
+        new VertexBundle(
+          data.position, data.textureCoord, data.indices
+        ),
+        'grass_bottom'
+      );
+    }
+    this.vertexData.finalise();
+    this.bufferDataFromBundler();
+    // Tell WebGL we want to affect texture unit 0
+    this.gl.activeTexture(this.gl.TEXTURE0);
+    // Tell the shader we bound the texture to texture unit 0
+    this.gl.uniform1i(this.programInfo.uniformLocations.uSampler, 0);
+    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
+    this.vertexData.drawElements();
+    this.last_error = this.gl.getError();
+    if(this.last_error !== this.gl.NO_ERROR){
+      if (this.nFaults < 64){
+        console.error("WebGL error: ", glErrnoToMsg(this.last_error))
+      }
+      else if(this.nFaults == 64){
+        console.error("Too many WebGL errors")
+      }
+      this.nFaults++;
+    }
+  }
+
+  resetRender(){
+    this.offset = 0;
     this.clearCanvas();
     this.gl.useProgram(this.programInfo.program);
-    this.setUniforms();
-    this.initArrayBuffers();
-    this.offset = 0;
-    this.drawElements();
+    this.vertexData.reset();
   }
 
   // ARRAY BUFFERS
   initArrayBuffers(){
+    // dont need this each frame ??
     this.configVArrayBuffer('position', 'vertexPosition', 3, this.gl.FLOAT);
     this.configVArrayBuffer('textureCoord', 'textureCoord', 2, this.gl.FLOAT);
   }
@@ -218,7 +306,7 @@ class Renderer {
   }
 
   // BUFFERS
-  initBuffers(){
+  makeBufferData(){
     this.buffers = {
       position: this.bufferPositions(),
       textureCoord: this.bufferTextureCoords(),
@@ -227,39 +315,220 @@ class Renderer {
   }
 
   bufferPositions(){
-    const positionBuffer = this.gl.createBuffer();
-    // Select the positionBuffer as the one to apply buffer
-    // operations to from here out.
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);  
-    const positions = this.getPositionData();
-    this.gl.bufferData(this.gl.ARRAY_BUFFER,
-                  new Float32Array(positions),
-                  this.gl.STATIC_DRAW);
-    return positionBuffer;
+    return this.makeBufferWithData(new Float32Array(this.getPositionData()),
+                              this.gl.ARRAY_BUFFER);
   }
   bufferTextureCoords(){
-    const textureCoordinates = this.getTextureCoordData();
-    const textureCoordBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, textureCoordBuffer);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER,
-                       new Float32Array(textureCoordinates),
-                       this.gl.STATIC_DRAW);
-    return textureCoordBuffer;
+    return this.makeBufferWithData(new Float32Array(this.getTextureCoordData()),
+                              this.gl.ARRAY_BUFFER);
   }
   bufferIndices(){
-    const indices = this.getIndexData();
-    const indexBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER,
-                       new Uint16Array(indices),
-                       this.gl.STATIC_DRAW);
-    return indexBuffer;
+    return this.makeBufferWithData(new Uint16Array(this.getIndexData()),
+                               this.gl.ELEMENT_ARRAY_BUFFER)
+  }
+  
+  makeBufferWithData(data/*in eg. Float32Array()*/, buf_type=null, usage=null){
+    buf_type = buf_type ?? this.gl.ARRAY_BUFFER;
+    usage = usage ?? this.gl.STATIC_DRAW;
+    const buf = this.gl.createBuffer();
+    this.gl.bindBuffer(buf_type, buf);
+    this.gl.bufferData(buf_type, data, usage);
+    return buf;
+  }
+
+  setBufferData(buf_name, data/*in eg. Float32Array()*/,
+                buf_type=null, usage=null){
+    buf_type = buf_type ?? this.gl.ARRAY_BUFFER;
+    usage = usage ?? this.gl.STATIC_DRAW;
+    let buf = expectValue(this.buffers[buf_name], "buffer");
+    this.gl.bindBuffer(buf_type, buf);
+    this.gl.bufferData(buf_type, data, usage);
+  }
+
+  bufferDataFromBundler(){
+    this.setBufferData('position',
+                       new Float32Array(this.vertexData.positions));
+    this.setBufferData('textureCoord',
+                       new Float32Array(this.vertexData.texCoords));
+    this.setBufferData('indices', new Uint16Array(this.vertexData.indices), 
+                       this.gl.ELEMENT_ARRAY_BUFFER);
   }
 
   // BUFFER DATA
+  dataForCubeSides(p0, p1){
+    sortCoords(p0, p1);
+    const [x0, y0, z0] = p0;
+    const [x1, y1, z1] = p1;
+    const sides = {'position': [
+    // Front face
+    x0, y0, z1,
+    x1, y0, z1,
+    x1, y1, z1,
+    x0, y1, z1,
+  
+    // Back face
+    x0, y0, z0,
+    x0, y1, z0,  
+    x1, y1, z0,
+    x1, y0, z0,
+  
+    // Right face
+    x1, y0, z0, 
+    x1, y1, z0,
+    x1, y1, z1,
+    x1, y0, z1,
+  
+    // Left face
+    x0, y0, z0,
+    x0, y0, z1,
+    x0, y1, z1,
+    x0, y1, z0,
+    ], 'textureCoord':[
+      // Front
+      0.0,  1.0,
+      1.0,  1.0,
+      1.0,  0.0,
+      0.0,  0.0,
+      // Back
+      0.0,  1.0,
+      0.0,  0.0,
+      1.0,  0.0,
+      1.0,  1.0,
+      // Right
+      0.0,  1.0,
+      0.0,  0.0,
+      1.0,  0.0,
+      1.0,  1.0,
+      // Left
+      0.0,  1.0,
+      1.0,  1.0,
+      1.0,  0.0,
+      0.0,  0.0,
+    ], 'indices':[
+      0,  1,  2,      0,  2,  3,    // front
+      4,  5,  6,      4,  6,  7,    // back
+      8,  9,  10,     8,  10, 11,   // right
+      12, 13, 14,     12, 14, 15,   // left
+    ]};
+    return sides;
+  }
+  
+  dataForCubeTop(p0, p1){
+    sortCoords(p0, p1);
+    const [x0, _y0, z0] = p0;
+    const [x1, y1, z1] = p1;
+    const ret = {'position': [
+      x0, y1, z0,
+      x0, y1, z1,
+      x1, y1, z1,
+      x1, y1, z0,
+    ],'textureCoord':[
+      0.0,  0.0,
+      1.0,  0.0,
+      1.0,  1.0,
+      0.0,  1.0,
+    ],'indices':[
+      0, 1, 2,     0, 2, 3,   // top
+    ]};
+    return ret;
+  }
+  
+  dataForCubeBottom(p0, p1){
+    sortCoords(p0, p1);
+    const [x0, y0, z0] = p0;
+    const [x1, _y1, z1] = p1;
+    const ret = {'position': [
+      x0, y0, z0,
+      x1, y0, z0,
+      x1, y0, z1,
+      x0, y0, z1,
+    ],'textureCoord':[
+      0.0,  0.0,
+      1.0,  0.0,
+      1.0,  1.0,
+      0.0,  1.0,
+    ],'indices':[
+      0, 1, 2,     0, 2, 3,   // bottom
+    ]};
+    return ret;
+  }
+  
+  dataForCubeRest(p0, p1){
+    sortCoords(p0, p1);
+    const [x0, y0, z0] = p0;
+    const [x1, y1, z1] = p1;
+    const ret = {'position': [
+      // Top face
+      x0, y1, z0,
+      x0, y1, z1,
+      x1, y1, z1,
+      x1, y1, z0,
+    
+      // Bottom face
+      x0, y0, z0,
+      x1, y0, z0,
+      x1, y0, z1,
+      x0, y0, z1,
+    ],'textureCoord':[
+      // Top
+      0.0,  0.0,
+      1.0,  0.0,
+      1.0,  1.0,
+      0.0,  1.0,
+      // Bottom
+      0.0,  0.0,
+      1.0,  0.0,
+      1.0,  1.0,
+      0.0,  1.0,
+    ],'indices':[
+      0, 1, 2,     0, 2, 3,   // top
+      4, 5, 6,     4, 6, 7,   // bottom
+    ]};
+    return ret;
+  }
+  
   posDataForCube(p0, p1){
     sortCoords(p0, p1);
-    // TODO
+    const [x0, y0, z0] = p0;
+    const [x1, y1, z1] = p1;
+    const positions = [
+    // Front face
+    x0, y0, z1,
+    x1, y0, z1,
+    x1, y1, z1,
+    x0, y1, z1,
+  
+    // Back face
+    x0, y0, z0,
+    x0, y1, z0,  
+    x1, y1, z0,
+    x1, y0, z0,
+  
+    // Top face
+    x0, y1, z0,
+    x0, y1, z1,
+    x1, y1, z1,
+    x1, y1, z0,
+  
+    // Bottom face
+    x0, y0, z0,
+    x1, y0, z0,
+    x1, y0, z1,
+    x0, y0, z1,
+  
+    // Right face
+    x1, y0, z0, 
+    x1, y1, z0,
+    x1, y1, z1,
+    x1, y0, z1,
+  
+    // Left face
+    x0, y0, z0,
+    x0, y0, z1,
+    x0, y1, z1,
+    x0, y1, z0,
+    ];
+    return positions;
   }
 
   
@@ -299,44 +568,7 @@ class Renderer {
     return textureCoordinates;
   }
   getPositionData(){
-    const positions = [
-    // Front face
-    -1.0, -1.0,  1.0,
-     1.0, -1.0,  1.0,
-     1.0,  1.0,  1.0,
-    -1.0,  1.0,  1.0,
-  
-    // Back face
-    -1.0, -1.0, -1.0,
-    -1.0,  1.0, -1.0,  
-     1.0,  1.0, -1.0,
-     1.0, -1.0, -1.0,
-  
-    // Top face
-    -1.0,  1.0, -1.0,
-    -1.0,  1.0,  1.0,
-     1.0,  1.0,  1.0,
-     1.0,  1.0, -1.0,
-  
-    // Bottom face
-    -1.0, -1.0, -1.0,
-     1.0, -1.0, -1.0,
-     1.0, -1.0,  1.0,
-    -1.0, -1.0,  1.0,
-  
-    // Right face
-     1.0, -1.0, -1.0, 
-     1.0,  1.0, -1.0,
-     1.0,  1.0,  1.0,
-     1.0, -1.0,  1.0,
-  
-    // Left face
-    -1.0, -1.0, -1.0,
-    -1.0, -1.0,  1.0,
-    -1.0,  1.0,  1.0,
-    -1.0,  1.0, -1.0,
-    ];
-    return positions;
+    return this.posDataForCube([-1, -1, -1], [1, 1, 1]);
   }
   getIndexData(){
     // This array defines each face as two triangles, using the
@@ -355,19 +587,20 @@ class Renderer {
 
   // TEXTURES
   initTextures(){
-    this.textures = {};
     this.loadTexture('grass_top', this.cnf.grassTopPath);
     this.loadTexture('grass_side', this.cnf.grassSidePath);
+    this.loadTexture('grass_bottom', this.cnf.grassBottomPath);
   }
   
-  loadTexture(name, path, callback=null){
+  loadTexture(name, path, callback=null, thisArg=null){
     let this_outer = this;
     this.textures[name] = loadTextureWithCallback(
       this_outer.gl, path,
       function (gl, url, img) {
         this_outer.textures[name].image = img;
         if(callback != null) {
-          callback.call(this_outer, name, url, img);
+          thisArg = thisArg ?? this_outer;
+          callback.call(thisArg, name, url, img);
         }
         this_outer.textures[name].loaded = true;
       }

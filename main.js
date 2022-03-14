@@ -1,3 +1,5 @@
+import {Renderer} from './renderer/renderer.js';
+
 function keypress_handler(r, e){  
   if(e.key == 'w'){
     r.camPos[2] += 1;
@@ -21,8 +23,7 @@ function keypress_handler(r, e){
 
 
 addEventListener('load', function(){
-  window.renderer = new Renderer({rotate: true});
-  let r = renderer;
+  let r = window.renderer = new Renderer({rotate: false});
   r.start();
   addEventListener('keydown', e => {keypress_handler(r, e);});
 });

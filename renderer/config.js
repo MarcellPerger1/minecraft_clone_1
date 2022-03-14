@@ -8,6 +8,7 @@ export class RendererConfig {
   fsPath;
   grassTopPath;
   grassSidePath;
+  grassBottomPath;
   rotate;
   cubePos;
   camPos;
@@ -27,8 +28,9 @@ RendererConfig.DEFAULT = new RendererConfig({
   bgColor: [0.5, 0.86, 1.0, 1.0],
   vsPath: "./shaders/vertex-shader.glsl",
   fsPath: "./shaders/fragment-shader.glsl",
-  grassTopPath: "./textures/grass-top-5.jpg",
-  grassSidePath: "./textures/grass-side-5.jpg",
+  grassTopPath: "./textures/grass-top.jpg",
+  grassSidePath: "./textures/grass-side.jpg",
+  grassBottomPath: "./textures/grass-bottom.png",
   rotate: false,
   cubePos: [0.0, 2.4, 10.0],
   camPos: [0.0, 0.0, 0.0],

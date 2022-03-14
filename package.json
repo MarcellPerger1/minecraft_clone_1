@@ -1,0 +1,18 @@
+{
+  "name": "stuffwebgl4",
+  "version": "1.0.0",
+  "description": "A minecraft clone in browser using webgl",
+  "main": "index.html",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^8.10.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "webgl"
+  ],
+  "author": "Marcell Perger",
+  "license": "MIT"
+}
