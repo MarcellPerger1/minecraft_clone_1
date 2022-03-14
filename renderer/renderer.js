@@ -36,6 +36,7 @@ export class Renderer {
     this.now = null;
     this.camPos = this.cnf.camPos;
     this.cubeRot = 0.0;
+    this.camRot = 0.0;
   }
 
   initGL(){
@@ -210,9 +211,9 @@ export class Renderer {
   }
   getModelViewMatrix(){
     const modelViewMatrix = mat4.create();
-  
-    // Now move the drawing position a bit to where we want to
-    // start drawing the square.
+    // NOTE: only X & Y roation because 
+    // Z rotation would flip carera upside down for example
+    mat4.rotateY(modelViewMatrix, modelViewMatrix, this.camRot * Math.PI / 180);
     const amount = [this.camPos[0]-this.cnf.cubePos[0],
                     this.camPos[1]-this.cnf.cubePos[1],
                     this.camPos[2]-this.cnf.cubePos[2]];

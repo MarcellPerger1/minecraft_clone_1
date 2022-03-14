@@ -1,6 +1,6 @@
 import {Renderer} from './renderer/renderer.js';
 
-function keypress_handler(r, e){  
+function keydown_handler(r, e){  
   if(e.key == 'w'){
     r.camPos[2] += 1;
   }
@@ -19,11 +19,18 @@ function keypress_handler(r, e){
   if(e.key == 'z'){
     r.camPos[1] += 1;
   }
+  // TODO !!! - correct fwd movement based on angle
+  if(e.key=='ArrowRight'){
+    r.camRot += 5;
+  }
+  if(e.key=='ArrowLeft'){
+    r.camRot -= 5;
+  }
 }
 
 
 addEventListener('load', function(){
   let r = window.renderer = new Renderer();
   r.start();
-  addEventListener('keydown', e => {keypress_handler(r, e);});
+  addEventListener('keydown', e => {keydown_handler(r, e);});
 });
