@@ -3,7 +3,7 @@ import {getGL, loadFile,
         loadTextureWithCallback} from '../utils.module.js';
 
 import {RendererConfig} from './config.js';
-import {exportAs, expectValue, isString,
+import {exportAs, expectValue,
         sortCoords, glErrnoToMsg} from './utils.js';
 import {ElementBundler, VertexBundle} from './vertex_bundle.js';
 
@@ -82,78 +82,44 @@ export class Renderer {
   }
   
   renderFrame(){
+    this.initFrame();
+    this.addAllData();
+    this.drawAll();
+    this.checkGlFault();
+  }
+
+  addAllData(){
+    this.addCube([-1,-1,-1],[1,1,1], 'grass_top', 'grass_side', 'grass_bottom');
+    this.addCube([-4,-4,-4],[-5,-5,-5], 'grass_top', 'grass_side', 'grass_bottom');
+  }
+
+  initFrame(){
     this.resetRender();
     this.setUniforms();
-    {
-      let data = this.dataForCubeSides([-1,-1,-1],[1,1,1]);
-      this.vertexData.addData(
-        new VertexBundle(
-          data.position, data.textureCoord, data.indices
-        ),
-        'grass_side');
-      }
-    {
-      let data = this.dataForCubeTop([-1,-1,-1],[1,1,1]);
-      this.vertexData.addData(
-        new VertexBundle(
-          data.position, data.textureCoord, data.indices
-        ),
-        'grass_top'
-      );
-    }
-    {
-      let data = this.dataForCubeBottom([-1,-1,-1],[1,1,1]);
-      this.vertexData.addData(
-        new VertexBundle(
-          data.position, data.textureCoord, data.indices
-        ),
-        'grass_bottom'
-      );
-    }
-    {
-      let data = this.dataForCubeSides([-4,-4,-4],[-5,-5,-5]);
-      this.vertexData.addData(
-        new VertexBundle(
-          data.position, data.textureCoord, data.indices
-        ),
-        'grass_side');
-      }
-    {
-      let data = this.dataForCubeTop([-4,-4,-4],[-5,-5,-5]);
-      this.vertexData.addData(
-        new VertexBundle(
-          data.position, data.textureCoord, data.indices
-        ),
-        'grass_top'
-      );
-    }
-    {
-      let data = this.dataForCubeBottom([-4,-4,-4],[-5,-5,-5]);
-      this.vertexData.addData(
-        new VertexBundle(
-          data.position, data.textureCoord, data.indices
-        ),
-        'grass_bottom'
-      );
-    }
+  }
+
+  drawAll(){
     this.vertexData.finalise();
     this.bufferDataFromBundler();
-    // Tell WebGL we want to affect texture unit 0
-    this.gl.activeTexture(this.gl.TEXTURE0);
-    // Tell the shader we bound the texture to texture unit 0
-    this.gl.uniform1i(this.programInfo.uniformLocations.uSampler, 0);
     this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
     this.vertexData.drawElements();
+  }
+
+  checkGlFault(){
     this.last_error = this.gl.getError();
     if(this.last_error !== this.gl.NO_ERROR){
-      if (this.nFaults < 64){
-        console.error("WebGL error: ", glErrnoToMsg(this.last_error))
-      }
-      else if(this.nFaults == 64){
-        console.error("Too many WebGL errors")
-      }
-      this.nFaults++;
+      this.onGlFault();
     }
+  }
+
+  onGlFault(){
+    if (this.nFaults < 64){
+      console.error("WebGL error: ", glErrnoToMsg(this.last_error))
+    }
+    else if(this.nFaults == 64){
+      console.error("Too many WebGL errors: only reporting first 64.")
+    }
+    this.nFaults++;
   }
 
   resetRender(){
@@ -165,7 +131,6 @@ export class Renderer {
 
   // ARRAY BUFFERS
   initArrayBuffers(){
-    // dont need this each frame ??
     this.configVArrayBuffer('position', 'vertexPosition', 3, this.gl.FLOAT);
     this.configVArrayBuffer('textureCoord', 'textureCoord', 2, this.gl.FLOAT);
   }
@@ -188,32 +153,32 @@ export class Renderer {
     this.gl.enableVertexAttribArray(attrLoc);
   }
 
-  drawElements(){
-    // Tell WebGL we want to affect texture unit 0
-    this.gl.activeTexture(this.gl.TEXTURE0);
-    // Tell the shader we bound the texture to texture unit 0
-    this.gl.uniform1i(this.programInfo.uniformLocations.uSampler, 0);
-    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
-  
-    this.drawNElements(12, 'grass_side');
-    this.drawNElements(6, 'grass_top');
-    this.drawNElements(18,'grass_side');
+  addData(data, texture){
+    return this.vertexData.addData(
+        new VertexBundle(
+          data.position, data.textureCoord, data.indices
+        ),
+        texture);
   }
 
-  drawNElements(n, texture, type=null){
-    type = type ?? this.gl.UNSIGNED_SHORT;
-    if(isString(texture)){
-      texture = expectValue(this.textures[texture], 'texture(from str)');
-    }
-    this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
-    this.gl.drawElements(this.gl.TRIANGLES, n, type, this.offset);
-    this.offset += 2*n;
+  addCube(p0,p1,top_tex,side_tex,bottom_tex){
+    this.addData(this.dataForCubeSides(p0,p1), side_tex);
+    this.addData(this.dataForCubeTop(p0,p1), top_tex);
+    this.addData(this.dataForCubeBottom(p0,p1), bottom_tex);
   }
   
   // UNIFORMS
   setUniforms(){
     this.initProjectionMatrix();
     this.initModelViewMatrix();
+    this.initTextureSampler();
+  }
+
+  initTextureSampler(){
+    // Tell WebGL we want to affect texture unit 0
+    this.gl.activeTexture(this.gl.TEXTURE0);
+    // Tell the shader we bound the texture to texture unit 0
+    this.gl.uniform1i(this.programInfo.uniformLocations.uSampler, 0);
   }
   
   initProjectionMatrix(){
@@ -308,23 +273,14 @@ export class Renderer {
   // BUFFERS
   makeBufferData(){
     this.buffers = {
-      position: this.bufferPositions(),
-      textureCoord: this.bufferTextureCoords(),
-      indices: this.bufferIndices(),
+      position: this.makeBuffer(),
+      textureCoord: this.makeBuffer(),
+      indices: this.makeBuffer(),
     };
   }
 
-  bufferPositions(){
-    return this.makeBufferWithData(new Float32Array(this.getPositionData()),
-                              this.gl.ARRAY_BUFFER);
-  }
-  bufferTextureCoords(){
-    return this.makeBufferWithData(new Float32Array(this.getTextureCoordData()),
-                              this.gl.ARRAY_BUFFER);
-  }
-  bufferIndices(){
-    return this.makeBufferWithData(new Uint16Array(this.getIndexData()),
-                               this.gl.ELEMENT_ARRAY_BUFFER)
+  makeBuffer(){
+    return this.gl.createBuffer();
   }
   
   makeBufferWithData(data/*in eg. Float32Array()*/, buf_type=null, usage=null){
@@ -352,9 +308,10 @@ export class Renderer {
                        new Float32Array(this.vertexData.texCoords));
     this.setBufferData('indices', new Uint16Array(this.vertexData.indices), 
                        this.gl.ELEMENT_ARRAY_BUFFER);
+    
   }
 
-  // BUFFER DATA
+  // DATA FOR BUFFERS
   dataForCubeSides(p0, p1){
     sortCoords(p0, p1);
     const [x0, y0, z0] = p0;
@@ -453,40 +410,6 @@ export class Renderer {
     return ret;
   }
   
-  dataForCubeRest(p0, p1){
-    sortCoords(p0, p1);
-    const [x0, y0, z0] = p0;
-    const [x1, y1, z1] = p1;
-    const ret = {'position': [
-      // Top face
-      x0, y1, z0,
-      x0, y1, z1,
-      x1, y1, z1,
-      x1, y1, z0,
-    
-      // Bottom face
-      x0, y0, z0,
-      x1, y0, z0,
-      x1, y0, z1,
-      x0, y0, z1,
-    ],'textureCoord':[
-      // Top
-      0.0,  0.0,
-      1.0,  0.0,
-      1.0,  1.0,
-      0.0,  1.0,
-      // Bottom
-      0.0,  0.0,
-      1.0,  0.0,
-      1.0,  1.0,
-      0.0,  1.0,
-    ],'indices':[
-      0, 1, 2,     0, 2, 3,   // top
-      4, 5, 6,     4, 6, 7,   // bottom
-    ]};
-    return ret;
-  }
-  
   posDataForCube(p0, p1){
     sortCoords(p0, p1);
     const [x0, y0, z0] = p0;
@@ -529,60 +452,6 @@ export class Renderer {
     x0, y1, z0,
     ];
     return positions;
-  }
-
-  
-  getTextureCoordData(){
-    const textureCoordinates = [
-      // Front
-      0.0,  1.0,
-      1.0,  1.0,
-      1.0,  0.0,
-      0.0,  0.0,
-      // Back
-      0.0,  1.0,
-      0.0,  0.0,
-      1.0,  0.0,
-      1.0,  1.0,
-      // Top
-      0.0,  0.0,
-      1.0,  0.0,
-      1.0,  1.0,
-      0.0,  1.0,
-      // Bottom
-      0.0,  0.0,
-      1.0,  0.0,
-      1.0,  1.0,
-      0.0,  1.0,
-      // Right
-      0.0,  1.0,
-      0.0,  0.0,
-      1.0,  0.0,
-      1.0,  1.0,
-      // Left
-      0.0,  1.0,
-      1.0,  1.0,
-      1.0,  0.0,
-      0.0,  0.0,
-    ];
-    return textureCoordinates;
-  }
-  getPositionData(){
-    return this.posDataForCube([-1, -1, -1], [1, 1, 1]);
-  }
-  getIndexData(){
-    // This array defines each face as two triangles, using the
-    // indices into the vertex array to specify each triangle's
-    // position.
-    const indices = [
-      0,  1,  2,      0,  2,  3,    // front
-      4,  5,  6,      4,  6,  7,    // back
-      8,  9,  10,     8,  10, 11,   // top
-      12, 13, 14,     12, 14, 15,   // bottom
-      16, 17, 18,     16, 18, 19,   // right
-      20, 21, 22,     20, 22, 23,   // left
-    ];
-    return indices;
   }
 
   // TEXTURES
