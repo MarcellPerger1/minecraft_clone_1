@@ -1,17 +1,20 @@
 import {Renderer} from './renderer/renderer.js';
+import {moveCamera} from './controller.js';
+
+const SPEED = 0.7;
 
 function keydown_handler(r, e){  
-  if(e.key == 'w'){
-    r.camPos[2] += 1;
+  if(e.key == 'w' || e.key=='ArrowUp'){
+    moveCamera(r.camPos,[0,0,1],-r.camRot.h,SPEED);
   }
-  if(e.key == 's'){
-    r.camPos[2] -= 1;
+  if(e.key == 's' || e.key=='ArrowDown'){
+    moveCamera(r.camPos,[0,0,-1],-r.camRot.h,SPEED);
   }
   if(e.key == 'a'){
-    r.camPos[0] += 1;
+    moveCamera(r.camPos,[1,0,0],-r.camRot.h,SPEED);
   }
   if(e.key == 'd'){
-    r.camPos[0] -= 1;
+    moveCamera(r.camPos,[-1,0,0],-r.camRot.h,SPEED);
   }
   if(e.key == 'q'){
     r.camPos[1] -= 1;
@@ -19,12 +22,11 @@ function keydown_handler(r, e){
   if(e.key == 'z'){
     r.camPos[1] += 1;
   }
-  // TODO !!! - correct fwd movement based on angle
   if(e.key=='ArrowRight'){
-    r.camRot += 5;
+    r.camRot.h += 5;
   }
   if(e.key=='ArrowLeft'){
-    r.camRot -= 5;
+    r.camRot.h -= 5;
   }
 }
 
