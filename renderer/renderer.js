@@ -221,6 +221,7 @@ export class Renderer {
     mat4.translate(modelViewMatrix,     // destination matrix
                    modelViewMatrix,     // matrix to translate
                    amount);  // amount to translate
+    
     return modelViewMatrix;
   }
 

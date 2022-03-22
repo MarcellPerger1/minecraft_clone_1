@@ -287,3 +287,15 @@ export function configVertexArrayBuffer(gl, buffer, attribLoc,
       offset);
   gl.enableVertexAttribArray(attribLoc);
 }
+
+
+export function extendNullSafe(a, ...args){
+  for(const other of args){
+    if(other==null){ continue; }
+    for(const v of other){
+      if(v==null){ continue; }
+      a.push(v);
+    }
+  }
+  return a;
+}
