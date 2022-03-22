@@ -7,6 +7,7 @@ import {exportAs, expectValue,
         sortCoords, glErrnoToMsg} from './utils.js';
 import {ElementBundler, VertexBundle} from './vertex_bundle.js';
 
+
 // var rot = 0.0;
 //const cubePos = [0.0, 2.4, 10.0];
 //var pos = [0.0, 0.0, 0.0];
@@ -37,6 +38,7 @@ export class Renderer {
     this.camPos = this.cnf.camPos;
     this.cubeRot = 0.0;
     this.camRot = {h: 0.0, v: 0.0};
+    this.camNorm = vec3.fromValues([1.0,0.0,0.0]);
   }
 
   initGL(){
@@ -90,6 +92,7 @@ export class Renderer {
   addAllData(){
     this.addCube([-1,-1,-1],[0,0,0], 'grass_top', 'grass_side', 'grass_bottom');
     this.addCube([-1,-1,-1],[-2,0,-2], 'grass_top', 'grass_side', 'grass_bottom');
+    this.addCube([-3,-1,-1],[-2,0,0], 'grass_top', 'grass_side', 'grass_bottom');
   }
 
   initFrame(){
@@ -210,19 +213,18 @@ export class Renderer {
         modelViewMatrix);
   }
   getModelViewMatrix(){
-    const modelViewMatrix = mat4.create();
+    var m1 = mat4.create();
     // NOTE: only X & Y roation because 
     // Z rotation would flip carera upside down for example
-    mat4.rotateY(modelViewMatrix, modelViewMatrix, this.camRot.h * Math.PI / 180);
-    mat4.rotateX(modelViewMatrix, modelViewMatrix, this.camRot.v * Math.PI / 180);
-    const amount = [this.camPos[0]-this.cnf.cubePos[0],
-                    this.camPos[1]-this.cnf.cubePos[1],
-                    this.camPos[2]-this.cnf.cubePos[2]];
-    mat4.translate(modelViewMatrix,     // destination matrix
-                   modelViewMatrix,     // matrix to translate
+    const amount = this.camPos;
+    // NOTEE: IMPORTANT!: does stuff in reverse order!!!
+    // eg.: here, matrix will transalate, then rotateY, then rotateX
+    mat4.rotateX(m1, m1, this.camRot.v * Math.PI / 180);
+    mat4.rotateY(m1, m1, this.camRot.h * Math.PI / 180);
+    mat4.translate(m1,     // destination matrix
+                   m1,     // matrix to translate
                    amount);  // amount to translate
-    
-    return modelViewMatrix;
+    return m1;
   }
 
   // SHADER PROGRAM

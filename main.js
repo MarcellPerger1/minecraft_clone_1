@@ -4,11 +4,12 @@ import {moveCamera} from './controller.js';
 const SPEED = 0.7;
 const SENSITIVITY = 0.6;
 
+// TODO: 16x16 textures - smaller and dont need extra detail
 function keydown_handler(r, e){  
-  if(e.key == 'w' || e.key=='ArrowUp'){
+  if(e.key == 'w'){
     moveCamera(r.camPos,[0,0,1],-r.camRot.h,SPEED);
   }
-  if(e.key == 's' || e.key=='ArrowDown'){
+  if(e.key == 's'){
     moveCamera(r.camPos,[0,0,-1],-r.camRot.h,SPEED);
   }
   if(e.key == 'a'){
@@ -29,6 +30,12 @@ function keydown_handler(r, e){
   if(e.key=='ArrowLeft'){
     r.camRot.h -= 5;
   }
+  if(e.key=='ArrowUp'){
+    r.camRot.v += 5;
+  }
+  if(e.key=='ArrowDown'){
+    r.camRot.v -= 5;
+  }
 }
 
 
@@ -43,7 +50,6 @@ function pointer_move(r, e){
     r.camRot.h += e.movementX * SENSITIVITY;
     // FIX: h rot at low angles not applied correctly!!
     r.camRot.v += e.movementY * SENSITIVITY;
-    r.camRot.v = clamp(r.camRot.v, -85, 85);
   }
 }
 

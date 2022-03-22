@@ -30,8 +30,8 @@ RendererConfig.DEFAULT = new RendererConfig({
   grassTopPath: "./textures/grass-top.jpg",
   grassSidePath: "./textures/grass-side.jpg",
   grassBottomPath: "./textures/grass-bottom.png",
-  cubePos: [0.0, 0.4, 5.0],
-  camPos: [0.0, 0.0, 0.0],
+  cubePos: [0.0, 0.0, 0.0],
+  camPos: [0.0, 0.0, -4.0],
 });
 
 exportAs(RendererConfig);
