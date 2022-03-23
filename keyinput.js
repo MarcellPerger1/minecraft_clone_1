@@ -2,51 +2,52 @@ export class KeyInput {
   constructor(){
     // funcs: [[event, func], ...]  (more flexible & extensible this way)
     this.funcs = [];
-    this.key_down = [];
-    this.code_down = [];
+    this.key_down = {};
+    this.code_down = {};
   }
 
-  add_func(func, event){
-    (this.funcs[event] ??= []).push(func);
+  addFunc(event, func){
+    this.funcs.push([event, func]);
     return this;
   }
 
   keydown(e){
     this.key_down[e.key] = true;
-    this.code_down[e.key] = true;
+    this.code_down[e.code] = true;
   }
 
-  key_up(e){
+  keyup(e){
     this.key_down[e.key] = false;
-    this.code_down[e.key] = false;
+    this.code_down[e.code] = false;
   }
 
-  tick(){
+  tick(deltaT){
     for(const [event, func] of this.funcs){
       if(event.shouldTrigger(this)){
-        func();
+        func(deltaT);
       }
     }
   }
 }
 
 
-class BaseKeyEvent {
+export class BaseKeyEvent {
   shouldTrigger(ki){
     throw new ReferenceError('KeyEvents should override shouldTrigger');
   }
 }
 
-class KeyEvent extends BaseKeyEvent {
-  AUTO = 0;
-  KEY = 1;  // eg. 'h' or 'H' (affected by Shift/CapsLock)
+export class KeyEvent extends BaseKeyEvent {
+  static AUTO = 0;
+  static KEY = 1;  // eg. 'h' or 'H' (affected by Shift/CapsLock)
   // recommended:
-  CODE = 2; // eg. 'KeyH'     (for keybinds - NOT text editing)
+  static CODE = 2; // eg. 'KeyH'     (for keybinds - NOT text editing)
   
   constructor(event_str, mode=KeyEvent.AUTO){
+    super()
     mode ??= KeyEvent.AUTO
     if(mode == KeyEvent.AUTO){
-      mode = this.getAutoMode(event_str);
+      [mode, event_str] = this.getAutoEvent(event_str);
     }
     this.mode = mode;
     this.event_str = event_str;
@@ -57,13 +58,10 @@ class KeyEvent extends BaseKeyEvent {
     return down_o[this.event_str] ?? false;
   }
 
-  getAutoMode(event){
-    if(event.startsWith('Key')){
-      return KeyEvent.CODE;
-    } 
-    if(event.length==1){
-      return KeyEvent.KEY;
+  getAutoEvent(event_str){
+    if(event_str.length==1){
+      return [KeyEvent.CODE, event_str.upper()];
     }
-    return KeyEvent.CODE;
+    return [KeyEvent.CODE, event_str];
   }
 }

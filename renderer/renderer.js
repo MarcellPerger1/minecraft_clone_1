@@ -6,11 +6,9 @@ import {RendererConfig} from './config.js';
 import {exportAs, expectValue,
         sortCoords, glErrnoToMsg} from './utils.js';
 import {ElementBundler, VertexBundle} from './vertex_bundle.js';
+import {KeyInput} from '../keyinput.js';
 
 
-// var rot = 0.0;
-//const cubePos = [0.0, 2.4, 10.0];
-//var pos = [0.0, 0.0, 0.0];
 // TODO: implement this so that it works 
 // because textures need a reload when they are loaded
 // const dynamic = true;
@@ -35,10 +33,10 @@ export class Renderer {
     this.initTextures();
     this.then = 0;
     this.now = null;
+    this.ki = new KeyInput();
     this.camPos = this.cnf.camPos;
     this.cubeRot = 0.0;
     this.camRot = {h: 0.0, v: 0.0};
-    this.camNorm = vec3.fromValues([1.0,0.0,0.0]);
   }
 
   initGL(){
@@ -84,6 +82,7 @@ export class Renderer {
   
   renderFrame(){
     this.initFrame();
+    this.ki.tick(this.deltaT);
     this.addAllData();
     this.drawAll();
     this.checkGlFault();

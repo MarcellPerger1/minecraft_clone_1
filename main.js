@@ -1,15 +1,16 @@
 import {Renderer} from './renderer/renderer.js';
 import {moveCamera} from './controller.js';
+import {KeyInput, KeyEvent} from './keyinput.js';
 
-const SPEED = 0.7;
+const SPEED = 3.5;
 const SENSITIVITY = 0.6;
 
 // TODO: 16x16 textures - smaller and dont need extra detail
 // TODO texture atlas with these!
 function keydown_handler(r, e){  
-  if(e.key == 'w' || e.key=='ArrowUp'){
-    moveCamera(r.camPos,[0,0,1],-r.camRot.h,SPEED);
-  }
+  // if(e.key == 'w' || e.key=='ArrowUp'){
+  //   moveCamera(r.camPos,[0,0,1],-r.camRot.h,SPEED);
+  // }
   if(e.key == 's' || e.key=='ArrowDown'){
     moveCamera(r.camPos,[0,0,-1],-r.camRot.h,SPEED);
   }
@@ -31,9 +32,11 @@ function keydown_handler(r, e){
   if(e.key=='ArrowLeft'){
     r.camRot.h -= 5;
   }
-  console.log(e.key, e.code)
   clampRot(r);
 }
+
+
+
 
 
 function clamp(v, min, max) {
@@ -64,10 +67,6 @@ function pointerlock_error(r,e){
   alert('pointerlock error');
 }
 
-function click_handler(r, e){
-  
-}
-
 function addEvent(name, hdlr, elem=null, opts=null){
   return (elem??window).addEventListener(
     name,
@@ -78,6 +77,11 @@ function addEvent(name, hdlr, elem=null, opts=null){
 addEventListener('load', function(){
   var c = window.canvas = document.getElementById('glCanvas');
   var r = window.renderer = new Renderer();
+  var ki = window.keyinput = r.ki;
+  ki.addFunc(new KeyEvent('KeyW'),
+             (deltaT) => moveCamera(r.camPos,[0,0,1],-r.camRot.h,SPEED*deltaT))
+  addEventListener('keydown', (e) => ki.keydown(e));
+  addEventListener('keyup', (e) => ki.keyup(e));
   r.start();
   addEvent('keydown', keydown_handler);
   addEvent('pointerlockerror', pointerlock_error, document);
