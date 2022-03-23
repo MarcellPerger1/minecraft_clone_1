@@ -60,7 +60,7 @@ export class KeyEvent extends BaseKeyEvent {
 
   getAutoEvent(event_str){
     if(event_str.length==1){
-      return [KeyEvent.CODE, event_str.upper()];
+      return [KeyEvent.CODE, 'Key'+event_str.toUpperCase()];
     }
     return [KeyEvent.CODE, event_str];
   }

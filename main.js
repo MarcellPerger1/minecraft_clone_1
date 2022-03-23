@@ -11,15 +11,15 @@ function keydown_handler(r, e){
   // if(e.key == 'w' || e.key=='ArrowUp'){
   //   moveCamera(r.camPos,[0,0,1],-r.camRot.h,SPEED);
   // }
-  if(e.key == 's' || e.key=='ArrowDown'){
-    moveCamera(r.camPos,[0,0,-1],-r.camRot.h,SPEED);
-  }
-  if(e.key == 'a'){
-    moveCamera(r.camPos,[1,0,0],-r.camRot.h,SPEED);
-  }
-  if(e.key == 'd'){
-    moveCamera(r.camPos,[-1,0,0],-r.camRot.h,SPEED);
-  }
+  // if(e.key == 's' || e.key=='ArrowDown'){
+  //   moveCamera(r.camPos,[0,0,-1],-r.camRot.h,SPEED);
+  // }
+  // if(e.key == 'a'){
+  //   moveCamera(r.camPos,[1,0,0],-r.camRot.h,SPEED);
+  // }
+  // if(e.key == 'd'){
+  //   moveCamera(r.camPos,[-1,0,0],-r.camRot.h,SPEED);
+  // }
   if(e.key == 'q'){
     r.camPos[1] -= 1;
   }
@@ -78,8 +78,14 @@ addEventListener('load', function(){
   var c = window.canvas = document.getElementById('glCanvas');
   var r = window.renderer = new Renderer();
   var ki = window.keyinput = r.ki;
-  ki.addFunc(new KeyEvent('KeyW'),
-             (deltaT) => moveCamera(r.camPos,[0,0,1],-r.camRot.h,SPEED*deltaT))
+  ki.addFunc(new KeyEvent('w'),
+             (deltaT) => moveCamera(r.camPos,[0,0,1],-r.camRot.h,SPEED*deltaT));
+  ki.addFunc(new KeyEvent('s'),
+             (deltaT) => moveCamera(r.camPos,[0,0,-1],-r.camRot.h,SPEED*deltaT));
+  ki.addFunc(new KeyEvent('a'),
+             (deltaT) => moveCamera(r.camPos,[1,0,0],-r.camRot.h,SPEED*deltaT));
+  ki.addFunc(new KeyEvent('d'),
+             (deltaT) => moveCamera(r.camPos,[-1,0,0],-r.camRot.h,SPEED*deltaT));
   addEventListener('keydown', (e) => ki.keydown(e));
   addEventListener('keyup', (e) => ki.keyup(e));
   r.start();
