@@ -16,9 +16,10 @@ export function sum(array, initval=0){
 }
 
 
-//
-// Get the WebGL context, return true on success
-//
+export function clamp(v, min, max) {
+  return (min!=null && v<min) ? min : ((max!=null && v>max) ? max : v);
+}
+
 export function getGL(){
   const canvas = document.querySelector("#glCanvas");
   const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
@@ -29,9 +30,7 @@ export function getGL(){
   return gl;
 }
 
-//
 // Load text for source from <script> element id
-//
 export function loadSrc(id){
   const vse = document.getElementById(id);
   return vse.innerText;
@@ -70,15 +69,12 @@ export function loadShader(gl, type, source) {
   const shader = gl.createShader(type);
 
   // Send the source to the shader object
-
   gl.shaderSource(shader, source);
 
   // Compile the shader program
-
   gl.compileShader(shader);
 
   // See if it compiled successfully
-
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
     alertLog('An error occurred compiling the shaders: ' 
                   + gl.getShaderInfoLog(shader));
@@ -117,8 +113,6 @@ export function loadTexture(gl, url) {
   gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
                 width, height, border, srcFormat, srcType,
                 pixel);
-  console.log(texture)  
-  window.TEX = texture;
   const image = new Image();
   image.onload = function() {
     gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -166,7 +160,6 @@ export function loadTextureWithCallback(gl, url, callback=null){
   gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
                 width, height, border, srcFormat, srcType,
                 pixel);
-  console.log(texture)  
   const image = new Image();
   image.onload = function() {
     gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -219,7 +212,6 @@ export function loadTextureWithInfo(gl, url, callback=null, thisArg=null){
   gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
                 width, height, border, srcFormat, srcType,
                 pixel);
-  console.log(texture)  
   const image = new Image();
   image.onload = function() {
     gl.bindTexture(gl.TEXTURE_2D, texture);
