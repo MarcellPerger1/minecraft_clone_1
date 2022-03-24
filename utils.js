@@ -62,6 +62,17 @@ export function iextend(a, b){
   return a.concat(b);
 }
 
+export function extendNullSafe(a, ...args){
+  for(const other of args){
+    if(other==null){ continue; }
+    for(const v of other){
+      if(v==null){ continue; }
+      a.push(v);
+    }
+  }
+  return a;
+}
+
 export function sortCoords(p0, p1){
   let len = p0.length;
   if(p0.length != p1.length){
@@ -337,18 +348,6 @@ export function configVertexArrayBuffer(gl, buffer, attribLoc,
       stride,
       offset);
   gl.enableVertexAttribArray(attribLoc);
-}
-
-
-export function extendNullSafe(a, ...args){
-  for(const other of args){
-    if(other==null){ continue; }
-    for(const v of other){
-      if(v==null){ continue; }
-      a.push(v);
-    }
-  }
-  return a;
 }
 
 
