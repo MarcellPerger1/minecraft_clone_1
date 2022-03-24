@@ -21,6 +21,12 @@ export class KeyInput {
     this.code_down[e.code] = false;
   }
 
+  addListeners(elem=null){
+    elem ??= window;
+    elem.addEventListener('keydown', (e) => this.keydown(e));
+    elem.addEventListener('keyup', (e) => this.keyup(e));
+  }
+
   tick(deltaT){
     for(const [event, func] of this.funcs){
       if(event.shouldTrigger(this)){
@@ -32,7 +38,7 @@ export class KeyInput {
 
 
 export class BaseKeyEvent {
-  shouldTrigger(ki){
+  shouldTrigger(_ki){
     throw new ReferenceError('KeyEvents should override shouldTrigger');
   }
 }
