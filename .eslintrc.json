@@ -8,14 +8,16 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "ignorePatterns":[
-    "**/-old-files/**"
-  ],
+  "ignorePatterns":[],
   "globals":{
     "mat4": "readonly",
     "vec3": "readonly"
   },
   "rules": {
-    "no-unused-vars": ["warn", {"varsIgnorePattern": "^_"}]
+    "no-unused-vars": ["warn", {
+      "varsIgnorePattern": "^_",
+      "argsIgnorePattern": "^_"
+      
+    }]
   }
 }
