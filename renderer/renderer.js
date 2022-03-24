@@ -1,12 +1,13 @@
-import {getGL, loadFile,
-        initShaderProgram,
-        loadTextureWithCallback,
-       exportAs, expectValue,
-        sortCoords, glErrnoToMsg} from '../utils.module.js';
+import {
+  // general utils
+  exportAs, expectValue, sortCoords,
+  // webgl
+  getGL, glErrnoToMsg, initShaderProgram,
+  // file loading
+  loadFile, loadTextureWithCallback
+} from '../utils.js';
 
 import {RendererConfig} from './config.js';
-// import {exportAs, expectValue,
-//         sortCoords, glErrnoToMsg} from './utils.js';
 import {ElementBundler, VertexBundle} from './vertex_bundle.js';
 import {KeyInput} from '../keyinput.js';
 
@@ -16,7 +17,7 @@ import {KeyInput} from '../keyinput.js';
 // const dynamic = true;
 // https://www.toptal.com/game/video-game-physics-part-i-an-introduction-to-rigid-body-dynamics
 
-// TODO: switch to typescript? or use modules? or both!?
+// TODO: switch to typescript?
 export class Renderer {
   constructor(cnf, do_init = true) {
     this.cnf = new RendererConfig(cnf);

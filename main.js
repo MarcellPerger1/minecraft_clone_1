@@ -1,7 +1,7 @@
 import {Renderer} from './renderer/renderer.js';
 import {moveCamera} from './controller.js';
 import {KeyEvent} from './keyinput.js';
-import {clamp} from './utils.module.js';
+import {clamp} from './utils.js';
 
 const SPEED = 3.5;
 const SENSITIVITY = 0.6;

@@ -1,7 +1,17 @@
+// type checking
 export function classOf(v) {
   return v.constructor;
 }
 
+export function isString(v){
+  return typeof v === 'string' || v instanceof String;
+}
+
+export function isObject(x){
+  return x.constructor.name === 'Object'
+}
+
+// general stuff
 export function exportAs(obj, name=null){
   name = name??obj.name;
   if(name==null){
@@ -21,35 +31,16 @@ export function expectValue(v, name=null){
   return v;
 }
 
-export function isString(v){
-  return typeof v === 'string' || v instanceof String;
+// math
+export function sum(array, initval=0){
+  return array.reduce((a,b)=>a+b, initval);
 }
 
-export function sortCoords(p0, p1){
-  let len = p0.length;
-  if(p0.length != p1.length){
-    throw new RangeError("Arrays must be same len");
-  }
-  for(let i=0;i<len;i++){
-    if(p0[i] > p1[i]){
-    [p0[i], p1[i]] = [p1[i], p0[i]];
-  }
-  }
-  return [p0, p1];
+export function clamp(v, min, max) {
+  return (min!=null && v<min) ? min : ((max!=null && v>max) ? max : v);
 }
 
-// export function objUpdate(target, ...args){
-//   for(const o of args){
-//     if(o!=null){
-//       for(const [k, v] of Object.entries()){
-//         if(v!=null){
-//           target[k] = v;
-//         }
-//       }
-//     }
-//   }
-//   return target;
-// }
+// list stuff
 
 // may modify list inplace, but doesnt have to
 export function iextend(a, b){
@@ -71,40 +62,31 @@ export function iextend(a, b){
   return a.concat(b);
 }
 
-export function isObject(x){
-  return x.constructor.name === 'Object'
+export function sortCoords(p0, p1){
+  let len = p0.length;
+  if(p0.length != p1.length){
+    throw new RangeError("Arrays must be same len");
+  }
+  for(let i=0;i<len;i++){
+    if(p0[i] > p1[i]){
+    [p0[i], p1[i]] = [p1[i], p0[i]];
+  }
+  }
+  return [p0, p1];
 }
 
-export function WExportsAs(...args){
-  if(args.length == 2 && isString(args[1]) || args.length == 1 ){
-    return exportAs(...args);
+
+
+
+// webgl stuff
+export function getGL(){
+  const canvas = document.querySelector("#glCanvas");
+  const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+  if (gl == null) {
+    alertLogError("Unable to initialize WebGL. Your browser or machine may not support it.");
+    return null;
   }
-  if((args.length & 1 == 0) && args.every((v, i) => i & 1 == 0 || isString(i)))
-  for(let arg of args){
-    if(arg == null){
-      continue;
-    }
-    else if(Array.isArray(arg)){
-      exportAs(...arg);
-    }
-    else if(isObject(arg)){
-      for(const [k, v] of Object.entries()){
-        // if both string, key is name
-        if(isString(k)){
-          exportAs(v, k);
-        } else if(isString(v)){
-          // v is the name
-          exportAs(k, v)
-        }
-        else{
-          throw new Error("Where is the key?")
-        }
-      }
-    }
-    else{
-      exportAs(arg);
-    }
-  }
+  return gl;
 }
 
 export function glErrnoToMsg(errno, gl=WebGLRenderingContext){
@@ -120,61 +102,23 @@ export function glErrnoToMsg(errno, gl=WebGLRenderingContext){
   return lookup[errno];
 }
 
-
-export function alertLog(...args){
-  console.log(...args);
-  alert(sum(args, ''));
-}
-
-export function alertLogError(etype, ...args){
-  console.error(...args);
-  var s = sum(args, '');
-  alert(s);
-  throw new etype(args);
-}
-
-
-export function sum(array, initval=0){
-  return array.reduce((a,b)=>a+b, initval);
-}
-
-
-export function clamp(v, min, max) {
-  return (min!=null && v<min) ? min : ((max!=null && v>max) ? max : v);
-}
-
-export function getGL(){
-  const canvas = document.querySelector("#glCanvas");
-  const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-  if (gl == null) {
-    alertLogError("Unable to initialize WebGL. Your browser or machine may not support it.");
-    return null;
-  }
-  return gl;
-}
-
 // Load text for source from <script> element id
-export function loadSrc(id){
+export function loadShaderFromScriptTag(id){
   const vse = document.getElementById(id);
   return vse.innerText;
 }
 
-//
-// Initialize a shader program, so WebGL knows how to draw our data
-//
 export function initShaderProgram(gl, vsSource, fsSource) {
   const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource);
   const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
 
   // Create the shader program
-
   const shaderProgram = gl.createProgram();
   gl.attachShader(shaderProgram, vertexShader);
   gl.attachShader(shaderProgram, fragmentShader);
   gl.linkProgram(shaderProgram);
 
   // If creating the shader program failed, alert
-
   if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
     alertLogError('Unable to initialize the shader program: ' 
                   + gl.getProgramInfoLog(shaderProgram));
@@ -184,36 +128,28 @@ export function initShaderProgram(gl, vsSource, fsSource) {
   return shaderProgram;
 }
 
-//
 // creates a shader of the given type, uploads the source and
 // compiles it.
-//
 export function loadShader(gl, type, source) {
   const shader = gl.createShader(type);
-
   // Send the source to the shader object
   gl.shaderSource(shader, source);
-
   // Compile the shader program
   gl.compileShader(shader);
-
   // See if it compiled successfully
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    alertLog('An error occurred compiling the shaders: ' 
-                  + gl.getShaderInfoLog(shader));
+    let etext = 'An error occurred compiling the shaders: ' 
+      + gl.getShaderInfoLog(shader);
+    alert(etext);
     gl.deleteShader(shader);
-    throw new Error('An error occurred compiling the shaders: ' 
-                    + gl.getShaderInfoLog(shader));
+    throw new Error(etext);
   }
-
   return shader;
 }
 
 
-//
 // Initialize a texture and load an image.
 // When the image finished loading copy it into the texture.
-//
 export function loadTexture(gl, url) {
   const texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -414,3 +350,18 @@ export function extendNullSafe(a, ...args){
   }
   return a;
 }
+
+
+// useless stuff
+export function alertLog(...args){
+  console.log(...args);
+  alert(sum(args, ''));
+}
+
+export function alertLogError(etype, ...args){
+  console.error(...args);
+  var s = sum(args, '');
+  alert(s);
+  throw new etype(args);
+}
+
