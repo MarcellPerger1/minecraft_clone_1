@@ -1,10 +1,12 @@
 import {getGL, loadFile,
         initShaderProgram,
-        loadTextureWithCallback} from '../utils.module.js';
+        loadTextureWithCallback,
+       exportAs, expectValue,
+        sortCoords, glErrnoToMsg} from '../utils.module.js';
 
 import {RendererConfig} from './config.js';
-import {exportAs, expectValue,
-        sortCoords, glErrnoToMsg} from './utils.js';
+// import {exportAs, expectValue,
+//         sortCoords, glErrnoToMsg} from './utils.js';
 import {ElementBundler, VertexBundle} from './vertex_bundle.js';
 import {KeyInput} from '../keyinput.js';
 

@@ -1,4 +1,4 @@
-import {exportAs, iextend, expectValue, isString, classOf} from './utils.js';
+import {exportAs, iextend, expectValue, isString, classOf} from '../utils.module.js';
 
 // simply a container utility class for each 'section' of vertex data eg a 'section' could be a cube
 export class VertexBundle{

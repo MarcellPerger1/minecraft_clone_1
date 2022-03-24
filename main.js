@@ -28,7 +28,7 @@ function pointerlock_change(_r, _e){
   console.log('pointerlock change to ',document.pointerLockElement);
 }
 function pointerlock_error(_r, _e){
-  alert('pointerlock error');
+  console.error('pointerlock error');
 }
 
 function addEvent(name, hdlr, elem=null, opts=null){

@@ -1,4 +1,4 @@
-import {classOf, exportAs} from './utils.js';
+import {classOf, exportAs} from '../utils.module.js';
 
 export class RendererConfig {
   static DEFAULT = undefined;
