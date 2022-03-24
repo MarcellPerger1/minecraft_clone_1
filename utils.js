@@ -1,25 +1,95 @@
-export function alertLog(...args){
-  console.log(...args);
-  alert(sum(args, ''));
+// type checking
+export function classOf(v) {
+  return v.constructor;
 }
 
-export function alertLogError(etype, ...args){
-  console.error(...args);
-  var s = sum(args, '');
-  alert(s);
-  throw new etype(args);
+export function isString(v){
+  return typeof v === 'string' || v instanceof String;
 }
 
+export function isObject(x){
+  return x.constructor.name === 'Object'
+}
 
+// general stuff
+export function exportAs(obj, name=null){
+  name = name??obj.name;
+  if(name==null){
+    console.error("No name");
+  }
+  window[name] = obj;
+}
+
+export function expectValue(v, name=null){
+  name = name ?? v?.name;
+  if(name==null){
+    throw new ReferenceError("Name not specified!")
+  }
+  if(v==null){
+    throw new ReferenceError(`${name} must not be null!`);
+  }
+  return v;
+}
+
+// math
 export function sum(array, initval=0){
   return array.reduce((a,b)=>a+b, initval);
 }
-
 
 export function clamp(v, min, max) {
   return (min!=null && v<min) ? min : ((max!=null && v>max) ? max : v);
 }
 
+// list stuff
+
+// may modify list inplace, but doesnt have to
+export function iextend(a, b){
+  if(b.length < 32_000){
+    a.push(...b);
+    return a;
+  }
+  if(a.length < b.length/2){
+    // a much smaller than b -  use concat (copy not too expensive)
+    return a.concat(b);
+  }
+  if(b.length < a.length/2){
+    // b much smaller - just use a loop
+    for(const v of b){
+      a.push(v);
+    }
+    return a;
+  }
+  return a.concat(b);
+}
+
+export function extendNullSafe(a, ...args){
+  for(const other of args){
+    if(other==null){ continue; }
+    for(const v of other){
+      if(v==null){ continue; }
+      a.push(v);
+    }
+  }
+  return a;
+}
+
+export function sortCoords(p0, p1){
+  let len = p0.length;
+  if(p0.length != p1.length){
+    throw new RangeError("Arrays must be same len");
+  }
+  for(let i=0;i<len;i++){
+    if(p0[i] > p1[i]){
+    [p0[i], p1[i]] = [p1[i], p0[i]];
+  }
+  }
+  return [p0, p1];
+}
+
+
+
+
+// webgl stuff
 export function getGL(){
   const canvas = document.querySelector("#glCanvas");
   const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
@@ -30,28 +100,36 @@ export function getGL(){
   return gl;
 }
 
+export function glErrnoToMsg(errno, gl=WebGLRenderingContext){
+  let lookup = {
+    [gl.NO_ERROR]: "gl.NO_ERROR",
+    [gl.INVALID_ENUM]: "gl.INVALID_ENUM",
+    [gl.INVALID_VALUE]: "gl.INVALID_VALUE",
+    [gl.INVALID_OPERATION]: "gl.INVALID_OPERATION",
+    [gl.INVALID_FRAMEBUFFER_OPERATION]: "gl.INVALID_FRAMEBUFFER_OPERATION",
+    [gl.OUT_OF_MEMORY]: "gl.OUT_OF_MEMORY",
+    [gl.CONTEXT_LOST_WEBGL]: "gl.CONTEXT_LOST_WEBGL"
+  };
+  return lookup[errno];
+}
+
 // Load text for source from <script> element id
-export function loadSrc(id){
+export function loadShaderFromScriptTag(id){
   const vse = document.getElementById(id);
   return vse.innerText;
 }
 
-//
-// Initialize a shader program, so WebGL knows how to draw our data
-//
 export function initShaderProgram(gl, vsSource, fsSource) {
   const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource);
   const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
 
   // Create the shader program
-
   const shaderProgram = gl.createProgram();
   gl.attachShader(shaderProgram, vertexShader);
   gl.attachShader(shaderProgram, fragmentShader);
   gl.linkProgram(shaderProgram);
 
   // If creating the shader program failed, alert
-
   if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
     alertLogError('Unable to initialize the shader program: ' 
                   + gl.getProgramInfoLog(shaderProgram));
@@ -61,36 +139,28 @@ export function initShaderProgram(gl, vsSource, fsSource) {
   return shaderProgram;
 }
 
-//
 // creates a shader of the given type, uploads the source and
 // compiles it.
-//
 export function loadShader(gl, type, source) {
   const shader = gl.createShader(type);
-
   // Send the source to the shader object
   gl.shaderSource(shader, source);
-
   // Compile the shader program
   gl.compileShader(shader);
-
   // See if it compiled successfully
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    alertLog('An error occurred compiling the shaders: ' 
-                  + gl.getShaderInfoLog(shader));
+    let etext = 'An error occurred compiling the shaders: ' 
+      + gl.getShaderInfoLog(shader);
+    alert(etext);
     gl.deleteShader(shader);
-    throw new Error('An error occurred compiling the shaders: ' 
-                    + gl.getShaderInfoLog(shader));
+    throw new Error(etext);
   }
-
   return shader;
 }
 
 
-//
 // Initialize a texture and load an image.
 // When the image finished loading copy it into the texture.
-//
 export function loadTexture(gl, url) {
   const texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -281,13 +351,16 @@ export function configVertexArrayBuffer(gl, buffer, attribLoc,
 }
 
 
-export function extendNullSafe(a, ...args){
-  for(const other of args){
-    if(other==null){ continue; }
-    for(const v of other){
-      if(v==null){ continue; }
-      a.push(v);
-    }
-  }
-  return a;
+// useless stuff
+export function alertLog(...args){
+  console.log(...args);
+  alert(sum(args, ''));
 }
+
+export function alertLogError(etype, ...args){
+  console.error(...args);
+  var s = sum(args, '');
+  alert(s);
+  throw new etype(args);
+}
+

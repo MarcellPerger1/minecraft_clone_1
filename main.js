@@ -1,7 +1,7 @@
 import {Renderer} from './renderer/renderer.js';
 import {moveCamera} from './controller.js';
 import {KeyEvent} from './keyinput.js';
-import {clamp} from './utils.module.js';
+import {clamp} from './utils.js';
 
 const SPEED = 3.5;
 const SENSITIVITY = 0.6;
@@ -28,7 +28,7 @@ function pointerlock_change(_r, _e){
   console.log('pointerlock change to ',document.pointerLockElement);
 }
 function pointerlock_error(_r, _e){
-  alert('pointerlock error');
+  console.error('pointerlock error');
 }
 
 function addEvent(name, hdlr, elem=null, opts=null){
