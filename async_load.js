@@ -4,10 +4,10 @@ export class AsyncLoader {
   }
   
   addTask(task){
-    
+    this.tasks.push(task);
   }
   
-  waitForTasks(){
-    
+  async doTasks(){
+    await Promise.all(this.tasks);
   }
 }

@@ -6,6 +6,7 @@ import {
   // file loading
   loadFile, loadTextureWithCallback
 } from '../utils.js';
+import {Loader} from './resource_loader.js';
 
 import {RendererConfig} from './config.js';
 import {ElementBundler, VertexBundle} from './vertex_bundle.js';
@@ -26,20 +27,46 @@ export class Renderer {
 
   init() {
     this.nFaults = 0;
-    this.initGL();
-    this.initGLConfig();
-    this.loadShaders();
     this.textures = {};
-    this.vertexData = new ElementBundler(this.gl, this.textures);
-    this.makeBufferData();
-    this.initArrayBuffers();
-    this.initTextures();
     this.then = 0;
     this.now = null;
     this.ki = new KeyInput();
     this.camPos = this.cnf.camPos;
     this.cubeRot = 0.0;
     this.camRot = {h: 0.0, v: 0.0};
+
+    this.initGL();
+    this.initGLConfig();
+    
+    this.loader = new Loader(this);
+    this.lprom = this.loader.loadResources()
+    .then(result => {
+      console.log(result);
+      console.log(this)
+      const shProg = initShaderProgram(this.gl, result[1], result[0]);
+      this.initProgramInfo(shProg);
+      this.gl.useProgram(this.programInfo.program);
+      this.vertexData = new ElementBundler(this.gl, this.textures);
+      this.makeBufferData();
+      this.initArrayBuffers();
+      this.initTextures();
+    })
+    
+    //this.loadShaders();
+    
+    
+    
+    
+  }
+
+  startResourcesLoad(){
+    this.pr = fetch(this.cnf.fsPath)
+    .then(result => {
+      if(!result.ok){
+        throw new Error('Failed to load resource');
+      }
+      return result.text();
+    })
   }
 
   initGL(){
