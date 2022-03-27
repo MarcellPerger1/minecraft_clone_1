@@ -6,6 +6,7 @@ import {
   // file loading
   loadFile, loadTextureWithCallback
 } from '../utils.js';
+import {Loader} from './resource_loader.js';
 
 import {RendererConfig} from './config.js';
 import {ElementBundler, VertexBundle} from './vertex_bundle.js';
@@ -26,20 +27,28 @@ export class Renderer {
 
   init() {
     this.nFaults = 0;
-    this.initGL();
-    this.initGLConfig();
-    this.loadShaders();
     this.textures = {};
-    this.vertexData = new ElementBundler(this.gl, this.textures);
-    this.makeBufferData();
-    this.initArrayBuffers();
-    this.initTextures();
     this.then = 0;
     this.now = null;
     this.ki = new KeyInput();
     this.camPos = this.cnf.camPos;
     this.cubeRot = 0.0;
     this.camRot = {h: 0.0, v: 0.0};
+
+    this.initGL();
+    this.initGLConfig();
+    
+    this.loader = new Loader(this);
+    this.initDone = this.loader.loadResources().then(_result => {
+      // todo compile shaders asyncshronously
+      this.initProgramInfo(initShaderProgram(
+        this.gl, this.loader.vsSrc, this.loader.fsSrc));
+      this.gl.useProgram(this.programInfo.program);
+      this.vertexData = new ElementBundler(this.gl, this.textures);
+      this.makeBufferData();
+      this.initArrayBuffers();
+      this.initTextures();
+    })
   }
 
   initGL(){
@@ -64,7 +73,9 @@ export class Renderer {
 
   // DRAW SCENE
   start(){
-    this.registerOnFrame();
+    this.initDone.then(_result => {
+      this.registerOnFrame();
+    });
   }
   
   render(now=null){
