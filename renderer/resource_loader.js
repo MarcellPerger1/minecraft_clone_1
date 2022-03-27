@@ -2,18 +2,17 @@ import {expectValue} from '../utils.js';
 
 export class Loader{
   constructor(r){
-    this.r = r;
-    this.vsPath = this.r.cnf.vsPath;
-    this.fsPath = this.r.cnf.fsPath;
+    this.vsPath = r.cnf.vsPath;
+    this.fsPath = r.cnf.fsPath;
     this.fsSrc = null;
     this.vsSrc = null;
   }
 
   loadResources(){
     return Promise.all([
-      loadTextFile(this.fsPath).then(result => {return (this.fsSrc = result);}),
-      this.loadResource(this.vsPath, 'vsSrc')
-    ])
+      this.loadResource(this.vsPath, 'vsSrc'),
+      this.loadResource(this.fsPath, 'fsSrc')
+    ]);
   }
 
   loadResource(path, result_attr_name){

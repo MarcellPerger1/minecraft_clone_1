@@ -39,33 +39,15 @@ export class Renderer {
     this.initGLConfig();
     
     this.loader = new Loader(this);
-    this.lprom = this.loader.loadResources()
-    .then(result => {
-      console.log(result);
-      console.log(this)
-      const shProg = initShaderProgram(this.gl, result[1], result[0]);
-      this.initProgramInfo(shProg);
+    this.initDone = this.loader.loadResources().then(_result => {
+      // todo compile shaders asyncshronously
+      this.initProgramInfo(initShaderProgram(
+        this.gl, this.loader.vsSrc, this.loader.fsSrc));
       this.gl.useProgram(this.programInfo.program);
       this.vertexData = new ElementBundler(this.gl, this.textures);
       this.makeBufferData();
       this.initArrayBuffers();
       this.initTextures();
-    })
-    
-    //this.loadShaders();
-    
-    
-    
-    
-  }
-
-  startResourcesLoad(){
-    this.pr = fetch(this.cnf.fsPath)
-    .then(result => {
-      if(!result.ok){
-        throw new Error('Failed to load resource');
-      }
-      return result.text();
     })
   }
 
@@ -91,7 +73,9 @@ export class Renderer {
 
   // DRAW SCENE
   start(){
-    this.registerOnFrame();
+    this.initDone.then(_result => {
+      this.registerOnFrame();
+    });
   }
   
   render(now=null){

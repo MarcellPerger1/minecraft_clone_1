@@ -71,7 +71,5 @@ addEventListener('load', function(){
   var r = window.renderer = new Renderer();
   window.keyinput = r.ki;
   addAllListeners();
-  r.lprom.then(_ => {
-    r.start();
-  })
+  r.start();
 });
