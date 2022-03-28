@@ -1,3 +1,9 @@
+// Load text from <script> element id
+export function loadTextFromTag(id){
+  const vse = document.getElementById(id);
+  return vse.innerText;
+}
+
 export function fetchTextFile(path){
   // todo use XMLHttpRequest for progress event (only needed when bigger files)
   return fetch(path).then(response => {

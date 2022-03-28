@@ -1,74 +1,4 @@
-// type checking
 export * from "./utils/index.js";
-
-// webgl stuff
-export function getGL(){
-  const canvas = document.querySelector("#glCanvas");
-  const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-  if (gl == null) {
-    alertLogError("Unable to initialize WebGL. Your browser or machine may not support it.");
-    return null;
-  }
-  return gl;
-}
-
-export function glErrnoToMsg(errno, gl=WebGLRenderingContext){
-  let lookup = {
-    [gl.NO_ERROR]: "gl.NO_ERROR",
-    [gl.INVALID_ENUM]: "gl.INVALID_ENUM",
-    [gl.INVALID_VALUE]: "gl.INVALID_VALUE",
-    [gl.INVALID_OPERATION]: "gl.INVALID_OPERATION",
-    [gl.INVALID_FRAMEBUFFER_OPERATION]: "gl.INVALID_FRAMEBUFFER_OPERATION",
-    [gl.OUT_OF_MEMORY]: "gl.OUT_OF_MEMORY",
-    [gl.CONTEXT_LOST_WEBGL]: "gl.CONTEXT_LOST_WEBGL"
-  };
-  return lookup[errno];
-}
-
-// Load text for source from <script> element id
-export function loadShaderFromScriptTag(id){
-  const vse = document.getElementById(id);
-  return vse.innerText;
-}
-
-export function initShaderProgram(gl, vsSource, fsSource) {
-  const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource);
-  const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
-
-  // Create the shader program
-  const shaderProgram = gl.createProgram();
-  gl.attachShader(shaderProgram, vertexShader);
-  gl.attachShader(shaderProgram, fragmentShader);
-  gl.linkProgram(shaderProgram);
-
-  // If creating the shader program failed, alert
-  if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-    alertLogError('Unable to initialize the shader program: ' 
-                  + gl.getProgramInfoLog(shaderProgram));
-    return null;
-  }
-
-  return shaderProgram;
-}
-
-// creates a shader of the given type, uploads the source and
-// compiles it.
-export function loadShader(gl, type, source) {
-  const shader = gl.createShader(type);
-  // Send the source to the shader object
-  gl.shaderSource(shader, source);
-  // Compile the shader program
-  gl.compileShader(shader);
-  // See if it compiled successfully
-  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    let etext = 'An error occurred compiling the shaders: ' 
-      + gl.getShaderInfoLog(shader);
-    alert(etext);
-    gl.deleteShader(shader);
-    throw new Error(etext);
-  }
-  return shader;
-}
 
 
 // Initialize a texture and load an image.
@@ -229,21 +159,6 @@ export function isPowerOf2(value) {
   return (value & (value - 1)) == 0;
 }
 
-// TODO!!! - use async=true - sync is deprecated
-export function loadFile(filePath) {
-  var result = null;
-  var xmlhttp = new XMLHttpRequest();
-  xmlhttp.open("GET", filePath, false);
-  xmlhttp.send();
-  if (xmlhttp.status==200) {
-    result = xmlhttp.responseText;
-  }
-  if(result==null){
-    alertLogError(Error, "failed to load file: ", filePath);
-  }
-  return result;
-}
-
 
 export function configVertexArrayBuffer(gl, buffer, attribLoc,
                                  numComponents, type=null,
@@ -265,11 +180,13 @@ export function configVertexArrayBuffer(gl, buffer, attribLoc,
 
 // useless stuff
 export function alertLog(...args){
+  console.warn("alertLog is deprecated");
   console.log(...args);
   alert(sum(args, ''));
 }
 
 export function alertLogError(etype, ...args){
+  console.warn("alertLogError is deprecated");
   console.error(...args);
   var s = sum(args, '');
   alert(s);
