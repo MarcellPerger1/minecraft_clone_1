@@ -1,6 +1,13 @@
 export * from "./utils/index.js";
 
 
+export const INITIAL_TEX = [
+  255, 0, 255, 255,    0,   0,   0, 255,
+  0,   0,   0, 255,    255, 0, 255, 255
+];
+
+// TODO merge 3 implementations into 1 concrete goood one
+
 // Initialize a texture and load an image.
 // When the image finished loading copy it into the texture.
 export function loadTexture(gl, url) {
@@ -62,16 +69,18 @@ export function loadTextureWithCallback(gl, url, callback=null){
   // we'll update the texture with the contents of the image.
   const level = 0;
   const internalFormat = gl.RGBA;
-  const width = 1;
-  const height = 1;
+  const width = 2;
+  const height = 2;
   const border = 0;
   const srcFormat = gl.RGBA;
   const srcType = gl.UNSIGNED_BYTE;
-  const pixel = new Uint8Array ([255, 0, 255, 255]);
+  const pixel = new Uint8Array (INITIAL_TEX);
 
   gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
                 width, height, border, srcFormat, srcType,
                 pixel);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
   const image = new Image();
   image.onload = function() {
     gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -103,7 +112,6 @@ export function loadTextureWithCallback(gl, url, callback=null){
 }
 
 export function loadTextureWithInfo(gl, url, callback=null, thisArg=null){
-  thisArg = thisArg ?? this;
   const texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);
 
@@ -146,7 +154,11 @@ export function loadTextureWithInfo(gl, url, callback=null, thisArg=null){
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     if(callback!=null){
       // throw all the data at the callback function
-      callback.call(thisArg, gl, url, image);
+      if(thisArg==null){
+        callback(gl, url, image);
+      } else{
+        callback.call(thisArg, gl, url, image);  // TODO pass as single object
+      }
     }
   };
   image.src = url;
