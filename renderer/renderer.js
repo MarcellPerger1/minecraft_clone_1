@@ -4,7 +4,7 @@ import {
   // webgl
   getGL, glErrnoToMsg, initShaderProgram,
   // file loading
-  loadTextureWithCallback, loadTextureEx
+  loadTextureEx
 } from '../utils.js';
 import {Loader} from './resource_loader.js';
 
