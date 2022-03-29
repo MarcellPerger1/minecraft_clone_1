@@ -167,11 +167,6 @@ export function loadTextureWithInfo(gl, url, callback=null, thisArg=null){
 }
 
 
-export function isPowerOf2(value) {
-  return (value & (value - 1)) == 0;
-}
-
-
 export function configVertexArrayBuffer(gl, buffer, attribLoc,
                                  numComponents, type=null,
                                  normalize=false, stride=0, offset=0) {

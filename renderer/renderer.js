@@ -1,10 +1,10 @@
 import {
   // general utils
-  exportAs, expectValue, sortCoords,
+  exportAs, expectValue, sortCoords, callCallback,
   // webgl
   getGL, glErrnoToMsg, initShaderProgram,
   // file loading
-  loadTextureWithCallback
+  loadTextureWithCallback, loadTextureEx
 } from '../utils.js';
 import {Loader} from './resource_loader.js';
 
@@ -456,9 +456,21 @@ export class Renderer {
 
   // TEXTURES
   initTextures(){
-    this.loadTexture('grass_top', this.cnf.grassTopPath);
-    this.loadTexture('grass_side', this.cnf.grassSidePath);
-    this.loadTexture('grass_bottom', this.cnf.grassBottomPath);
+    this.loadTextureEx('grass_top', this.cnf.grassTopPath);
+    this.loadTextureEx('grass_side', this.cnf.grassSidePath);
+    this.loadTextureEx('grass_bottom', this.cnf.grassBottomPath);
+  }
+
+  loadTextureEx(name, path, callback=null, thisArg=null){
+    this.textures ??= {};
+    let info = loadTextureEx(this.gl, path, (texInfo) => {
+      // everythin else already in info object that is automatically updated
+      this.textures[name].loaded = true;
+      callCallback(callback, thisArg);
+    }, this);
+    this.textures[name] = info.texture;
+    this.textures[name].info = info;
+    this.textures[name].loaded = false;
   }
   
   loadTexture(name, path, callback=null, thisArg=null){

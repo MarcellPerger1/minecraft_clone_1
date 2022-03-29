@@ -1,4 +1,5 @@
 import {callCallback} from "./general.js";
+import {isPowerOf2} from "./math.js";
 
 
 export function getGL(canv_id){
@@ -124,7 +125,7 @@ export function loadTextureEx(gl, url, callback=null, thisArg=null){
     callCallback(callback, thisArg, texLoadInfo);
   }
   image.src = url;
-  return TextureLoadInfo(texLoadInfo);
+  return texLoadInfo;
 }
 
 
