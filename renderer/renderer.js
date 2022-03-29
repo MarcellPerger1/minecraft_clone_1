@@ -41,9 +41,7 @@ export class Renderer {
     this.loader = new Loader(this);
     this.initDone = this.loader.loadResources().then(_result => {
       // todo compile shaders asyncshronously
-      this.initProgramInfo(initShaderProgram(
-        this.gl, this.loader.vsSrc, this.loader.fsSrc));
-      this.gl.useProgram(this.programInfo.program);
+      this.makeShaders(this.loader.vsSrc, this.loader.fsSrc);
       this.vertexData = new ElementBundler(this.gl, this.textures);
       this.makeBufferData();
       this.initArrayBuffers();
@@ -241,11 +239,8 @@ export class Renderer {
   }
 
   // SHADER PROGRAM
-  loadShaders() {
-    const vsText = loadFile(this.cnf.vsPath);
-    const fsText = loadFile(this.cnf.fsPath);
-    const shProg = initShaderProgram(this.gl, vsText, fsText);
-    this.initProgramInfo(shProg);
+  makeShaders(vsSrc, fsSrc){
+    this.initProgramInfo(initShaderProgram( this.gl, vsSrc, fsSrc));
     this.gl.useProgram(this.programInfo.program);
   }
   
@@ -463,30 +458,13 @@ export class Renderer {
 
   loadTextureEx(name, path, callback=null, thisArg=null){
     this.textures ??= {};
-    let info = loadTextureEx(this.gl, path, (texInfo) => {
+    let info = loadTextureEx(this.gl, path, (_texInfo) => {
       // everythin else already in info object that is automatically updated
       this.textures[name].loaded = true;
       callCallback(callback, thisArg);
     }, this);
     this.textures[name] = info.texture;
     this.textures[name].info = info;
-    this.textures[name].loaded = false;
-  }
-  
-  loadTexture(name, path, callback=null, thisArg=null){
-    let this_outer = this;
-    this.textures[name] = loadTextureWithCallback(
-      this_outer.gl, path,
-      function (gl, url, img) {
-        this_outer.textures[name].image = img;
-        if(callback != null) {
-          thisArg = thisArg ?? this_outer;
-          callback.call(thisArg, name, url, img);
-        }
-        this_outer.textures[name].loaded = true;
-      }
-    )
-    this.textures[name].callback = callback;
     this.textures[name].loaded = false;
   }
 }
