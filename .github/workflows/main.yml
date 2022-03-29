@@ -30,4 +30,4 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Run eslint
-        run: sudo npx eslint --max-warnings 0 ./
+        run: npx eslint --max-warnings 0 ./
