@@ -32,9 +32,10 @@ export class VertexBundle{
   imerge(...others){
     this.calcMaxIndex();
     for(let other of others){
-      iextend(this.positions, other.positions);
-      iextend(this.texCoords, other.texCoords);
-      iextend(this.indices, other.indices.map(v => v + this.maxindex + 1), this);
+      this.positions = iextend(this.positions, other.positions);
+      this.texCoords = iextend(this.texCoords, other.texCoords);
+      this.indices = iextend(this.indices,
+                             other.indices.map(v => v + this.maxindex + 1), this);
       this.maxindex += other.calcMaxIndex() + 1;
     }
     return this;
