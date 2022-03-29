@@ -87,7 +87,8 @@ export const INITIAL_TEX_DATA = new Uint8Array(INITIAL_TEX_ARR);
 
 export const INITIAL_TEX_SIZE = [2, 2];
 
-export function loadTextureEx(gl, url, callback=null, thisArg=null){
+
+export function loadTexture(gl, url, callback=null, thisArg=null){
   const texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);
 
