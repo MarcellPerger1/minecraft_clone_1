@@ -17,3 +17,14 @@ export function expectValue(v, name=null){
   }
   return v;
 }
+
+
+export function callCallback(callback, thisArg, ...args){
+  if(callback!=null){
+    if(thisArg==null){
+      callback(...args);
+    } else{
+      callback.call(thisArg, ...args);
+    }
+  }
+}
