@@ -1,7 +1,7 @@
-import {Renderer} from './renderer/renderer.js';
-import {moveCamera} from './controller.js';
-import {KeyEvent} from './keyinput.js';
-import {clamp} from './utils.js';
+import {Renderer} from './src/renderer/renderer.js';
+import {moveCamera} from './src/controller.js';
+import {KeyEvent} from './src/keyinput.js';
+import {clamp} from './src/utils.js';
 
 // TODO: 16x16 textures - smaller and dont need extra detail
 // TODO texture atlas with these!
