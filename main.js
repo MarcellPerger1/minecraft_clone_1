@@ -65,7 +65,6 @@ function addPointerEvents(){
 
 function addAllListeners(){
   var ki = window.keyinput;
-  var c = window.canvas;
   addMoveBindings();
   ki.addListeners();
   addPointerEvents();
