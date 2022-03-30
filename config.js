@@ -1,28 +1,34 @@
 import {classOf, exportAs} from '../utils.js';
 
-export class RendererConfig {
+// TODO nested config classes/objects
+export class Config {
   static DEFAULT = undefined;
-  // fields
-  bgColor;
+  // filepaths
   vsPath;
   fsPath;
   grassTopPath;
   grassSidePath;
   grassBottomPath;
+  // rendering consts
+  bgColor;
   camPos;
+  // movement consts
+  speed;
+  sensitivity;
 
   constructor(cnf = {}, ...args) {
-    cnf = cnf != undefined ? cnf : {};
+    cnf ??= {};
     Object.assign(this, classOf(this).DEFAULT, cnf, ...args);
   }
+  
   getWithDefaults() {
     // allows overriding default in subclasses
-    return new RendererConfig(classOf(this).DEFAULT, this);
+    return new classOf(this)(classOf(this).DEFAULT, this);
   }
 }
 
 
-RendererConfig.DEFAULT = new RendererConfig({
+Config.DEFAULT = new Config({
   bgColor: [0.5, 0.86, 1.0, 1.0],
   vsPath: "./shaders/vertex-shader.glsl",
   fsPath: "./shaders/fragment-shader.glsl",
@@ -30,6 +36,8 @@ RendererConfig.DEFAULT = new RendererConfig({
   grassSidePath: "./textures/grass-side.jpg",
   grassBottomPath: "./textures/grass-bottom.png",
   camPos: [0.0, 0.0, -4.0],
+  speed: 3.5,
+  sensitivity: 0.7,
 });
 
-exportAs(RendererConfig);
+exportAs(Config);
