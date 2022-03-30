@@ -1,8 +1,8 @@
-import {classOf, exportAs} from '../utils.js';
+import {classOf, exportAs, assignNullSafe} from './utils.js';
 
 // TODO nested config classes/objects
 export class Config {
-  static DEFAULT = undefined;
+  static DEFAULT;
   // filepaths
   vsPath;
   fsPath;
@@ -17,8 +17,7 @@ export class Config {
   sensitivity;
 
   constructor(cnf = {}, ...args) {
-    cnf ??= {};
-    Object.assign(this, classOf(this).DEFAULT, cnf, ...args);
+    assignNullSafe(this, classOf(this).DEFAULT, cnf ?? {}, ...args);
   }
   
   getWithDefaults() {

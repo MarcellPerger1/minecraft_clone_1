@@ -29,6 +29,16 @@ export function extendNullSafe(a, ...args){
   return a;
 }
 
+export function assignNullSafe(a, ...args){
+  for(const other of args){
+    if(other==null){ continue; }
+    for(const [k, v] of Object.entries(other)){
+      a[k] = v ?? a[k];
+    }
+  }
+  return a;
+}
+
 export function sortCoords(p0, p1){
   let len = p0.length;
   if(p0.length != p1.length){
