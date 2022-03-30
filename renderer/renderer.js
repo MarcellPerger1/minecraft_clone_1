@@ -8,7 +8,7 @@ import {
 } from '../utils.js';
 import {Loader} from './resource_loader.js';
 
-import {RendererConfig} from './config.js';
+import {Config} from '../config.js';
 import {ElementBundler, VertexBundle} from './vertex_bundle.js';
 import {KeyInput} from '../keyinput.js';
 
@@ -21,7 +21,7 @@ import {KeyInput} from '../keyinput.js';
 // TODO: switch to typescript?
 export class Renderer {
   constructor(cnf, do_init = true) {
-    this.cnf = new RendererConfig(cnf);
+    this.cnf = new Config(cnf);
     if (do_init) { this.init(); }
   }
 
