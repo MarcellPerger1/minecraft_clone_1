@@ -14,7 +14,10 @@ export class Config {
   camPos;
   // movement consts
   speed;
+  // mouse consts
   sensitivity;
+  vRotMin;
+  vRotMax;
 
   constructor(cnf = {}, ...args) {
     assignNullSafe(this, classOf(this).DEFAULT, cnf ?? {}, ...args);
@@ -37,6 +40,8 @@ Config.DEFAULT = new Config({
   camPos: [0.0, 0.0, -4.0],
   speed: 3.5,
   sensitivity: 0.7,
+  vRotMin: -80,
+  vRotMax: 80,
 });
 
 exportAs(Config);
