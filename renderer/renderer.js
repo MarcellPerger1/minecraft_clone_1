@@ -28,7 +28,7 @@ export class Renderer {
   init() {
     this.nFaults = 0;
     this.textures = {};
-    this.then = 0;
+    this.then = null;
     this.now = null;
     this.ki = new KeyInput();
     this.camPos = this.cnf.camPos;
@@ -81,6 +81,7 @@ export class Renderer {
       return this.registerOnFrame();
     }
     this.now = now*0.001;
+    this.then ??= this.now;
     this.deltaT = this.now - this.then;
     this.renderFrame();
     this.then=this.now;
