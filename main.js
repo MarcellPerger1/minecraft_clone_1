@@ -66,10 +66,15 @@ function addAllListeners(){
   c.addEventListener('click', _e=>{ c.requestPointerLock(); });
 }
 
-addEventListener('load', function(){
+function initGlobs(){
   window.canvas = document.getElementById('glCanvas');
   var r = window.renderer = new Renderer();
   window.keyinput = r.ki;
+}
+
+addEventListener('load', function(){
+  initGlobs();
+  var r = window.renderer;
   addAllListeners();
   r.start();
 });
