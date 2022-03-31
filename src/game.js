@@ -6,7 +6,6 @@ import {clamp} from './utils.js';
 
 export class Game {
   constructor(cnf){
-    // TODO get rid of this window.~~~ stuff
     this.cnf = new Config(cnf);
     this.canvas = document.getElementById('glCanvas');
     this.r = this.renderer = new Renderer(this.cnf);
