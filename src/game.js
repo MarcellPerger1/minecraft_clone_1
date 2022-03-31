@@ -7,10 +7,10 @@ import {clamp} from './utils.js';
 export class Game {
   constructor(cnf){
     // TODO get rid of this window.~~~ stuff
-    this.cnf = window.cnf = new Config(cnf);
-    this.canvas = window.canvas = document.getElementById('glCanvas');
-    this.r = this.renderer = window.renderer = new Renderer(this.cnf);
-    this.ki = this.keyinput = window.keyinput = this.r.ki;
+    this.cnf = new Config(cnf);
+    this.canvas = document.getElementById('glCanvas');
+    this.r = this.renderer = new Renderer(this.cnf);
+    this.ki = this.keyinput = this.r.ki;
   }
   
   clampRot(){
