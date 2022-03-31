@@ -6,6 +6,9 @@
     <title>stuff_webgl_4</title>
     <link href="style.css" rel="stylesheet" type="text/css" />
     <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="modulepreload" href="src/game.js">
+    <link rel="modulepreload" href="src/utils/index.js">
+    <link rel="modulepreload" href="src/renderer/renderer.js">
   </head>
   <body>
     <!-- Canvas-->
@@ -16,7 +19,6 @@
       crossorigin="anonymous">
     </script>
     <!-- The code -->
-    <script src="renderer/renderer.js" type="module"></script>
     <script src='main.js' type="module"></script>
   </body>
 </html>
