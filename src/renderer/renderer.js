@@ -7,7 +7,7 @@ import {
   loadTexture
 } from '../utils.js';
 import {Loader} from './resource_loader.js';
-
+import {GameComponent} from '../game_component.js';
 import {Config} from '../config.js';
 import {ElementBundler, VertexBundle} from './vertex_bundle.js';
 import {KeyInput} from '../keyinput.js';
@@ -19,9 +19,9 @@ import {KeyInput} from '../keyinput.js';
 // https://www.toptal.com/game/video-game-physics-part-i-an-introduction-to-rigid-body-dynamics
 
 // TODO: switch to typescript?
-export class Renderer {
-  constructor(cnf, do_init = true) {
-    this.cnf = new Config(cnf);
+export class Renderer extends GameComponent {
+  constructor(game, do_init = true) {
+    super(game);
     if (do_init) { this.init(); }
   }
 

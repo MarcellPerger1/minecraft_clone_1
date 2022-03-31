@@ -8,7 +8,7 @@ export class Game {
   constructor(cnf){
     this.cnf = new Config(cnf);
     this.canvas = document.getElementById('glCanvas');
-    this.r = this.renderer = new Renderer(this.cnf);
+    this.r = this.renderer = new Renderer(this);
     this.ki = this.keyinput = this.r.ki;
   }
   
