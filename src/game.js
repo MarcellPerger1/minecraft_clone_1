@@ -23,7 +23,7 @@ export class Game {
   }
 
   pointer_move(e){
-    if(document.pointerLockElement === window.canvas){
+    if(document.pointerLockElement === this.canvas){
       this.r.camRot.h += e.movementX * this.cnf.sensitivity;
       this.r.camRot.v += e.movementY * this.cnf.sensitivity;
     }
