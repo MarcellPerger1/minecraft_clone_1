@@ -18,4 +18,8 @@ export class GameComponent {
   get canvas(){
     return this.game.canvas;
   }
+
+  get deltaT(){
+    return this.game.deltaT;
+  }
 }

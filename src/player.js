@@ -1,6 +1,7 @@
 import {GameComponent} from './game_component.js';
 import {moveCamera} from './controller.js';
 import {KeyEvent} from './keyinput.js';
+import {clamp} from './utils.js';
 
 
 export class Player extends GameComponent {
@@ -21,14 +22,18 @@ export class Player extends GameComponent {
   }
 
   pointer_move(e){
-    console.log('point move player')
-    if(document.pointerLockElement === this.canvas){
+    if(this.game.hasPointerLock()){
       this.rotation.h += e.movementX * this.cnf.sensitivity;
       this.rotation.v += e.movementY * this.cnf.sensitivity;
-      this.r.camRot.h = this.rotation.h;
-      this.r.camRot.v = this.rotation.v;
     }
-    this.game.clampRot();
+    this.clampRot();
+    this.r.camRot.h = this.rotation.h;
+    this.r.camRot.v = this.rotation.v;
+  }
+
+  clampRot(){
+    this.rotation.v = clamp(this.rotation.v, this.cnf.vRotMin, this.cnf.vRotMax);
+    this.rotation.h %= 360;
   }
 
   addMoveBindings(){

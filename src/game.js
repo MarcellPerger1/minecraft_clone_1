@@ -16,22 +16,37 @@ export class Game {
     this.player = new Player(this);  // todo player on tick etc.
     this.player.addListeners();
   }
-  
-  clampRot(){
-    this.r.camRot.v = clamp(this.r.camRot.v, this.cnf.vRotMin, this.cnf.vRotMax);
-    this.r.camRot.h %= 360;
+
+  start(){
+    this.registerOnFrame();
   }
 
   main(){
     this.onload();
   }
 
-  pointer_move(e){
-    if(document.pointerLockElement === this.canvas){
-      this.r.camRot.h += e.movementX * this.cnf.sensitivity;
-      this.r.camRot.v += e.movementY * this.cnf.sensitivity;
+  // pointer_move(e){
+  //   if(document.pointerLockElement === this.canvas){
+  //     this.r.camRot.h += e.movementX * this.cnf.sensitivity;
+  //     this.r.camRot.v += e.movementY * this.cnf.sensitivity;
+  //   }
+  //   this.clampRot();
+  // }
+  render(now=null){
+    if(now==null){
+      return this.registerOnFrame();
     }
-    this.clampRot();
+    this.now = now*0.001;
+    this.then ??= this.now;
+    this.deltaT = this.now - this.then;
+    this.r.renderFrame();
+    this.then=this.now;
+    return this.registerOnFrame();
+  }
+  
+  registerOnFrame(){
+    let this_outer = this;
+    return requestAnimationFrame(now => {this_outer.render(now);});
   }
 
   pointerlock_change(_e){
@@ -82,5 +97,9 @@ export class Game {
   onload(){
     this.addAllListeners();
     this.r.start();
+  }
+
+  hasPointerLock(){
+    return document.pointerLockElement === this.canvas;
   }
 }

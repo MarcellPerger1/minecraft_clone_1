@@ -26,8 +26,8 @@ export class Renderer extends GameComponent {
   init() {
     this.nFaults = 0;
     this.textures = {};
-    this.then = null;
-    this.now = null;
+    // this.then = null;
+    // this.now = null;
     this.camPos = this.cnf.camPos.slice();
     this.cubeRot = 0.0;
     this.camRot = {h: 0.0, v: 0.0};
@@ -69,26 +69,27 @@ export class Renderer extends GameComponent {
   // DRAW SCENE
   start(){
     this.initDone.then(_result => {
-      this.registerOnFrame();
+      this.game.start();  /// TODO calling other way round
+      // this.registerOnFrame();
     });
   }
   
-  render(now=null){
-    if(now==null){
-      return this.registerOnFrame();
-    }
-    this.now = now*0.001;
-    this.then ??= this.now;
-    this.deltaT = this.now - this.then;
-    this.renderFrame();
-    this.then=this.now;
-    return this.registerOnFrame();
-  }
+  // render(now=null){
+  //   if(now==null){
+  //     return this.registerOnFrame();
+  //   }
+  //   this.now = now*0.001;
+  //   this.then ??= this.now;
+  //   this.deltaT = this.now - this.then;
+  //   this.renderFrame();
+  //   this.then=this.now;
+  //   return this.registerOnFrame();
+  // }
   
-  registerOnFrame(){
-    let this_outer = this;
-    return requestAnimationFrame(now => {this_outer.render(now);});
-  }
+  // registerOnFrame(){
+  //   let this_outer = this;
+  //   return requestAnimationFrame(now => {this_outer.render(now);});
+  // }
   
   renderFrame(){
     this.initFrame();
