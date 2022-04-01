@@ -36,14 +36,19 @@ export class Renderer extends GameComponent {
     this.initGLConfig();
     
     this.loader = new Loader(this);
+    // TODO: a REnderer should NOT be in charge on fetching resources!!!!!
     this.initDone = this.loader.loadResources().then(_result => {
-      // todo compile shaders asyncshronously
-      this.makeShaders(this.loader.vsSrc, this.loader.fsSrc);
-      this.vertexData = new ElementBundler(this.gl, this.textures);
-      this.makeBufferData();
-      this.initArrayBuffers();
-      this.initTextures();
+      this.onResourcesLoaded();
     })
+  }
+
+  onResourcesLoaded(){
+    // todo compile shaders asyncshronously
+    this.makeShaders(this.loader.vsSrc, this.loader.fsSrc);
+    this.vertexData = new ElementBundler(this.gl, this.textures);
+    this.makeBufferData();
+    this.initArrayBuffers();
+    this.initTextures();
   }
 
   initGL(){
@@ -61,8 +66,9 @@ export class Renderer extends GameComponent {
   }
   clearCanvas() {
     this.gl.clearColor(...this.cnf.bgColor);
-    // Clear everything
+    // Clear depth buffer to 1.0
     this.gl.clearDepth(1.0);
+    // actully does the clearing:
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
   }
 
@@ -70,26 +76,8 @@ export class Renderer extends GameComponent {
   start(){
     this.initDone.then(_result => {
       this.game.start();  /// TODO calling other way round
-      // this.registerOnFrame();
     });
   }
-  
-  // render(now=null){
-  //   if(now==null){
-  //     return this.registerOnFrame();
-  //   }
-  //   this.now = now*0.001;
-  //   this.then ??= this.now;
-  //   this.deltaT = this.now - this.then;
-  //   this.renderFrame();
-  //   this.then=this.now;
-  //   return this.registerOnFrame();
-  // }
-  
-  // registerOnFrame(){
-  //   let this_outer = this;
-  //   return requestAnimationFrame(now => {this_outer.render(now);});
-  // }
   
   renderFrame(){
     this.initFrame();

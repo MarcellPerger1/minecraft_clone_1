@@ -6,14 +6,14 @@ import {clamp} from './utils.js';
 import {Player} from './player.js';
 
 
-// TODO request animationFrame on this NOT on Renderer!!!!!
+
 export class Game {
   constructor(cnf){
     this.cnf = new Config(cnf);
     this.canvas = document.getElementById('glCanvas');
     this.r = this.renderer = new Renderer(this);
     this.ki = this.keyinput = new KeyInput();
-    this.player = new Player(this);  // todo player on tick etc.
+    this.player = new Player(this);
     this.player.addListeners();
   }
 
@@ -25,13 +25,6 @@ export class Game {
     this.onload();
   }
 
-  // pointer_move(e){
-  //   if(document.pointerLockElement === this.canvas){
-  //     this.r.camRot.h += e.movementX * this.cnf.sensitivity;
-  //     this.r.camRot.v += e.movementY * this.cnf.sensitivity;
-  //   }
-  //   this.clampRot();
-  // }
   render(now=null){
     if(now==null){
       return this.registerOnFrame();
@@ -101,5 +94,9 @@ export class Game {
 
   hasPointerLock(){
     return document.pointerLockElement === this.canvas;
+  }
+
+  get pointerLocked(){
+    return this.hasPointerLock();
   }
 }
