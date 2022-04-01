@@ -46,9 +46,14 @@ export class Game {
     this.now = now*0.001;
     this.then ??= this.now;
     this.deltaT = this.now - this.then;
-    this.r.renderFrame();
+    this.onframe();
     this.then=this.now;
     return this.registerOnFrame();
+  }
+
+  onframe(){
+    this.ki.tick(this.deltaT);
+    this.r.renderFrame();
   }
   
   registerOnFrame(){

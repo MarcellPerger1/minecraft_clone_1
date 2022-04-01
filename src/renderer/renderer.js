@@ -26,8 +26,7 @@ export class Renderer extends GameComponent {
   init() {
     this.nFaults = 0;
     this.textures = {};
-    // this.then = null;
-    // this.now = null;
+    this.buffers = {};
     this.camPos = this.cnf.camPos.slice();
     this.cubeRot = 0.0;
     this.camRot = {h: 0.0, v: 0.0};
@@ -36,11 +35,6 @@ export class Renderer extends GameComponent {
     this.initGLConfig();
     
     this.loader = new Loader(this);
-    // TODO: a REnderer should NOT be in charge on fetching resources!!!!!
-    // this.loadResources();
-    // this.initDoneProm = this.loader.loadResources().then(_result => {
-    //   this.onResourcesLoaded();
-    // });
   }
 
   // Returns Promise that fulfilles when all resources loaded and ready for a render
@@ -82,15 +76,8 @@ export class Renderer extends GameComponent {
   }
 
   // DRAW SCENE
-  // start(){
-  //   this.initDoneProm.then(_result => {
-  //     this.game.start();  /// TODO calling other way round
-  //   });
-  // }
-  
   renderFrame(){
     this.initFrame();
-    this.ki.tick(this.deltaT);
     this.addAllData();
     this.drawAll();
     this.checkGlFault();
@@ -236,7 +223,7 @@ export class Renderer extends GameComponent {
 
   // SHADER PROGRAM
   makeShaders(vsSrc, fsSrc){
-    this.initProgramInfo(initShaderProgram( this.gl, vsSrc, fsSrc));
+    this.initProgramInfo(initShaderProgram(this.gl, vsSrc, fsSrc));
     this.gl.useProgram(this.programInfo.program);
   }
   
@@ -275,21 +262,37 @@ export class Renderer extends GameComponent {
   }
   
   makeBufferWithData(data/*in eg. Float32Array()*/, buf_type=null, usage=null){
-    buf_type = buf_type ?? this.gl.ARRAY_BUFFER;
-    usage = usage ?? this.gl.STATIC_DRAW;
-    const buf = this.gl.createBuffer();
+    const buf = this.makeBuffer();
+    this.setBufferDataRaw(buf, data, buf_type, usage);
+    return buf;
+    // buf_type ??= this.gl.ARRAY_BUFFER;
+    // usage ??= this.gl.STATIC_DRAW;
+    // this.gl.bindBuffer(buf_type, buf);
+    // this.gl.bufferData(buf_type, data, usage);
+    // return buf;
+  }
+
+  makeBufferWithDataNamed(buf_name, data, buf_type=null, usage=null){
+    this.buffers[buf_name] = this.makeBuffer();
+    this.setBufferData(buf_name, data, buf_type, usage);
+  }
+
+  setBufferDataRaw(buf, data, buf_type=null, usage=null){
+    buf_type ??= this.gl.ARRAY_BUFFER;
+    usage ??= this.gl.STATIC_DRAW;
     this.gl.bindBuffer(buf_type, buf);
     this.gl.bufferData(buf_type, data, usage);
-    return buf;
   }
 
   setBufferData(buf_name, data/*in eg. Float32Array()*/,
                 buf_type=null, usage=null){
-    buf_type = buf_type ?? this.gl.ARRAY_BUFFER;
-    usage = usage ?? this.gl.STATIC_DRAW;
     let buf = expectValue(this.buffers[buf_name], "buffer");
-    this.gl.bindBuffer(buf_type, buf);
-    this.gl.bufferData(buf_type, data, usage);
+    return this.setBufferDataRaw(buf, data, buf_type, usage);
+    // buf_type = buf_type ?? this.gl.ARRAY_BUFFER;
+    // usage = usage ?? this.gl.STATIC_DRAW;
+    // let buf = expectValue(this.buffers[buf_name], "buffer");
+    // this.gl.bindBuffer(buf_type, buf);
+    // this.gl.bufferData(buf_type, data, usage);
   }
 
   bufferDataFromBundler(){
@@ -467,11 +470,3 @@ export class Renderer extends GameComponent {
 
 
 exportAs(Renderer);
-
-
-
-
-
-
-
-
