@@ -37,9 +37,18 @@ export class Renderer extends GameComponent {
     
     this.loader = new Loader(this);
     // TODO: a REnderer should NOT be in charge on fetching resources!!!!!
-    this.initDone = this.loader.loadResources().then(_result => {
+    // this.loadResources();
+    // this.initDoneProm = this.loader.loadResources().then(_result => {
+    //   this.onResourcesLoaded();
+    // });
+  }
+
+  // Returns Promise that fulfilles when all resources loaded and ready for a render
+  loadResources(){
+    this.initDoneProm = this.loader.loadResources().then(_result => {
       this.onResourcesLoaded();
-    })
+    });
+    return this.initDoneProm;
   }
 
   onResourcesLoaded(){
@@ -73,11 +82,11 @@ export class Renderer extends GameComponent {
   }
 
   // DRAW SCENE
-  start(){
-    this.initDone.then(_result => {
-      this.game.start();  /// TODO calling other way round
-    });
-  }
+  // start(){
+  //   this.initDoneProm.then(_result => {
+  //     this.game.start();  /// TODO calling other way round
+  //   });
+  // }
   
   renderFrame(){
     this.initFrame();

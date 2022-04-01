@@ -15,10 +15,24 @@ export class Game {
     this.ki = this.keyinput = new KeyInput();
     this.player = new Player(this);
     this.player.addListeners();
+    this.resourceLoaders = [this.r];
+    this.loadProms = this.resourceLoaders.map(o => {
+      let f = o?.loadResources;
+      if(f==null){ return Promise.resolve(); }
+      return o.loadResources();
+    })
+    this.onReady = Promise.all(this.loadProms);
   }
 
   start(){
-    this.registerOnFrame();
+    this.onReady.then(_result => {
+      this.addAllListeners();
+      this.registerOnFrame();
+    })
+  }
+  
+  onload(){
+    this.start();
   }
 
   main(){
@@ -87,10 +101,7 @@ export class Game {
     this.addPointerEvents();
   }
 
-  onload(){
-    this.addAllListeners();
-    this.r.start();
-  }
+  
 
   hasPointerLock(){
     return document.pointerLockElement === this.canvas;
