@@ -23,8 +23,10 @@ export class Player extends GameComponent {
   pointer_move(e){
     console.log('point move player')
     if(document.pointerLockElement === this.canvas){
-      this.r.camRot.h += e.movementX * this.cnf.sensitivity;
-      this.r.camRot.v += e.movementY * this.cnf.sensitivity;
+      this.rotation.h += e.movementX * this.cnf.sensitivity;
+      this.rotation.v += e.movementY * this.cnf.sensitivity;
+      this.r.camRot.h = this.rotation.h;
+      this.r.camRot.v = this.rotation.v;
     }
     this.game.clampRot();
   }
