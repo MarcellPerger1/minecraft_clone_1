@@ -8,7 +8,6 @@ import {
 } from '../utils.js';
 import {Loader} from './resource_loader.js';
 import {GameComponent} from '../game_component.js';
-import {Config} from '../config.js';
 import {ElementBundler, VertexBundle} from './vertex_bundle.js';
 import {KeyInput} from '../keyinput.js';
 
@@ -30,7 +29,6 @@ export class Renderer extends GameComponent {
     this.textures = {};
     this.then = null;
     this.now = null;
-    this.ki = new KeyInput();
     this.camPos = this.cnf.camPos;
     this.cubeRot = 0.0;
     this.camRot = {h: 0.0, v: 0.0};

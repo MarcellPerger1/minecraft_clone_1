@@ -6,4 +6,16 @@ export class GameComponent {
   get cnf(){
     return this.game.cnf;
   }
+
+  get ki(){
+    return this.game.ki;
+  }
+
+  get r(){
+    return this.game.r;
+  }
+
+  get canvas(){
+    return this.game.canvas;
+  }
 }
