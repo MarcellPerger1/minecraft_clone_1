@@ -1,15 +1,20 @@
 import {Renderer} from './renderer/renderer.js';
 import {Config} from './config.js';
 import {moveCamera} from './controller.js';
-import {KeyEvent} from './keyinput.js';
+import {KeyEvent, KeyInput} from './keyinput.js';
 import {clamp} from './utils.js';
+import {Player} from './player.js';
 
+
+// TODO request animationFrame on this NOT on Renderer!!!!!
 export class Game {
   constructor(cnf){
     this.cnf = new Config(cnf);
     this.canvas = document.getElementById('glCanvas');
-    this.r = this.renderer = new Renderer(this.cnf);
-    this.ki = this.keyinput = this.r.ki;
+    this.r = this.renderer = new Renderer(this);
+    this.ki = this.keyinput = new KeyInput();
+    this.player = new Player(this);  // todo player on tick etc.
+    this.player.addListeners();
   }
   
   clampRot(){
@@ -46,7 +51,7 @@ export class Game {
   addPointerEvents(){
     this.addEvent('pointerlockerror', this.pointerlock_error, this, document);
     this.addEvent('pointerlockchange', this.pointerlock_change, this, document);
-    this.addEvent('pointermove', this.pointer_move, this, this.canvas);
+    // this.addEvent('pointermove', this.pointer_move, this, this.canvas);
     this.canvas.addEventListener(
       'click', _e => { this.canvas.requestPointerLock(); });
   }
@@ -70,7 +75,6 @@ export class Game {
   }
 
   addAllListeners(){
-    this.addMoveBindings();
     this.ki.addListeners();
     this.addPointerEvents();
   }

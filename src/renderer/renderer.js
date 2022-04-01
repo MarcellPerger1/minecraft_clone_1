@@ -7,10 +7,8 @@ import {
   loadTexture
 } from '../utils.js';
 import {Loader} from './resource_loader.js';
-
-import {Config} from '../config.js';
+import {GameComponent} from '../game_component.js';
 import {ElementBundler, VertexBundle} from './vertex_bundle.js';
-import {KeyInput} from '../keyinput.js';
 
 
 // TODO: implement this so that it works 
@@ -19,9 +17,9 @@ import {KeyInput} from '../keyinput.js';
 // https://www.toptal.com/game/video-game-physics-part-i-an-introduction-to-rigid-body-dynamics
 
 // TODO: switch to typescript?
-export class Renderer {
-  constructor(cnf, do_init = true) {
-    this.cnf = new Config(cnf);
+export class Renderer extends GameComponent {
+  constructor(game, do_init = true) {
+    super(game);
     if (do_init) { this.init(); }
   }
 
@@ -30,8 +28,7 @@ export class Renderer {
     this.textures = {};
     this.then = null;
     this.now = null;
-    this.ki = new KeyInput();
-    this.camPos = this.cnf.camPos;
+    this.camPos = this.cnf.camPos.slice();
     this.cubeRot = 0.0;
     this.camRot = {h: 0.0, v: 0.0};
 
@@ -343,15 +340,15 @@ export class Renderer {
       1.0,  0.0,
       0.0,  0.0,
       // Back
-      0.0,  1.0,
-      0.0,  0.0,
-      1.0,  0.0,
       1.0,  1.0,
+      1.0,  0.0,
+      0.0,  0.0,
+      0.0,  1.0,
       // Right
-      0.0,  1.0,
-      0.0,  0.0,
-      1.0,  0.0,
       1.0,  1.0,
+      1.0,  0.0,
+      0.0,  0.0,
+      0.0,  1.0,
       // Left
       0.0,  1.0,
       1.0,  1.0,
