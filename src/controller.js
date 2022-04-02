@@ -4,7 +4,7 @@ export function moveCamera(camPos, moveBy, hCamRotDeg, scale) {
         // dest
         [],
         // rotate this
-        vec3.scale([],moveBy,scale),  
+        vec3.scale([], moveBy, scale),  
         // center of rotation
         [0,0,0],  
         // angle

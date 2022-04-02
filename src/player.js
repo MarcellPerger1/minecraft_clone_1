@@ -30,11 +30,31 @@ export class Player extends GameComponent {
     this.rotation.h %= 360;
   }
 
+  tick(){
+    this.apply_h_movement();
+  }
+
+  apply_h_movement(){
+    let movement = [0, 0, 0];
+    if(this.ki.pressed('w')){
+      movement[2] += 1;
+    } 
+    if(this.ki.pressed('s')){
+      movement[2] -= 1;
+    }
+    if(this.ki.pressed('a')){
+      movement[0] += 1;
+    }
+    if(this.ki.pressed('d')){
+      movement[0] -= 1;
+    }
+    vec3.normalize(movement, movement);
+    moveCamera(
+          this.r.camPos, movement,
+          -this.r.camRot.h, this.cnf.speed * this.deltaT);
+  }
+
   addMoveBindings(){
-    this.addMoveEvent('w', [0,0,1]);
-    this.addMoveEvent('s', [0,0,-1]);
-    this.addMoveEvent('a', [1,0,0]);
-    this.addMoveEvent('d', [-1,0,0]);
     this.addMoveEvent('q', [0,-1,0]);
     this.addMoveEvent('z', [0,1,0]);
   }
