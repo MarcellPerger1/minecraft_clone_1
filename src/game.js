@@ -1,37 +1,73 @@
 import {Renderer} from './renderer/renderer.js';
 import {Config} from './config.js';
-import {moveCamera} from './controller.js';
-import {KeyEvent, KeyInput} from './keyinput.js';
-import {clamp} from './utils.js';
+import {KeyInput} from './keyinput.js';
 import {Player} from './player.js';
 
 
-// TODO request animationFrame on this NOT on Renderer!!!!!
 export class Game {
   constructor(cnf){
     this.cnf = new Config(cnf);
     this.canvas = document.getElementById('glCanvas');
     this.r = this.renderer = new Renderer(this);
     this.ki = this.keyinput = new KeyInput();
-    this.player = new Player(this);  // todo player on tick etc.
-    this.player.addListeners();
+    this.player = new Player(this);
+    this.loadResources();
+  }
+
+  loadResources(){
+    this.makeResourceLoaders();
+    this.gatherResourceLoaders();
+    return this.onReady;
+  }
+
+  makeResourceLoaders(){
+    this.resourceLoaders = [this.r];
+  }
+
+  gatherResourceLoaders(){
+    this.loadProms = this.resourceLoaders.map(o => {
+      let f = o?.loadResources;
+      if(f==null){ return Promise.resolve(); }
+      return o.loadResources();
+    });
+    this.onReady = Promise.all(this.loadProms);
+  }
+
+  start(){
+    this.onReady.then(_result => {
+      this.addAllListeners();
+      this.registerOnFrame();
+    })
   }
   
-  clampRot(){
-    this.r.camRot.v = clamp(this.r.camRot.v, this.cnf.vRotMin, this.cnf.vRotMax);
-    this.r.camRot.h %= 360;
+  onload(){
+    this.start();
   }
 
   main(){
     this.onload();
   }
 
-  pointer_move(e){
-    if(document.pointerLockElement === this.canvas){
-      this.r.camRot.h += e.movementX * this.cnf.sensitivity;
-      this.r.camRot.v += e.movementY * this.cnf.sensitivity;
+  render(now=null){
+    if(now==null){
+      return this.registerOnFrame();
     }
-    this.clampRot();
+    this.now = now*0.001;
+    this.then ??= this.now;
+    this.deltaT = this.now - this.then;
+    this.onframe();
+    this.then = this.now;
+    return this.registerOnFrame();
+  }
+
+  onframe(){
+    this.ki.tick(this.deltaT);
+    this.r.renderFrame();
+  }
+  
+  registerOnFrame(){
+    let this_outer = this;
+    return requestAnimationFrame(now => {this_outer.render(now);});
   }
 
   pointerlock_change(_e){
@@ -51,36 +87,25 @@ export class Game {
   addPointerEvents(){
     this.addEvent('pointerlockerror', this.pointerlock_error, this, document);
     this.addEvent('pointerlockchange', this.pointerlock_change, this, document);
-    // this.addEvent('pointermove', this.pointer_move, this, this.canvas);
     this.canvas.addEventListener(
-      'click', _e => { this.canvas.requestPointerLock(); });
-  }
-
-  addMoveEvent(key, amount){
-    return this.ki.addFunc(
-      new KeyEvent(key),
-      (deltaT) => moveCamera(
-        this.r.camPos, amount,
-        -this.r.camRot.h, this.cnf.speed * deltaT)
-    );
-  }
-
-  addMoveBindings(){
-    this.addMoveEvent('w', [0,0,1]);
-    this.addMoveEvent('s', [0,0,-1]);
-    this.addMoveEvent('a', [1,0,0]);
-    this.addMoveEvent('d', [-1,0,0]);
-    this.addMoveEvent('q', [0,-1,0]);
-    this.addMoveEvent('z', [0,1,0]);
+      'click', _e => {
+        if(!this.pointerLocked){ 
+          this.canvas.requestPointerLock(); 
+        }
+      });
   }
 
   addAllListeners(){
-    this.ki.addListeners();
     this.addPointerEvents();
+    this.player.addListeners();
+    this.ki.addListeners();
   }
 
-  onload(){
-    this.addAllListeners();
-    this.r.start();
+  hasPointerLock(){
+    return document.pointerLockElement === this.canvas;
+  }
+
+  get pointerLocked(){
+    return this.hasPointerLock();
   }
 }

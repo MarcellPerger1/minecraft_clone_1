@@ -1,3 +1,5 @@
+import {isString} from './type_check.js';
+
 export function globExport(obj, name=null){
   name = name??obj.name;
   if(name==null){
@@ -16,6 +18,13 @@ export function expectValue(v, name=null){
     throw new ReferenceError(`${name} must not be null!`);
   }
   return v;
+}
+
+export function nameOrValue(v, obj, name=null){
+  if(isString(v)){
+    return expectValue(obj[v], name==null ? name : name + '(from string)');
+  }
+  return expectValue(v, name);
 }
 
 
