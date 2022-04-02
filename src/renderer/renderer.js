@@ -8,7 +8,6 @@ import {
   // file loading
   loadTexture
 } from '../utils.js';
-import {Loader} from '../resource_loader.js';
 import {ShaderLoader} from './shader_loader.js';
 import {GameComponent} from '../game_component.js';
 import {ElementBundler, VertexBundle} from './vertex_bundle.js';
@@ -37,22 +36,19 @@ export class Renderer extends GameComponent {
     this.initGL();
     this.initGLConfig();
     
-    this.loader = new Loader(this.game);
-    this.sLoader = new ShaderLoader(this.game, this.gl);
+    this.loader = new ShaderLoader(this.game, this.gl);
   }
 
   // Returns Promise that fulfilles when all resources loaded and ready for a render
   loadResources(){
-    this.initDoneProm = this.sLoader.loadResources().then(_result => {
+    this.initDoneProm = this.loader.loadResources().then(_result => {
       this.onResourcesLoaded();
     });
     return this.initDoneProm;
   }
 
   onResourcesLoaded(){
-    // todo compile shaders asyncshronously
-    // this.makeShaders(this.loader.vsSrc, this.loader.fsSrc);
-    this.initProgramInfo(this.sLoader.program);
+    this.initProgramInfo(this.loader.program);
     this.gl.useProgram(this.programInfo.program);
     this.vertexData = new ElementBundler(this.gl, this.textures);
     this.makeBufferData();

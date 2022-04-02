@@ -1,9 +1,7 @@
 import {Renderer} from './renderer/renderer.js';
 import {Config} from './config.js';
-import {moveCamera} from './controller.js';
-import {KeyEvent, KeyInput} from './keyinput.js';
+import {KeyInput} from './keyinput.js';
 import {Player} from './player.js';
-
 
 
 export class Game {
