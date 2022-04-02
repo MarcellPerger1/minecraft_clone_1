@@ -7,6 +7,7 @@ export class Player extends GameComponent {
   constructor(game){
     super(game);
     this.rotation = {h: 0, v: 0};
+    this.position = this.cnf.camPos.slice(); // todo rename config entry
   }
 
   addListeners(){
@@ -20,8 +21,6 @@ export class Player extends GameComponent {
       this.rotation.v += e.movementY * this.cnf.sensitivity;
     }
     this.clampRot();
-    this.r.camRot.h = this.rotation.h;
-    this.r.camRot.v = this.rotation.v;
   }
 
   clampRot(){
@@ -68,7 +67,7 @@ export class Player extends GameComponent {
   moveRelRotation(moveBy, scale=1) {
     let scaled = vec3.scale([], moveBy, scale);
     let absMove = vec3.rotateY([], scaled, [0,0,0], toRad(-this.r.camRot.h));
-    vec3.add(this.r.camPos, this.r.camPos, absMove);
+    vec3.add(this.position, this.position, absMove);
   }
 }
 
