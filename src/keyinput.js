@@ -1,3 +1,5 @@
+import {charIsDigit} from './utils.js';
+
 export class KeyInput {
   constructor(){
     // funcs: [[event, func], ...]  (more flexible & extensible this way)
@@ -34,6 +36,9 @@ export class KeyInput {
       }
     }
   }
+  pressed(event_str, mode=KeyEvent.AUTO){
+    return new KeyEvent(event_str, mode).shouldTrigger(this);
+  }
 }
 
 
@@ -50,11 +55,8 @@ export class KeyEvent extends BaseKeyEvent {
   static CODE = 2; // eg. 'KeyH'     (for keybinds - NOT text editing)
   
   constructor(event_str, mode=KeyEvent.AUTO){
-    super()
-    mode ??= KeyEvent.AUTO
-    if(mode == KeyEvent.AUTO){
-      [mode, event_str] = this.getAutoEvent(event_str);
-    }
+    super();
+    [event_str, mode] = getEventStr(event_str, mode);
     this.mode = mode;
     this.event_str = event_str;
   }
@@ -63,11 +65,20 @@ export class KeyEvent extends BaseKeyEvent {
     var down_o = this.mode == this.KEY ? ki.key_down : ki.code_down;
     return down_o[this.event_str] ?? false;
   }
+}
 
-  getAutoEvent(event_str){
-    if(event_str.length==1){
-      return [KeyEvent.CODE, 'Key'+event_str.toUpperCase()];
-    }
-    return [KeyEvent.CODE, event_str];
+export function getAutoEventStr(event_str){
+  if(event_str.length==1){
+    let pre = charIsDigit(event_str) ? 'Digit' : 'Key';
+    return [pre+event_str.toUpperCase(), KeyEvent.CODE];
   }
+  return [event_str, KeyEvent.CODE];
+}
+
+export function getEventStr(event_str, mode){
+  mode ??= KeyEvent.AUTO;
+  if(mode==KeyEvent.AUTO){
+    [event_str, mode] = getAutoEventStr(event_str);
+  }
+  return [event_str, mode];
 }
