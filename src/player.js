@@ -6,8 +6,8 @@ import {clamp, toRad} from './utils.js';
 export class Player extends GameComponent {
   constructor(game){
     super(game);
-    this.rotation = {h: 0, v: 0};
-    this.position = this.cnf.camPos.slice(); // todo rename config entry
+    this.rotation = Object.assign({}, this.cnf.startRot);
+    this.position = this.cnf.startPos.slice();
   }
 
   addListeners(){
