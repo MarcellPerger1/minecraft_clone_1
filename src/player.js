@@ -1,7 +1,6 @@
 import {GameComponent} from './game_component.js';
-import {moveCamera} from './controller.js';
 import {KeyEvent} from './keyinput.js';
-import {clamp} from './utils.js';
+import {clamp, toRad} from './utils.js';
 
 
 export class Player extends GameComponent {
@@ -30,11 +29,29 @@ export class Player extends GameComponent {
     this.rotation.h %= 360;
   }
 
+  tick(){
+    this.apply_h_movement();
+  }
+
+  apply_h_movement(){
+    let movement = [0, 0, 0];
+    if(this.ki.pressed('w')){
+      movement[2] += 1;
+    } 
+    if(this.ki.pressed('s')){
+      movement[2] -= 1;
+    }
+    if(this.ki.pressed('a')){
+      movement[0] += 1;
+    }
+    if(this.ki.pressed('d')){
+      movement[0] -= 1;
+    }
+    vec3.normalize(movement, movement);
+    this.moveRelRotation(movement, this.cnf.speed * this.deltaT);
+  }
+
   addMoveBindings(){
-    this.addMoveEvent('w', [0,0,1]);
-    this.addMoveEvent('s', [0,0,-1]);
-    this.addMoveEvent('a', [1,0,0]);
-    this.addMoveEvent('d', [-1,0,0]);
     this.addMoveEvent('q', [0,-1,0]);
     this.addMoveEvent('z', [0,1,0]);
   }
@@ -43,10 +60,21 @@ export class Player extends GameComponent {
     return this.ki.addFunc(
       new KeyEvent(key),
       (deltaT) => {
-        moveCamera(
-          this.r.camPos, amount,
-          -this.r.camRot.h, this.cnf.speed * deltaT);
+        this.moveRelRotation(amount, this.cnf.speed * deltaT)
       }
     );
   }
+
+  moveRelRotation(moveBy, scale=1) {
+    let scaled = vec3.scale([], moveBy, scale);
+    let absMove = vec3.rotateY([], scaled, [0,0,0], toRad(-this.r.camRot.h));
+    vec3.add(this.r.camPos, this.r.camPos, absMove);
+  }
+}
+
+
+export function moveCamera(camPos, moveBy, hCamRotDeg, scale=1) {
+  let scaled = vec3.scale([], moveBy, scale);
+  let absMove = vec3.rotateY([], scaled, [0,0,0], toRad(hCamRotDeg));
+  vec3.add(camPos, camPos, absMove);
 }

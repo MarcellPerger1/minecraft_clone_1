@@ -22,15 +22,14 @@ import {ElementBundler, VertexBundle} from './vertex_bundle.js';
 export class Renderer extends GameComponent {
   constructor(game, do_init = true) {
     super(game);
+    this.nFaults = 0;
+    this.textures = {};
+    this.buffers = {};
     if (do_init) { this.init(); }
   }
 
   init() {
-    this.nFaults = 0;
-    this.textures = {};
-    this.buffers = {};
     this.camPos = this.cnf.camPos.slice();
-    this.cubeRot = 0.0;
     this.camRot = {h: 0.0, v: 0.0};
 
     this.initGL();
@@ -41,6 +40,7 @@ export class Renderer extends GameComponent {
 
   // Returns Promise that fulfilles when all resources loaded and ready for a render
   loadResources(){
+    this.initTextures();
     this.initDoneProm = this.loader.loadResources().then(_result => {
       this.onResourcesLoaded();
     });
@@ -53,7 +53,6 @@ export class Renderer extends GameComponent {
     this.vertexData = new ElementBundler(this.gl, this.textures);
     this.makeBufferData();
     this.initArrayBuffers();
-    this.initTextures();
   }
 
   initGL(){
@@ -104,9 +103,11 @@ export class Renderer extends GameComponent {
   }
 
   checkGlFault(){
-    this.last_error = this.gl.getError();
-    if(this.last_error !== this.gl.NO_ERROR){
-      this.onGlFault();
+    if(this.cnf.debug){
+      this.last_error = this.gl.getError();
+      if(this.last_error !== this.gl.NO_ERROR){
+        this.onGlFault();
+      }
     }
   }
 
@@ -139,7 +140,7 @@ export class Renderer extends GameComponent {
       this.programInfo.attribLocations[attrLocName], 'attrLoc');
     let buffer = expectValue(
       this.buffers[bufferName], 'buffer');
-    type = type ?? this.gl.FLOAT;
+    type ??= this.gl.FLOAT;
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
     this.gl.vertexAttribPointer(
         attrLoc,
@@ -152,11 +153,8 @@ export class Renderer extends GameComponent {
   }
 
   addData(data, texture){
-    return this.vertexData.addData(
-        new VertexBundle(
-          data.position, data.textureCoord, data.indices
-        ),
-        texture);
+    let bundle = new VertexBundle(data.position, data.textureCoord, data.indices);
+    return this.vertexData.addData(bundle, texture);
   }
 
   addCube(p0,p1,top_tex,side_tex,bottom_tex){
@@ -210,16 +208,12 @@ export class Renderer extends GameComponent {
   }
   getModelViewMatrix(){
     var m1 = mat4.create();
-    // NOTE: only X & Y roation because 
-    // Z rotation would flip carera upside down for example
     const amount = this.camPos;
     // NOTEE: IMPORTANT!: does stuff in reverse order!!!
     // eg.: here, matrix will transalate, then rotateY, then rotateX
     mat4.rotateX(m1, m1, this.camRot.v * Math.PI / 180);
     mat4.rotateY(m1, m1, this.camRot.h * Math.PI / 180);
-    mat4.translate(m1,     // destination matrix
-                   m1,     // matrix to translate
-                   amount);  // amount to translate
+    mat4.translate(m1, m1, amount);
     return m1;
   }
 

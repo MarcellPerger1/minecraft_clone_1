@@ -61,8 +61,13 @@ export class Game {
   }
 
   onframe(){
-    this.ki.tick(this.deltaT);
+    this.tick();
     this.r.renderFrame();
+  }
+
+  tick(){
+    this.ki.tick(this.deltaT);
+    this.player.tick();
   }
   
   registerOnFrame(){
