@@ -8,7 +8,7 @@ import {
   // file loading
   loadTexture
 } from '../utils.js';
-import {Loader} from './resource_loader.js';
+import {Loader} from '../resource_loader.js';
 import {GameComponent} from '../game_component.js';
 import {ElementBundler, VertexBundle} from './vertex_bundle.js';
 

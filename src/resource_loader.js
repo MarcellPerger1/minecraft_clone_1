@@ -1,4 +1,4 @@
-import {expectValue} from '../utils.js';
+import {expectValue} from './utils.js';
 
 export class Loader{
   constructor(r){
