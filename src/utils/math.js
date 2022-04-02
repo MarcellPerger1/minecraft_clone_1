@@ -21,3 +21,7 @@ export function charIsDigit(c, base=10){
   let i = chars.indexOf(c.toLowerCase());
   return 0 <= i && i < base;
 }
+
+export function toRad(x){
+  return x*Math.PI/180;
+}

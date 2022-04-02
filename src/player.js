@@ -1,7 +1,7 @@
 import {GameComponent} from './game_component.js';
 import {moveCamera} from './controller.js';
 import {KeyEvent} from './keyinput.js';
-import {clamp} from './utils.js';
+import {clamp, toRad} from './utils.js';
 
 
 export class Player extends GameComponent {
@@ -49,9 +49,7 @@ export class Player extends GameComponent {
       movement[0] -= 1;
     }
     vec3.normalize(movement, movement);
-    moveCamera(
-          this.r.camPos, movement,
-          -this.r.camRot.h, this.cnf.speed * this.deltaT);
+    this.moveRelRotation(movement, this.cnf.speed * this.deltaT)
   }
 
   addMoveBindings(){
@@ -68,5 +66,11 @@ export class Player extends GameComponent {
           -this.r.camRot.h, this.cnf.speed * deltaT);
       }
     );
+  }
+
+  moveRelRotation(moveBy, scale=1) {
+    let scaled = vec3.scale([], moveBy, scale);
+    let absMove = vec3.rotateY([], scaled, [0,0,0], toRad(-this.r.camRot.h));
+    vec3.add(this.r.camPos, this.r.camPos, absMove);
   }
 }
