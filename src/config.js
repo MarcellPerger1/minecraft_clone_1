@@ -11,7 +11,8 @@ export class Config {
   grassBottomPath;
   // rendering consts
   bgColor;
-  camPos;
+  startPos;
+  startRot;
   // movement consts
   speed;
   // mouse consts
@@ -38,7 +39,8 @@ Config.DEFAULT = new Config({
   grassTopPath: "./textures/grass-top.jpg",
   grassSidePath: "./textures/grass-side.jpg",
   grassBottomPath: "./textures/grass-bottom.png",
-  camPos: [0.0, 0.0, -4.0],
+  startPos: [0, 0, -4],
+  startRot: {h: 0, v: 0},
   speed: 3.5,
   sensitivity: 0.7,
   vRotMin: -80,

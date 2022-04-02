@@ -29,13 +29,17 @@ export class Renderer extends GameComponent {
   }
 
   init() {
-    this.camPos = this.cnf.camPos.slice();
-    this.camRot = {h: 0.0, v: 0.0};
-
     this.initGL();
     this.initGLConfig();
     
     this.loader = new ShaderLoader(this.game, this.gl);
+  }
+
+  get camRot(){
+    return this.player.rotation;
+  }
+  get camPos(){
+    return this.player.position;
   }
 
   // Returns Promise that fulfilles when all resources loaded and ready for a render
