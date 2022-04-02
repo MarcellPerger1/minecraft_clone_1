@@ -8,7 +8,7 @@ export class KeyInput {
     this.code_down = {};
   }
 
-  addFunc(event, func){
+  addFunc(event, func=null){
     this.funcs.push([event, func]);
     return this;
   }
@@ -32,7 +32,9 @@ export class KeyInput {
   tick(deltaT){
     for(const [event, func] of this.funcs){
       if(event.shouldTrigger(this)){
-        func(deltaT);
+        if(func!=null){
+          func(deltaT);
+        }
       }
     }
   }
