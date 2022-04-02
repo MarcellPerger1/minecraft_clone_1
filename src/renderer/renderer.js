@@ -1,6 +1,6 @@
 import {
   // general utils
-  exportAs, expectValue, sortCoords, callCallback,
+  exportAs, expectValue, nameOrValue, sortCoords, callCallback,
   // webgl
   getGL, glErrnoToMsg, initShaderProgram,
   // file loading
@@ -257,44 +257,6 @@ export class Renderer extends GameComponent {
     };
   }
 
-  makeBuffer(){
-    return this.gl.createBuffer();
-  }
-  
-  makeBufferWithData(data/*in eg. Float32Array()*/, buf_type=null, usage=null){
-    const buf = this.makeBuffer();
-    this.setBufferDataRaw(buf, data, buf_type, usage);
-    return buf;
-    // buf_type ??= this.gl.ARRAY_BUFFER;
-    // usage ??= this.gl.STATIC_DRAW;
-    // this.gl.bindBuffer(buf_type, buf);
-    // this.gl.bufferData(buf_type, data, usage);
-    // return buf;
-  }
-
-  makeBufferWithDataNamed(buf_name, data, buf_type=null, usage=null){
-    this.buffers[buf_name] = this.makeBuffer();
-    this.setBufferData(buf_name, data, buf_type, usage);
-  }
-
-  setBufferDataRaw(buf, data, buf_type=null, usage=null){
-    buf_type ??= this.gl.ARRAY_BUFFER;
-    usage ??= this.gl.STATIC_DRAW;
-    this.gl.bindBuffer(buf_type, buf);
-    this.gl.bufferData(buf_type, data, usage);
-  }
-
-  setBufferData(buf_name, data/*in eg. Float32Array()*/,
-                buf_type=null, usage=null){
-    let buf = expectValue(this.buffers[buf_name], "buffer");
-    return this.setBufferDataRaw(buf, data, buf_type, usage);
-    // buf_type = buf_type ?? this.gl.ARRAY_BUFFER;
-    // usage = usage ?? this.gl.STATIC_DRAW;
-    // let buf = expectValue(this.buffers[buf_name], "buffer");
-    // this.gl.bindBuffer(buf_type, buf);
-    // this.gl.bufferData(buf_type, data, usage);
-  }
-
   bufferDataFromBundler(){
     this.setBufferData('position',
                        new Float32Array(this.vertexData.positions));
@@ -303,6 +265,56 @@ export class Renderer extends GameComponent {
     this.setBufferData('indices', new Uint16Array(this.vertexData.indices), 
                        this.gl.ELEMENT_ARRAY_BUFFER);
     
+  }
+
+  // BUFFER UTIL METHODS
+  makeBuffer(buf_name=null){
+    return (this.buffers[buf_name ?? "_"] = this.makeBufferRaw());
+  }
+
+  makeBufferRaw(){
+    return this.gl.createBuffer();
+  }
+  
+  makeBufferWithData(buf_name, data, buf_type=null, usage=null){
+    let raw_args = this._getMakeBufferWithDataRawArgs(
+      buf_name, data, buf_type, usage);
+    if(raw_args==null){
+      return this.makeBufferWithDataRaw(...raw_args);
+    }
+    this.makeBuffer(buf_name);
+    this.setBufferData(buf_name, data, buf_type, usage);
+    return this.buffers[buf_name];
+  }
+
+  makeBufferWithDataRaw(data, buf_type=null, usage=null){
+    const buf = this.makeBuffer();
+    this.setBufferDataRaw(buf, data, buf_type, usage);
+    return buf;
+  }
+
+  _getMakeBufferWithDataRawArgs(name, data, type, usage){
+    if(data==null || isNumber(data)){
+      // data not array (must be type or usage) so pass first 3 args to _raw
+      return [name, data, type];  
+    }
+    if(buf_name==null){
+      // no name, pass other 3 args to _raw
+      return [data, type, usage];
+    }
+    return null;
+  }
+  
+  setBufferData(buf_name, data, buf_type=null, usage=null){
+    let buf = nameOrValue(buf_name, this.buffers, "buffer");
+    return this.setBufferDataRaw(buf, data, buf_type, usage);
+  }
+  
+  setBufferDataRaw(buf, data, buf_type=null, usage=null){
+    buf_type ??= this.gl.ARRAY_BUFFER;
+    usage ??= this.gl.STATIC_DRAW;
+    this.gl.bindBuffer(buf_type, buf);
+    this.gl.bufferData(buf_type, data, usage);
   }
 
   // DATA FOR BUFFERS
