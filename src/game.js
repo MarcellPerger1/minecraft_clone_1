@@ -2,7 +2,6 @@ import {Renderer} from './renderer/renderer.js';
 import {Config} from './config.js';
 import {moveCamera} from './controller.js';
 import {KeyEvent, KeyInput} from './keyinput.js';
-import {clamp} from './utils.js';
 import {Player} from './player.js';
 
 
@@ -14,13 +13,25 @@ export class Game {
     this.r = this.renderer = new Renderer(this);
     this.ki = this.keyinput = new KeyInput();
     this.player = new Player(this);
-    this.player.addListeners();
+    this.loadResources();
+  }
+
+  loadResources(){
+    this.makeResourceLoaders();
+    this.gatherResourceLoaders();
+    return this.onReady;
+  }
+
+  makeResourceLoaders(){
     this.resourceLoaders = [this.r];
+  }
+
+  gatherResourceLoaders(){
     this.loadProms = this.resourceLoaders.map(o => {
       let f = o?.loadResources;
       if(f==null){ return Promise.resolve(); }
       return o.loadResources();
-    })
+    });
     this.onReady = Promise.all(this.loadProms);
   }
 
@@ -47,7 +58,7 @@ export class Game {
     this.then ??= this.now;
     this.deltaT = this.now - this.then;
     this.onframe();
-    this.then=this.now;
+    this.then = this.now;
     return this.registerOnFrame();
   }
 
@@ -78,35 +89,19 @@ export class Game {
   addPointerEvents(){
     this.addEvent('pointerlockerror', this.pointerlock_error, this, document);
     this.addEvent('pointerlockchange', this.pointerlock_change, this, document);
-    // this.addEvent('pointermove', this.pointer_move, this, this.canvas);
     this.canvas.addEventListener(
-      'click', _e => { this.canvas.requestPointerLock(); });
-  }
-
-  addMoveEvent(key, amount){
-    return this.ki.addFunc(
-      new KeyEvent(key),
-      (deltaT) => moveCamera(
-        this.r.camPos, amount,
-        -this.r.camRot.h, this.cnf.speed * deltaT)
-    );
-  }
-
-  addMoveBindings(){
-    this.addMoveEvent('w', [0,0,1]);
-    this.addMoveEvent('s', [0,0,-1]);
-    this.addMoveEvent('a', [1,0,0]);
-    this.addMoveEvent('d', [-1,0,0]);
-    this.addMoveEvent('q', [0,-1,0]);
-    this.addMoveEvent('z', [0,1,0]);
+      'click', _e => {
+        if(!this.pointerLocked){ 
+          this.canvas.requestPointerLock(); 
+        }
+      });
   }
 
   addAllListeners(){
-    this.ki.addListeners();
     this.addPointerEvents();
+    this.player.addListeners();
+    this.ki.addListeners();
   }
-
-  
 
   hasPointerLock(){
     return document.pointerLockElement === this.canvas;

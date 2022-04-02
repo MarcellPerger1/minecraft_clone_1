@@ -15,12 +15,6 @@ export class Player extends GameComponent {
     this.addEvent('pointermove', this.pointer_move, this, this.canvas);
   }
 
-  addEvent(name, hdlr, thisArg=null, elem=null, opts=null){
-    elem ??= window;
-    return elem.addEventListener(
-      name, event => hdlr.call(thisArg, event), opts);
-  }
-
   pointer_move(e){
     if(this.game.hasPointerLock()){
       this.rotation.h += e.movementX * this.cnf.sensitivity;

@@ -1,6 +1,8 @@
 import {
   // general utils
   exportAs, expectValue, nameOrValue, sortCoords, callCallback,
+  //type checking
+  isNumber,
   // webgl
   getGL, glErrnoToMsg, initShaderProgram,
   // file loading
@@ -298,7 +300,7 @@ export class Renderer extends GameComponent {
       // data not array (must be type or usage) so pass first 3 args to _raw
       return [name, data, type];  
     }
-    if(buf_name==null){
+    if(name==null){
       // no name, pass other 3 args to _raw
       return [data, type, usage];
     }
