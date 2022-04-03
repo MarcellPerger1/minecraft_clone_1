@@ -87,7 +87,6 @@ export class Renderer extends GameComponent {
   // DRAW SCENE
   renderFrame(){
     this.initFrame();
-    // this.addAllData();
     this.addWorldData();
     this.drawAll();
     this.checkGlFault();
@@ -101,16 +100,7 @@ export class Renderer extends GameComponent {
     }
   }
 
-  addAllData(){
-    this.addGrassBlock([0,0,0]);
-    this.addGrassBlock([0,3,0]);
-    this.addGrassBlock([3,0,0]);
-    this.addGrassBlock([0,0,3]);
-    this.addGrassBlock([0,0,4]);
-  }
-
-  addGrassBlock(pos/*bottom*/){
-    pos = pos.slice();
+  addGrassBlock(pos){
     this.addGrassCube(pos, vec3.add([], pos, [1,1,1]));
   }
 

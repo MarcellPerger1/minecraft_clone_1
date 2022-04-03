@@ -1,5 +1,5 @@
 import {GameComponent} from './game_component.js';
-import {fromNested, exportAs, assert, roundNearest, nearRoundNearest} from './utils.js';
+import {fromNested, exportAs} from './utils.js';
 
 export var SIZE = [16, 16, 16];
 export var LOW = [-8, -8, -8];
