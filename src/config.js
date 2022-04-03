@@ -19,7 +19,7 @@ export class Config {
   sensitivity;
   vRotMin;
   vRotMax;
-  debug;
+  checkError;
 
   constructor(cnf = {}, ...args) {
     assignNullSafe(this, classOf(this).DEFAULT, cnf ?? {}, ...args);
@@ -45,7 +45,7 @@ Config.DEFAULT = new Config({
   sensitivity: 0.7,
   vRotMin: -80,
   vRotMax: 80,
-  debug: true,
+  checkError: false,
 });
 
 exportAs(Config);

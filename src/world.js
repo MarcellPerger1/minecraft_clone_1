@@ -44,12 +44,15 @@ export class World extends GameComponent {
     return vec3.sub([], at, this.origin);
   }
 
-  addToRender(){
-    nestedFor(this.blocks, (v, p) => {
-      if(v!=Blocks.air){
-        this.r.addGrassBlock(this.getPos(p));
+  *[Symbol.iterator]() {
+    for(let x=0; x<this.size[0]; x++){
+      for(let y=0; y<this.size[1]; y++){
+        for(let z=0; z<this.size[2]; z++){
+          let val = [this.getPos([x, y, z]), this.blocks[x][y][z]];
+          yield val;
+        }
       }
-    });
+    }
   }
 }
 

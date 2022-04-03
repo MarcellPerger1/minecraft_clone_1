@@ -12,11 +12,12 @@ import {
 import {ShaderLoader} from './shader_loader.js';
 import {GameComponent} from '../game_component.js';
 import {ElementBundler, VertexBundle} from './vertex_bundle.js';
+import {Blocks} from '../world.js';
 
 // NOTE: 
-// North = +x
+// West  = +x
 // Up    = +y 
-// East  = +z
+// North = +z
 
 
 // https://www.toptal.com/game/video-game-physics-part-i-an-introduction-to-rigid-body-dynamics
@@ -87,9 +88,17 @@ export class Renderer extends GameComponent {
   renderFrame(){
     this.initFrame();
     // this.addAllData();
-    this.game.world.addToRender();
+    this.addWorldData();
     this.drawAll();
     this.checkGlFault();
+  }
+
+  addWorldData(){
+    for(const [pos, block] of this.world){
+      if(block==Blocks.grass){
+        this.addGrassBlock(pos);
+      }
+    }
   }
 
   addAllData(){
@@ -122,7 +131,7 @@ export class Renderer extends GameComponent {
   }
 
   checkGlFault(){
-    if(this.cnf.debug){
+    if(this.cnf.check_error){
       this.last_error = this.gl.getError();
       if(this.last_error !== this.gl.NO_ERROR){
         this.onGlFault();
