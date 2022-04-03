@@ -18,13 +18,9 @@ export class Game {
         this.world.setBlock([x,0,z], Blocks.grass);
       }
     }
-    this.world.setBlock([-1,0,0]);
-    // this.world.setBlock([0,0,0], blocks.grass);
+    this.world.setBlock([15,0,0], Blocks.grass);
+    this.world.setBlock([0,0,15], Blocks.grass);
     this.world.setBlock([0,3,0], Blocks.grass);
-    // this.world.setBlock([3,0,0], Blocks.grass);
-    // this.world.setBlock([0,0,0], Blocks.grass);
-    // this.world.setBlock([0,0,3], Blocks.grass);
-    // this.world.setBlock([0,0,4], Blocks.grass);
     this.loadResources();
   }
 
