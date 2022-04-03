@@ -6,14 +6,27 @@ export var LOW = [-8, 8, -8];
 export var HIGH = vec3.add([], LOW, SIZE);
 
 export class World extends GameComponent {
-  constructor(game){
+  constructor(game, size=SIZE){
     super(game);
-    this.blocks = fromNested(SIZE, _ => 0);
+    this.size = size.slice();
+    this.blocks = fromNested(this.size, _ => Blocks.air);
   }
   
-  getBlock(x, y, z){
-    
+  getBlock(at){
+    const [x,y,z] = at;
+    return this.blocks[x][y][z];
+  }
+
+  setBlock(at, block){
+    const [x,y,z] = at;
+    return (this.blocks[x][y][z] = block);
   }
 }
+
+export var Blocks = {
+  air : 0,
+  grass: 1,
+};
+
 
 exportAs(World);
