@@ -2,6 +2,7 @@ import {Renderer} from './renderer/renderer.js';
 import {Config} from './config.js';
 import {KeyInput} from './keyinput.js';
 import {Player} from './player.js';
+import {World} from './world.js';
 
 
 export class Game {
