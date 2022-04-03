@@ -13,11 +13,12 @@ export class Game {
     this.ki = this.keyinput = new KeyInput();
     this.player = new Player(this);
     this.w = this.world = new World(this, [0, 0, 0]);
-    for(let x=-4;x<4;x++){
-      for(let z=-4;z<4;z++){
+    for(let x=0;x<8;x++){
+      for(let z=0;z<8;z++){
         this.world.setBlock([x,0,z], Blocks.grass);
       }
     }
+    this.world.setBlock([-1,0,0]);
     // this.world.setBlock([0,0,0], blocks.grass);
     this.world.setBlock([0,3,0], Blocks.grass);
     // this.world.setBlock([3,0,0], Blocks.grass);
