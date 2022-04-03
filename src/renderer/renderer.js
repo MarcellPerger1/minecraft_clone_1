@@ -86,7 +86,8 @@ export class Renderer extends GameComponent {
   // DRAW SCENE
   renderFrame(){
     this.initFrame();
-    this.addAllData();
+    // this.addAllData();
+    this.game.world.addToRender();
     this.drawAll();
     this.checkGlFault();
   }

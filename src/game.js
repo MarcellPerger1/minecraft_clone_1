@@ -2,7 +2,7 @@ import {Renderer} from './renderer/renderer.js';
 import {Config} from './config.js';
 import {KeyInput} from './keyinput.js';
 import {Player} from './player.js';
-import {World} from './world.js';
+import {World, Blocks} from './world.js';
 
 
 export class Game {
@@ -12,6 +12,18 @@ export class Game {
     this.r = this.renderer = new Renderer(this);
     this.ki = this.keyinput = new KeyInput();
     this.player = new Player(this);
+    this.w = this.world = new World(this, [0, 0, 0]);
+    for(let x=-4;x<4;x++){
+      for(let z=-4;z<4;z++){
+        this.world.setBlock([x,0,z], Blocks.grass);
+      }
+    }
+    // this.world.setBlock([0,0,0], blocks.grass);
+    this.world.setBlock([0,3,0], Blocks.grass);
+    // this.world.setBlock([3,0,0], Blocks.grass);
+    // this.world.setBlock([0,0,0], Blocks.grass);
+    // this.world.setBlock([0,0,3], Blocks.grass);
+    // this.world.setBlock([0,0,4], Blocks.grass);
     this.loadResources();
   }
 
