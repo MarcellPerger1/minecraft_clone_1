@@ -51,8 +51,8 @@ export class Player extends GameComponent {
   }
 
   addMoveBindings(){
-    this.addMoveEvent('q', [0,-1,0]);
-    this.addMoveEvent('z', [0,1,0]);
+    this.addMoveEvent('q', [0,1,0]);
+    this.addMoveEvent('z', [0,-1,0]);
   }
 
   addMoveEvent(key, amount){

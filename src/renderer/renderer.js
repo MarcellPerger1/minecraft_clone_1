@@ -1,6 +1,7 @@
 import {
   // general utils
   exportAs, expectValue, nameOrValue, sortCoords, callCallback,
+  toRad,
   //type checking
   isNumber,
   // webgl
@@ -12,10 +13,12 @@ import {ShaderLoader} from './shader_loader.js';
 import {GameComponent} from '../game_component.js';
 import {ElementBundler, VertexBundle} from './vertex_bundle.js';
 
+// NOTE: 
+// North = +x
+// Up    = +y 
+// East  = +z
 
-// TODO: implement this so that it works 
-// because textures need a reload when they are loaded
-// const dynamic = true;
+
 // https://www.toptal.com/game/video-game-physics-part-i-an-introduction-to-rigid-body-dynamics
 
 // TODO: switch to typescript?
@@ -89,9 +92,20 @@ export class Renderer extends GameComponent {
   }
 
   addAllData(){
-    this.addCube([-1,-1,-1],[0,0,0], 'grass_top', 'grass_side', 'grass_bottom');
-    this.addCube([-1,-1,-1],[-2,0,-2], 'grass_top', 'grass_side', 'grass_bottom');
-    this.addCube([-3,-1,-1],[-2,0,0], 'grass_top', 'grass_side', 'grass_bottom');
+    this.addGrassBlock([0,0,0]);
+    this.addGrassBlock([0,3,0]);
+    this.addGrassBlock([3,0,0]);
+    this.addGrassBlock([0,0,3]);
+    this.addGrassBlock([0,0,4]);
+  }
+
+  addGrassBlock(pos/*bottom*/){
+    pos = pos.slice();
+    this.addGrassCube(pos, vec3.add([], pos, [1,1,1]));
+  }
+
+  addGrassCube(start, end){
+    this.addCube(start, end, 'grass_top', 'grass_side', 'grass_bottom');
   }
 
   initFrame(){
@@ -212,11 +226,11 @@ export class Renderer extends GameComponent {
   }
   getModelViewMatrix(){
     var m1 = mat4.create();
-    const amount = this.camPos;
+    const amount = vec3.scale([], this.camPos.slice(), -1);
     // NOTEE: IMPORTANT!: does stuff in reverse order!!!
     // eg.: here, matrix will transalate, then rotateY, then rotateX
     mat4.rotateX(m1, m1, this.camRot.v * Math.PI / 180);
-    mat4.rotateY(m1, m1, this.camRot.h * Math.PI / 180);
+    mat4.rotateY(m1, m1, toRad(this.camRot.h + 180));
     mat4.translate(m1, m1, amount);
     return m1;
   }

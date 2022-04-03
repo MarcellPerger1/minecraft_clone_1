@@ -39,7 +39,7 @@ Config.DEFAULT = new Config({
   grassTopPath: "./textures/grass-top.jpg",
   grassSidePath: "./textures/grass-side.jpg",
   grassBottomPath: "./textures/grass-bottom.png",
-  startPos: [0, 0, -4],
+  startPos: [0.5, 2.5, -5],
   startRot: {h: 0, v: 0},
   speed: 3.5,
   sensitivity: 0.7,
