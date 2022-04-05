@@ -10,6 +10,7 @@ import {
   loadTexture
 } from '../utils.js';
 import {ShaderLoader} from './shader_loader.js';
+import {CubeData} from './cube_data.js';
 import {GameComponent} from '../game_component.js';
 import {ElementBundler, VertexBundle} from './vertex_bundle.js';
 import {Blocks} from '../world.js';

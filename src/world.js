@@ -1,9 +1,10 @@
 import {GameComponent} from './game_component.js';
-import {fromNested, exportAs} from './utils.js';
+import {fromNested, exportAs, assert} from './utils.js';
 
 export var SIZE = [16, 16, 16];
 export var LOW = [-8, -8, -8];
 export var HIGH = vec3.add([], LOW, SIZE);
+
 
 export class World extends GameComponent {
   constructor(game, low=LOW, size=SIZE){
@@ -18,11 +19,13 @@ export class World extends GameComponent {
   }
 
   getBlock(at){
+    this.wantInRange(at);
     const [x,y,z] = this.getIndex(at);
     return this.blocks[x][y][z];
   }
 
   setBlock(at, block=Blocks.air){
+    this.wantInRange(at);
     const [x,y,z] = this.getIndex(at);
     return (this.blocks[x][y][z] = block);
   }
@@ -41,6 +44,14 @@ export class World extends GameComponent {
     return vec3.add([], at, this.origin);
   }
 
+  inRange(pos){
+    return [0,1,2].every((i) => (this.low[i] <= pos[i] && pos[i] < this.high[i]));
+  }
+
+  wantInRange(pos, msg="Position out of range"){
+    assert(this.inRange(pos), msg);
+  }
+
   *[Symbol.iterator]() {
     for(let x=0; x<this.size[0]; x++){
       for(let y=0; y<this.size[1]; y++){
@@ -52,6 +63,7 @@ export class World extends GameComponent {
     }
   }
 }
+
 
 export var Blocks = {
   air : 0,
