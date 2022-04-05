@@ -1,6 +1,7 @@
 import {
   // general utils
-  exportAs, expectValue, nameOrValue, sortCoords, callCallback,
+  exportAs, expectValue, nameOrValue, callCallback,
+  // math
   toRad,
   //type checking
   isNumber,
@@ -283,7 +284,7 @@ export class Renderer extends GameComponent {
     
   }
 
-  // BUFFER UTIL METHODS
+  // BUFFER UTIL METHODS (TODO buffer manager?)
   makeBuffer(buf_name=null){
     return (this.buffers[buf_name ?? "_"] = this.makeBufferRaw());
   }
@@ -331,149 +332,6 @@ export class Renderer extends GameComponent {
     usage ??= this.gl.STATIC_DRAW;
     this.gl.bindBuffer(buf_type, buf);
     this.gl.bufferData(buf_type, data, usage);
-  }
-
-  // DATA FOR BUFFERS
-  dataForCubeSides(p0, p1){
-    sortCoords(p0, p1);
-    const [x0, y0, z0] = p0;
-    const [x1, y1, z1] = p1;
-    const sides = {'position': [
-    // Front face
-    x0, y0, z1,
-    x1, y0, z1,
-    x1, y1, z1,
-    x0, y1, z1,
-  
-    // Back face
-    x0, y0, z0,
-    x0, y1, z0,  
-    x1, y1, z0,
-    x1, y0, z0,
-  
-    // Right face
-    x1, y0, z0, 
-    x1, y1, z0,
-    x1, y1, z1,
-    x1, y0, z1,
-  
-    // Left face
-    x0, y0, z0,
-    x0, y0, z1,
-    x0, y1, z1,
-    x0, y1, z0,
-    ], 'textureCoord':[
-      // Front
-      0.0,  1.0,
-      1.0,  1.0,
-      1.0,  0.0,
-      0.0,  0.0,
-      // Back
-      1.0,  1.0,
-      1.0,  0.0,
-      0.0,  0.0,
-      0.0,  1.0,
-      // Right
-      1.0,  1.0,
-      1.0,  0.0,
-      0.0,  0.0,
-      0.0,  1.0,
-      // Left
-      0.0,  1.0,
-      1.0,  1.0,
-      1.0,  0.0,
-      0.0,  0.0,
-    ], 'indices':[
-      0,  1,  2,      0,  2,  3,    // front
-      4,  5,  6,      4,  6,  7,    // back
-      8,  9,  10,     8,  10, 11,   // right
-      12, 13, 14,     12, 14, 15,   // left
-    ]};
-    return sides;
-  }
-  
-  dataForCubeTop(p0, p1){
-    sortCoords(p0, p1);
-    const [x0, _y0, z0] = p0;
-    const [x1, y1, z1] = p1;
-    const ret = {'position': [
-      x0, y1, z0,
-      x0, y1, z1,
-      x1, y1, z1,
-      x1, y1, z0,
-    ],'textureCoord':[
-      0.0,  0.0,
-      1.0,  0.0,
-      1.0,  1.0,
-      0.0,  1.0,
-    ],'indices':[
-      0, 1, 2,     0, 2, 3,   // top
-    ]};
-    return ret;
-  }
-  
-  dataForCubeBottom(p0, p1){
-    sortCoords(p0, p1);
-    const [x0, y0, z0] = p0;
-    const [x1, _y1, z1] = p1;
-    const ret = {'position': [
-      x0, y0, z0,
-      x1, y0, z0,
-      x1, y0, z1,
-      x0, y0, z1,
-    ],'textureCoord':[
-      0.0,  0.0,
-      1.0,  0.0,
-      1.0,  1.0,
-      0.0,  1.0,
-    ],'indices':[
-      0, 1, 2,     0, 2, 3,   // bottom
-    ]};
-    return ret;
-  }
-  
-  posDataForCube(p0, p1){
-    sortCoords(p0, p1);
-    const [x0, y0, z0] = p0;
-    const [x1, y1, z1] = p1;
-    const positions = [
-    // Front face
-    x0, y0, z1,
-    x1, y0, z1,
-    x1, y1, z1,
-    x0, y1, z1,
-  
-    // Back face
-    x0, y0, z0,
-    x0, y1, z0,  
-    x1, y1, z0,
-    x1, y0, z0,
-  
-    // Top face
-    x0, y1, z0,
-    x0, y1, z1,
-    x1, y1, z1,
-    x1, y1, z0,
-  
-    // Bottom face
-    x0, y0, z0,
-    x1, y0, z0,
-    x1, y0, z1,
-    x0, y0, z1,
-  
-    // Right face
-    x1, y0, z0, 
-    x1, y1, z0,
-    x1, y1, z1,
-    x1, y0, z1,
-  
-    // Left face
-    x0, y0, z0,
-    x0, y0, z1,
-    x0, y1, z1,
-    x0, y1, z0,
-    ];
-    return positions;
   }
 
   // TEXTURES

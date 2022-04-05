@@ -183,4 +183,47 @@ export class CubeData {
     ]};
     return sides;
   }
+
+  allPosData(){
+    const [x0, y0, z0] = this.p0;
+    const [x1, y1, z1] = this.p1;
+    const positions = [
+    // Front face
+    x0, y0, z1,
+    x1, y0, z1,
+    x1, y1, z1,
+    x0, y1, z1,
+  
+    // Back face
+    x0, y0, z0,
+    x0, y1, z0,  
+    x1, y1, z0,
+    x1, y0, z0,
+  
+    // Top face
+    x0, y1, z0,
+    x0, y1, z1,
+    x1, y1, z1,
+    x1, y1, z0,
+  
+    // Bottom face
+    x0, y0, z0,
+    x1, y0, z0,
+    x1, y0, z1,
+    x0, y0, z1,
+  
+    // Right face
+    x1, y0, z0, 
+    x1, y1, z0,
+    x1, y1, z1,
+    x1, y0, z1,
+  
+    // Left face
+    x0, y0, z0,
+    x0, y0, z1,
+    x0, y1, z1,
+    x0, y1, z0,
+    ];
+    return positions;
+  }
 }
