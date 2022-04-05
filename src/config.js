@@ -36,8 +36,8 @@ Config.DEFAULT = new Config({
   bgColor: [0.5, 0.86, 1.0, 1.0],
   vsPath: "./shaders/vertex-shader.glsl",
   fsPath: "./shaders/fragment-shader.glsl",
-  grassTopPath: "./textures/grass-top.jpg",
-  grassSidePath: "./textures/grass-side.jpg",
+  grassTopPath: "./textures/grass-top.min.png",
+  grassSidePath: "./textures/grass-side.min.png",
   grassBottomPath: "./textures/grass-bottom.png",
   startPos: [0.5, 2.5, -5],
   startRot: {h: 0, v: 0},
@@ -45,7 +45,9 @@ Config.DEFAULT = new Config({
   sensitivity: 0.7,
   vRotMin: -80,
   vRotMax: 80,
-  checkError: false,
+  // because gl.getError has HUGE impacts on performance
+  // and chrome dev tools reports it anyway
+  checkError: false,  
 });
 
 exportAs(Config);

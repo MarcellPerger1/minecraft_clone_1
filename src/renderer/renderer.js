@@ -106,7 +106,6 @@ export class Renderer extends GameComponent {
   addGrassBlock(pos){
     this.addBlock2(pos, {
       side: 'grass_side', top: 'grass_top', bottom: 'grass_bottom'})
-    //this.addGrassCube(pos, vec3.add([], pos, [1,1,1]));
   }
 
   addGrassCube(start, end){
