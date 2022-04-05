@@ -1,7 +1,8 @@
 import {sortCoords} from '../utils.js';
 
-export class CubeData {
+export class CubeVertexData {
   constructor(p0, p1){
+    p1 ??= vec3.add([], p0, [1,1,1]);
     [this.p0, this.p1] = sortCoords(p0, p1);
   }
 
@@ -184,7 +185,7 @@ export class CubeData {
     return sides;
   }
 
-  allPosData(){
+  _allPosData(){
     const [x0, y0, z0] = this.p0;
     const [x1, y1, z1] = this.p1;
     const positions = [

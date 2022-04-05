@@ -14,3 +14,7 @@ export function assert(condition, msg=null){
     }
   }
 }
+
+export function unreachable(msg=null){
+  assert(0, msg ?? "Unreachable code reached! Program should never reach here.");
+}

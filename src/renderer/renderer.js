@@ -11,7 +11,8 @@ import {
   loadTexture
 } from '../utils.js';
 import {ShaderLoader} from './shader_loader.js';
-import {CubeData} from './cube_data.js';
+import {CubeVertexData} from './cube_data.js';
+import {CubeDataAdder} from './face_culling.js';
 import {GameComponent} from '../game_component.js';
 import {ElementBundler, VertexBundle} from './vertex_bundle.js';
 import {Blocks} from '../world.js';
@@ -103,11 +104,17 @@ export class Renderer extends GameComponent {
   }
 
   addGrassBlock(pos){
-    this.addGrassCube(pos, vec3.add([], pos, [1,1,1]));
+    this.addBlock2(pos, {
+      side: 'grass_side', top: 'grass_top', bottom: 'grass_bottom'})
+    //this.addGrassCube(pos, vec3.add([], pos, [1,1,1]));
   }
 
   addGrassCube(start, end){
     this.addCube(start, end, 'grass_top', 'grass_side', 'grass_bottom');
+  }
+
+  addBlock2(pos, tData){
+    new CubeDataAdder(this.game, pos, tData).addData();
   }
 
   initFrame(){
@@ -178,7 +185,7 @@ export class Renderer extends GameComponent {
   }
 
   addCube(p0,p1,top_tex,side_tex,bottom_tex){
-    let cData = new CubeData(p0, p1);
+    let cData = new CubeVertexData(p0, p1);
     this.addData(cData.sides(p0,p1), side_tex);
     this.addData(cData.top(p0,p1), top_tex);
     this.addData(cData.bottom(p0,p1), bottom_tex);
