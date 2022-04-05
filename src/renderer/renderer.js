@@ -177,9 +177,10 @@ export class Renderer extends GameComponent {
   }
 
   addCube(p0,p1,top_tex,side_tex,bottom_tex){
-    this.addData(this.dataForCubeSides(p0,p1), side_tex);
-    this.addData(this.dataForCubeTop(p0,p1), top_tex);
-    this.addData(this.dataForCubeBottom(p0,p1), bottom_tex);
+    let cData = new CubeData(p0, p1);
+    this.addData(cData.sides(p0,p1), side_tex);
+    this.addData(cData.top(p0,p1), top_tex);
+    this.addData(cData.bottom(p0,p1), bottom_tex);
   }
   
   // UNIFORMS
