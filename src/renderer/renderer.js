@@ -65,7 +65,9 @@ export class Renderer extends GameComponent {
     this.makeBufferData();
     this.initArrayBuffers();
   }
-
+  
+  // WebGL stuff
+  // initialisation
   initGL(){
     this.gl = getGL();
     if(this.gl==null){
@@ -74,60 +76,14 @@ export class Renderer extends GameComponent {
     this.clearCanvas();
     this.checkGlFault();
   }
+  
   initGLConfig(){
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.depthFunc(this.gl.LEQUAL);
     this.checkGlFault();
   }
-  clearCanvas() {
-    this.gl.clearColor(...this.cnf.bgColor);
-    // Clear depth buffer to 1.0
-    this.gl.clearDepth(1.0);
-    // actully does the clearing:
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-  }
 
-  // DRAW SCENE
-  renderFrame(){
-    this.initFrame();
-    this.addWorldData();
-    this.drawAll();
-    this.checkGlFault();
-  }
-
-  addWorldData(){
-    for(const [pos, block] of this.world){
-      if(block==Blocks.grass){
-        this.addGrassBlock(pos);
-      }
-    }
-  }
-
-  addGrassBlock(pos){
-    this.addBlock2(pos, {
-      side: 'grass_side', top: 'grass_top', bottom: 'grass_bottom'})
-  }
-
-  addGrassCube(start, end){
-    this.addCube(start, end, 'grass_top', 'grass_side', 'grass_bottom');
-  }
-
-  addBlock2(pos, tData){
-    new CubeDataAdder(this.game, pos, tData).addData();
-  }
-
-  initFrame(){
-    this.resetRender();
-    this.setUniforms();
-  }
-
-  drawAll(){
-    this.vertexData.finalise();
-    this.bufferDataFromBundler();
-    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
-    this.vertexData.drawElements();
-  }
-
+  // gl errors
   checkGlFault(){
     if(this.cnf.check_error){
       this.last_error = this.gl.getError();
@@ -146,12 +102,69 @@ export class Renderer extends GameComponent {
     }
     this.nFaults++;
   }
+  
+  // other
+  clearCanvas() {
+    this.gl.clearColor(...this.cnf.bgColor);
+    // Clear depth buffer to 1.0
+    this.gl.clearDepth(1.0);
+    // actully does the clearing:
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+  }
+  
+  // DRAW SCENE
+  renderFrame(){
+    this.initFrame();
+    this.addWorldData();
+    this.drawAll();
+    this.checkGlFault();
+  }
+
+  initFrame(){
+    this.resetRender();
+    this.setUniforms();
+  }
+
+  drawAll(){
+    this.vertexData.finalise();
+    this.bufferDataFromBundler();
+    this.vertexData.drawElements();
+  }
 
   resetRender(){
-    this.offset = 0;
     this.clearCanvas();
-    this.gl.useProgram(this.programInfo.program);
     this.vertexData.reset();
+  }
+
+  // CUBE DATA HANDLING
+  addWorldData(){
+    for(const [pos, block] of this.world){
+      if(block==Blocks.grass){
+        this.addGrassBlock(pos);
+      }
+    }
+  }
+  
+  addGrassBlock(pos){
+    this.addBlock(pos, {
+      side: 'grass_side', top: 'grass_top', bottom: 'grass_bottom'})
+  }
+
+  addBlock(pos, tData){
+    new CubeDataAdder(this.game, pos, tData).addData();
+  }
+
+  addData(data, texture){
+    let bundle = new VertexBundle(data.position, data.textureCoord, data.indices);
+    return this.vertexData.addData(bundle, texture);
+  }
+
+  // NOTE: no cullling done in this method - this is old
+  addCube_raw(p0,p1,top_tex,side_tex,bottom_tex){
+    let cData = new CubeVertexData(p0, p1);
+    this.addData(cData.sides(p0,p1), side_tex);
+    this.addData(cData.top(p0,p1), top_tex);
+    this.addData(cData.bottom(p0,p1), bottom_tex);
   }
 
   // ARRAY BUFFERS
@@ -178,19 +191,7 @@ export class Renderer extends GameComponent {
     this.gl.enableVertexAttribArray(attrLoc);
   }
 
-  addData(data, texture){
-    let bundle = new VertexBundle(data.position, data.textureCoord, data.indices);
-    return this.vertexData.addData(bundle, texture);
-  }
-
-  addCube(p0,p1,top_tex,side_tex,bottom_tex){
-    let cData = new CubeVertexData(p0, p1);
-    this.addData(cData.sides(p0,p1), side_tex);
-    this.addData(cData.top(p0,p1), top_tex);
-    this.addData(cData.bottom(p0,p1), bottom_tex);
-  }
-  
-  // UNIFORMS
+  // UNIFORMS (todo separate uniform handler class)
   setUniforms(){
     this.initProjectionMatrix();
     this.initModelViewMatrix();
