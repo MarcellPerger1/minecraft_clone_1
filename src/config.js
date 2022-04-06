@@ -38,7 +38,7 @@ Config.DEFAULT = new Config({
   fsPath: "./shaders/fragment-shader.glsl",
   grassTopPath: "./textures/grass-top.min.png",
   grassSidePath: "./textures/grass-side.min.png",
-  grassBottomPath: "./textures/grass-bottom.png",
+  grassBottomPath: "./textures/grass-bottom.min.png",
   startPos: [0.5, 2.5, -5],
   startRot: {h: 0, v: 0},
   speed: 3.5,
@@ -49,5 +49,8 @@ Config.DEFAULT = new Config({
   // and chrome dev tools reports it anyway
   checkError: false,  
 });
+
+// textures from:
+// https://sketchfab.com/3d-models/minecraft-grass-block-84938a8f3f8d4a0aa64aaa9c4e4d27d3
 
 exportAs(Config);

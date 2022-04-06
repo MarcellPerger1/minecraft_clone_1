@@ -110,12 +110,12 @@ export class CubeVertexData {
       x1, y0, z1,
       x0, y0, z1,
     ],'textureCoord': [
-      0.0,  0.0,
-      1.0,  0.0,
-      1.0,  1.0,
       0.0,  1.0,
+      1.0,  1.0,
+      1.0,  0.0,
+      0.0,  0.0,
     ],'indices': [
-      0, 1, 2,     0, 2, 3,   // bottom
+      0, 1, 2,     0, 2, 3,
     ]};
     return ret;
   }
