@@ -1,3 +1,5 @@
+import {isAnyArray} from './type_check.js';
+
 // may modify list inplace, but doesnt have to
 export function iextend(a, b){
   if(b.length < 32_000){
@@ -50,4 +52,36 @@ export function sortCoords(p0, p1){
   }
   }
   return [p0, p1];
+}
+
+export function forRange(n, func, thisArg=null){
+  return Array.from({length: n}, (_v, i) => func.call(thisArg, i));
+}
+
+export function fromNested(shape, func, thisArg=null){
+  var path = [];
+  let inner = (i) => {
+    var value;
+    path.push(i);
+    if(path.length == shape.length){
+      value = func.call(thisArg, path.slice());
+    } else {
+      value = forRange(shape[path.length], inner);
+    }
+    path.pop();
+    return value;
+  }
+  return forRange(shape[0], inner);
+}
+
+export function nestedFor(arr, func, thisArg=null, path_prefix=[]){
+  var path = path_prefix.slice();
+  arr.forEach((v, i, a) => {
+    let p = path.concat(i);
+    if(isAnyArray(v)){
+      nestedFor(v, func, thisArg, p);
+    } else {
+      func.call(thisArg, v, p, arr, a);  // throw eveything at the function
+    }
+  })
 }

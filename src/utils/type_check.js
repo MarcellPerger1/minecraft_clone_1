@@ -13,3 +13,18 @@ export function isObject(x){
 export function isNumber(x) {
   return typeof x == 'number' || x instanceof Number;
 }
+
+export function isArray(x){
+  return Array.isArray(x);
+}
+
+export function isTypedArray(x){
+  return x instanceof TypedArray 
+    || (ArrayBuffer.isView(x) && !(x instanceof DataView));
+}
+
+export const TypedArray = Object.getPrototypeOf(Uint8Array);
+
+export function isAnyArray(x){
+  return isArray(x) || isTypedArray(x);
+}

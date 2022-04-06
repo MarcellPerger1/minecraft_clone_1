@@ -1,6 +1,8 @@
 import {
   // general utils
-  exportAs, expectValue, nameOrValue, sortCoords, callCallback,
+  exportAs, expectValue, nameOrValue, callCallback,
+  // math
+  toRad,
   //type checking
   isNumber,
   // webgl
@@ -9,13 +11,18 @@ import {
   loadTexture
 } from '../utils.js';
 import {ShaderLoader} from './shader_loader.js';
+import {CubeVertexData} from './cube_data.js';
+import {CubeDataAdder} from './face_culling.js';
 import {GameComponent} from '../game_component.js';
 import {ElementBundler, VertexBundle} from './vertex_bundle.js';
+import {Blocks} from '../world.js';
+
+// NOTE: 
+// West  = +x
+// Up    = +y 
+// North = +z
 
 
-// TODO: implement this so that it works 
-// because textures need a reload when they are loaded
-// const dynamic = true;
 // https://www.toptal.com/game/video-game-physics-part-i-an-introduction-to-rigid-body-dynamics
 
 // TODO: switch to typescript?
@@ -58,7 +65,9 @@ export class Renderer extends GameComponent {
     this.makeBufferData();
     this.initArrayBuffers();
   }
-
+  
+  // WebGL stuff
+  // initialisation
   initGL(){
     this.gl = getGL();
     if(this.gl==null){
@@ -67,47 +76,16 @@ export class Renderer extends GameComponent {
     this.clearCanvas();
     this.checkGlFault();
   }
+  
   initGLConfig(){
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.depthFunc(this.gl.LEQUAL);
     this.checkGlFault();
   }
-  clearCanvas() {
-    this.gl.clearColor(...this.cnf.bgColor);
-    // Clear depth buffer to 1.0
-    this.gl.clearDepth(1.0);
-    // actully does the clearing:
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-  }
 
-  // DRAW SCENE
-  renderFrame(){
-    this.initFrame();
-    this.addAllData();
-    this.drawAll();
-    this.checkGlFault();
-  }
-
-  addAllData(){
-    this.addCube([-1,-1,-1],[0,0,0], 'grass_top', 'grass_side', 'grass_bottom');
-    this.addCube([-1,-1,-1],[-2,0,-2], 'grass_top', 'grass_side', 'grass_bottom');
-    this.addCube([-3,-1,-1],[-2,0,0], 'grass_top', 'grass_side', 'grass_bottom');
-  }
-
-  initFrame(){
-    this.resetRender();
-    this.setUniforms();
-  }
-
-  drawAll(){
-    this.vertexData.finalise();
-    this.bufferDataFromBundler();
-    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
-    this.vertexData.drawElements();
-  }
-
+  // gl errors
   checkGlFault(){
-    if(this.cnf.debug){
+    if(this.cnf.check_error){
       this.last_error = this.gl.getError();
       if(this.last_error !== this.gl.NO_ERROR){
         this.onGlFault();
@@ -124,12 +102,69 @@ export class Renderer extends GameComponent {
     }
     this.nFaults++;
   }
+  
+  // other
+  clearCanvas() {
+    this.gl.clearColor(...this.cnf.bgColor);
+    // Clear depth buffer to 1.0
+    this.gl.clearDepth(1.0);
+    // actully does the clearing:
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+  }
+  
+  // DRAW SCENE
+  renderFrame(){
+    this.initFrame();
+    this.addWorldData();
+    this.drawAll();
+    this.checkGlFault();
+  }
+
+  initFrame(){
+    this.resetRender();
+    this.setUniforms();
+  }
+
+  drawAll(){
+    this.vertexData.finalise();
+    this.bufferDataFromBundler();
+    this.vertexData.drawElements();
+  }
 
   resetRender(){
-    this.offset = 0;
     this.clearCanvas();
-    this.gl.useProgram(this.programInfo.program);
     this.vertexData.reset();
+  }
+
+  // CUBE DATA HANDLING
+  addWorldData(){
+    for(const [pos, block] of this.world){
+      if(block==Blocks.grass){
+        this.addGrassBlock(pos);
+      }
+    }
+  }
+  
+  addGrassBlock(pos){
+    this.addBlock(pos, {
+      side: 'grass_side', top: 'grass_top', bottom: 'grass_bottom'})
+  }
+
+  addBlock(pos, tData){
+    new CubeDataAdder(this.game, pos, tData).addData();
+  }
+
+  addData(data, texture){
+    let bundle = new VertexBundle(data.position, data.textureCoord, data.indices);
+    return this.vertexData.addData(bundle, texture);
+  }
+
+  // NOTE: no cullling done in this method - this is old
+  addCube_raw(p0,p1,top_tex,side_tex,bottom_tex){
+    let cData = new CubeVertexData(p0, p1);
+    this.addData(cData.sides(p0,p1), side_tex);
+    this.addData(cData.top(p0,p1), top_tex);
+    this.addData(cData.bottom(p0,p1), bottom_tex);
   }
 
   // ARRAY BUFFERS
@@ -156,18 +191,7 @@ export class Renderer extends GameComponent {
     this.gl.enableVertexAttribArray(attrLoc);
   }
 
-  addData(data, texture){
-    let bundle = new VertexBundle(data.position, data.textureCoord, data.indices);
-    return this.vertexData.addData(bundle, texture);
-  }
-
-  addCube(p0,p1,top_tex,side_tex,bottom_tex){
-    this.addData(this.dataForCubeSides(p0,p1), side_tex);
-    this.addData(this.dataForCubeTop(p0,p1), top_tex);
-    this.addData(this.dataForCubeBottom(p0,p1), bottom_tex);
-  }
-  
-  // UNIFORMS
+  // UNIFORMS (todo separate uniform handler class)
   setUniforms(){
     this.initProjectionMatrix();
     this.initModelViewMatrix();
@@ -212,11 +236,11 @@ export class Renderer extends GameComponent {
   }
   getModelViewMatrix(){
     var m1 = mat4.create();
-    const amount = this.camPos;
+    const amount = vec3.scale([], this.camPos.slice(), -1);
     // NOTEE: IMPORTANT!: does stuff in reverse order!!!
     // eg.: here, matrix will transalate, then rotateY, then rotateX
     mat4.rotateX(m1, m1, this.camRot.v * Math.PI / 180);
-    mat4.rotateY(m1, m1, this.camRot.h * Math.PI / 180);
+    mat4.rotateY(m1, m1, toRad(this.camRot.h + 180));
     mat4.translate(m1, m1, amount);
     return m1;
   }
@@ -267,7 +291,7 @@ export class Renderer extends GameComponent {
     
   }
 
-  // BUFFER UTIL METHODS
+  // BUFFER UTIL METHODS (TODO buffer manager?)
   makeBuffer(buf_name=null){
     return (this.buffers[buf_name ?? "_"] = this.makeBufferRaw());
   }
@@ -315,149 +339,6 @@ export class Renderer extends GameComponent {
     usage ??= this.gl.STATIC_DRAW;
     this.gl.bindBuffer(buf_type, buf);
     this.gl.bufferData(buf_type, data, usage);
-  }
-
-  // DATA FOR BUFFERS
-  dataForCubeSides(p0, p1){
-    sortCoords(p0, p1);
-    const [x0, y0, z0] = p0;
-    const [x1, y1, z1] = p1;
-    const sides = {'position': [
-    // Front face
-    x0, y0, z1,
-    x1, y0, z1,
-    x1, y1, z1,
-    x0, y1, z1,
-  
-    // Back face
-    x0, y0, z0,
-    x0, y1, z0,  
-    x1, y1, z0,
-    x1, y0, z0,
-  
-    // Right face
-    x1, y0, z0, 
-    x1, y1, z0,
-    x1, y1, z1,
-    x1, y0, z1,
-  
-    // Left face
-    x0, y0, z0,
-    x0, y0, z1,
-    x0, y1, z1,
-    x0, y1, z0,
-    ], 'textureCoord':[
-      // Front
-      0.0,  1.0,
-      1.0,  1.0,
-      1.0,  0.0,
-      0.0,  0.0,
-      // Back
-      1.0,  1.0,
-      1.0,  0.0,
-      0.0,  0.0,
-      0.0,  1.0,
-      // Right
-      1.0,  1.0,
-      1.0,  0.0,
-      0.0,  0.0,
-      0.0,  1.0,
-      // Left
-      0.0,  1.0,
-      1.0,  1.0,
-      1.0,  0.0,
-      0.0,  0.0,
-    ], 'indices':[
-      0,  1,  2,      0,  2,  3,    // front
-      4,  5,  6,      4,  6,  7,    // back
-      8,  9,  10,     8,  10, 11,   // right
-      12, 13, 14,     12, 14, 15,   // left
-    ]};
-    return sides;
-  }
-  
-  dataForCubeTop(p0, p1){
-    sortCoords(p0, p1);
-    const [x0, _y0, z0] = p0;
-    const [x1, y1, z1] = p1;
-    const ret = {'position': [
-      x0, y1, z0,
-      x0, y1, z1,
-      x1, y1, z1,
-      x1, y1, z0,
-    ],'textureCoord':[
-      0.0,  0.0,
-      1.0,  0.0,
-      1.0,  1.0,
-      0.0,  1.0,
-    ],'indices':[
-      0, 1, 2,     0, 2, 3,   // top
-    ]};
-    return ret;
-  }
-  
-  dataForCubeBottom(p0, p1){
-    sortCoords(p0, p1);
-    const [x0, y0, z0] = p0;
-    const [x1, _y1, z1] = p1;
-    const ret = {'position': [
-      x0, y0, z0,
-      x1, y0, z0,
-      x1, y0, z1,
-      x0, y0, z1,
-    ],'textureCoord':[
-      0.0,  0.0,
-      1.0,  0.0,
-      1.0,  1.0,
-      0.0,  1.0,
-    ],'indices':[
-      0, 1, 2,     0, 2, 3,   // bottom
-    ]};
-    return ret;
-  }
-  
-  posDataForCube(p0, p1){
-    sortCoords(p0, p1);
-    const [x0, y0, z0] = p0;
-    const [x1, y1, z1] = p1;
-    const positions = [
-    // Front face
-    x0, y0, z1,
-    x1, y0, z1,
-    x1, y1, z1,
-    x0, y1, z1,
-  
-    // Back face
-    x0, y0, z0,
-    x0, y1, z0,  
-    x1, y1, z0,
-    x1, y0, z0,
-  
-    // Top face
-    x0, y1, z0,
-    x0, y1, z1,
-    x1, y1, z1,
-    x1, y1, z0,
-  
-    // Bottom face
-    x0, y0, z0,
-    x1, y0, z0,
-    x1, y0, z1,
-    x0, y0, z1,
-  
-    // Right face
-    x1, y0, z0, 
-    x1, y1, z0,
-    x1, y1, z1,
-    x1, y0, z1,
-  
-    // Left face
-    x0, y0, z0,
-    x0, y0, z1,
-    x0, y1, z1,
-    x0, y1, z0,
-    ];
-    return positions;
   }
 
   // TEXTURES

@@ -27,6 +27,10 @@ export class GameComponent {
     return this.game.player;
   }
 
+  get world(){
+    return this.game.world;
+  }
+
   addEvent(name, hdlr, thisArg=null, elem=null, opts=null){
     this.game.addEvent(name, hdlr, thisArg, elem, opts);
   }

@@ -19,7 +19,7 @@ export class Config {
   sensitivity;
   vRotMin;
   vRotMax;
-  debug;
+  checkError;
 
   constructor(cnf = {}, ...args) {
     assignNullSafe(this, classOf(this).DEFAULT, cnf ?? {}, ...args);
@@ -36,16 +36,21 @@ Config.DEFAULT = new Config({
   bgColor: [0.5, 0.86, 1.0, 1.0],
   vsPath: "./shaders/vertex-shader.glsl",
   fsPath: "./shaders/fragment-shader.glsl",
-  grassTopPath: "./textures/grass-top.jpg",
-  grassSidePath: "./textures/grass-side.jpg",
-  grassBottomPath: "./textures/grass-bottom.png",
-  startPos: [0, 0, -4],
+  grassTopPath: "./textures/grass-top.min.png",
+  grassSidePath: "./textures/grass-side.min.png",
+  grassBottomPath: "./textures/grass-bottom.min.png",
+  startPos: [0.5, 2.5, -5],
   startRot: {h: 0, v: 0},
   speed: 3.5,
   sensitivity: 0.7,
   vRotMin: -80,
   vRotMax: 80,
-  debug: true,
+  // because gl.getError has HUGE impacts on performance
+  // and chrome dev tools reports it anyway
+  checkError: false,  
 });
+
+// textures from:
+// https://sketchfab.com/3d-models/minecraft-grass-block-84938a8f3f8d4a0aa64aaa9c4e4d27d3
 
 exportAs(Config);

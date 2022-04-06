@@ -1,3 +1,5 @@
+import {assert} from "./assert.js";
+
 export function sum(array, initval=0){
   return array.reduce((a,b)=>a+b, initval);
 }
@@ -24,4 +26,14 @@ export function charIsDigit(c, base=10){
 
 export function toRad(x){
   return x*Math.PI/180;
+}
+
+export function roundNearest(x, n=1){
+  return Math.round(x * n) / n;
+}
+
+export function nearRoundNearest(x, n=1, tol=0.00001){
+  assert(x%n < tol || x%n > n-tol,
+         `x should be within ${tol} of nearest ${n}`);
+  return roundNearest(x, n);
 }
