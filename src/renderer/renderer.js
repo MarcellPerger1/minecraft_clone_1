@@ -62,8 +62,8 @@ export class Renderer extends GameComponent {
     this.initProgramInfo(this.loader.program);
     this.gl.useProgram(this.programInfo.program);
     this.vertexData = new ElementBundler(this.gl, this.textures);
-    this.makeBufferData();
-    this.initArrayBuffers();
+    this.makeBuffers();
+    this.configArrayBuffers();
   }
   
   // WebGL stuff
@@ -168,7 +168,7 @@ export class Renderer extends GameComponent {
   }
 
   // ARRAY BUFFERS
-  initArrayBuffers(){
+  configArrayBuffers(){
     this.configVArrayBuffer('position', 'vertexPosition', 3, this.gl.FLOAT);
     this.configVArrayBuffer('textureCoord', 'textureCoord', 2, this.gl.FLOAT);
   }
@@ -246,11 +246,6 @@ export class Renderer extends GameComponent {
   }
 
   // SHADER PROGRAM
-  makeShaders(vsSrc, fsSrc){
-    this.initProgramInfo(initShaderProgram(this.gl, vsSrc, fsSrc));
-    this.gl.useProgram(this.programInfo.program);
-  }
-  
   initProgramInfo(shaderProgram) {
     const programInfo = {
       program: shaderProgram,
@@ -273,12 +268,10 @@ export class Renderer extends GameComponent {
   }
 
   // BUFFERS
-  makeBufferData(){
-    this.buffers = {
-      position: this.makeBuffer(),
-      textureCoord: this.makeBuffer(),
-      indices: this.makeBuffer(),
-    };
+  makeBuffers(){
+    this.makeBuffer('position');
+    this.makeBuffer('textureCoord');
+    this.makeBuffer('indices');
   }
 
   bufferDataFromBundler(){
