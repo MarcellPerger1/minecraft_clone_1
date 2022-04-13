@@ -40,8 +40,9 @@ function main(){
   const texDir = getTexturesDir();
   var canv, ctx, n;
   var i = 0;
+  var data = [];
   console.log('Finding textures...');
-  getTexturePaths(texDir).then((paths) => {
+  const ondrawn = getTexturePaths(texDir).then((paths) => {
     n = paths.length;
     console.log('Creating canvas...');
     canv = createCanvas(n*16, 16);
@@ -49,14 +50,27 @@ function main(){
     console.log('Drawing images...');
     return Promise.all(
       paths.map(p => 
-        loadImage(p).then(img => drawNthImage(ctx, img, i++))
+        loadImage(p).then(img => {
+          drawNthImage(ctx, img, i++);
+          let nm = path.basename(p, '.min.png');
+          data.push(nm);
+        })
     ));
-  }).then((_) => {
-    console.log('Creating atlas...');
-    return writeToPng(canv, path.join(texDir, 'atlas.min.png'))
-  }).then((_) => {
+  })
+  let ondone = Promise.all([
+    ondrawn.then((_) => {
+      console.log('Creating atlas...');
+      return writeToPng(canv, path.join(texDir, 'atlas.min.png'));
+    }), ondrawn.then((_) => {
+      console.log('Indexing textures...');
+      let s = JSON.stringify(data);
+      return fsP.writeFile(path.join(texDir, 'atlas.index.json'), s);
+    })
+  ])
+  ondone.then((_) => {
     console.log('Finished!');
   });
+  
 }
 
 function writeToPng(canv, dir){
