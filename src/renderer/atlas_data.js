@@ -1,3 +1,6 @@
+import {GameComponent} from '../game_component.js';
+import {fetchJsonFile, loadTextureProm} from '../utils.js';
+
 export class AtlasEntry {
   constructor(aData, name, i){
     this.aData = aData;
@@ -23,3 +26,23 @@ export class AtlasData {
     Object.assign(this, this.data);
   }
 }
+
+export class AtlasLoader extends GameComponent {
+  constructor(game){
+    super(game);
+    this.data = null;
+    this.textures = null;
+  }
+
+  loadResources(){
+    return Promise.all([
+      fetchJsonFile('./textures/atlas.index.json')
+      .then(raw => new AtlasData(raw))
+      .then(v => (this.data = v)),
+      // todo: load atlas
+      loadTextureProm(this.gl, './textures/atlas.min.png')
+      .then(tex => (this.texture = tex)),
+    ])
+  }
+}
+// todo loader union class

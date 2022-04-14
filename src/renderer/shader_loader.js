@@ -3,10 +3,11 @@ import {
   loadShader, programFromShaders,
   fetchTextFile
 } from '../utils.js';
+import {GameComponent} from '../game_component.js';
 
-export class ShaderLoader {
-  constructor(game, gl){
-    this.gl = gl;
+export class ShaderLoader extends GameComponent {
+  constructor(game){
+    super(game);
     this.vsPath = game.cnf.vsPath;
     this.fsPath = game.cnf.fsPath;
     this.fs = null;

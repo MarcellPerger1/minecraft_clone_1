@@ -130,6 +130,47 @@ export function loadTexture(gl, url, callback=null, thisArg=null){
 }
 
 
+export function loadTextureProm(gl, url){
+  return new Promise((resolve, reject) => {
+    const texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+  
+
+    // Until images loaded, put a placeholder in the texture so we can
+    // use it immediately. When the image has finished downloading
+    // we'll update the texture with the contents of the image.
+    const internFmt = gl.RGBA;
+    const srcFmt = gl.RGBA;
+    const srcType = gl.UNSIGNED_BYTE;
+    const level = 0;  // mipmap level
+    var [w, h] = INITIAL_TEX_SIZE;
+    
+    gl.texImage2D(
+      /*target*/gl.TEXTURE_2D,
+      level, internFmt,
+      w, h, 
+      /*border (must be 0)*/0,
+      srcFmt, srcType,
+      INITIAL_TEX_DATA
+    );
+    setTexParams(gl, w, h);
+    
+    const image = new Image();
+    image.onload = function() {
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.texImage2D(gl.TEXTURE_2D, level, internFmt,
+                    srcFmt, srcType, image);
+      setTexParams(gl, image.width, image.height);
+      resolve(texture);
+    }
+    image.onerror = function(event) {
+      reject(event);
+    }
+    image.src = url;
+  })
+}
+
+
 function setTexParams(gl, w, h){
   // WebGL1 has different requirements for power of 2 images
   // vs non power of 2 images so check if the image is a

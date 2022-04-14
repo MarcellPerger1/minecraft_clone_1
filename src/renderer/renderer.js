@@ -6,7 +6,7 @@ import {
   //type checking
   isNumber,
   // webgl
-  getGL, glErrnoToMsg, initShaderProgram,
+  getGL, glErrnoToMsg,
   // file loading
   loadTexture
 } from '../utils.js';
@@ -38,20 +38,23 @@ export class Renderer extends GameComponent {
   init() {
     this.initGL();
     this.initGLConfig();
-    
-    this.loader = new ShaderLoader(this.game, this.gl);
   }
 
-  get camRot(){
-    return this.player.rotation;
+  get gl(){
+    return this._gl;
   }
-  get camPos(){
-    return this.player.position;
+  set gl(v){
+    this._gl = v;
+  }
+
+  initLoaders(){
+    this.loader = new ShaderLoader(this.game);
+    this.initTextures();
   }
 
   // Returns Promise that fulfilles when all resources loaded and ready for a render
   loadResources(){
-    this.initTextures();
+    this.initLoaders();
     this.initDoneProm = this.loader.loadResources().then(_result => {
       this.onResourcesLoaded();
     });
@@ -64,6 +67,13 @@ export class Renderer extends GameComponent {
     this.vertexData = new ElementBundler(this.gl, this.textures);
     this.makeBuffers();
     this.configArrayBuffers();
+  }
+  
+  get camRot(){
+    return this.player.rotation;
+  }
+  get camPos(){
+    return this.player.position;
   }
   
   // WebGL stuff

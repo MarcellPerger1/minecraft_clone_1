@@ -24,6 +24,10 @@ export class Game {
     this.loadResources();
   }
 
+  get gl(){
+    return this.r.gl;
+  }
+
   loadResources(){
     this.makeResourceLoaders();
     this.gatherResourceLoaders();
