@@ -1,4 +1,4 @@
-import {callCallback} from "./general.js";
+import {callCallback, expectValue} from "./general.js";
 import {isPowerOf2} from "./math.js";
 
 
@@ -79,15 +79,37 @@ export class TextureLoadInfo{
 }
 
 
+// gl type sizes
+export function glTypeSize(type){
+  return expectValue(glTypeToSize[type], "gl type (to size)")
+}
+  
+export const glTypeToSize = {
+  BYTE: 1,
+  UNSIGNED_BYTE: 1,
+  SHORT: 2,
+  UNSIGNED_SHORT: 2,
+  INT: 4,
+  UNSIGNED_INT: 4,
+  FLOAT: 4,
+}
+
+  
+for(let [k, v] of Object.entries(glTypeToSize)){
+  glTypeToSize[WebGLRenderingContext[k]] = v;
+}
+
+
+// texture loading
 export const INITIAL_TEX_ARR = [
   255, 0, 255, 255,    0,   0,   0, 255,
   0,   0,   0, 255,    255, 0, 255, 255
 ];
 export const INITIAL_TEX_DATA = new Uint8Array(INITIAL_TEX_ARR);
-
 export const INITIAL_TEX_SIZE = [2, 2];
 
 
+// todo : remove this? or make better
 export function loadTexture(gl, url, callback=null, thisArg=null){
   const texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);

@@ -1,4 +1,4 @@
-import {exportAs, iextend, expectValue, isString, classOf} from '../utils.js';
+import {exportAs, iextend, expectValue, isString, classOf, glTypeSize} from '../utils.js';
 
 // simply a container utility class for each 'section' of vertex data eg a 'section' could be a cube
 export class VertexBundle{
@@ -6,35 +6,8 @@ export class VertexBundle{
     this.positions = positions ?? [];
     this.texCoords = texCoords ?? [];
     this.indices = indices ?? [];
-    this.maxindex = null;
-  }
-
-  calcMaxIndex(){
     // give -1 if no items instead of -Inf
     this.maxindex = Math.max(...this.indices, -1);
-    return this.maxindex;
-  }
-
-  get nElems(){
-    return this.maxindex + 1;
-  }
-  set nElems(v){
-    this.maxindex = v - 1;
-  }
-
-  imerge(...others){
-    this.calcMaxIndex();
-    for(let other of others){
-      this.positions = iextend(this.positions, other.positions);
-      this.texCoords = iextend(this.texCoords, other.texCoords);
-      this.indices = iextend(this.indices,
-                             other.indices.map(v => v + this.maxindex + 1), this);
-      this.maxindex += other.calcMaxIndex() + 1;
-    }
-    return this;
-  }
-  add(...others){
-    return this.imerge(...others);
   }
 }
 
@@ -45,10 +18,10 @@ export class ToplevelVertexBundle{
     this.positions = [];
     this.texCoords = [];
     this.indices = [];
-    // you can try set this to 0, 1 or 2 and enjoy the CHAOS
+    // you can try set this to other than -1 and enjoy the CHAOS
     this.maxindex = -1;
     this.elemType = type ?? WebGLRenderingContext.UNSIGNED_SHORT;
-    this.elemSize = classOf(this).elemTypeToSize(this.elemType);
+    this.elemSize = glTypeSize(this.elemType);
     this.nElems = 0;
   }
 
@@ -58,8 +31,8 @@ export class ToplevelVertexBundle{
     return this.maxindex;
   }
   
-  add(bundle, texture){
-    let nElems = bundle.calcMaxIndex() + 1;
+  add(bundle){
+    let nElems = bundle.maxindex + 1;
     {
       iextend(this.positions, bundle.positions);
       iextend(this.texCoords, bundle.texCoords);
@@ -69,34 +42,12 @@ export class ToplevelVertexBundle{
     this.nElems = this.indices.length;
     return this;
   }
-
-  static getElemType(type, gl=WebGLRenderingContext){
-    if(isString(type)){
-      return expectValue(gl[type], "Type (from string)")
-    }
-    return type;
-  }
-
-  static elemTypeToSize(type){
-    return expectValue(this.ElemT_Size[type], "type")
-  }
-  
-  static ElemT_Size = {
-    UNSIGNED_BYTE: 1,
-    UNSIGNED_SHORT: 2,
-    UNSIGNED_INT: 4,
-  }; 
-}
-
-for(let [k, v] of Object.entries(ToplevelVertexBundle.ElemT_Size)){
-  ToplevelVertexBundle.ElemT_Size[WebGLRenderingContext[k]] = v;
 }
 
 
 export class ElementBundler{
-  constructor(gl, textures){
+  constructor(gl){
     this.gl = gl;
-    this.textures = textures;
     this.reset();
   }
   
@@ -122,8 +73,8 @@ export class ElementBundler{
   get indices(){ return this.getIndices(); }
 
   drawElements(){
-    this.gl.drawElements(this.gl.TRIANGLES, this.bundle.nElems,
-                           this.bundle.elemType, 0);
+    this.gl.drawElements(
+      this.gl.TRIANGLES, this.bundle.nElems, this.bundle.elemType, 0);
   }
 }
 
