@@ -180,7 +180,7 @@ export class ElementBundler{
   drawElements(){
     this.wantFinal();
     for(const texData of this.vBundle.textureData){
-      this.gl.bindTexture(this.gl.TEXTURE_2D, this.textures[texData.name]);
+      // this.gl.bindTexture(this.gl.TEXTURE_2D, this.textures[texData.name]);
       this.gl.drawElements(this.gl.TRIANGLES, texData.nElems,
                            this.vBundle.elemType, texData.offset);
     }

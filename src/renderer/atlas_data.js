@@ -8,8 +8,8 @@ export class AtlasEntry {
     this.i = i;
     this.y0 = 0;
     this.y1 = 1;
-    this.x0 = this.i/this.aData.w;
-    this.x1 = (this.i+1)/this.aData.w;
+    this.x0 = this[0] = this.i/this.aData.n;
+    this.x1 = this[1] = (this.i+1)/this.aData.n;
   }
 }
 
@@ -31,7 +31,7 @@ export class AtlasLoader extends GameComponent {
   constructor(game){
     super(game);
     this.data = null;
-    this.textures = null;
+    this.texture = null;
   }
 
   loadResources(){

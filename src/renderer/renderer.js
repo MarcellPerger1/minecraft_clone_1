@@ -57,7 +57,7 @@ export class Renderer extends GameComponent {
       shader: new ShaderLoader(this.game),
       atlas: new AtlasLoader(this.game),  // TODO: actually use this data
     });
-    this.initTextures();
+    // this.initTextures();
   }
 
   // Returns Promise that fulfilles when all resources loaded and ready for a render
@@ -71,10 +71,16 @@ export class Renderer extends GameComponent {
 
   onResourcesLoaded(){
     this.initProgramInfo(this.loader.shader.program);
-    this.gl.useProgram(this.programInfo.program);
+    this.initAtlasInfo(this.loader.atlas);
     this.vertexData = new ElementBundler(this.gl, this.textures);
     this.makeBuffers();
     this.configArrayBuffers();
+  }
+
+  initAtlasInfo(atlas){
+    this.atlas = atlas
+    this.atlasTex = this.texture = this.atlas.texture;
+    this.atlasData = this.atlas.data;
   }
   
   get camRot(){
@@ -146,6 +152,7 @@ export class Renderer extends GameComponent {
   drawAll(){
     this.vertexData.finalise();
     this.bufferDataFromBundler();
+    this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture)
     this.vertexData.drawElements();
   }
 
@@ -283,6 +290,7 @@ export class Renderer extends GameComponent {
       },
     };
     this.programInfo = programInfo;
+    this.gl.useProgram(this.programInfo.program);
   }
 
   // BUFFERS
