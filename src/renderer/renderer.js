@@ -55,9 +55,8 @@ export class Renderer extends GameComponent {
   initLoaders(){
     this.loader = new LoaderMerge({
       shader: new ShaderLoader(this.game),
-      atlas: new AtlasLoader(this.game),  // TODO: actually use this data
+      atlas: new AtlasLoader(this.game),
     });
-    // this.initTextures();
   }
 
   // Returns Promise that fulfilles when all resources loaded and ready for a render
@@ -185,11 +184,14 @@ export class Renderer extends GameComponent {
   }
 
   // NOTE: no cullling done in this method - this is old
-  addCube_raw(p0,p1,top_tex,side_tex,bottom_tex){
-    let cData = new CubeVertexData(this.game, p0, p1);
-    this.addData(cData.sides(p0,p1), side_tex);
-    this.addData(cData.top(p0,p1), top_tex);
-    this.addData(cData.bottom(p0,p1), bottom_tex);
+  addCube_raw(p0,p1,tex){
+    console.warn("addCube_raw is deprecated "
+                 "and will be removed as soon as i can be bothered ;-)")
+    let cData = new CubeVertexData(this.game, p0, p1, tex);
+    this.addData(cData.sides(p0,p1), tex.side);
+    this.addData(cData.top(p0,p1), tex.top);
+    this.addData(cData.bottom(p0,p1), tex.bottom);
+
   }
 
   // ARRAY BUFFERS
@@ -358,25 +360,6 @@ export class Renderer extends GameComponent {
     usage ??= this.gl.STATIC_DRAW;
     this.gl.bindBuffer(buf_type, buf);
     this.gl.bufferData(buf_type, data, usage);
-  }
-
-  // TEXTURES
-  initTextures(){
-    this.loadTexture('grass_top', this.cnf.grassTopPath);
-    this.loadTexture('grass_side', this.cnf.grassSidePath);
-    this.loadTexture('grass_bottom', this.cnf.grassBottomPath);
-  }
-
-  loadTexture(name, path, callback=null, thisArg=null){
-    this.textures ??= {};
-    let info = loadTexture(this.gl, path, (_texInfo) => {
-      // everythin else already in info object that is automatically updated
-      this.textures[name].loaded = true;
-      callCallback(callback, thisArg);
-    }, this);
-    this.textures[name] = info.texture;
-    this.textures[name].info = info;
-    this.textures[name].loaded = false;
   }
 }
 
