@@ -149,7 +149,6 @@ export class Renderer extends GameComponent {
   }
 
   drawAll(){
-    this.vertexData.finalise();
     this.bufferDataFromBundler();
     this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture)
     this.vertexData.drawElements();

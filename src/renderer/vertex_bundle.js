@@ -9,16 +9,9 @@ export class VertexBundle{
     this.maxindex = null;
   }
 
-  calcMaxIndex(redo=false){
-    if(redo){ this.maxindex = null; }
-    if(this.maxindex == null){
-      if(this.indices.length==0){
-        this.maxindex = -1;
-      }
-      else{
-        this.maxindex = Math.max(...this.indices);
-      }
-    }
+  calcMaxIndex(){
+    // give -1 if no items instead of -Inf
+    this.maxindex = Math.max(...this.indices, -1);
     return this.maxindex;
   }
 
@@ -46,72 +39,35 @@ export class VertexBundle{
 }
 
 
-export class TextureBundle{
-  constructor(){
-    this.texBundles = {};
-  }
-
-  add(bundle, texture){
-    texture = expectValue(texture, "texture")
-    if(this.texBundles[texture]==null){
-      this.texBundles[texture] = new VertexBundle();
-    }
-    this.texBundles[texture].add(bundle);
-  }
-}
-
 
 export class ToplevelVertexBundle{
   constructor(type=null){
     this.positions = [];
     this.texCoords = [];
     this.indices = [];
-    this.maxindex = null;
+    // you can try set this to 0, 1 or 2 and enjoy the CHAOS
+    this.maxindex = -1;
     this.elemType = type ?? WebGLRenderingContext.UNSIGNED_SHORT;
     this.elemSize = classOf(this).elemTypeToSize(this.elemType);
-    // [{name: ..., offset: ..., nElems: ...}, ...]
-    this.textureData = [];
     this.nElems = 0;
-    this.maxoffset = 0;
   }
 
   calcMaxIndex(){
-    this.maxindex = null;
-    if(this.maxindex == null){
-      if(this.indices.length==0){
-        this.maxindex = -1;
-      }
-      else{
-        this.maxindex = Math.max(...this.indices);
-      }
-    }
+    // give -1 if no items instead of -Inf
+    this.maxindex = Math.max(...this.indices, -1);
     return this.maxindex;
   }
   
   add(bundle, texture){
-    this.calcMaxIndex();
     let nElems = bundle.calcMaxIndex() + 1;
-    this.textureData.push(
-      {name: texture, offset: this.maxoffset,
-       nElems: bundle.indices.length});  // nElems
-    // from VertexBundle
     {
       iextend(this.positions, bundle.positions);
       iextend(this.texCoords, bundle.texCoords);
       iextend(this.indices, bundle.indices.map(v => v + this.maxindex + 1), this);
       this.maxindex += nElems;
     }
-    this.nElems += nElems;
-    this.maxoffset += bundle.indices.length * this.elemSize;
+    this.nElems = this.indices.length;
     return this;
-  }
-
-  static fromTextureBundle(bundle, type=null){
-    let b = new this(type);
-    for(const [texName, sub] of Object.entries(bundle.texBundles)){
-      b.add(sub, texName);
-    }
-    return b;
   }
 
   static getElemType(type, gl=WebGLRenderingContext){
@@ -145,33 +101,20 @@ export class ElementBundler{
   }
   
   reset(){
-    this.final = false;
-    //this.texBundle = new TextureBundle();
-    this.vBundle = null;
     this.bundle = new ToplevelVertexBundle();
   }
   
   addData(bundle){
-    this.wantNotFinal();
     this.bundle.add(bundle, null);
   }
 
-  finalise(){
-    this.wantNotFinal("Cant finalise ElenentBundler twice");
-    this.final = true;
-    // this.vBundle = ToplevelVertexBundle.fromTextureBundle(this.texBundle);
-  }
-
   getPositionData(){
-    this.wantFinal();
     return this.bundle.positions;
   }
   getTexCoords(){
-    this.wantFinal();
     return this.bundle.texCoords;
   }
   getIndices(){
-    this.wantFinal();
     return this.bundle.indices;
   }
   get positions(){ return this.getPositionData(); }
@@ -179,33 +122,9 @@ export class ElementBundler{
   get indices(){ return this.getIndices(); }
 
   drawElements(){
-    this.wantFinal();
-    this.gl.drawElements(this.gl.TRIANGLES, this.bundle.indices.length,
+    this.gl.drawElements(this.gl.TRIANGLES, this.bundle.nElems,
                            this.bundle.elemType, 0);
   }
-
-  wantFinal(...args){
-    if(args.length==0){
-      args = ["ElementBundler must be finalised"];
-    }
-    if(!this.final){
-       // TODO custom error type
-       throw new Error(...args);
-    }
-    return this
-  }
-
-  wantNotFinal(...args){
-    if(args.length==0){
-      args = ["ElementBundler must not be finalised"];
-    }
-    if(this.final){
-       // TODO custom error type
-       throw new Error(...args);
-    }
-    return this
-  }
-  
 }
 
 
