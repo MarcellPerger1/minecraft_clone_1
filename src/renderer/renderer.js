@@ -10,12 +10,17 @@ import {
   // file loading
   loadTexture
 } from '../utils.js';
+import {GameComponent} from '../game_component.js';
+import {LoaderMerge} from '../resource_loader.js';
+
+import {Blocks} from '../world.js';
+
+import {AtlasData, AtlasLoader} from './atlas_data.js';
 import {ShaderLoader} from './shader_loader.js';
 import {CubeVertexData} from './cube_data.js';
 import {CubeDataAdder} from './face_culling.js';
-import {GameComponent} from '../game_component.js';
 import {ElementBundler, VertexBundle} from './vertex_bundle.js';
-import {Blocks} from '../world.js';
+
 
 // NOTE: 
 // West  = +x
@@ -48,21 +53,21 @@ export class Renderer extends GameComponent {
   }
 
   initLoaders(){
-    this.loader = new ShaderLoader(this.game);
+    this.loader = new LoaderMerge(new ShaderLoader(this.game));
     this.initTextures();
   }
 
   // Returns Promise that fulfilles when all resources loaded and ready for a render
   loadResources(){
     this.initLoaders();
-    this.initDoneProm = this.loader.loadResources().then(_result => {
+    this.initDoneProm = this.loader[0].loadResources().then(_result => {
       this.onResourcesLoaded();
     });
     return this.initDoneProm;
   }
 
   onResourcesLoaded(){
-    this.initProgramInfo(this.loader.program);
+    this.initProgramInfo(this.loader[0].program);
     this.gl.useProgram(this.programInfo.program);
     this.vertexData = new ElementBundler(this.gl, this.textures);
     this.makeBuffers();
@@ -223,7 +228,7 @@ export class Renderer extends GameComponent {
       projectionMatrix);
   }
   getProjectionMatrix(){
-    const fieldOfView = 45 * Math.PI / 180;   // in radians
+    const fieldOfView = toRad(45);
     const aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
     const zNear = 0.1;
     const zFar = 100.0;
@@ -238,7 +243,7 @@ export class Renderer extends GameComponent {
   }
 
   initModelViewMatrix(){
-    const modelViewMatrix = this.getModelViewMatrix(this.deltaT);
+    const modelViewMatrix = this.getModelViewMatrix();
     this.gl.uniformMatrix4fv(
         this.programInfo.uniformLocations.modelViewMatrix,
         false,
@@ -246,10 +251,10 @@ export class Renderer extends GameComponent {
   }
   getModelViewMatrix(){
     var m1 = mat4.create();
-    const amount = vec3.scale([], this.camPos.slice(), -1);
+    const amount = vec3.scale([], this.camPos, -1);
     // NOTEE: IMPORTANT!: does stuff in reverse order!!!
     // eg.: here, matrix will transalate, then rotateY, then rotateX
-    mat4.rotateX(m1, m1, this.camRot.v * Math.PI / 180);
+    mat4.rotateX(m1, m1, toRad(this.camRot.v));
     mat4.rotateY(m1, m1, toRad(this.camRot.h + 180));
     mat4.translate(m1, m1, amount);
     return m1;
