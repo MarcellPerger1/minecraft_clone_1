@@ -1,9 +1,12 @@
 import {sortCoords} from '../utils.js';
+import {GameComponent} from '../game_component.js';
 
-export class CubeVertexData {
-  constructor(p0, p1){
+export class CubeVertexData extends GameComponent {
+  constructor(game, p0, p1, textures){
+    super(game);
     p1 ??= vec3.add([], p0, [1,1,1]);
     [this.p0, this.p1] = sortCoords(p0, p1);
+    this.textures = textures;
   }
 
   side_x0(){

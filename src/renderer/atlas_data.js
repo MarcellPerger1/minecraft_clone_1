@@ -3,7 +3,7 @@ import {fetchJsonFile, loadTextureProm} from '../utils.js';
 
 export class AtlasEntry {
   constructor(aData, name, i){
-    this.aData = aData;
+    this.aData = aData;  // backref to parent AtlasData object
     this.name = name;
     this.i = i;
     this.y0 = 0;
@@ -39,10 +39,8 @@ export class AtlasLoader extends GameComponent {
       fetchJsonFile('./textures/atlas.index.json')
       .then(raw => new AtlasData(raw))
       .then(v => (this.data = v)),
-      // todo: load atlas
       loadTextureProm(this.gl, './textures/atlas.min.png')
       .then(tex => (this.texture = tex)),
     ])
   }
 }
-// todo loader union class

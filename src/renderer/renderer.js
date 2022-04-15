@@ -53,21 +53,24 @@ export class Renderer extends GameComponent {
   }
 
   initLoaders(){
-    this.loader = new LoaderMerge(new ShaderLoader(this.game));
+    this.loader = new LoaderMerge({
+      shader: new ShaderLoader(this.game),
+      atlas: new AtlasLoader(this.game),  // TODO: actually use this data
+    });
     this.initTextures();
   }
 
   // Returns Promise that fulfilles when all resources loaded and ready for a render
   loadResources(){
     this.initLoaders();
-    this.initDoneProm = this.loader[0].loadResources().then(_result => {
+    this.initDoneProm = this.loader.loadResources().then(_result => {
       this.onResourcesLoaded();
     });
     return this.initDoneProm;
   }
 
   onResourcesLoaded(){
-    this.initProgramInfo(this.loader[0].program);
+    this.initProgramInfo(this.loader.shader.program);
     this.gl.useProgram(this.programInfo.program);
     this.vertexData = new ElementBundler(this.gl, this.textures);
     this.makeBuffers();
@@ -176,7 +179,7 @@ export class Renderer extends GameComponent {
 
   // NOTE: no cullling done in this method - this is old
   addCube_raw(p0,p1,top_tex,side_tex,bottom_tex){
-    let cData = new CubeVertexData(p0, p1);
+    let cData = new CubeVertexData(this.game, p0, p1);
     this.addData(cData.sides(p0,p1), side_tex);
     this.addData(cData.top(p0,p1), top_tex);
     this.addData(cData.bottom(p0,p1), bottom_tex);

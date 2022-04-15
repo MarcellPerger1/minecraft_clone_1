@@ -1,8 +1,7 @@
-// perhaps this could be in utils/
+// TODO this should be in utils/
 import {isArray, isObject} from './utils.js';
 
 
-// inherits from GameComponent for consistency with other Loaders
 export class LoaderMerge {
   constructor(...args){
     this.isFromObject = false;
@@ -23,7 +22,7 @@ export class LoaderMerge {
 
   loadResources(){
     return Promise.all(
-      (this.isFromObject ? this.components.values() : this.components)
+      (this.isFromObject ? Object.values(this.components) : this.components)
       .map(c => c.loadResources()));
   }
 }
