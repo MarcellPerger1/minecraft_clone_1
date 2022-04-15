@@ -185,7 +185,7 @@ export class Renderer extends GameComponent {
 
   // NOTE: no cullling done in this method - this is old
   addCube_raw(p0,p1,tex){
-    console.warn("addCube_raw is deprecated "
+    console.warn("addCube_raw is deprecated " +
                  "and will be removed as soon as i can be bothered ;-)")
     let cData = new CubeVertexData(this.game, p0, p1, tex);
     this.addData(cData.sides(p0,p1), tex.side);

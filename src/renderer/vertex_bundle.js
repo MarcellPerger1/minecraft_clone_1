@@ -146,32 +146,33 @@ export class ElementBundler{
   
   reset(){
     this.final = false;
-    this.texBundle = new TextureBundle();
+    //this.texBundle = new TextureBundle();
     this.vBundle = null;
+    this.bundle = new ToplevelVertexBundle();
   }
   
-  addData(bundle, texture){
+  addData(bundle){
     this.wantNotFinal();
-    this.texBundle.add(bundle, texture);
+    this.bundle.add(bundle, null);
   }
 
   finalise(){
     this.wantNotFinal("Cant finalise ElenentBundler twice");
     this.final = true;
-    this.vBundle = ToplevelVertexBundle.fromTextureBundle(this.texBundle);
+    // this.vBundle = ToplevelVertexBundle.fromTextureBundle(this.texBundle);
   }
 
   getPositionData(){
     this.wantFinal();
-    return this.vBundle.positions;
+    return this.bundle.positions;
   }
   getTexCoords(){
     this.wantFinal();
-    return this.vBundle.texCoords;
+    return this.bundle.texCoords;
   }
   getIndices(){
     this.wantFinal();
-    return this.vBundle.indices;
+    return this.bundle.indices;
   }
   get positions(){ return this.getPositionData(); }
   get texCoords(){ return this.getTexCoords(); }
@@ -179,11 +180,8 @@ export class ElementBundler{
 
   drawElements(){
     this.wantFinal();
-    for(const texData of this.vBundle.textureData){
-      // this.gl.bindTexture(this.gl.TEXTURE_2D, this.textures[texData.name]);
-      this.gl.drawElements(this.gl.TRIANGLES, texData.nElems,
-                           this.vBundle.elemType, texData.offset);
-    }
+    this.gl.drawElements(this.gl.TRIANGLES, this.bundle.indices.length,
+                           this.bundle.elemType, 0);
   }
 
   wantFinal(...args){
