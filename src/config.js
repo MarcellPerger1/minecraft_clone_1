@@ -16,6 +16,7 @@ export class Config {
   sensitivity;
   vRotMin;
   vRotMax;
+  maxMouseMove;
   checkError;
 
   constructor(cnf = {}, ...args) {
@@ -36,9 +37,10 @@ Config.DEFAULT = new Config({
   startPos: [0.5, 2.5, -5],
   startRot: {h: 0, v: 0},
   speed: 3.5,
-  sensitivity: 0.7,
+  sensitivity: 0.5,
   vRotMin: -80,
   vRotMax: 80,
+  maxMouseMove: [Infinity, Infinity],
   // because gl.getError has HUGE impacts on performance
   // and chrome dev tools reports it anyway
   checkError: false,  
