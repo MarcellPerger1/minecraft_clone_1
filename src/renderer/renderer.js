@@ -15,7 +15,6 @@ import {Blocks} from '../world.js';
 
 import {AtlasLoader} from './atlas_data.js';
 import {ShaderLoader} from './shader_loader.js';
-import {CubeVertexData} from './cube_data.js';
 import {CubeDataAdder} from './face_culling.js';
 import {ElementBundler, VertexBundle} from './vertex_bundle.js';
 
