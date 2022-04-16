@@ -7,9 +7,10 @@ import {
   isNumber,
   // webgl
   getGL, glErrnoToMsg,
+  // other
+  LoaderMerge
 } from '../utils.js';
 import {GameComponent} from '../game_component.js';
-import {LoaderMerge} from '../resource_loader.js';
 
 import {Blocks} from '../world.js';
 

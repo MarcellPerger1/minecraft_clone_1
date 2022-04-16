@@ -5,4 +5,4 @@ export * from "./math.js";
 export * from "./array_utils.js";
 export * from "./file_load.js";
 export * from "./gl_utils.js";
-
+export * from "./loader.js";
