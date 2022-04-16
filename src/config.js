@@ -6,9 +6,6 @@ export class Config {
   // filepaths
   vsPath;
   fsPath;
-  grassTopPath;
-  grassSidePath;
-  grassBottomPath;
   // rendering consts
   bgColor;
   startPos;
@@ -36,9 +33,6 @@ Config.DEFAULT = new Config({
   bgColor: [0.5, 0.86, 1.0, 1.0],
   vsPath: "./shaders/vertex-shader.glsl",
   fsPath: "./shaders/fragment-shader.glsl",
-  grassTopPath: "./textures/grass_top.min.png",
-  grassSidePath: "./textures/grass_side.min.png",
-  grassBottomPath: "./textures/grass_bottom.min.png",
   startPos: [0.5, 2.5, -5],
   startRot: {h: 0, v: 0},
   speed: 3.5,
