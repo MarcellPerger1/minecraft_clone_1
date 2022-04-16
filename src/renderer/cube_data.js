@@ -1,24 +1,36 @@
-import {sortCoords} from '../utils.js';
+import {sortCoords, isObject} from '../utils.js';
+import {GameComponent} from '../game_component.js';
 
-export class CubeVertexData {
-  constructor(p0, p1){
+export class CubeVertexData extends GameComponent {
+  constructor(game, p0, p1, textures){
+    super(game);
+    if(textures==null && isObject(p1)){
+      textures = p1;
+      p1 = null;
+    }
     p1 ??= vec3.add([], p0, [1,1,1]);
     [this.p0, this.p1] = sortCoords(p0, p1);
+    this.textures = textures;
   }
 
+  // NOTE: only x coords needed on a per-texture basis
+  // as y coords always just 0 and 1 as texture is flat long
   side_x0(){
     const [x0, y0, z0] = this.p0;
     const [_x1, y1, z1] = this.p1;
+    const td = this.r.atlas.data[this.textures.side];
+    const t0 = td.x0;
+    const t1 = td.x1;
     const sides = {'position': [
       x0, y0, z0,
       x0, y0, z1,
       x0, y1, z1,
       x0, y1, z0,
     ], 'textureCoord': [
-      0.0,  1.0,
-      1.0,  1.0,
-      1.0,  0.0,
-      0.0,  0.0,
+      t0,  1,
+      t1,  1,
+      t1,  0,
+      t0,  0,
     ], 'indices': [
       0, 1, 2,     0, 2, 3,
     ]};
@@ -28,16 +40,19 @@ export class CubeVertexData {
   side_x1(){
     const [_x0, y0, z0] = this.p0;
     const [x1, y1, z1] = this.p1;
+    const td = this.r.atlas.data[this.textures.side];
+    const t0 = td.x0;
+    const t1 = td.x1;
     const sides = {'position': [
       x1, y0, z0, 
       x1, y1, z0,
       x1, y1, z1,
       x1, y0, z1,
     ], 'textureCoord': [
-      1.0,  1.0,
-      1.0,  0.0,
-      0.0,  0.0,
-      0.0,  1.0,
+      t1,  1,
+      t1,  0,
+      t0,  0,
+      t0,  1,
     ], 'indices':[
       0,  1,  2,      0,  2,  3,
     ]};
@@ -47,16 +62,19 @@ export class CubeVertexData {
   side_z0(){
     const [x0, y0, z0] = this.p0;
     const [x1, y1, _z1] = this.p1;
+    const td = this.r.atlas.data[this.textures.side];
+    const t0 = td.x0;
+    const t1 = td.x1;
     const sides = {'position': [
       x0, y0, z0,
       x0, y1, z0,  
       x1, y1, z0,
       x1, y0, z0,
     ], 'textureCoord': [
-      1.0,  1.0,
-      1.0,  0.0,
-      0.0,  0.0,
-      0.0,  1.0,
+      t1,  1,
+      t1,  0,
+      t0,  0,
+      t0,  1,
     ], 'indices': [
       0,  1,  2,      0,  2,  3,
     ]};
@@ -66,16 +84,19 @@ export class CubeVertexData {
   side_z1(){
     const [x0, y0, _z0] = this.p0;
     const [x1, y1, z1] = this.p1;
+    const td = this.r.atlas.data[this.textures.side];
+    const t0 = td.x0;
+    const t1 = td.x1;
     const sides = {'position': [
       x0, y0, z1,
       x1, y0, z1,
       x1, y1, z1,
       x0, y1, z1,
     ], 'textureCoord': [
-      0.0,  1.0,
-      1.0,  1.0,
-      1.0,  0.0,
-      0.0,  0.0,
+      t0,  1,
+      t1,  1,
+      t1,  0,
+      t0,  0,
     ], 'indices': [
       0,  1,  2,      0,  2,  3,
     ]};
@@ -85,16 +106,19 @@ export class CubeVertexData {
   top(){
     const [x0, _y0, z0] = this.p0;
     const [x1, y1, z1] = this.p1;
+    const td = this.r.atlas.data[this.textures.top];
+    const t0 = td.x0;
+    const t1 = td.x1;
     const ret = {'position': [
       x0, y1, z0,
       x0, y1, z1,
       x1, y1, z1,
       x1, y1, z0,
     ],'textureCoord': [
-      0.0,  0.0,
-      1.0,  0.0,
-      1.0,  1.0,
-      0.0,  1.0,
+      t0,  0,
+      t1,  0,
+      t1,  1,
+      t0,  1,
     ],'indices': [
       0, 1, 2,     0, 2, 3,   // top
     ]};
@@ -104,16 +128,19 @@ export class CubeVertexData {
   bottom(){
     const [x0, y0, z0] = this.p0;
     const [x1, _y1, z1] = this.p1;
+    const td = this.r.atlas.data[this.textures.bottom];
+    const t0 = td.x0;
+    const t1 = td.x1;
     const ret = {'position': [
       x0, y0, z0,
       x1, y0, z0,
       x1, y0, z1,
       x0, y0, z1,
     ],'textureCoord': [
-      0.0,  1.0,
-      1.0,  1.0,
-      1.0,  0.0,
-      0.0,  0.0,
+      t0,  1,
+      t1,  1,
+      t1,  0,
+      t0,  0,
     ],'indices': [
       0, 1, 2,     0, 2, 3,
     ]};

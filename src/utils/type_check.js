@@ -6,8 +6,12 @@ export function isString(v){
   return typeof v === 'string' || v instanceof String;
 }
 
-export function isObject(x){
+export function isPureObject(x){
   return x.constructor.name === 'Object'
+}
+
+export function isObject(x){
+  return x && !isArray(x) && x instanceof Object;
 }
 
 export function isNumber(x) {

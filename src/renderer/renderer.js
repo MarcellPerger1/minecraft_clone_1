@@ -1,21 +1,23 @@
 import {
   // general utils
-  exportAs, expectValue, nameOrValue, callCallback,
+  exportAs, expectValue, nameOrValue,
   // math
   toRad,
   //type checking
   isNumber,
   // webgl
-  getGL, glErrnoToMsg, initShaderProgram,
-  // file loading
-  loadTexture
+  getGL, glErrnoToMsg,
 } from '../utils.js';
-import {ShaderLoader} from './shader_loader.js';
-import {CubeVertexData} from './cube_data.js';
-import {CubeDataAdder} from './face_culling.js';
 import {GameComponent} from '../game_component.js';
-import {ElementBundler, VertexBundle} from './vertex_bundle.js';
+import {LoaderMerge} from '../resource_loader.js';
+
 import {Blocks} from '../world.js';
+
+import {AtlasLoader} from './atlas_data.js';
+import {ShaderLoader} from './shader_loader.js';
+import {CubeDataAdder} from './face_culling.js';
+import {ElementBundler, VertexBundle} from './vertex_bundle.js';
+
 
 // NOTE: 
 // West  = +x
@@ -38,20 +40,25 @@ export class Renderer extends GameComponent {
   init() {
     this.initGL();
     this.initGLConfig();
-    
-    this.loader = new ShaderLoader(this.game, this.gl);
   }
 
-  get camRot(){
-    return this.player.rotation;
+  get gl(){
+    return this._gl;
   }
-  get camPos(){
-    return this.player.position;
+  set gl(v){
+    this._gl = v;
+  }
+
+  initLoaders(){
+    this.loader = new LoaderMerge({
+      shader: new ShaderLoader(this.game),
+      atlas: new AtlasLoader(this.game),
+    });
   }
 
   // Returns Promise that fulfilles when all resources loaded and ready for a render
   loadResources(){
-    this.initTextures();
+    this.initLoaders();
     this.initDoneProm = this.loader.loadResources().then(_result => {
       this.onResourcesLoaded();
     });
@@ -59,11 +66,24 @@ export class Renderer extends GameComponent {
   }
 
   onResourcesLoaded(){
-    this.initProgramInfo(this.loader.program);
-    this.gl.useProgram(this.programInfo.program);
-    this.vertexData = new ElementBundler(this.gl, this.textures);
-    this.makeBufferData();
-    this.initArrayBuffers();
+    this.initProgramInfo(this.loader.shader.program);
+    this.initAtlasInfo(this.loader.atlas);
+    this.vertexData = new ElementBundler(this.game);
+    this.makeBuffers();
+    this.configArrayBuffers();
+  }
+
+  initAtlasInfo(atlas){
+    this.atlas = atlas
+    this.atlasTex = this.texture = this.atlas.texture;
+    this.atlasData = this.atlas.data;
+  }
+  
+  get camRot(){
+    return this.player.rotation;
+  }
+  get camPos(){
+    return this.player.position;
   }
   
   // WebGL stuff
@@ -126,8 +146,8 @@ export class Renderer extends GameComponent {
   }
 
   drawAll(){
-    this.vertexData.finalise();
     this.bufferDataFromBundler();
+    this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture)
     this.vertexData.drawElements();
   }
 
@@ -159,16 +179,8 @@ export class Renderer extends GameComponent {
     return this.vertexData.addData(bundle, texture);
   }
 
-  // NOTE: no cullling done in this method - this is old
-  addCube_raw(p0,p1,top_tex,side_tex,bottom_tex){
-    let cData = new CubeVertexData(p0, p1);
-    this.addData(cData.sides(p0,p1), side_tex);
-    this.addData(cData.top(p0,p1), top_tex);
-    this.addData(cData.bottom(p0,p1), bottom_tex);
-  }
-
   // ARRAY BUFFERS
-  initArrayBuffers(){
+  configArrayBuffers(){
     this.configVArrayBuffer('position', 'vertexPosition', 3, this.gl.FLOAT);
     this.configVArrayBuffer('textureCoord', 'textureCoord', 2, this.gl.FLOAT);
   }
@@ -213,7 +225,7 @@ export class Renderer extends GameComponent {
       projectionMatrix);
   }
   getProjectionMatrix(){
-    const fieldOfView = 45 * Math.PI / 180;   // in radians
+    const fieldOfView = toRad(45);
     const aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
     const zNear = 0.1;
     const zFar = 100.0;
@@ -228,7 +240,7 @@ export class Renderer extends GameComponent {
   }
 
   initModelViewMatrix(){
-    const modelViewMatrix = this.getModelViewMatrix(this.deltaT);
+    const modelViewMatrix = this.getModelViewMatrix();
     this.gl.uniformMatrix4fv(
         this.programInfo.uniformLocations.modelViewMatrix,
         false,
@@ -236,21 +248,16 @@ export class Renderer extends GameComponent {
   }
   getModelViewMatrix(){
     var m1 = mat4.create();
-    const amount = vec3.scale([], this.camPos.slice(), -1);
+    const amount = vec3.scale([], this.camPos, -1);
     // NOTEE: IMPORTANT!: does stuff in reverse order!!!
     // eg.: here, matrix will transalate, then rotateY, then rotateX
-    mat4.rotateX(m1, m1, this.camRot.v * Math.PI / 180);
+    mat4.rotateX(m1, m1, toRad(this.camRot.v));
     mat4.rotateY(m1, m1, toRad(this.camRot.h + 180));
     mat4.translate(m1, m1, amount);
     return m1;
   }
 
   // SHADER PROGRAM
-  makeShaders(vsSrc, fsSrc){
-    this.initProgramInfo(initShaderProgram(this.gl, vsSrc, fsSrc));
-    this.gl.useProgram(this.programInfo.program);
-  }
-  
   initProgramInfo(shaderProgram) {
     const programInfo = {
       program: shaderProgram,
@@ -270,15 +277,14 @@ export class Renderer extends GameComponent {
       },
     };
     this.programInfo = programInfo;
+    this.gl.useProgram(this.programInfo.program);
   }
 
   // BUFFERS
-  makeBufferData(){
-    this.buffers = {
-      position: this.makeBuffer(),
-      textureCoord: this.makeBuffer(),
-      indices: this.makeBuffer(),
-    };
+  makeBuffers(){
+    this.makeBuffer('position');
+    this.makeBuffer('textureCoord');
+    this.makeBuffer('indices');
   }
 
   bufferDataFromBundler(){
@@ -339,25 +345,6 @@ export class Renderer extends GameComponent {
     usage ??= this.gl.STATIC_DRAW;
     this.gl.bindBuffer(buf_type, buf);
     this.gl.bufferData(buf_type, data, usage);
-  }
-
-  // TEXTURES
-  initTextures(){
-    this.loadTexture('grass_top', this.cnf.grassTopPath);
-    this.loadTexture('grass_side', this.cnf.grassSidePath);
-    this.loadTexture('grass_bottom', this.cnf.grassBottomPath);
-  }
-
-  loadTexture(name, path, callback=null, thisArg=null){
-    this.textures ??= {};
-    let info = loadTexture(this.gl, path, (_texInfo) => {
-      // everythin else already in info object that is automatically updated
-      this.textures[name].loaded = true;
-      callCallback(callback, thisArg);
-    }, this);
-    this.textures[name] = info.texture;
-    this.textures[name].info = info;
-    this.textures[name].loaded = false;
   }
 }
 

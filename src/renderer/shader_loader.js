@@ -1,8 +1,13 @@
-import {expectValue, loadShader, programFromShaders} from '../utils.js';
+import {
+  expectValue,
+  loadShader, programFromShaders,
+  fetchTextFile
+} from '../utils.js';
+import {GameComponent} from '../game_component.js';
 
-export class ShaderLoader{
-  constructor(game, gl){
-    this.gl = gl;
+export class ShaderLoader extends GameComponent {
+  constructor(game){
+    super(game);
     this.vsPath = game.cnf.vsPath;
     this.fsPath = game.cnf.fsPath;
     this.fs = null;
@@ -23,23 +28,10 @@ export class ShaderLoader{
   }
 
   loadResource(path, result_attr_name, sType){
-    return loadTextFile(expectValue(path, "Path"))
+    return fetchTextFile(expectValue(path, "Path"))
       .then(text => loadShader(this.gl, sType, text))
       .then(result => (this[result_attr_name] = result))
       .catch(reason => {throw reason;});
   }
 }
 
-export function loadTextFile(path){
-  // todo use XMLHttpRequest for progress event (only needed when bigger files)
-  return fetch(path).then(response => {
-    if(!response.ok){
-      throw new Error("cant load resource")
-    }
-    return response.text();
-  })
-  .catch(reason => {
-    console.error(reason)
-    throw reason;
-  })
-}

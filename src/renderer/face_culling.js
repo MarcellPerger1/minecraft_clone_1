@@ -10,7 +10,7 @@ export class CubeDataAdder extends GameComponent {
     super(game);
     this.pos = pos;
     this.textureData = textureData; 
-    this.cData = new CubeVertexData(pos);
+    this.cData = new CubeVertexData(this.game, pos, this.textureData);
     this.world.wantInRange(pos);
   }
 

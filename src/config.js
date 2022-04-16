@@ -36,9 +36,9 @@ Config.DEFAULT = new Config({
   bgColor: [0.5, 0.86, 1.0, 1.0],
   vsPath: "./shaders/vertex-shader.glsl",
   fsPath: "./shaders/fragment-shader.glsl",
-  grassTopPath: "./textures/grass-top.min.png",
-  grassSidePath: "./textures/grass-side.min.png",
-  grassBottomPath: "./textures/grass-bottom.min.png",
+  grassTopPath: "./textures/grass_top.min.png",
+  grassSidePath: "./textures/grass_side.min.png",
+  grassBottomPath: "./textures/grass_bottom.min.png",
   startPos: [0.5, 2.5, -5],
   startRot: {h: 0, v: 0},
   speed: 3.5,
@@ -52,5 +52,6 @@ Config.DEFAULT = new Config({
 
 // textures from:
 // https://sketchfab.com/3d-models/minecraft-grass-block-84938a8f3f8d4a0aa64aaa9c4e4d27d3
+// using PrintScreen, then mspaint.exe
 
 exportAs(Config);
