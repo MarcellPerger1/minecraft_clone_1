@@ -1,21 +1,19 @@
 import {
   // general utils
-  exportAs, expectValue, nameOrValue, callCallback,
+  exportAs, expectValue, nameOrValue,
   // math
   toRad,
   //type checking
   isNumber,
   // webgl
   getGL, glErrnoToMsg,
-  // file loading
-  loadTexture
 } from '../utils.js';
 import {GameComponent} from '../game_component.js';
 import {LoaderMerge} from '../resource_loader.js';
 
 import {Blocks} from '../world.js';
 
-import {AtlasData, AtlasLoader} from './atlas_data.js';
+import {AtlasLoader} from './atlas_data.js';
 import {ShaderLoader} from './shader_loader.js';
 import {CubeVertexData} from './cube_data.js';
 import {CubeDataAdder} from './face_culling.js';

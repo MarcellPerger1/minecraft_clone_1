@@ -1,4 +1,4 @@
-import {exportAs, iextend, expectValue, isString, classOf, glTypeSize} from '../utils.js';
+import {exportAs, iextend,  glTypeSize} from '../utils.js';
 import {GameComponent} from '../game_component.js';
 
 

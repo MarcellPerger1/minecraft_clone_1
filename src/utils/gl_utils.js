@@ -109,49 +109,6 @@ export const INITIAL_TEX_DATA = new Uint8Array(INITIAL_TEX_ARR);
 export const INITIAL_TEX_SIZE = [2, 2];
 
 
-// todo : remove this? or make better
-export function loadTexture(gl, url, callback=null, thisArg=null){
-  const texture = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-
-  // Because images have to be downloaded over the internet
-  // they might take a moment until they are ready.
-  // Until then put a placeholder in the texture so we can
-  // use it immediately. When the image has finished downloading
-  // we'll update the texture with the contents of the image.
-  // TODO: perhaps only start game once images loaded
-  const internFmt = gl.RGBA;
-  const srcFmt = gl.RGBA;
-  const srcType = gl.UNSIGNED_BYTE;
-  const level = 0;  // mipmap level
-  var [width, height] = INITIAL_TEX_SIZE;
-  
-  gl.texImage2D(
-    /*target*/gl.TEXTURE_2D,
-    level, internFmt,
-    width, height, 
-    /*border (must be 0)*/0,
-    srcFmt, srcType,
-    INITIAL_TEX_DATA
-  );
-  setTexParams(gl, width, height);
-  
-  const image = new Image();
-  var texLoadInfo = new TextureLoadInfo(gl, url, image, texture);
-  image.onload = function() {
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, level, internFmt,
-                  srcFmt, srcType, image);
-    width = image.width;
-    height = image.height;
-    setTexParams(gl, width, height);
-    callCallback(callback, thisArg, texLoadInfo);
-  }
-  image.src = url;
-  return texLoadInfo;
-}
-
-
 export function loadTextureProm(gl, url){
   return new Promise((resolve, reject) => {
     const texture = gl.createTexture();
