@@ -127,7 +127,6 @@ export class Renderer extends GameComponent {
   // other
   clearCanvas() {
     this.gl.clearColor(...this.cnf.bgColor);
-    // Clear depth buffer to 1.0
     this.gl.clearDepth(1.0);
     // actully does the clearing:
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
@@ -160,18 +159,23 @@ export class Renderer extends GameComponent {
   // CUBE DATA HANDLING
   addWorldData(){
     for(const [pos, block] of this.world){
-      if(block==Blocks.grass){
-        this.addGrassBlock(pos);
-      }
+      this.addBlock(pos, block);
     }
   }
-  
+
+  // TODO: remove this - too specialise, use addBlock instead
   addGrassBlock(pos){
     this.addBlock(pos, {
       side: 'grass_side', top: 'grass_top', bottom: 'grass_bottom'})
   }
 
-  addBlock(pos, tData){
+  addBlock(pos, block){
+    if(block.visible){
+      this.addBlockTextures(pos, block.textures);
+    }
+  }
+
+  addBlockTextures(pos, tData){
     new CubeDataAdder(this.game, pos, tData).addData();
   }
 

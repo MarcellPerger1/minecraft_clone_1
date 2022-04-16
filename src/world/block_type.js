@@ -21,8 +21,9 @@ export class BlockType {
     // name
     this.name = config.name ?? this._getPlaceholderName();
     assert(cls.BlockByName[this.name] == null);
-    // other
-    this.transparent = this.config.transparent ?? false;
+    // transparency
+    this.transparent ??= false;
+    this.visible ??= true;
     this._addToRegistry();
   }
 
@@ -53,6 +54,10 @@ export class BlockType {
 
 
 BlockType.addTypes(
-  {name: 'air', transparent: true},
-  {name: 'grass'}
+  {name: 'air', transparent: true, visible: false},
+  {name: 'grass', textures: {
+    top: 'grass_top',
+    side: 'grass_side',
+    bottom: 'grass_bottom'}
+  }
 )
