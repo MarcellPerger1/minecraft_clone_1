@@ -36,7 +36,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install npm stuff
-        run: sudo npm install -g --unsafe-perm=true --allow-root
+        run: sudo npm install --unsafe-perm=true --allow-root
       - name: Generate atlas
         run: node ./scripts/make_atlas.js
 
