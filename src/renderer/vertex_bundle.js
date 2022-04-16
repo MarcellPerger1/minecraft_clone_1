@@ -1,4 +1,7 @@
 import {exportAs, iextend, expectValue, isString, classOf, glTypeSize} from '../utils.js';
+import {GameComponent} from '../game_component.js';
+
+
 
 // simply a container utility class for each 'section' of vertex data eg a 'section' could be a cube
 export class VertexBundle{
@@ -10,7 +13,6 @@ export class VertexBundle{
     this.maxindex = Math.max(...this.indices, -1);
   }
 }
-
 
 
 export class ToplevelVertexBundle{
@@ -45,9 +47,9 @@ export class ToplevelVertexBundle{
 }
 
 
-export class ElementBundler{
-  constructor(gl){
-    this.gl = gl;
+export class ElementBundler extends GameComponent{
+  constructor(game){
+    super(game);
     this.reset();
   }
   
@@ -56,7 +58,7 @@ export class ElementBundler{
   }
   
   addData(bundle){
-    this.bundle.add(bundle, null);
+    this.bundle.add(bundle);
   }
 
   getPositionData(){

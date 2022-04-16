@@ -71,7 +71,7 @@ export class Renderer extends GameComponent {
   onResourcesLoaded(){
     this.initProgramInfo(this.loader.shader.program);
     this.initAtlasInfo(this.loader.atlas);
-    this.vertexData = new ElementBundler(this.gl, this.textures);
+    this.vertexData = new ElementBundler(this.game);
     this.makeBuffers();
     this.configArrayBuffers();
   }
