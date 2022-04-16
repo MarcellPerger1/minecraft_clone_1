@@ -53,10 +53,9 @@ export class CubeDataAdder extends GameComponent {
     if(!this.world.inRange(pos)){
       return true;  // no way for block to be there
     }
-    // TODO check for transparent blocks later
-    if(this.world.getBlock(pos) != Blocks.air){  
-      return false;
+    if(this.world.getBlock(pos).transparent){  
+      return true;
     }
-    return true;
+    return false;
   }
 }
