@@ -1,5 +1,4 @@
 import {GameComponent} from '../game_component.js';
-import {Blocks} from '../world.js';
 import {unreachable} from '../utils.js';
 import {CubeVertexData} from './cube_data.js';
 
