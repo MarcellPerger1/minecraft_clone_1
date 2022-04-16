@@ -180,17 +180,6 @@ export class Renderer extends GameComponent {
     return this.vertexData.addData(bundle, texture);
   }
 
-  // NOTE: no cullling done in this method - this is old
-  addCube_raw(p0,p1,tex){
-    console.warn("addCube_raw is deprecated " +
-                 "and will be removed as soon as i can be bothered ;-)")
-    let cData = new CubeVertexData(this.game, p0, p1, tex);
-    this.addData(cData.sides(p0,p1), tex.side);
-    this.addData(cData.top(p0,p1), tex.top);
-    this.addData(cData.bottom(p0,p1), tex.bottom);
-
-  }
-
   // ARRAY BUFFERS
   configArrayBuffers(){
     this.configVArrayBuffer('position', 'vertexPosition', 3, this.gl.FLOAT);

@@ -1,4 +1,4 @@
-import {callCallback, expectValue} from "./general.js";
+import {expectValue} from "./general.js";
 import {isPowerOf2} from "./math.js";
 
 
@@ -109,7 +109,7 @@ export const INITIAL_TEX_DATA = new Uint8Array(INITIAL_TEX_ARR);
 export const INITIAL_TEX_SIZE = [2, 2];
 
 
-export function loadTextureProm(gl, url){
+export function loadTexture(gl, url){
   return new Promise((resolve, reject) => {
     const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);

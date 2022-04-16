@@ -94,7 +94,6 @@ export class Game {
   }
   pointerlock_error(_e){
     console.log('pointerlock error');
-    throw new Error('pointerlock error');
   }
 
   addEvent(name, hdlr, thisArg=null, elem=null, opts=null){
