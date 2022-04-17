@@ -12,6 +12,7 @@ import {
 } from '../utils.js';
 import {GameComponent} from '../game_component.js';
 
+import {Buffers} from './buffers.js';
 import {AtlasLoader} from './atlas_data.js';
 import {ShaderLoader} from './shader_loader.js';
 import {CubeDataAdder} from './face_culling.js';
@@ -31,8 +32,6 @@ export class Renderer extends GameComponent {
   constructor(game, do_init = true) {
     super(game);
     this.nFaults = 0;
-    this.textures = {};
-    this.buffers = {};
     if (do_init) { this.init(); }
   }
 
@@ -68,6 +67,7 @@ export class Renderer extends GameComponent {
     this.initProgramInfo(this.loader.shader.program);
     this.initAtlasInfo(this.loader.atlas);
     this.vertexData = new ElementBundler(this.game);
+    this.buffers = new Buffers(this.game);
     this.makeBuffers();
     this.configArrayBuffers();
   }
@@ -279,69 +279,19 @@ export class Renderer extends GameComponent {
 
   // BUFFERS
   makeBuffers(){
-    this.makeBuffer('position');
-    this.makeBuffer('textureCoord');
-    this.makeBuffer('indices');
+    this.buffers.make('position');
+    this.buffers.make('textureCoord');
+    this.buffers.make('indices');
   }
 
   bufferDataFromBundler(){
-    this.setBufferData('position',
+    this.buffers.setData('position',
                        new Float32Array(this.vertexData.positions));
-    this.setBufferData('textureCoord',
+    this.buffers.setData('textureCoord',
                        new Float32Array(this.vertexData.texCoords));
-    this.setBufferData('indices', new Uint16Array(this.vertexData.indices), 
+    this.buffers.setData('indices', new Uint16Array(this.vertexData.indices), 
                        this.gl.ELEMENT_ARRAY_BUFFER);
     
-  }
-
-  // BUFFER UTIL METHODS (TODO buffer manager?)
-  makeBuffer(buf_name=null){
-    return (this.buffers[buf_name ?? "_"] = this.makeBufferRaw());
-  }
-
-  makeBufferRaw(){
-    return this.gl.createBuffer();
-  }
-  
-  makeBufferWithData(buf_name, data, buf_type=null, usage=null){
-    let raw_args = this._getMakeBufferWithDataRawArgs(
-      buf_name, data, buf_type, usage);
-    if(raw_args==null){
-      return this.makeBufferWithDataRaw(...raw_args);
-    }
-    this.makeBuffer(buf_name);
-    this.setBufferData(buf_name, data, buf_type, usage);
-    return this.buffers[buf_name];
-  }
-
-  makeBufferWithDataRaw(data, buf_type=null, usage=null){
-    const buf = this.makeBuffer();
-    this.setBufferDataRaw(buf, data, buf_type, usage);
-    return buf;
-  }
-
-  _getMakeBufferWithDataRawArgs(name, data, type, usage){
-    if(data==null || isNumber(data)){
-      // data not array (must be type or usage) so pass first 3 args to _raw
-      return [name, data, type];  
-    }
-    if(name==null){
-      // no name, pass other 3 args to _raw
-      return [data, type, usage];
-    }
-    return null;
-  }
-  
-  setBufferData(buf_name, data, buf_type=null, usage=null){
-    let buf = nameOrValue(buf_name, this.buffers, "buffer");
-    return this.setBufferDataRaw(buf, data, buf_type, usage);
-  }
-  
-  setBufferDataRaw(buf, data, buf_type=null, usage=null){
-    buf_type ??= this.gl.ARRAY_BUFFER;
-    usage ??= this.gl.STATIC_DRAW;
-    this.gl.bindBuffer(buf_type, buf);
-    this.gl.bufferData(buf_type, data, usage);
   }
 }
 
