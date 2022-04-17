@@ -178,26 +178,8 @@ export class Renderer extends GameComponent {
 
   // ARRAY BUFFERS
   configArrayBuffers(){
-    this.configVArrayBuffer('position', 'vertexPosition', 3, this.gl.FLOAT);
-    this.configVArrayBuffer('textureCoord', 'textureCoord', 2, this.gl.FLOAT);
-  }
-
-  configVArrayBuffer(bufferName, attrLocName, numComponents,
-                     type=null, normalize=false, stride=0, offset=0){
-    let attrLoc = expectValue(
-      this.programInfo.attribLocations[attrLocName], 'attrLoc');
-    let buffer = expectValue(
-      this.buffers[bufferName], 'buffer');
-    type ??= this.gl.FLOAT;
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
-    this.gl.vertexAttribPointer(
-        attrLoc,
-        numComponents,
-        type,
-        normalize,
-        stride,
-        offset);
-    this.gl.enableVertexAttribArray(attrLoc);
+    this.buffers.config('position', 'vertexPosition', 3, this.gl.FLOAT);
+    this.buffers.config('textureCoord', 'textureCoord', 2, this.gl.FLOAT);
   }
 
   // UNIFORMS (todo separate uniform handler class)

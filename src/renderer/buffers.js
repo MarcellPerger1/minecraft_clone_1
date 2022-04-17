@@ -1,4 +1,4 @@
-import {isNumber, nameOrValue} from "../utils.js";
+import {isNumber, nameOrValue, expectValue} from "../utils.js";
 import {GameComponent} from "../game_component.js";
 
 
@@ -16,7 +16,7 @@ export class Buffers extends GameComponent {
   }
   
   makeWithData(buf_name, data, buf_type=null, usage=null){
-    let raw_args = this._get_makeWithDataRaw_args(
+    let raw_args = this._get_makeBufferWithDataRaw_args(
       buf_name, data, buf_type, usage);
     if(raw_args!=null){
       return this.makeWithDataRaw(...raw_args);
@@ -54,5 +54,22 @@ export class Buffers extends GameComponent {
     usage ??= this.gl.STATIC_DRAW;
     this.gl.bindBuffer(buf_type, buf);
     this.gl.bufferData(buf_type, data, usage);
+  }
+
+  config(buf_name, attr_name, numComponents,
+                     type=null, normalize=false, stride=0, offset=0){
+    let attr = expectValue(
+      this.r.programInfo.attribLocations[attr_name], 'attrLoc');
+    let buf = expectValue(this[buf_name], 'buffer');
+    type ??= this.gl.FLOAT;
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buf);
+    this.gl.vertexAttribPointer(
+        attr,
+        numComponents,
+        type,
+        normalize,
+        stride,
+        offset);
+    this.gl.enableVertexAttribArray(attr);
   }
 }
