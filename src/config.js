@@ -46,8 +46,5 @@ Config.DEFAULT = new Config({
   checkError: false,  
 });
 
-// textures from:
-// https://sketchfab.com/3d-models/minecraft-grass-block-84938a8f3f8d4a0aa64aaa9c4e4d27d3
-// using PrintScreen, then mspaint.exe
 
 exportAs(Config);
