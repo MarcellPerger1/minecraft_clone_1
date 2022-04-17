@@ -60,7 +60,7 @@ export class Buffers extends GameComponent {
                      type=null, normalize=false, stride=0, offset=0){
     let attr = expectValue(
       this.r.programInfo.attribLocations[attr_name], 'attrLoc');
-    let buf = expectValue(this[buf_name], 'buffer');
+    let buf = nameOrValue(buf_name, this, 'buffer');
     type ??= this.gl.FLOAT;
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buf);
     this.gl.vertexAttribPointer(
