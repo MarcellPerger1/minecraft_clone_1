@@ -12,8 +12,6 @@ import {
 } from '../utils.js';
 import {GameComponent} from '../game_component.js';
 
-import {Blocks} from '../world.js';
-
 import {AtlasLoader} from './atlas_data.js';
 import {ShaderLoader} from './shader_loader.js';
 import {CubeDataAdder} from './face_culling.js';
@@ -161,12 +159,6 @@ export class Renderer extends GameComponent {
     for(const [pos, block] of this.world){
       this.addBlock(pos, block);
     }
-  }
-
-  // TODO: remove this - too specialise, use addBlock instead
-  addGrassBlock(pos){
-    this.addBlock(pos, {
-      side: 'grass_side', top: 'grass_top', bottom: 'grass_bottom'})
   }
 
   addBlock(pos, block){
