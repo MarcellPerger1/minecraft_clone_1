@@ -36,7 +36,7 @@ export class AtlasLoader extends GameComponent {
 
   loadResources(){
     return Promise.all([
-      fetchJsonFile('./textures/atlas.index.json')
+      fetchJsonFile('./textures/atlas-index.json')
       .then(raw => new AtlasData(raw))
       .then(v => (this.data = v)),
       loadTexture(this.gl, './textures/atlas.png')

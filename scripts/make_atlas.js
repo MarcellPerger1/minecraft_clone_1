@@ -64,7 +64,7 @@ function main(){
     }), ondrawn.then((_) => {
       console.log('Indexing textures...');
       let s = JSON.stringify(data);
-      return fsP.writeFile(path.join(texDir, 'atlas.index.json'), s);
+      return fsP.writeFile(path.join(texDir, 'atlas-index.json'), s);
     })
   ])
   ondone.then((_) => {
