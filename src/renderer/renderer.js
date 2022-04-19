@@ -28,7 +28,6 @@ import {ElementBundler, VertexBundle} from './vertex_bundle.js';
 export class Renderer extends GameComponent {
   constructor(game, do_init = true) {
     super(game);
-    this.nFaults = 0;
     if (do_init) { this.init(); }
   }
 
@@ -37,6 +36,9 @@ export class Renderer extends GameComponent {
     this.initGLConfig();
   }
 
+  /**
+   * @type {WebGLRenderingContext}
+   */
   get gl(){
     return this._gl;
   }
@@ -101,22 +103,17 @@ export class Renderer extends GameComponent {
 
   // gl errors
   checkGlFault(){
-    if(this.cnf.check_error){
-      this.last_error = this.gl.getError();
-      if(this.last_error !== this.gl.NO_ERROR){
-        this.onGlFault();
-      }
+    if(!this.cnf.check_error){
+      return
+    }
+    this.last_error = this.gl.getError();
+    if(this.last_error !== this.gl.NO_ERROR){
+      this.onGlFault();
     }
   }
 
   onGlFault(){
-    if (this.nFaults < 64){
-      console.error("WebGL error: ", glErrnoToMsg(this.last_error))
-    }
-    else if(this.nFaults == 64){
-      console.error("Too many WebGL errors: only reporting first 64.")
-    }
-    this.nFaults++;
+    console.error("WebGL error: ", glErrnoToMsg(this.last_error))
   }
   
   // other
@@ -142,7 +139,7 @@ export class Renderer extends GameComponent {
 
   drawAll(){
     this.bufferDataFromBundler();
-    this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture)
+    this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
     this.vertexData.drawElements();
   }
 
@@ -193,12 +190,19 @@ export class Renderer extends GameComponent {
     this.gl.uniform1i(this.programInfo.uniformLocations.uSampler, 0);
   }
   
-  initProjectionMatrix(){
-    const projectionMatrix = this.getProjectionMatrix();
+  /**
+   * Set a uniform to matrix `mat`
+   * @param {String} name - The name of the uniform
+   * @param {(Array<Number> | Float32Array)} mat - The matrix
+   */
+  setUniformMat4(name, mat){
     this.gl.uniformMatrix4fv(
-      this.programInfo.uniformLocations.projectionMatrix,
-      false,
-      projectionMatrix);
+      this.programInfo.uniformLocations[name], false, mat
+    )
+  }
+  
+  initProjectionMatrix(){
+    this.setUniformMat4('projectionMatrix', this.getProjectionMatrix());
   }
   getProjectionMatrix(){
     const fieldOfView = toRad(45);
@@ -216,11 +220,7 @@ export class Renderer extends GameComponent {
   }
 
   initModelViewMatrix(){
-    const modelViewMatrix = this.getModelViewMatrix();
-    this.gl.uniformMatrix4fv(
-        this.programInfo.uniformLocations.modelViewMatrix,
-        false,
-        modelViewMatrix);
+    this.setUniformMat4('modelViewMatrix', this.getModelViewMatrix());
   }
   getModelViewMatrix(){
     var m1 = mat4.create();

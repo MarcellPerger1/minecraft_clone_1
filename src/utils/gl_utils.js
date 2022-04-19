@@ -13,6 +13,12 @@ export function getGL(canv_id="glCanvas"){
   return gl;
 }
 
+/**
+ * Get a string representation of error from `errno`
+ * @param {number} errno
+ * @param {WebGLRenderingContextBase} gl - the gl object to use
+ * @returns {string} string representation
+ */
 export function glErrnoToMsg(errno, gl=WebGLRenderingContext){
   let lookup = {
     [gl.NO_ERROR]: "gl.NO_ERROR",

@@ -39,7 +39,7 @@ export class AtlasLoader extends GameComponent {
       fetchJsonFile('./textures/atlas.index.json')
       .then(raw => new AtlasData(raw))
       .then(v => (this.data = v)),
-      loadTexture(this.gl, './textures/atlas.min.png')
+      loadTexture(this.gl, './textures/atlas.png')
       .then(tex => (this.texture = tex)),
     ])
   }

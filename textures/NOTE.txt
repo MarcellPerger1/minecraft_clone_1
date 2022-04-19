@@ -1,5 +1,8 @@
-textures from:
-https://sketchfab.com/3d-models/minecraft-grass-block-84938a8f3f8d4a0aa64aaa9c4e4d27d3
-made by Render at Night
-under license https://creativecommons.org/licenses/by/4.0/
-see that website for all the stuff
+grass textures from:
+  https://sketchfab.com/3d-models/minecraft-grass-block-84938a8f3f8d4a0aa64aaa9c4e4d27d3
+  made by Render at Night
+  under license https://creativecommons.org/licenses/by/4.0/
+  see that website for all the stuff
+
+stone texture from:
+  https://static.wikia.nocookie.net/minecraft_gamepedia/images/d/dc/Stone_%28texture%29_JE5_BE3.png/revision/latest?cb=20201001141805
