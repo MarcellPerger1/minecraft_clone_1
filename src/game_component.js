@@ -1,5 +1,16 @@
+/**
+ * @typedef {import('./game.js').Game} Game
+ */
+
+/**
+ * Anything that use the Game object should inherit from this
+ */
 export class GameComponent {
   constructor(game){
+    /**
+     * The Game object
+     * @type {Game}
+     */
     this.game = game;
   }
 
