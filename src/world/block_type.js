@@ -1,9 +1,9 @@
-import {isString, classOf, assert} from '../utils.js';
+import {isString, classOf, assert, fromKeys, assignNullSafe, setDefaults} from '../utils.js';
 
 
-export var Blocks = {};
-
-
+/**
+ * Represents a type of block eg. grass
+ */
 export class BlockType {
   static BlockByNum = [];
   static BlockByName = {};
@@ -21,10 +21,18 @@ export class BlockType {
     // name
     this.name = config.name ?? this._getPlaceholderName();
     assert(cls.BlockByName[this.name] == null);
+    // textures
+    this._getTextures();
     // transparency
     this.transparent ??= false;
     this.visible ??= true;
     this._addToRegistry();
+  }
+
+  _getTextures(){
+    this.textures ??= {};
+    let d = this.textures?.all ?? this.texture;
+    setDefaults(this.textures, fromKeys(['top', 'side', 'bottom'], d));
   }
 
   _getPlaceholderName(){
@@ -52,6 +60,12 @@ export class BlockType {
   }
 }
 
+/**
+ * All the blocks
+ * @type {{air: BlockType, grass: BlockType, stone: BlockType}}
+ */
+export var Blocks = {};
+
 
 BlockType.addTypes(
   {name: 'air', transparent: true, visible: false},
@@ -59,5 +73,6 @@ BlockType.addTypes(
     top: 'grass_top',
     side: 'grass_side',
     bottom: 'grass_bottom'}
-  }
+  }, 
+  {name: 'stone', texture: 'stone'}
 )
