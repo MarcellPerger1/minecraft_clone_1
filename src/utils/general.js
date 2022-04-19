@@ -12,7 +12,7 @@ export var exportAs = globExport;
 export function expectValue(v, name=null){
   name = name ?? v?.name;
   if(name==null){
-    throw new ReferenceError("Name not specified!")
+    console.warn("Name not specified!");
   }
   if(v==null){
     throw new ReferenceError(`${name} must not be null!`);

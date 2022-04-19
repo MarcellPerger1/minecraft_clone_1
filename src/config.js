@@ -6,9 +6,6 @@ export class Config {
   // filepaths
   vsPath;
   fsPath;
-  grassTopPath;
-  grassSidePath;
-  grassBottomPath;
   // rendering consts
   bgColor;
   startPos;
@@ -19,6 +16,7 @@ export class Config {
   sensitivity;
   vRotMin;
   vRotMax;
+  maxMouseMove;
   checkError;
 
   constructor(cnf = {}, ...args) {
@@ -36,22 +34,17 @@ Config.DEFAULT = new Config({
   bgColor: [0.5, 0.86, 1.0, 1.0],
   vsPath: "./shaders/vertex-shader.glsl",
   fsPath: "./shaders/fragment-shader.glsl",
-  grassTopPath: "./textures/grass_top.min.png",
-  grassSidePath: "./textures/grass_side.min.png",
-  grassBottomPath: "./textures/grass_bottom.min.png",
   startPos: [0.5, 2.5, -5],
   startRot: {h: 0, v: 0},
   speed: 3.5,
-  sensitivity: 0.7,
+  sensitivity: 0.5,
   vRotMin: -80,
   vRotMax: 80,
+  maxMouseMove: [Infinity, Infinity],
   // because gl.getError has HUGE impacts on performance
   // and chrome dev tools reports it anyway
   checkError: false,  
 });
 
-// textures from:
-// https://sketchfab.com/3d-models/minecraft-grass-block-84938a8f3f8d4a0aa64aaa9c4e4d27d3
-// using PrintScreen, then mspaint.exe
 
 exportAs(Config);

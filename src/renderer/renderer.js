@@ -1,18 +1,15 @@
 import {
-  // general utils
-  exportAs, expectValue, nameOrValue,
+  exportAs, 
   // math
   toRad,
-  //type checking
-  isNumber,
   // webgl
   getGL, glErrnoToMsg,
+  // other
+  LoaderMerge
 } from '../utils.js';
 import {GameComponent} from '../game_component.js';
-import {LoaderMerge} from '../resource_loader.js';
 
-import {Blocks} from '../world.js';
-
+import {Buffers} from './buffers.js';
 import {AtlasLoader} from './atlas_data.js';
 import {ShaderLoader} from './shader_loader.js';
 import {CubeDataAdder} from './face_culling.js';
@@ -32,8 +29,6 @@ export class Renderer extends GameComponent {
   constructor(game, do_init = true) {
     super(game);
     this.nFaults = 0;
-    this.textures = {};
-    this.buffers = {};
     if (do_init) { this.init(); }
   }
 
@@ -69,6 +64,7 @@ export class Renderer extends GameComponent {
     this.initProgramInfo(this.loader.shader.program);
     this.initAtlasInfo(this.loader.atlas);
     this.vertexData = new ElementBundler(this.game);
+    this.buffers = new Buffers(this.game);
     this.makeBuffers();
     this.configArrayBuffers();
   }
@@ -126,7 +122,6 @@ export class Renderer extends GameComponent {
   // other
   clearCanvas() {
     this.gl.clearColor(...this.cnf.bgColor);
-    // Clear depth buffer to 1.0
     this.gl.clearDepth(1.0);
     // actully does the clearing:
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
@@ -159,18 +154,17 @@ export class Renderer extends GameComponent {
   // CUBE DATA HANDLING
   addWorldData(){
     for(const [pos, block] of this.world){
-      if(block==Blocks.grass){
-        this.addGrassBlock(pos);
-      }
+      this.addBlock(pos, block);
     }
   }
-  
-  addGrassBlock(pos){
-    this.addBlock(pos, {
-      side: 'grass_side', top: 'grass_top', bottom: 'grass_bottom'})
+
+  addBlock(pos, block){
+    if(block.visible){
+      this.addBlockTextures(pos, block.textures);
+    }
   }
 
-  addBlock(pos, tData){
+  addBlockTextures(pos, tData){
     new CubeDataAdder(this.game, pos, tData).addData();
   }
 
@@ -181,26 +175,8 @@ export class Renderer extends GameComponent {
 
   // ARRAY BUFFERS
   configArrayBuffers(){
-    this.configVArrayBuffer('position', 'vertexPosition', 3, this.gl.FLOAT);
-    this.configVArrayBuffer('textureCoord', 'textureCoord', 2, this.gl.FLOAT);
-  }
-
-  configVArrayBuffer(bufferName, attrLocName, numComponents,
-                     type=null, normalize=false, stride=0, offset=0){
-    let attrLoc = expectValue(
-      this.programInfo.attribLocations[attrLocName], 'attrLoc');
-    let buffer = expectValue(
-      this.buffers[bufferName], 'buffer');
-    type ??= this.gl.FLOAT;
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
-    this.gl.vertexAttribPointer(
-        attrLoc,
-        numComponents,
-        type,
-        normalize,
-        stride,
-        offset);
-    this.gl.enableVertexAttribArray(attrLoc);
+    this.buffers.config('position', 'vertexPosition', 3, this.gl.FLOAT);
+    this.buffers.config('textureCoord', 'textureCoord', 2, this.gl.FLOAT);
   }
 
   // UNIFORMS (todo separate uniform handler class)
@@ -282,69 +258,19 @@ export class Renderer extends GameComponent {
 
   // BUFFERS
   makeBuffers(){
-    this.makeBuffer('position');
-    this.makeBuffer('textureCoord');
-    this.makeBuffer('indices');
+    this.buffers.make('position');
+    this.buffers.make('textureCoord');
+    this.buffers.make('indices');
   }
 
   bufferDataFromBundler(){
-    this.setBufferData('position',
-                       new Float32Array(this.vertexData.positions));
-    this.setBufferData('textureCoord',
-                       new Float32Array(this.vertexData.texCoords));
-    this.setBufferData('indices', new Uint16Array(this.vertexData.indices), 
-                       this.gl.ELEMENT_ARRAY_BUFFER);
-    
-  }
-
-  // BUFFER UTIL METHODS (TODO buffer manager?)
-  makeBuffer(buf_name=null){
-    return (this.buffers[buf_name ?? "_"] = this.makeBufferRaw());
-  }
-
-  makeBufferRaw(){
-    return this.gl.createBuffer();
-  }
-  
-  makeBufferWithData(buf_name, data, buf_type=null, usage=null){
-    let raw_args = this._getMakeBufferWithDataRawArgs(
-      buf_name, data, buf_type, usage);
-    if(raw_args==null){
-      return this.makeBufferWithDataRaw(...raw_args);
-    }
-    this.makeBuffer(buf_name);
-    this.setBufferData(buf_name, data, buf_type, usage);
-    return this.buffers[buf_name];
-  }
-
-  makeBufferWithDataRaw(data, buf_type=null, usage=null){
-    const buf = this.makeBuffer();
-    this.setBufferDataRaw(buf, data, buf_type, usage);
-    return buf;
-  }
-
-  _getMakeBufferWithDataRawArgs(name, data, type, usage){
-    if(data==null || isNumber(data)){
-      // data not array (must be type or usage) so pass first 3 args to _raw
-      return [name, data, type];  
-    }
-    if(name==null){
-      // no name, pass other 3 args to _raw
-      return [data, type, usage];
-    }
-    return null;
-  }
-  
-  setBufferData(buf_name, data, buf_type=null, usage=null){
-    let buf = nameOrValue(buf_name, this.buffers, "buffer");
-    return this.setBufferDataRaw(buf, data, buf_type, usage);
-  }
-  
-  setBufferDataRaw(buf, data, buf_type=null, usage=null){
-    buf_type ??= this.gl.ARRAY_BUFFER;
-    usage ??= this.gl.STATIC_DRAW;
-    this.gl.bindBuffer(buf_type, buf);
-    this.gl.bufferData(buf_type, data, usage);
+    this.buffers.setData(
+      'position', new Float32Array(this.vertexData.positions));
+    this.buffers.setData(
+      'textureCoord', new Float32Array(this.vertexData.texCoords));
+    this.buffers.setData(
+      'indices', new Uint16Array(this.vertexData.indices), 
+      this.gl.ELEMENT_ARRAY_BUFFER);
   }
 }
 

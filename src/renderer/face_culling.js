@@ -1,5 +1,4 @@
 import {GameComponent} from '../game_component.js';
-import {Blocks} from '../world.js';
 import {unreachable} from '../utils.js';
 import {CubeVertexData} from './cube_data.js';
 
@@ -53,10 +52,9 @@ export class CubeDataAdder extends GameComponent {
     if(!this.world.inRange(pos)){
       return true;  // no way for block to be there
     }
-    // TODO check for transparent blocks later
-    if(this.world.getBlock(pos) != Blocks.air){  
-      return false;
+    if(this.world.getBlock(pos).transparent){  
+      return true;
     }
-    return true;
+    return false;
   }
 }

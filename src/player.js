@@ -17,8 +17,12 @@ export class Player extends GameComponent {
 
   pointer_move(e){
     if(this.game.hasPointerLock()){
-      this.rotation.h += e.movementX * this.cnf.sensitivity;
-      this.rotation.v += e.movementY * this.cnf.sensitivity;
+      this.rotation.h += clamp(
+        e.movementX, null, this.cnf.maxMouseMove[0]
+      ) * this.cnf.sensitivity;
+      this.rotation.v += clamp(
+        e.movementY, null, this.cnf.maxMouseMove[1]
+      ) * this.cnf.sensitivity;
     }
     this.clampRot();
   }
