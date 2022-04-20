@@ -31,3 +31,13 @@ export function fetchJsonFile(path){
     throw reason;
   })
 }
+
+/**
+ * Returns a new URL identical to given one except with server caching disabled
+ * @param {string} url - Original URL
+ * @returns {string} URL with caching disabled
+ */
+export function disableCaching(url){
+  return url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
+}
+

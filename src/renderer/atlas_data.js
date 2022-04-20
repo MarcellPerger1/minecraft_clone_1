@@ -1,5 +1,5 @@
 import {GameComponent} from '../game_component.js';
-import {fetchJsonFile, loadTexture} from '../utils.js';
+import {disableCaching, fetchJsonFile, loadTexture} from '../utils.js';
 
 export class AtlasEntry {
   constructor(aData, name, i){
@@ -36,10 +36,10 @@ export class AtlasLoader extends GameComponent {
 
   loadResources(){
     return Promise.all([
-      fetchJsonFile('./textures/atlas-index.json')
+      fetchJsonFile(disableCaching(this.cnf.atlasIndex))
       .then(raw => new AtlasData(raw))
       .then(v => (this.data = v)),
-      loadTexture(this.gl, './textures/atlas.png')
+      loadTexture(this.gl, disableCaching(this.cnf.atlasImg))
       .then(tex => (this.texture = tex)),
     ])
   }
