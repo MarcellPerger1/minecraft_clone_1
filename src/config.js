@@ -6,6 +6,8 @@ export class Config {
   // filepaths
   vsPath;
   fsPath;
+  atlasImg;
+  atlasIndex;
   // rendering consts
   bgColor;
   startPos;
@@ -34,6 +36,8 @@ Config.DEFAULT = new Config({
   bgColor: [0.5, 0.86, 1.0, 1.0],
   vsPath: "./shaders/vertex-shader.glsl",
   fsPath: "./shaders/fragment-shader.glsl",
+  atlasImg: "./textures/atlas.png",
+  atlasIndex: "./textures/atlas-index.json",
   startPos: [0.5, 2.5, -5],
   startRot: {h: 0, v: 0},
   speed: 3.5,

@@ -37,3 +37,16 @@ export function callCallback(callback, thisArg, ...args){
     }
   }
 }
+
+/**
+ * Return an object with all of `keys` set to `value`
+ * @template KT, VT
+ * @param {Array<KT>} keys
+ * @param {VT} value
+ * @returns {(Object.<KT, VT> | Map.<KT, VT)}
+ */
+export function fromKeys(keys, value){
+  return Object.fromEntries(keys.map(k => [k, value]));
+}
+
+

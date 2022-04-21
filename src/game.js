@@ -17,7 +17,7 @@ export class Game {
     this.w = this.world = new World(this, [0, 0, 0]);
     for (let x = 0; x < 8; x++) {
       for (let z = 0; z < 8; z++) {
-        this.world.setBlock([x, 0, z], Blocks.grass);
+        this.world.setBlock([x, 0, z], Blocks[(x+z+1)%4]);
       }
     }
     this.world.setBlock([15, 0, 0], Blocks.grass);

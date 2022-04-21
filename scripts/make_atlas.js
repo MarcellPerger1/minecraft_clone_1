@@ -60,11 +60,11 @@ function main(){
   let ondone = Promise.all([
     ondrawn.then((_) => {
       console.log('Creating atlas...');
-      return writeToPng(canv, path.join(texDir, 'atlas.min.png'));
+      return writeToPng(canv, path.join(texDir, 'atlas.png'));
     }), ondrawn.then((_) => {
       console.log('Indexing textures...');
       let s = JSON.stringify(data);
-      return fsP.writeFile(path.join(texDir, 'atlas.index.json'), s);
+      return fsP.writeFile(path.join(texDir, 'atlas-index.json'), s);
     })
   ])
   ondone.then((_) => {
