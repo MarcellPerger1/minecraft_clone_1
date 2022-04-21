@@ -59,6 +59,7 @@ export class BlockType {
 
   static updateRegistry(){
     assignNullSafe(Blocks, this.BlockByName, this.BlockByNum);
+    Blocks.count = Blocks.n = this.BlockByNum.length;
   }
 
   /**

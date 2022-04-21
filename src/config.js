@@ -38,7 +38,7 @@ Config.DEFAULT = new Config({
   fsPath: "./shaders/fragment-shader.glsl",
   atlasImg: "./textures/atlas.png",
   atlasIndex: "./textures/atlas-index.json",
-  startPos: [0.5, 2.5, -5],
+  startPos: [0.5, 5.5, -5],
   startRot: {h: 0, v: 0},
   speed: 3.5,
   sensitivity: 0.5,
