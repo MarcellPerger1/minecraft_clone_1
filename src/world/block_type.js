@@ -88,5 +88,10 @@ BlockType.addTypes(
     bottom: 'grass_bottom'}
   }, 
   {name: 'stone', texture: 'stone'},
-  {name: 'dirt', texture: 'grass_bottom'}
+  {name: 'dirt', texture: 'grass_bottom'},
+  {name: 'oak_log', textures: {
+    top: 'oak_log_top',
+    bottom: 'oak_log_top',
+    side: 'oak_log_side'}
+  }
 )
