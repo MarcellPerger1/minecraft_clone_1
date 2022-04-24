@@ -1,4 +1,4 @@
-import SimplexNoise from "../../libs/simplex-noise/dist/esm/simplex-noise.js";
+import SimplexNoise from "../libs/simplex-noise/simplex-noise.js";
 
 import { GameComponent } from "../game_component.js";
 import { World, Blocks } from "../world.js";
