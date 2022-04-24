@@ -27,7 +27,6 @@ jobs:
       
       - name: Install npm stuff
         run: sudo npm install -g eslint --unsafe-perm=true --allow-root
-
       # Runs a single command using the runners shell
       - name: Run eslint
         run: npx eslint --max-warnings 0 ./
@@ -39,4 +38,14 @@ jobs:
         run: sudo npm install --unsafe-perm=true --allow-root
       - name: Generate atlas
         run: node ./scripts/make_atlas.js
+  build_libs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install npm stuff
+        run: sudo npm install --unsafe-perm=true --allow-root
+      - name: Run build_libs.sh
+        run: |
+          chmod +x ./scripts/build_libs.sh
+          ./scripts/build_libs.sh
 
