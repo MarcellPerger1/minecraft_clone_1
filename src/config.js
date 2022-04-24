@@ -20,6 +20,9 @@ export class Config {
   vRotMax;
   maxMouseMove;
   checkError;
+  // world generation
+  seed;
+  isTestWorld;
 
   constructor(cnf = {}, ...args) {
     assignNullSafe(this, classOf(this).DEFAULT, cnf ?? {}, ...args);
@@ -48,6 +51,8 @@ Config.DEFAULT = new Config({
   // because gl.getError has HUGE impacts on performance
   // and chrome dev tools reports it anyway
   checkError: false,  
+  seed: 'secret-seed',
+  isTestWorld: false,
 });
 
 

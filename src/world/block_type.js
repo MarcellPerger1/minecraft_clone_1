@@ -76,7 +76,7 @@ export class BlockType {
 
 /**
  * All the blocks
- * @type {{air: BlockType, grass: BlockType, stone: BlockType}}
+ * @type {Object.<string, BlockType>}
  */
 export var Blocks = {};
 
