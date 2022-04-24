@@ -2,7 +2,7 @@ import { Renderer } from './renderer/renderer.js';
 import { Config } from './config.js';
 import { KeyInput } from './keyinput.js';
 import { Player } from './player.js';
-import { World, Blocks, WorldGenerator } from './world.js';
+import { WorldGenerator } from './world.js';
 
 /**
  * The global Game object
