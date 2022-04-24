@@ -14,14 +14,10 @@ export class CubeDataAdder extends GameComponent {
   }
 
   addData(){
-    for(const [dir_index, dir_name] of Object.entries("xyz")){
-      for(const [offset_name, offset_by] of Object.entries([-1,1])){
-        let offset = [0,0,0];
-        offset[dir_index] = offset_by;
-        if(this.renderBlock(offset)){
-          let data = this.cData[`side_${dir_name}${offset_name}`]();
-          this.r.addData(data, this.getOffsetTexture(offset));
-        }
+    for(const [offset,name] of _OFFSET_NAMES){
+      if(this.renderBlock(offset)){
+        let data = this.cData[name]();
+        this.r.addData(data, this.getOffsetTexture(offset));
       }
     }
   }
@@ -58,3 +54,12 @@ export class CubeDataAdder extends GameComponent {
     return false;
   }
 }
+
+const _OFFSET_NAMES = [
+  [vec3.fromValues(-1,0,0), 'side_x0'],
+  [vec3.fromValues(1,0,0), 'side_x1'],
+  [vec3.fromValues(0,-1,0), 'side_y0'],
+  [vec3.fromValues(0,1,0), 'side_y1'],
+  [vec3.fromValues(0,0,-1), 'side_z0'],
+  [vec3.fromValues(0,0,1), 'side_z1'],
+]

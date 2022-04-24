@@ -1,4 +1,4 @@
-import {exportAs, iextend,  glTypeSize} from '../utils.js';
+import {exportAs,  glTypeSize} from '../utils.js';
 import {GameComponent} from '../game_component.js';
 
 
@@ -36,9 +36,12 @@ export class ToplevelVertexBundle{
   add(bundle){
     let nElems = bundle.maxindex + 1;
     {
-      iextend(this.positions, bundle.positions);
-      iextend(this.texCoords, bundle.texCoords);
-      iextend(this.indices, bundle.indices.map(v => v + this.maxindex + 1), this);
+      // iextend(this.positions, bundle.positions);
+      // iextend(this.texCoords, bundle.texCoords);
+      // iextend(this.indices, bundle.indices.map(v => v + this.maxindex + 1));
+      this.positions.push(...bundle.positions);
+      this.texCoords.push(...bundle.texCoords);
+      this.indices.push(...bundle.indices.map(v => v + this.maxindex + 1));
       this.maxindex += nElems;
     }
     this.nElems = this.indices.length;

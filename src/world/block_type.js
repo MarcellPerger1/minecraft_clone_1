@@ -59,6 +59,7 @@ export class BlockType {
 
   static updateRegistry(){
     assignNullSafe(Blocks, this.BlockByName, this.BlockByNum);
+    Blocks.count = Blocks.n = this.BlockByNum.length;
   }
 
   /**
@@ -75,7 +76,7 @@ export class BlockType {
 
 /**
  * All the blocks
- * @type {{air: BlockType, grass: BlockType, stone: BlockType}}
+ * @type {Object.<string, BlockType>}
  */
 export var Blocks = {};
 
@@ -88,5 +89,10 @@ BlockType.addTypes(
     bottom: 'grass_bottom'}
   }, 
   {name: 'stone', texture: 'stone'},
-  {name: 'dirt', texture: 'grass_bottom'}
+  {name: 'dirt', texture: 'grass_bottom'},
+  {name: 'oak_log', textures: {
+    top: 'oak_log_top',
+    bottom: 'oak_log_top',
+    side: 'oak_log_side'}
+  }
 )

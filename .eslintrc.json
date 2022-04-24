@@ -8,7 +8,9 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "ignorePatterns":[],
+  "ignorePatterns":[
+    "**/libs/**"
+  ],
   "globals":{
     "mat4": "readonly",
     "vec3": "readonly"

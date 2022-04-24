@@ -2,7 +2,7 @@ import { Renderer } from './renderer/renderer.js';
 import { Config } from './config.js';
 import { KeyInput } from './keyinput.js';
 import { Player } from './player.js';
-import { World, Blocks } from './world.js';
+import { WorldGenerator } from './world.js';
 
 /**
  * The global Game object
@@ -14,15 +14,15 @@ export class Game {
     this.r = this.renderer = new Renderer(this);
     this.ki = this.keyinput = new KeyInput();
     this.player = new Player(this);
-    this.w = this.world = new World(this, [0, 0, 0]);
-    for (let x = 0; x < 8; x++) {
-      for (let z = 0; z < 8; z++) {
-        this.world.setBlock([x, 0, z], Blocks[(x+z+1)%4]);
-      }
-    }
-    this.world.setBlock([15, 0, 0], Blocks.grass);
-    this.world.setBlock([0, 0, 15], Blocks.grass);
-    this.world.setBlock([0, 3, 0], Blocks.grass);
+    this.w = this.world = new WorldGenerator(this).generate();//new World(this, [0, 0, 0]);
+    // for (let x = 0; x < 8; x++) {
+    //   for (let z = 0; z < 8; z++) {
+    //     this.world.setBlock([x, 0, z], Blocks[(x+z+1)%5]);
+    //   }
+    // }
+    // this.world.setBlock([15, 0, 0], Blocks.grass);
+    // this.world.setBlock([0, 0, 15], Blocks.grass);
+    // this.world.setBlock([0, 3, 0], Blocks.grass);
     this.loadResources();
   }
 

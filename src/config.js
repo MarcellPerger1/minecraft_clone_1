@@ -20,6 +20,9 @@ export class Config {
   vRotMax;
   maxMouseMove;
   checkError;
+  // world generation
+  seed;
+  isTestWorld;
 
   constructor(cnf = {}, ...args) {
     assignNullSafe(this, classOf(this).DEFAULT, cnf ?? {}, ...args);
@@ -38,7 +41,7 @@ Config.DEFAULT = new Config({
   fsPath: "./shaders/fragment-shader.glsl",
   atlasImg: "./textures/atlas.png",
   atlasIndex: "./textures/atlas-index.json",
-  startPos: [0.5, 2.5, -5],
+  startPos: [0.5, 5.5, -5],
   startRot: {h: 0, v: 0},
   speed: 3.5,
   sensitivity: 0.5,
@@ -48,6 +51,8 @@ Config.DEFAULT = new Config({
   // because gl.getError has HUGE impacts on performance
   // and chrome dev tools reports it anyway
   checkError: false,  
+  seed: 'secret-seed',
+  isTestWorld: false,
 });
 
 
