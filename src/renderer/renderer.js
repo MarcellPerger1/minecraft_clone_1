@@ -98,6 +98,7 @@ export class Renderer extends GameComponent {
   initGLConfig(){
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.depthFunc(this.gl.LEQUAL);
+    this.gl.enable(this.gl.SCISSOR_TEST);
     this.checkGlFault();
   }
 
