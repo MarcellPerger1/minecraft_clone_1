@@ -17,14 +17,24 @@ export class Player extends GameComponent {
 
   pointer_move(e){
     if(this.game.hasPointerLock()){
-      this.rotation.h += clamp(
-        e.movementX, null, this.cnf.maxMouseMove[0]
-      ) * this.cnf.sensitivity;
-      this.rotation.v += clamp(
-        e.movementY, null, this.cnf.maxMouseMove[1]
-      ) * this.cnf.sensitivity;
+      this.rotation.h += this.clampMouseMovementPart(e, 0) * this.cnf.sensitivity;
+      this.rotation.v += this.clampMouseMovementPart(e, 1) * this.cnf.sensitivity;
     }
     this.clampRot();
+  }
+
+  /**
+   * Returns a part (x or y) of the mouse movement (from event `e`)
+   * clamped to the values set in `game.cnf`
+   * @param {MouseEvent} e - The event to get values from
+   * @param {number} part - Which part of the movement (0=x, 1=y)
+   * @returns {number} the clamped value
+   */
+  clampMouseMovementPart(e, part){
+    return clamp(
+      part==0 ? e.movementX : e.movementY,
+      -this.cnf.maxMouseMove[part], this.cnf.maxMouseMove[part]
+      );
   }
 
   clampRot(){

@@ -39,6 +39,7 @@ export class AtlasLoader extends GameComponent {
       fetchJsonFile(disableCaching(this.cnf.atlasIndex))
       .then(raw => new AtlasData(raw))
       .then(v => (this.data = v)),
+      // TODO: don't think this 'hack' works for png files :(
       loadTexture(this.gl, disableCaching(this.cnf.atlasImg))
       .then(tex => (this.texture = tex)),
     ])
