@@ -36,9 +36,7 @@ export class ToplevelVertexBundle{
   add(bundle){
     let nElems = bundle.maxindex + 1;
     {
-      // iextend(this.positions, bundle.positions);
-      // iextend(this.texCoords, bundle.texCoords);
-      // iextend(this.indices, bundle.indices.map(v => v + this.maxindex + 1));
+      // NOTE: could use iextend here but the lists should never get that large
       this.positions.push(...bundle.positions);
       this.texCoords.push(...bundle.texCoords);
       this.indices.push(...bundle.indices.map(v => v + this.maxindex + 1));
