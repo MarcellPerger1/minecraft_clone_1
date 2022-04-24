@@ -46,7 +46,7 @@ jobs:
       - name: Install npm stuff
         run: sudo npm install --unsafe-perm=true --allow-root
       - name: Run build_libs.sh
-      - run: |
+        run: |
           chmod +x ./scripts/build_libs.sh
           ./scripts/build_libs.sh
 
