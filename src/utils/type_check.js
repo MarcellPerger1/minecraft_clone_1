@@ -32,3 +32,11 @@ export const TypedArray = Object.getPrototypeOf(Uint8Array);
 export function isAnyArray(x){
   return isArray(x) || isTypedArray(x);
 }
+
+export function isPrimitive(x){
+  return Object(x) !== x;
+}
+
+export function isFunction(x){
+  return typeof x === 'function';
+}
