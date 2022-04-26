@@ -37,11 +37,15 @@ BaseConfig[Symbol.isConfig] = true;
  * @typedef {Object} GenerationConfigT
  * @property {SeedType} seed
  * @property {boolean} isTestWorld
+ * @property {Vec3} nScale
+ * @property {Vec3} wSize
 */
 export class GenerationConfig extends BaseConfig { }
 GenerationConfig.DEFAULT = new GenerationConfig({
   seed: 'secret-seed', 
-  isTestWorld: false
+  isTestWorld: false,
+  nScale: [11.14, 2, 11.14],
+  wSize: [16, 16, 16],
 });
 
 
