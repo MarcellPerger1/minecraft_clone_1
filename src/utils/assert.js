@@ -5,7 +5,7 @@ export var ASSERT_SETTINGS = {
 
 export function assert(condition, msg=null){
   if(!condition){
-    msg ??= "Assertion condition not met";
+    msg ??= "Assertion failed";
     if(ASSERT_SETTINGS.log){
       console.log(msg);
     }
@@ -14,6 +14,8 @@ export function assert(condition, msg=null){
     }
   }
 }
+
+export var assume = assert;
 
 export function unreachable(msg=null){
   assert(0, msg ?? "Unreachable code reached! Program should never reach here.");

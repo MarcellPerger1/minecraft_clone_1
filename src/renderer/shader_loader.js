@@ -8,8 +8,8 @@ import {GameComponent} from '../game_component.js';
 export class ShaderLoader extends GameComponent {
   constructor(game){
     super(game);
-    this.vsPath = game.cnf.vsPath;
-    this.fsPath = game.cnf.fsPath;
+    this.vsPath = this.cnf.shader.vsPath;
+    this.fsPath = this.cnf.shader.fsPath;
     this.fs = null;
     this.vs = null;
   }

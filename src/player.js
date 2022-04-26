@@ -6,8 +6,8 @@ import {clamp, toRad} from './utils.js';
 export class Player extends GameComponent {
   constructor(game){
     super(game);
-    this.rotation = Object.assign({}, this.cnf.startRot);
-    this.position = this.cnf.startPos.slice();
+    this.rotation = Object.assign({}, this.cnf.player.startRot);
+    this.position = this.cnf.player.startPos.slice();
   }
 
   addListeners(){
@@ -17,8 +17,10 @@ export class Player extends GameComponent {
 
   pointer_move(e){
     if(this.game.hasPointerLock()){
-      this.rotation.h += this.clampMouseMovementPart(e, 0) * this.cnf.sensitivity;
-      this.rotation.v += this.clampMouseMovementPart(e, 1) * this.cnf.sensitivity;
+      this.rotation.h += 
+        this.clampMouseMovementPart(e, 0) * this.cnf.controls.sensitivity;
+      this.rotation.v += 
+        this.clampMouseMovementPart(e, 1) * this.cnf.controls.sensitivity;
     }
     this.clampRot();
   }
@@ -33,12 +35,15 @@ export class Player extends GameComponent {
   clampMouseMovementPart(e, part){
     return clamp(
       part==0 ? e.movementX : e.movementY,
-      -this.cnf.maxMouseMove[part], this.cnf.maxMouseMove[part]
+      -this.cnf.controls.maxMouseMove[part],
+      this.cnf.controls.maxMouseMove[part]
       );
   }
 
   clampRot(){
-    this.rotation.v = clamp(this.rotation.v, this.cnf.vRotMin, this.cnf.vRotMax);
+    this.rotation.v = clamp(
+      this.rotation.v,
+      ...this.cnf.controls.vRotRange);
     this.rotation.h %= 360;
   }
 
@@ -61,7 +66,7 @@ export class Player extends GameComponent {
       movement[0] -= 1;
     }
     vec3.normalize(movement, movement);
-    this.moveRelRotation(movement, this.cnf.speed * this.deltaT);
+    this.moveRelRotation(movement, this.cnf.player.speed * this.deltaT);
   }
 
   addMoveBindings(){
