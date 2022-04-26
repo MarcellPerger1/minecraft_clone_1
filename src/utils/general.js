@@ -1,4 +1,5 @@
 import {isString, isFunction} from './type_check.js';
+import {assert} from "./assert.js";
 
 export function globExport(obj, name=null){
   name = name??obj.name;
