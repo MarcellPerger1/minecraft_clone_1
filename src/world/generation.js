@@ -8,7 +8,11 @@ export class WorldGenerator extends GameComponent{
   constructor(game){
     super(game);
     this.init();
-    this.ns = new SimplexNoise(this.cnf.seed);
+    this.ns = new SimplexNoise(this.gcnf.seed);
+  }
+
+  get gcnf(){
+    return this.cnf.generation;
   }
 
   init(){
@@ -16,7 +20,9 @@ export class WorldGenerator extends GameComponent{
   }
   
   generate(){
-    return this.cnf.isTestWorld ? this.generateTestWorld() : this.generateTerrain();
+    return this.gcnf.isTestWorld ? 
+      this.generateTestWorld() 
+      : this.generateTerrain();
   }
 
   generateTerrain(){

@@ -36,11 +36,11 @@ export class AtlasLoader extends GameComponent {
 
   loadResources(){
     return Promise.all([
-      fetchJsonFile(disableCaching(this.cnf.atlasIndex))
+      fetchJsonFile(disableCaching(this.cnf.atlas.indexPath))
       .then(raw => new AtlasData(raw))
       .then(v => (this.data = v)),
       // TODO: don't think this 'hack' works for png files :(
-      loadTexture(this.gl, disableCaching(this.cnf.atlasImg))
+      loadTexture(this.gl, disableCaching(this.cnf.atlas.imgPath))
       .then(tex => (this.texture = tex)),
     ])
   }

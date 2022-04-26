@@ -5,10 +5,15 @@ import { Player } from './player.js';
 import { WorldGenerator } from './world.js';
 
 /**
+ * @typedef {import('./config.js').ConfigT} ConfigT
+*/
+
+/**
  * The global Game object
 */
 export class Game {
   constructor(cnf) {
+    /** @type {ConfigT} */
     this.cnf = new Config(cnf);
     this.canvas = document.getElementById('glCanvas');
     this.r = this.renderer = new Renderer(this);
