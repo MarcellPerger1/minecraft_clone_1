@@ -49,16 +49,13 @@ GenerationConfig.DEFAULT = new GenerationConfig({
  * Controls Configs
  * @typedef {Object} ControlsConfigT
  * @property {number} sensitivity
- * @property {number} vRotMin
- * @property {number} vRotMax
+ * @property {[number, number]} vRotRange
  * @property {Vec2} maxMouseMove
  */
 export class ControlsConfig extends BaseConfig { }
 ControlsConfig.DEFAULT = new ControlsConfig({
   sensitivity: 0.5,
-  // TODO merge these
-  vRotMin: -80,
-  vRotMax: 80,
+  vRotRange: [-80, 80],
   maxMouseMove: [Infinity, Infinity],
 })
 

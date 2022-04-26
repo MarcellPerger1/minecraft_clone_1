@@ -43,7 +43,7 @@ export class Player extends GameComponent {
   clampRot(){
     this.rotation.v = clamp(
       this.rotation.v,
-      this.cnf.controls.vRotMin, this.cnf.controls.vRotMax);
+      ...this.cnf.controls.vRotRange);
     this.rotation.h %= 360;
   }
 
