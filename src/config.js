@@ -1,7 +1,6 @@
 import { classOf, exportAs, isObject } from './utils.js';
 
 
-
 Symbol.isConfig = Symbol.for('isConfig');
 Symbol.overrideType = Symbol.for('overrideType');
 
@@ -23,17 +22,14 @@ BaseConfig[Symbol.isConfig] = true;
 
 
 /**
- * Root Config object
- * @typedef {Object} ConfigT
- * @property {RGBA_Tuple} bgColor
- * @property {boolean} checkError
- * @property {GenerationConfigT} generation
- * @property {ControlsConfigT} controls
- * @property {PlayerConfigT} player
- * @property {ShaderConfigT} shader
- * @property {function():ConfigT} getWithDefaults
+ * @typedef {string} path
+ * @typedef {[number, number, number, number]} RGBA_Tuple
+ * @typedef {[number, number number]} Vec3
+ * @typedef {[number, number]} Vec2
+ * @typedef {(number|string)} SeedType
+ * @typedef {{h: number, v: number}} Rot3
 */
-export class Config extends BaseConfig { }
+
 
 
 /**
@@ -47,6 +43,7 @@ GenerationConfig.DEFAULT = new GenerationConfig({
   seed: 'secret-seed', 
   isTestWorld: false
 });
+
 
 /**
  * Controls Configs
@@ -64,6 +61,7 @@ ControlsConfig.DEFAULT = new ControlsConfig({
   vRotMax: 80,
   maxMouseMove: [Infinity, Infinity],
 })
+
 
 /**
  * Player Configs
@@ -106,7 +104,18 @@ AtlasConfig.DEFAULT = new AtlasConfig({
 })
 
 
-
+/**
+ * Root Config object
+ * @typedef {Object} ConfigT
+ * @property {RGBA_Tuple} bgColor
+ * @property {boolean} checkError
+ * @property {GenerationConfigT} generation
+ * @property {ControlsConfigT} controls
+ * @property {PlayerConfigT} player
+ * @property {ShaderConfigT} shader
+ * @property {function():ConfigT} getWithDefaults
+*/
+export class Config extends BaseConfig { }
 Config.DEFAULT = new Config({
   bgColor: [0.5, 0.86, 1.0, 1.0],
   // because gl.getError has HUGE impacts on performance
@@ -118,6 +127,8 @@ Config.DEFAULT = new Config({
   shader: ShaderConfig.DEFAULT,
   atlas: AtlasConfig.DEFAULT,
 });
+
+
 
 
 export function mergeConfigNested(...configs) {
@@ -154,74 +165,7 @@ export function _doDeepMerge(v){
   return false;
 }
 
-/**
- * @typedef {string} path
- * @typedef {[number, number, number, number]} RGBA_Tuple
- * @typedef {[number, number number]} Vec3
- * @typedef {[number, number]} Vec2
- * @typedef {(number|string)} SeedType
- * @typedef {{h: number, v: number}} Rot3
-*/
 
-// export function updateConfigNested(a, b) {
-//   if (b == null) { return a; }
-//   for (const [k, av] of Object.entries(a)) {
-//     let bv = b[k];
-//     if (bv == null) {
-//       continue;
-//     }
-//     if (av == null) {
-//       // todo copy the values from bv, not just assign
-//       a[k] = bv;
-//       continue;
-//     }
-//     if (!isObject(av)) {
-//       // not an object so dont need to recurse into av
-//       if (isObject(bv)) {
-//         // todo copy the values from bv, not just assign
-//         bv = bv;
-//       }
-//       a[k] = bv;
-//       continue;
-//     }
-//     // assert(isObject(av));
-//     if (!isObject(bv)) {
-//       // just assign (TODO: deepcopy?)
-//       a[k] = bv;
-//       continue;
-//     }
-//     // assert(isObject(av) && isObject(bv));
-//     updateConfigNested(av, bv);
-//   }
-//   return a;
-// }
-
-// export function deepcopyConfig(cnf, opts=null, memo=new Map()){
-//   setProto = opts?.setProto ?? true;
-//   // dont use memo for primitives
-//   if(isPrimitive(cnf)){
-//     return cnf;
-//   }
-//   if(memo.has(cnf)){
-//     return memo.get(cnf);
-//   }
-//   let r;
-//   if(isArray(cnf)){
-//     r = cnf.map(v => deepcopyConfig(v, memo));
-//   }
-//   if(isObject(cnf)){
-//     r = Object.fromEntries(
-//       Object.entries(cnf).map(
-//         ([k, v]) => [deepcopyConfig(k, memo), deepcopyConfig(v, memo)]
-//       )
-//     );
-//     if(setProto){
-//       Object.setPrototypeOf(r, Object.getPrototypeOf(cnf));
-//     }
-//   }
-//   memo.set(cnf, r);
-//   return r;
-// }
 
 
 exportAs(Config);
