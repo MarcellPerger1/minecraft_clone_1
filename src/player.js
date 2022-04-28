@@ -78,7 +78,7 @@ export class Player extends GameComponent {
     return this.ki.addFunc(
       new KeyEvent(key),
       (deltaT) => {
-        this.moveRelRotation(amount, this.cnf.speed * deltaT)
+        this.moveRelRotation(amount, this.cnf.player.speed * deltaT)
       }
     );
   }
