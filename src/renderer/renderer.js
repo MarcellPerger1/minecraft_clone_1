@@ -102,9 +102,19 @@ export class Renderer extends GameComponent {
     this.checkGlFault();
   }
 
+  /**
+   * Set size of webGL stuff
+   * @param {[number, number]} size
+  */
+  setGLSize(size, offset=null){
+    offset = (offset ?? [0,0]).slice(0, 2);
+    this.gl.viewport(...offset, ...size);
+    this.gl.scissor(...offset, ...size);
+  }
+
   // gl errors
   checkGlFault(){
-    if(!this.cnf.check_error){
+    if(!this.cnf.checkError){
       return
     }
     this.last_error = this.gl.getError();

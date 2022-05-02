@@ -1,11 +1,11 @@
-import {exportAs,  glTypeSize} from '../utils.js';
-import {GameComponent} from '../game_component.js';
+import { exportAs, glTypeSize } from '../utils.js';
+import { GameComponent } from '../game_component.js';
 
 
 
 // simply a container utility class for each 'section' of vertex data eg a 'section' could be a cube
-export class VertexBundle{
-  constructor(positions=null, texCoords=null, indices=null){
+export class VertexBundle {
+  constructor(positions = null, texCoords = null, indices = null) {
     this.positions = positions ?? [];
     this.texCoords = texCoords ?? [];
     this.indices = indices ?? [];
@@ -15,8 +15,8 @@ export class VertexBundle{
 }
 
 
-export class ToplevelVertexBundle{
-  constructor(type=null){
+export class ToplevelVertexBundle {
+  constructor(type = null) {
     this.positions = [];
     this.texCoords = [];
     this.indices = [];
@@ -27,57 +27,54 @@ export class ToplevelVertexBundle{
     this.nElems = 0;
   }
 
-  calcMaxIndex(){
+  calcMaxIndex() {
     // give -1 if no items instead of -Inf
     this.maxindex = Math.max(...this.indices, -1);
     return this.maxindex;
   }
-  
-  add(bundle){
+
+  add(bundle) {
     let nElems = bundle.maxindex + 1;
-    {
-      // NOTE: could use iextend here but the lists should never get that large
-      this.positions.push(...bundle.positions);
-      this.texCoords.push(...bundle.texCoords);
-      this.indices.push(...bundle.indices.map(v => v + this.maxindex + 1));
-      this.maxindex += nElems;
-    }
-    this.nElems = this.indices.length;
+    // NOTE: could use iextend here but the lists should never get that large
+    this.positions.push(...bundle.positions);
+    this.texCoords.push(...bundle.texCoords);
+    this.indices.push(...bundle.indices.map(v => v + this.maxindex + 1));
+    this.maxindex += nElems;
     return this;
   }
 }
 
 
-export class ElementBundler extends GameComponent{
-  constructor(game){
+export class ElementBundler extends GameComponent {
+  constructor(game) {
     super(game);
     this.reset();
   }
-  
-  reset(){
+
+  reset() {
     this.bundle = new ToplevelVertexBundle();
   }
-  
-  addData(bundle){
+
+  addData(bundle) {
     this.bundle.add(bundle);
   }
 
-  getPositionData(){
+  getPositionData() {
     return this.bundle.positions;
   }
-  getTexCoords(){
+  getTexCoords() {
     return this.bundle.texCoords;
   }
-  getIndices(){
+  getIndices() {
     return this.bundle.indices;
   }
-  get positions(){ return this.getPositionData(); }
-  get texCoords(){ return this.getTexCoords(); }
-  get indices(){ return this.getIndices(); }
+  get positions() { return this.getPositionData(); }
+  get texCoords() { return this.getTexCoords(); }
+  get indices() { return this.getIndices(); }
 
-  drawElements(){
+  drawElements() {
     this.gl.drawElements(
-      this.gl.TRIANGLES, this.bundle.nElems, this.bundle.elemType, 0);
+      this.gl.TRIANGLES, this.bundle.indices.length, this.bundle.elemType, 0);
   }
 }
 
