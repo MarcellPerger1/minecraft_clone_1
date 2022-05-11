@@ -7,6 +7,9 @@ function configJsonReplacer(_key, value){
   if (value == Infinity){
     return "Infinity"
   }
+  if(value == -Infinity){
+    return "-Infinity";
+  }
   if(isObject(value) && !isPureObject(value)){
     return {$class: value.constructor.name, ...value};
   }
@@ -20,6 +23,9 @@ function configJsonReviver(key, value){
   }
   if(value == "Infinity"){
     return Infinity;
+  }
+  if(value == "-Infinity"){
+    return -Infinity;
   }
   let cnf_cls = _getConfigClass(key, value);
   return cnf_cls ? new cnf_cls(value) : value;
