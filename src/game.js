@@ -3,6 +3,7 @@ import { Config } from './config.js';
 import { KeyInput } from './keyinput.js';
 import { Player } from './player.js';
 import { WorldGenerator } from './world.js';
+import { parseJsonConfig, stringifyJsonConfig } from "./config_loader.js";
 
 /**
  * @typedef {import('./config.js').ConfigT} ConfigT

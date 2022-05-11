@@ -1,0 +1,60 @@
+{
+  "$class": "Config",
+  "bgColor": [
+    0.5,
+    0.86,
+    1,
+    1
+  ],
+  "checkError": false,
+  "generation": {
+    "$class": "GenerationConfig",
+    "seed": "secret-seed",
+    "isTestWorld": false,
+    "nScale": [
+      11.14,
+      2,
+      11.14
+    ],
+    "wSize": [
+      16,
+      16,
+      16
+    ]
+  },
+  "controls": {
+    "$class": "ControlsConfig",
+    "sensitivity": 0.5,
+    "vRotRange": [
+      -80,
+      80
+    ],
+    "maxMouseMove": [
+      "Infinity",
+      "Infinity"
+    ]
+  },
+  "player": {
+    "$class": "PlayerConfig",
+    "startPos": [
+      0.5,
+      5.5,
+      -5
+    ],
+    "startRot": {
+      "h": 0,
+      "v": 0
+    },
+    "speed": 3.5
+  },
+  "shader": {
+    "$class": "ShaderConfig",
+    "vsPath": "./shaders/vertex-shader.glsl",
+    "fsPath": "./shaders/fragment-shader.glsl"
+  },
+  "atlas": {
+    "$class": "AtlasConfig",
+    "imgPath": "./res/atlas.png",
+    "indexPath": "./res/atlas-index.json"
+  }
+}
