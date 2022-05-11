@@ -22,14 +22,21 @@ function isTextureFile(f){
   return f.endsWith('.min.png') && !f.endsWith('atlas.min.png')
 }
 
+/**
+* @param trustCwd {boolean} is cwd set properly (ie. to project root)
+**/
+function getProjectRoot(trustCwd=true){
+  return trustCwd ? 
+    path.resolve() 
+    : path.resolve(__dirname, '..');
+}
+
 
 /**
 * @param trustCwd {boolean} is cwd set properly (ie. to project root)
 **/
 function getTexturesDir(trustCwd=true){
-  return trustCwd ? 
-    path.resolve('textures/') 
-    : path.resolve(__dirname, '../textures');
+  return path.resolve(getProjectRoot(trustCwd), 'textures/');
 }
 
 function drawNthImage(ctx, img, i){
@@ -37,6 +44,8 @@ function drawNthImage(ctx, img, i){
 }
 
 function main(){
+  const root = getProjectRoot();
+  const resDir = path.resolve(root, 'res/');
   const texDir = getTexturesDir();
   var canv, ctx, n;
   var i = 0;
@@ -60,11 +69,11 @@ function main(){
   let ondone = Promise.all([
     ondrawn.then((_) => {
       console.log('Creating atlas...');
-      return writeToPng(canv, path.join(texDir, 'atlas.png'));
+      return writeToPng(canv, path.join(resDir, 'atlas.png'));
     }), ondrawn.then((_) => {
       console.log('Indexing textures...');
       let s = JSON.stringify(data);
-      return fsP.writeFile(path.join(texDir, 'atlas-index.json'), s);
+      return fsP.writeFile(path.join(resDir, 'atlas-index.json'), s);
     })
   ])
   ondone.then((_) => {

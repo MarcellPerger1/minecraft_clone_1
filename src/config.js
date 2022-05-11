@@ -100,8 +100,8 @@ ShaderConfig.DEFAULT = new ShaderConfig({
 */
 export class AtlasConfig extends BaseConfig { }
 AtlasConfig.DEFAULT = new AtlasConfig({
-  imgPath: "./textures/atlas.png",
-  indexPath: "./textures/atlas-index.json",
+  imgPath: "./res/atlas.png",
+  indexPath: "./res/atlas-index.json",
 })
 
 
@@ -114,6 +114,7 @@ AtlasConfig.DEFAULT = new AtlasConfig({
  * @property {ControlsConfigT} controls
  * @property {PlayerConfigT} player
  * @property {ShaderConfigT} shader
+ * @property {AtlasConfigT} atlas
  * @property {function():ConfigT} getWithDefaults
 */
 export class Config extends BaseConfig { }

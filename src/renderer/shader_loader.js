@@ -12,12 +12,13 @@ export class ShaderLoader extends GameComponent {
     this.fsPath = this.cnf.shader.fsPath;
     this.fs = null;
     this.vs = null;
+    this.program = null;
   }
 
-  loadResources(){
-    return this.getLoaders()
-      .then(_res => programFromShaders(this.gl, this.vs, this.fs))
-      .then(p => (this.program = p));
+  async loadResources(){
+    await this.getLoaders();
+    const p = programFromShaders(this.gl, this.vs, this.fs);
+    return (this.program = p);
   }
 
   getLoaders(){
@@ -27,11 +28,10 @@ export class ShaderLoader extends GameComponent {
     ])
   }
 
-  loadResource(path, result_attr_name, sType){
-    return fetchTextFile(expectValue(path, "Path"))
-      .then(text => loadShader(this.gl, sType, text))
-      .then(result => (this[result_attr_name] = result))
-      .catch(reason => {throw reason;});
+  async loadResource(path, result_attr_name, sType){
+    const text = await fetchTextFile(expectValue(path, "Path"));
+    const result = loadShader(this.gl, sType, text);
+    return (this[result_attr_name] = result);
   }
 }
 
