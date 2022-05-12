@@ -1,4 +1,5 @@
 import { classOf, exportAs, isObject } from './utils.js';
+import {loadConfigFile} from "./config_loader.js";
 
 
 Symbol.isConfig = Symbol.for('isConfig');
@@ -160,14 +161,25 @@ export function mergeConfigNested(...configs) {
   return r;
 }
 
-export function _doDeepMerge(v){
+export function _shouldDeepMerge(v){
   if(v?.[Symbol.isConfig]){
     return true;
   }
   return false;
 }
 
-
+/**
+ * Get `Config` to use
+ * @param {...(ConfigT)} extra - Extra Configs to merge
+ * @returns {Promise<ConfigT>} The `Config` to use
+ */
+export async function getConfig(...extra){
+  let configs = await Promise.all([
+    loadConfigFile("./configs/default.json"),
+    loadConfigFile("./configs/config.json"),
+  ]);
+  return mergeConfigNested(...configs, ...extra);
+}
 
 
 exportAs(Config);
