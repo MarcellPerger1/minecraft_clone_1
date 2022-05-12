@@ -168,12 +168,12 @@ export function _shouldDeepMerge(v){
   return false;
 }
 
-export async function getConfig(){
+export async function getConfig(...extra){
   let configs = await Promise.all([
     loadConfigFile("./configs/default.json"),
     loadConfigFile("./configs/config.json"),
   ]);
-  return mergeConfigNested(...configs);
+  return mergeConfigNested(...configs, ...extra);
 }
 
 
