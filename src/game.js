@@ -1,5 +1,5 @@
 import { Renderer } from './renderer/renderer.js';
-import { Config } from './config.js';
+import { getConfig } from './config.js';
 import { KeyInput } from './keyinput.js';
 import { Player } from './player.js';
 import { WorldGenerator } from './world.js';
@@ -14,24 +14,37 @@ import { WorldGenerator } from './world.js';
 */
 export class Game {
   constructor(cnf) {
+    this.cnf_arg = cnf;
+    this.onInit = null;
+  }
+
+  async init() {
+    if (this.onInit == null) {
+      this.onInit = this._init();
+      return await this.onInit;
+    } else {
+      return this.onInit;
+    }
+  }
+
+  async _init() {
     /** @type {ConfigT} */
-    this.cnf = new Config(cnf);
+    this.cnf = await getConfig(this.cnf_arg);
     this.canvas = document.getElementById('glCanvas');
     this.r = this.renderer = new Renderer(this);
     this.ki = this.keyinput = new KeyInput();
     this.player = new Player(this);
     this.w = this.world = new WorldGenerator(this).generate();
-    this.loadResources();
+    await this.loadResources();
   }
 
   get gl() {
     return this.r.gl;
   }
 
-  loadResources() {
+  async loadResources() {
     this.makeResourceLoaders();
-    this.gatherResourceLoaders();
-    return this.onReady;
+    return await this.gatherResourceLoaders();
   }
 
   makeResourceLoaders() {
@@ -45,21 +58,17 @@ export class Game {
       return o.loadResources();
     });
     this.onReady = Promise.all(this.loadProms);
+    return this.onReady;
   }
 
-  start() {
-    this.onReady.then(_result => {
-      this.addAllListeners();
-      this.registerOnFrame();
-    })
-  }
-
-  onload() {
-    this.start();
+  async start() {
+    await this.init();
+    this.addAllListeners();
+    this.registerOnFrame();
   }
 
   main() {
-    this.onload();
+    this.start();
   }
 
   render(now = null) {

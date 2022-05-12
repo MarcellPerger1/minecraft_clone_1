@@ -168,6 +168,11 @@ export function _shouldDeepMerge(v){
   return false;
 }
 
+/**
+ * Get `Config` to use
+ * @param {...(ConfigT)} extra - Extra Configs to merge
+ * @returns {Promise<ConfigT>} The `Config` to use
+ */
 export async function getConfig(...extra){
   let configs = await Promise.all([
     loadConfigFile("./configs/default.json"),
