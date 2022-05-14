@@ -1,5 +1,5 @@
 "use strict";
-import { isPureObject, isObject, fetchTextFile } from "./utils.js";
+import { isPureObject, isObject, fetchTextFile, isArray } from "./utils.js";
 import * as CNF_MOD from "./config.js";
 import { mergeConfigNested } from "./config.js";
 
@@ -74,12 +74,17 @@ export async function loadConfigFile(path, inheritance=true) {
 
 /**
  * Handle inheritance for Configs
- * @param {{$extends: String}} config - the original config
+ * @param {{$extends: (String|String[])}} config - the original config
  * @returns {Promise<CNF_MOD.ConfigT>} the new config
 */
 export async function handleConfigInheritance(config) {
-  let base = config.$extends ?? "default";
-  return mergeConfigNested(await loadConfigByName(base), config);
+  /** @type {String[]} */
+  let bases = config.$extends ?? "default";
+  if(!isArray(bases)){ bases = [bases]; }
+  return mergeConfigNested(
+    ...await Promise.all(
+      bases.map(base => loadConfigByName(base))) 
+    ,config);
 }
 
 export async function loadConfigByName(/**@type{String}*/name){
