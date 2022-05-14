@@ -1,8 +1,7 @@
 "use strict";
-import { isPureObject, isObject, fetchTextFile, isArray } from "./utils.js";
+import { isPureObject, isObject, fetchTextFile, isArray, trim } from "./utils.js";
 import * as CNF_MOD from "./config.js";
 import { mergeConfigNested } from "./config.js";
-import { trim } from "./utils/str_utils.js";
 
 
 function configJsonReplacer(_key, value) {
