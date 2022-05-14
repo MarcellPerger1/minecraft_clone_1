@@ -1,6 +1,7 @@
 "use strict";
-import { isPureObject, isObject, fetchTextFile } from "./utils.js";
+import { isPureObject, isObject, fetchTextFile, isArray, trim } from "./utils.js";
 import * as CNF_MOD from "./config.js";
+import { mergeConfigNested } from "./config.js";
 
 
 function configJsonReplacer(_key, value) {
@@ -18,7 +19,7 @@ function configJsonReplacer(_key, value) {
 
 function configJsonReviver(key, value) {
   // comments: key= $comment | $# | // | /*
-  if (/^\s+(?:\$comment|\/\/|\/\*|\$#|#)/.test(key)) {
+  if (''.match(/^\s+(?:\$comment|\/\/|\/\*|\$#|#)/)) {
     return void 0;
   }
   if (value == "Infinity") {
@@ -57,10 +58,63 @@ export function stringifyJsonConfig(obj, space = 2) {
   return JSON.stringify(obj, configJsonReplacer, space);
 }
 
-export async function loadConfigFile(path) {
-  return parseJsonConfig(await fetchTextFile(path));
+/**
+ * Load .json Config file
+ * @param {String} path
+ * @param {boolean} inheritance - Use inheritance?
+ * @returns {Promise<CNF_MOD.ConfigT>} the loaded config
+*/
+export async function loadConfigFile(path, inheritance = true) {
+  let data = parseJsonConfig(await fetchTextFile(path));
+  if (inheritance) {
+    data = await handleConfigInheritance(data);
+  }
+  return data;
 }
 
-// function _toCamelCase(/** @type {string}*/s){
-//   return s.replace(/(?:[_\-]|^)([A-Za-z])([A-Za-z]+)/)
-// }
+/**
+ * Handle inheritance for Configs
+ * @param {{$extends: (String|String[])}} config - the original config
+ * @returns {Promise<CNF_MOD.ConfigT>} the new config
+*/
+export async function handleConfigInheritance(config) {
+  /** @type {String[]} */
+  let bases = config.$extends ?? "default";
+  if (!isArray(bases)) { bases = [bases]; }
+  return mergeConfigNested(
+    ...await Promise.all(
+      bases.map(base => loadConfigByName(base))), 
+    config);
+}
+
+export async function loadConfigByName(/**@type{String}*/name) {
+  switch (name) {
+    case "default":
+      return loadConfigDefaults();
+    default:
+      return loadConfigByFilename(name);
+  }
+}
+
+export async function loadConfigDefaults() {
+  return loadConfigFile(
+    "/configs/default.json",
+    // IMPORTANT: this is so that no infinite recursion getting defaults for default
+    false);
+}
+
+export async function loadConfigByFilename(path) {
+  return loadConfigFile(getConfigFilename(path));
+}
+
+function getConfigFilename(/** @type {String} */path) {
+  // NOTE: this input *may* eventually come from the user
+  // so a bit of security can't hurt
+  if (path.includes('..')) {
+    throw new ReferenceError("Config paths shouldn't contain '..'");
+  }
+  path = trim(path, './', { start: true });
+  if (!path.endsWith('.json')) { path += '.json'; }
+  return '/' + (path.startsWith("configs/") ? path : 'configs/' + path);
+}
+

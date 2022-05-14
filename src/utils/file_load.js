@@ -8,7 +8,7 @@ export function fetchTextFile(path){
   // todo use XMLHttpRequest for progress event (only needed when bigger files)
   return fetch(path).then(response => {
     if(!response.ok){
-      throw new Error("cant load resource")
+      throw new Error(`cant load resource at ${path}`)
     }
     return response.text();
   })
@@ -22,7 +22,7 @@ export function fetchJsonFile(path){
   // todo use XMLHttpRequest for progress event (only needed when bigger files)
   return fetch(path).then(response => {
     if(!response.ok){
-      throw new Error("cant load resource")
+      throw new Error(`cant load resource at ${path}`)
     }
     return response.json();
   })

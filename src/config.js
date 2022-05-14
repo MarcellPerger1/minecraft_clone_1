@@ -1,17 +1,19 @@
-import { classOf, exportAs, isObject } from './utils.js';
-import {loadConfigFile} from "./config_loader.js";
+import { assignNullSafe, classOf, exportAs, isArray, isObject } from './utils.js';
+import { loadConfigFile } from "./config_loader.js";
 
 
 Symbol.isConfig = Symbol.for('isConfig');
 Symbol.overrideType = Symbol.for('overrideType');
 
+const _CONSTRUCTOR_OVERRIDES = {
+  [Symbol.overrideType]: Object,
+  [Symbol.isConfig]: true
+};
 export class BaseConfig {
   static DEFAULT;
-  
-  constructor(cnf = {}, ...args) {
-    Object.assign(this, mergeConfigNested(
-      classOf(this).DEFAULT, cnf, ...args,
-      {[Symbol.overrideType]: Object, [Symbol.isConfig]: true}));
+
+  constructor(...configs) {
+    assignNullSafe(this, mergeConfigNested(...configs, _CONSTRUCTOR_OVERRIDES));
   }
 
   getWithDefaults() {
@@ -43,7 +45,7 @@ BaseConfig[Symbol.isConfig] = true;
 */
 export class GenerationConfig extends BaseConfig { }
 GenerationConfig.DEFAULT = new GenerationConfig({
-  seed: 'secret-seed', 
+  seed: 'secret-seed',
   isTestWorld: false,
   nScale: [11.14, 2, 11.14],
   wSize: [16, 16, 16],
@@ -135,25 +137,20 @@ Config.DEFAULT = new Config({
 
 
 export function mergeConfigNested(...configs) {
-  let cnf_t = Object;
-  for(const cnf of configs){
-    if(cnf?.[Symbol.overrideType]!=null){
-      cnf_t = cnf[Symbol.overrideType];
-    } else {
-      if(cnf?.constructor ?? Object !== Object){
-        cnf_t = cnf.constructor;
-      }
-    }
-  }
+  let cnf_t = _getConfigType(configs);
   let r = new cnf_t();
-  for(const cnf of configs){
-    if(cnf==null){continue;}
-    for(let [k, cv] of Object.entries(cnf)){
+  for (const cnf of configs) {
+    if (cnf == null) { continue; }
+    for (let [k, cv] of Object.entries(cnf)) {
       let rv = r[k];
-      if(cv==null) { continue; }
-      if(isObject(cv)){
+      if (cv == null) { continue; }
+      if (isObject(cv)) {
         // merge with {} to deepcopy(not very well)
+        cv = cv.valueOf();
         cv = mergeConfigNested(isObject(rv) ? rv : {}, cv);
+      }
+      if (isArray(cv)) {
+        cv = cv.slice(); // shallow copy for now
       }
       r[k] = cv;
     }
@@ -161,8 +158,22 @@ export function mergeConfigNested(...configs) {
   return r;
 }
 
-export function _shouldDeepMerge(v){
-  if(v?.[Symbol.isConfig]){
+function _getConfigType(configs) {
+  let cnf_t = Object;
+  for (const cnf of configs) {
+    if (cnf?.[Symbol.overrideType] != null) {
+      cnf_t = cnf[Symbol.overrideType];
+    } else {
+      if ((cnf?.constructor ?? Object) !== Object) {
+        cnf_t = cnf.constructor;
+      }
+    }
+  }
+  return cnf_t;
+}
+
+export function _shouldDeepMerge(v) {
+  if (v?.[Symbol.isConfig]) {
     return true;
   }
   return false;
@@ -173,12 +184,9 @@ export function _shouldDeepMerge(v){
  * @param {...(ConfigT)} extra - Extra Configs to merge
  * @returns {Promise<ConfigT>} The `Config` to use
  */
-export async function getConfig(...extra){
-  let configs = await Promise.all([
-    loadConfigFile("./configs/default.json"),
-    loadConfigFile("./configs/config.json"),
-  ]);
-  return mergeConfigNested(...configs, ...extra);
+export async function getConfig(...extra) {
+  let config = await loadConfigFile("./configs/config.json");
+  return mergeConfigNested(config, ...extra);
 }
 
 
