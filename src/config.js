@@ -1,17 +1,19 @@
-import { classOf, exportAs, isObject } from './utils.js';
+import { assignNullSafe, classOf, exportAs, isObject } from './utils.js';
 import {loadConfigFile} from "./config_loader.js";
 
 
 Symbol.isConfig = Symbol.for('isConfig');
 Symbol.overrideType = Symbol.for('overrideType');
 
+const _CONSTRUCTOR_OVERRIDES = {
+  [Symbol.overrideType]: Object,
+  [Symbol.isConfig]: true
+};
 export class BaseConfig {
   static DEFAULT;
   
-  constructor(cnf = {}, ...args) {
-    Object.assign(this, mergeConfigNested(
-      classOf(this).DEFAULT, cnf, ...args,
-      {[Symbol.overrideType]: Object, [Symbol.isConfig]: true}));
+  constructor(...configs) {
+    assignNullSafe(this, mergeConfigNested(...configs, _CONSTRUCTOR_OVERRIDES));
   }
 
   getWithDefaults() {
@@ -140,7 +142,7 @@ export function mergeConfigNested(...configs) {
     if(cnf?.[Symbol.overrideType]!=null){
       cnf_t = cnf[Symbol.overrideType];
     } else {
-      if(cnf?.constructor ?? Object !== Object){
+      if((cnf?.constructor ?? Object) !== Object){
         cnf_t = cnf.constructor;
       }
     }
