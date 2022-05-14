@@ -174,11 +174,8 @@ export function _shouldDeepMerge(v){
  * @returns {Promise<ConfigT>} The `Config` to use
  */
 export async function getConfig(...extra){
-  let configs = await Promise.all([
-    loadConfigFile("./configs/default.json"),
-    loadConfigFile("./configs/config.json"),
-  ]);
-  return mergeConfigNested(...configs, ...extra);
+  let config = await loadConfigFile("./configs/default.json");
+  return mergeConfigNested(config, ...extra);
 }
 
 

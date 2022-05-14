@@ -1,6 +1,7 @@
 "use strict";
 import { isPureObject, isObject, fetchTextFile } from "./utils.js";
 import * as CNF_MOD from "./config.js";
+import { mergeConfigNested } from "./config.js";
 
 
 function configJsonReplacer(_key, value) {
@@ -57,8 +58,44 @@ export function stringifyJsonConfig(obj, space = 2) {
   return JSON.stringify(obj, configJsonReplacer, space);
 }
 
-export async function loadConfigFile(path) {
-  return parseJsonConfig(await fetchTextFile(path));
+/**
+ * Load .json Config file
+ * @param {String} path
+ * @param {boolean} inheritance - Use inheritance?
+ * @returns {Promise<CNF_MOD.ConfigT>} the loaded config
+*/
+export async function loadConfigFile(path, inheritance=true) {
+  let data = parseJsonConfig(await fetchTextFile(path));
+  if(inheritance){
+    data = await handleConfigInheritance(data);
+  }
+  return data;
+}
+
+/**
+ * Handle inheritance for Configs
+ * @param {{$extends: String}} config - the original config
+ * @returns {Promise<CNF_MOD.ConfigT>} the new config
+*/
+export async function handleConfigInheritance(config) {
+  let base = config.$extends ?? "default";
+  return mergeConfigNested(await loadConfigByName(base), config);
+}
+
+export async function loadConfigByName(/**@type{String}*/name){
+  switch (name) {
+    case "default":
+      return loadConfigDefaults();
+    default:
+      throw new ReferenceError("Unknown config name");
+  }
+}
+
+export async function loadConfigDefaults(){
+  return loadConfigFile(
+    "./configs/default.json",
+    // IMPORTANT: this is so that no infinite recursion getting defaults for default
+    false);
 }
 
 // function _toCamelCase(/** @type {string}*/s){
