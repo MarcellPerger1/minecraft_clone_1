@@ -13,8 +13,8 @@ export class CubeVertexData extends GameComponent {
     this.textures = textures;
   }
 
-  // NOTE: only x coords needed on a per-texture basis
-  // as y coords always just 0 and 1 as texture is flat long
+  // NOTE: only texture x coords needed on a per-texture basis
+  // as texture y coords always just 0 and 1 as texture is flat long
   side_x0(){
     const [x0, y0, z0] = this.p0;
     const [_x1, y1, z1] = this.p1;

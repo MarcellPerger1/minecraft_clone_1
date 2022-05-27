@@ -44,12 +44,12 @@ BaseConfig[Symbol.isConfig] = true;
  * @property {Vec3} wSize
 */
 export class GenerationConfig extends BaseConfig { }
-GenerationConfig.DEFAULT = new GenerationConfig({
-  seed: 'secret-seed',
-  isTestWorld: false,
-  nScale: [11.14, 2, 11.14],
-  wSize: [16, 16, 16],
-});
+// GenerationConfig.DEFAULT = new GenerationConfig({
+//   seed: 'secret-seed',
+//   isTestWorld: false,
+//   nScale: [11.14, 2, 11.14],
+//   wSize: [16, 16, 16],
+// });
 
 
 /**
@@ -60,11 +60,11 @@ GenerationConfig.DEFAULT = new GenerationConfig({
  * @property {Vec2} maxMouseMove
  */
 export class ControlsConfig extends BaseConfig { }
-ControlsConfig.DEFAULT = new ControlsConfig({
-  sensitivity: 0.5,
-  vRotRange: [-80, 80],
-  maxMouseMove: [Infinity, Infinity],
-})
+// ControlsConfig.DEFAULT = new ControlsConfig({
+//   sensitivity: 0.5,
+//   vRotRange: [-80, 80],
+//   maxMouseMove: [Infinity, Infinity],
+// })
 
 
 /**
@@ -75,11 +75,11 @@ ControlsConfig.DEFAULT = new ControlsConfig({
  * @property {number} speed
 */
 export class PlayerConfig extends BaseConfig { }
-PlayerConfig.DEFAULT = new PlayerConfig({
-  startPos: [0.5, 5.5, -5],
-  startRot: { h: 0, v: 0 },
-  speed: 3.5,
-});
+// PlayerConfig.DEFAULT = new PlayerConfig({
+//   startPos: [0.5, 5.5, -5],
+//   startRot: { h: 0, v: 0 },
+//   speed: 3.5,
+// });
 
 
 /**
@@ -89,10 +89,10 @@ PlayerConfig.DEFAULT = new PlayerConfig({
  * @property {path} fsPath
 */
 export class ShaderConfig extends BaseConfig { }
-ShaderConfig.DEFAULT = new ShaderConfig({
-  vsPath: "./shaders/vertex-shader.glsl",
-  fsPath: "./shaders/fragment-shader.glsl",
-})
+// ShaderConfig.DEFAULT = new ShaderConfig({
+//   vsPath: "./shaders/vertex-shader.glsl",
+//   fsPath: "./shaders/fragment-shader.glsl",
+// })
 
 
 /**
@@ -102,10 +102,10 @@ ShaderConfig.DEFAULT = new ShaderConfig({
  * @property {path} indexPath
 */
 export class AtlasConfig extends BaseConfig { }
-AtlasConfig.DEFAULT = new AtlasConfig({
-  imgPath: "./res/atlas.png",
-  indexPath: "./res/atlas-index.json",
-})
+// AtlasConfig.DEFAULT = new AtlasConfig({
+//   imgPath: "./res/atlas.png",
+//   indexPath: "./res/atlas-index.json",
+// })
 
 
 /**
@@ -121,17 +121,17 @@ AtlasConfig.DEFAULT = new AtlasConfig({
  * @property {function():ConfigT} getWithDefaults
 */
 export class Config extends BaseConfig { }
-Config.DEFAULT = new Config({
-  bgColor: [0.5, 0.86, 1.0, 1.0],
-  // because gl.getError has HUGE impacts on performance
-  // and chrome dev tools reports it anyway
-  checkError: false,
-  generation: GenerationConfig.DEFAULT,
-  controls: ControlsConfig.DEFAULT,
-  player: PlayerConfig.DEFAULT,
-  shader: ShaderConfig.DEFAULT,
-  atlas: AtlasConfig.DEFAULT,
-});
+// Config.DEFAULT = new Config({
+//   bgColor: [0.5, 0.86, 1.0, 1.0],
+//   // because gl.getError has HUGE impacts on performance
+//   // and chrome dev tools reports it anyway
+//   checkError: false,
+//   generation: GenerationConfig.DEFAULT,
+//   controls: ControlsConfig.DEFAULT,
+//   player: PlayerConfig.DEFAULT,
+//   shader: ShaderConfig.DEFAULT,
+//   atlas: AtlasConfig.DEFAULT,
+// });
 
 
 

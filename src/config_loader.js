@@ -17,9 +17,18 @@ function configJsonReplacer(_key, value) {
   return value;
 }
 
+/**
+ * Return if string should be interpretted as comment
+ * @param {String} s
+ * @returns {Boolean}
+*/
+export function isComment(s){
+  // comments: key= $comment | $# | // | /* | #
+  return s.match(/^\s+(?:\$comment|\/\/|\/\*|\$#|#)/)
+}
+
 function configJsonReviver(key, value) {
-  // comments: key= $comment | $# | // | /*
-  if (''.match(/^\s+(?:\$comment|\/\/|\/\*|\$#|#)/)) {
+  if (isComment(key)) {
     return void 0;
   }
   if (value == "Infinity") {
@@ -83,7 +92,7 @@ export async function handleConfigInheritance(config) {
   if (!isArray(bases)) { bases = [bases]; }
   return mergeConfigNested(
     ...await Promise.all(
-      bases.map(base => loadConfigByName(base))), 
+      bases.filter(base => !isComment(base)).map(base => loadConfigByName(base))), 
     config);
 }
 
