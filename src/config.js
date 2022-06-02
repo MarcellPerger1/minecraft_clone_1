@@ -44,12 +44,6 @@ BaseConfig[Symbol.isConfig] = true;
  * @property {Vec3} wSize
 */
 export class GenerationConfig extends BaseConfig { }
-// GenerationConfig.DEFAULT = new GenerationConfig({
-//   seed: 'secret-seed',
-//   isTestWorld: false,
-//   nScale: [11.14, 2, 11.14],
-//   wSize: [16, 16, 16],
-// });
 
 
 /**
@@ -60,11 +54,6 @@ export class GenerationConfig extends BaseConfig { }
  * @property {Vec2} maxMouseMove
  */
 export class ControlsConfig extends BaseConfig { }
-// ControlsConfig.DEFAULT = new ControlsConfig({
-//   sensitivity: 0.5,
-//   vRotRange: [-80, 80],
-//   maxMouseMove: [Infinity, Infinity],
-// })
 
 
 /**
@@ -75,11 +64,6 @@ export class ControlsConfig extends BaseConfig { }
  * @property {number} speed
 */
 export class PlayerConfig extends BaseConfig { }
-// PlayerConfig.DEFAULT = new PlayerConfig({
-//   startPos: [0.5, 5.5, -5],
-//   startRot: { h: 0, v: 0 },
-//   speed: 3.5,
-// });
 
 
 /**
@@ -89,23 +73,15 @@ export class PlayerConfig extends BaseConfig { }
  * @property {path} fsPath
 */
 export class ShaderConfig extends BaseConfig { }
-// ShaderConfig.DEFAULT = new ShaderConfig({
-//   vsPath: "./shaders/vertex-shader.glsl",
-//   fsPath: "./shaders/fragment-shader.glsl",
-// })
 
 
 /**
  * Atlas Configs
  * @typedef {Object} AtlasConfigT
- * @property {path} imgPath
- * @property {path} indexPath
+ * @property {Path} imgPath
+ * @property {Path} indexPath
 */
 export class AtlasConfig extends BaseConfig { }
-// AtlasConfig.DEFAULT = new AtlasConfig({
-//   imgPath: "./res/atlas.png",
-//   indexPath: "./res/atlas-index.json",
-// })
 
 
 /**
@@ -121,24 +97,18 @@ export class AtlasConfig extends BaseConfig { }
  * @property {function():ConfigT} getWithDefaults
 */
 export class Config extends BaseConfig { }
-// Config.DEFAULT = new Config({
-//   bgColor: [0.5, 0.86, 1.0, 1.0],
-//   // because gl.getError has HUGE impacts on performance
-//   // and chrome dev tools reports it anyway
-//   checkError: false,
-//   generation: GenerationConfig.DEFAULT,
-//   controls: ControlsConfig.DEFAULT,
-//   player: PlayerConfig.DEFAULT,
-//   shader: ShaderConfig.DEFAULT,
-//   atlas: AtlasConfig.DEFAULT,
-// });
-
 
 
 
 export function mergeConfigNested(...configs) {
   let cnf_t = _getConfigType(configs);
-  let r = new cnf_t();
+  let r = new cnf_t();  // result
+  if(isArray(r)){
+    for(const [i, v] of Object.entries(configs[configs.length-1])){
+      r[i] = mergeConfigNested(v);
+    }
+    return r;
+  }
   for (const cnf of configs) {
     if (cnf == null) { continue; }
     for (let [k, cv] of Object.entries(cnf)) {
@@ -157,6 +127,31 @@ export function mergeConfigNested(...configs) {
   }
   return r;
 }
+
+export function objDeepMerge(...objs){
+  objs = objs.filter(v=>v!=null);
+  if(!objs.length) {
+    // all nullish so return undefined (could throw error?)
+    return;
+  }
+  let objsToCopy = objs.slice();
+  let isConstructor, objType;
+  let i = -1;
+  while(++i >= objs.length){
+    let o = objs[o];
+    if(!isAnyObject(o)){
+      isConstructor = false;
+      // remove all elements before this one as they would be overwritten
+      objsToCopy.splice(0, i);
+    } else {
+      isConstructor = true;
+    }
+    objType = o.constructor;
+  }
+  // make new object
+  
+}
+
 
 function _getConfigType(configs) {
   let cnf_t = Object;
