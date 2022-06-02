@@ -1,4 +1,4 @@
-import { assignNullSafe, classOf, exportAs, isArray, isObject } from './utils.js';
+import { assignNullSafe, classOf, exportAs, isAnyObject, isArray, isObject } from './utils.js';
 import { loadConfigFile } from "./config_loader.js";
 
 
@@ -100,7 +100,12 @@ export class Config extends BaseConfig { }
 
 
 
+// todo this is super dirty!
 export function mergeConfigNested(...configs) {
+  configs = configs.filter(v=>v!=null);
+  if(!isAnyObject(configs[configs.length-1])){
+    return configs[configs.length-1];
+  }
   let cnf_t = _getConfigType(configs);
   let r = new cnf_t();  // result
   if(isArray(r)){
@@ -114,13 +119,10 @@ export function mergeConfigNested(...configs) {
     for (let [k, cv] of Object.entries(cnf)) {
       let rv = r[k];
       if (cv == null) { continue; }
-      if (isObject(cv)) {
-        // merge with {} to deepcopy(not very well)
+      if (isObject(cv)||isArray(cv)) {
+        // merge with null to deepcopy(not very well)
         cv = cv.valueOf();
         cv = mergeConfigNested(isObject(rv) ? rv : {}, cv);
-      }
-      if (isArray(cv)) {
-        cv = cv.slice(); // shallow copy for now
       }
       r[k] = cv;
     }

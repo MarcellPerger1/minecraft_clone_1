@@ -28,7 +28,7 @@ export function isComment(s){
 }
 
 function configJsonReviver(key, value) {
-  if (isComment(key)) {
+  if (isComment(key) || key=="$class") {
     return void 0;
   }
   if (value == "Infinity") {
