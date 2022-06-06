@@ -1,4 +1,4 @@
-import { assignNullSafe, classOf, exportAs, isAnyObject, isArray, isObject } from './utils.js';
+import { assignNullSafe, classOf, exportAs, getTypeTag, isAnyObject, isArray, isObject, removePrefix } from './utils.js';
 import { loadConfigFile } from "./config_loader.js";
 
 
@@ -102,14 +102,14 @@ export class Config extends BaseConfig { }
 
 // todo this is super dirty!
 export function mergeConfigNested(...configs) {
-  configs = configs.filter(v=>v!=null);
-  if(!isAnyObject(configs[configs.length-1])){
-    return configs[configs.length-1];
+  configs = configs.filter(v => v != null);
+  if (!isAnyObject(configs[configs.length - 1])) {
+    return configs[configs.length - 1];
   }
   let cnf_t = _getConfigType(configs);
   let r = new cnf_t();  // result
-  if(isArray(r)){
-    for(const [i, v] of Object.entries(configs[configs.length-1])){
+  if (isArray(r)) {
+    for (const [i, v] of Object.entries(configs[configs.length - 1])) {
       r[i] = mergeConfigNested(v);
     }
     return r;
@@ -119,7 +119,7 @@ export function mergeConfigNested(...configs) {
     for (let [k, cv] of Object.entries(cnf)) {
       let rv = r[k];
       if (cv == null) { continue; }
-      if (isObject(cv)||isArray(cv)) {
+      if (isObject(cv) || isArray(cv)) {
         // merge with null to deepcopy(not very well)
         cv = cv.valueOf();
         cv = mergeConfigNested(isObject(rv) ? rv : {}, cv);
@@ -130,28 +130,88 @@ export function mergeConfigNested(...configs) {
   return r;
 }
 
-export function objDeepMerge(...objs){
-  objs = objs.filter(v=>v!=null);
-  if(!objs.length) {
+/**
+* deep copy and merge some objects
+* @param {Array<*>} objs - Objects to deepmerge
+* @param {Object} cnf - Config
+* @param {Array<*>} [cnf.weakObjTypes=[Object]]
+* @returns {*}
+*/
+export function objDeepMerge(objs, cnf) {
+  objs = objs.filter(v => v != null);
+  if (!objs.length) {
     // all nullish so return undefined (could throw error?)
     return;
   }
-  let objsToCopy = objs.slice();
-  let isConstructor, objType;
+  let isObjType, primVal, lastPrimIndex;
   let i = -1;
-  while(++i >= objs.length){
-    let o = objs[o];
-    if(!isAnyObject(o)){
-      isConstructor = false;
-      // remove all elements before this one as they would be overwritten
-      objsToCopy.splice(0, i);
-    } else {
-      isConstructor = true;
+  while (++i < objs.length) {
+    let o = objs[i];
+    if (!isAnyObject(o)) {
+      primVal = o;
+      lastPrimIndex = i;
     }
-    objType = o.constructor;
   }
   // make new object
-  
+  // if primitive, return it
+  if (!isObjType) {
+    return primVal;
+  }
+  objs = objs.splice(0, lastPrimIndex);
+  let lastObj = objs[objs.length - 1];
+  let ttag = getTypeTag(lastObj);
+  let res = _constructFromTag(ttag);
+  if(isArray(res)){
+    // arrays just override each other
+    lastObj.forEach((v, i) => {res[i] = objDeepMerge([v])})
+    return res;
+  } else {
+    // for now, only copy ennumerable properties
+    // TODO: option in cnf
+    
+  }
+}
+
+// NOTE: 0 is used as the default for `protoOverride`
+// becausae prototypes have to be Object or mull
+// therefore can't use null as default and 
+// i would rather not get into the null/undefined stuff
+// so just use something that could never be valid as a prototype
+// ie. not null or Object.
+// therefore just use any primitive (0 in this case)
+function _constructFromTag(obj, /**@type{string}*/ttag, protoOverride=0) {
+  if (isArray(obj)) {
+    return new obj.constructor(obj.length);
+  }
+  let Ctor = obj.constructor;
+  ttag = removeSuffix(removePrefix(ttag, '[object '), ']');
+  let res;
+  switch (ttag) {
+    case 'Number':
+    case 'String':
+    case 'Boolean':
+    case 'Date':
+      return new Ctor(obj);
+    case 'Map':
+    case 'Set':
+      return new Ctor();
+    case 'Symbol':
+      return Object(Symbol.prototype.valueOf.call(obj));
+    case 'RegExp':
+      res = new obj.constructor(obj.source, obj.flags);
+      res.lastIndex = obj.lastIndex;
+      return res;
+    case 'Object':
+      if(typeof res.constructor !== 'function'){
+        return {};
+      }
+      let proto = protoOverride===0
+        ? Object.getPrototypeOf(obj)
+        : protoOverride;
+      return Object.create(proto);
+    default:
+      throw new TypeError(`Don't know how to merge ${ttag} objects`);
+  }
 }
 
 
