@@ -99,38 +99,6 @@ export class AtlasConfig extends BaseConfig { }
 */
 export class Config extends BaseConfig { }
 
-
-
-// todo this is super dirty!
-export function mergeConfigNested__(...configs) {
-  configs = configs.filter(v => v != null);
-  if (!isAnyObject(configs.at(-1))) {
-    return configs.at(-1);
-  }
-  let cnf_t = _getConfigType(configs);
-  let r = new cnf_t();  // result
-  if (isArray(r)) {
-    for (const [i, v] of Object.entries(configs.at(-1))) {
-      r[i] = mergeConfigNested(v);
-    }
-    return r;
-  }
-  for (const cnf of configs) {
-    if (cnf == null) { continue; }
-    for (let [k, cv] of Object.entries(cnf)) {
-      let rv = r[k];
-      if (cv == null) { continue; }
-      if (isObject(cv) || isArray(cv)) {
-        // merge with null to deepcopy(not very well)
-        cv = cv.valueOf();
-        cv = mergeConfigNested(isObject(rv) ? rv : {}, cv);
-      }
-      r[k] = cv;
-    }
-  }
-  return r;
-}
-
 /**
 * deep copy and merge some objects
 * @param {Array<*>} objs - Objects to deepmerge
@@ -286,27 +254,6 @@ function _isPrototype(value){
     && value.constructor.prototype === value
 }
 
-
-function _getConfigType(configs) {
-  let cnf_t = Object;
-  for (const cnf of configs) {
-    if (cnf?.[Symbol.overrideType] != null) {
-      cnf_t = cnf[Symbol.overrideType];
-    } else {
-      if ((cnf?.constructor ?? Object) !== Object) {
-        cnf_t = cnf.constructor;
-      }
-    }
-  }
-  return cnf_t;
-}
-
-export function _shouldDeepMerge(v) {
-  if (v?.[Symbol.isConfig]) {
-    return true;
-  }
-  return false;
-}
 
 /**
  * Get `Config` to use
