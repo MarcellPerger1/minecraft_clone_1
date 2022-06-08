@@ -5,13 +5,13 @@ import {  getTypeTag, isAnyObject, isArray, removePrefix, removeSuffix } from '.
 /**
 * deep copy and merge some objects
 * @param {Array<*>} objs - Objects to deepmerge
-* @param {Object} cnf - Config
+* @param {Object} [cnf] - Config
 * @param {Array<*>} [cnf.weakObjTypes=[Object]]
 * @param {*} [cnf.protoOverride]
 * @param {*} [cnf.ctorOverride]
 * @returns {*}
 */
-export function objDeepMerge(objs, cnf) {
+export function objDeepMerge(objs, cnf=null) {
   assert(isArray(objs), 
          "deepMerge first arg must be an array; " +
          "try putting the arguments into an array");
