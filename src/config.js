@@ -102,7 +102,7 @@ export class Config extends BaseConfig { }
 
 
 // todo this is super dirty!
-export function mergeConfigNested(...configs) {
+export function mergeConfigNested__(...configs) {
   configs = configs.filter(v => v != null);
   if (!isAnyObject(configs.at(-1))) {
     return configs.at(-1);

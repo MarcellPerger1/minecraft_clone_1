@@ -1,7 +1,7 @@
 "use strict";
 import { isPureObject, isObject, fetchTextFile, isArray, trim } from "./utils.js";
 import * as CNF_MOD from "./config.js";
-import { mergeConfigNested } from "./config.js";
+import { objDeepMerge } from "./config.js";
 
 
 function configJsonReplacer(_key, value) {
@@ -90,10 +90,12 @@ export async function handleConfigInheritance(config) {
   /** @type {string[]} */
   let bases = config.$extends ?? "default";
   if (!isArray(bases)) { bases = [bases]; }
-  return mergeConfigNested(
-    ...await Promise.all(
-      bases.filter(base => !isComment(base)).map(base => loadConfigByName(base))), 
-    config);
+  let parents = await Promise.all(
+    bases
+    .filter(base => !isComment(base))
+    .map(base => loadConfigByName(base))
+  );
+  return objDeepMerge([...parents, config]);
 }
 
 export async function loadConfigByName(/**@type{string}*/name) {
