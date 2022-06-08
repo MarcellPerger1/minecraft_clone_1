@@ -13,7 +13,8 @@ export class BaseConfig {
   static DEFAULT;
 
   constructor(...configs) {
-    assignNullSafe(this, mergeConfigNested(...configs, _CONSTRUCTOR_OVERRIDES));
+    assignNullSafe(this, objDeepMerge([...configs]));
+    // , _CONSTRUCTOR_OVERRIDES
   }
 
   getWithDefaults() {
@@ -314,7 +315,7 @@ export function _shouldDeepMerge(v) {
  */
 export async function getConfig(...extra) {
   let config = await loadConfigFile("./configs/config.json");
-  return mergeConfigNested(config, ...extra);
+  return objDeepMerge([config, ...extra]);
 }
 
 
