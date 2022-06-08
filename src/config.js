@@ -1,15 +1,8 @@
-import { assignNullSafe, classOf, exportAs, getTypeTag, isAnyObject, isArray, isObject, removePrefix, removeSuffix } from './utils.js';
+import { assignNullSafe, classOf, exportAs } from './utils.js';
 import { loadConfigFile } from "./config_loader.js";
 import { objDeepMerge } from "./utils/deep_merge.js";
 
 
-Symbol.isConfig = Symbol.for('isConfig');
-Symbol.overrideType = Symbol.for('overrideType');
-
-const _CONSTRUCTOR_OVERRIDES = {
-  [Symbol.overrideType]: Object,
-  [Symbol.isConfig]: true
-};
 export class BaseConfig {
   static DEFAULT;
 
