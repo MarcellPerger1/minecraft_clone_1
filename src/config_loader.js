@@ -1,7 +1,7 @@
 "use strict";
 import { isPureObject, isObject, fetchTextFile, isArray, trim } from "./utils.js";
 import * as CNF_MOD from "./config.js";
-import { objDeepMerge } from "./config.js";
+import { objDeepMerge } from "./utils/deep_merge.js";
 
 
 function configJsonReplacer(_key, value) {
