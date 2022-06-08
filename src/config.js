@@ -1,4 +1,4 @@
-import { assignNullSafe, classOf, exportAs, getTypeTag, isAnyObject, isArray, isObject, removePrefix } from './utils.js';
+import { assignNullSafe, classOf, exportAs, getTypeTag, isAnyObject, isArray, isObject, removePrefix, removeSuffix } from './utils.js';
 import { loadConfigFile } from "./config_loader.js";
 
 
@@ -103,13 +103,13 @@ export class Config extends BaseConfig { }
 // todo this is super dirty!
 export function mergeConfigNested(...configs) {
   configs = configs.filter(v => v != null);
-  if (!isAnyObject(configs[configs.length - 1])) {
-    return configs[configs.length - 1];
+  if (!isAnyObject(configs.at(-1))) {
+    return configs.at(-1);
   }
   let cnf_t = _getConfigType(configs);
   let r = new cnf_t();  // result
   if (isArray(r)) {
-    for (const [i, v] of Object.entries(configs[configs.length - 1])) {
+    for (const [i, v] of Object.entries(configs.at(-1))) {
       r[i] = mergeConfigNested(v);
     }
     return r;
@@ -135,15 +135,22 @@ export function mergeConfigNested(...configs) {
 * @param {Array<*>} objs - Objects to deepmerge
 * @param {Object} cnf - Config
 * @param {Array<*>} [cnf.weakObjTypes=[Object]]
+* @param {*} [cnf.protoOverride]
+* @param {*} [cnf.ctorOverride]
 * @returns {*}
 */
 export function objDeepMerge(objs, cnf) {
+  cnf ??= {};
+  // TODO use weakObjTypes - protos or ctors / detect=how??
+  // dewtection: typeof ctor == function
+  // typeof proto == 'object'
+  cnf.weakObjTypes ??= [Object];  
   objs = objs.filter(v => v != null);
   if (!objs.length) {
     // all nullish so return undefined (could throw error?)
     return;
   }
-  let isObjType, primVal, lastPrimIndex;
+  let primVal, lastPrimIndex;
   let i = -1;
   while (++i < objs.length) {
     let o = objs[i];
@@ -152,34 +159,36 @@ export function objDeepMerge(objs, cnf) {
       lastPrimIndex = i;
     }
   }
-  // make new object
+  let isObjType = isAnyObject(objs.at(-1))
   // if primitive, return it
   if (!isObjType) {
     return primVal;
   }
-  objs = objs.splice(0, lastPrimIndex);
-  let lastObj = objs[objs.length - 1];
+  objs.splice(0, lastPrimIndex);
+  let lastObj = objs.at(-1);
   let ttag = getTypeTag(lastObj);
-  let res = _constructFromTag(ttag);
-  if(isArray(res)){
+  let proto = _mergeProto(objs, cnf);
+  let res = _constructFromTag(lastObj, ttag, proto);
+  if (isArray(res)) {
     // arrays just override each other
-    lastObj.forEach((v, i) => {res[i] = objDeepMerge([v])})
+    lastObj.forEach((v, i) => { res[i] = objDeepMerge([v]) })
     return res;
   } else {
     // for now, only copy ennumerable properties
     // TODO: option in cnf
-    
+    let update_with = {};
+    for (let o of objs) {
+      Object.keys(o).forEach(k => (update_with[k] ??= []).push(o[k]));
+    }
+    for(let [k, vs] of Object.entries(update_with)){
+      res[k] = objDeepMerge(vs, cnf);
+    }
   }
+  return res;
 }
 
-// NOTE: 0 is used as the default for `protoOverride`
-// becausae prototypes have to be Object or mull
-// therefore can't use null as default and 
-// i would rather not get into the null/undefined stuff
-// so just use something that could never be valid as a prototype
-// ie. not null or Object.
-// therefore just use any primitive (0 in this case)
-function _constructFromTag(obj, /**@type{string}*/ttag, protoOverride=0) {
+// Importtant: undefined means detect prototype, null means null as prototype
+function _constructFromTag(obj, /**@type{string}*/ttag, proto) {
   if (isArray(obj)) {
     return new obj.constructor(obj.length);
   }
@@ -194,6 +203,7 @@ function _constructFromTag(obj, /**@type{string}*/ttag, protoOverride=0) {
       return new Ctor(obj);
     case 'Map':
     case 'Set':
+      throw new TypeError("Map and Set are not supported yet");
       return new Ctor();
     case 'Symbol':
       return Object(Symbol.prototype.valueOf.call(obj));
@@ -202,16 +212,77 @@ function _constructFromTag(obj, /**@type{string}*/ttag, protoOverride=0) {
       res.lastIndex = obj.lastIndex;
       return res;
     case 'Object':
-      if(typeof res.constructor !== 'function'){
-        return {};
-      }
-      let proto = protoOverride===0
-        ? Object.getPrototypeOf(obj)
-        : protoOverride;
-      return Object.create(proto);
+      return _constructObject(obj, proto);
     default:
       throw new TypeError(`Don't know how to merge ${ttag} objects`);
   }
+}
+
+function _constructObject(obj, proto=undefined){
+  // if (protoOverride !== undefined) {
+  //     return Object.create(protoOverride);
+  //   }
+  // TODO or isPrototype()
+  if (typeof obj.constructor !== 'function') {
+    return {};
+  }
+  // let proto = Object.getPrototypeOf(obj)
+  return Object.create(proto);
+}
+
+function _mergeProto(objs, cnf){
+  // null is a vaild prototype so use '!== undefined'
+  if (cnf.protoOverride !== undefined) {
+    return cnf.protoOverride;
+  }
+  // use '!= undefined' because null is not a vaild constructor
+  if (cnf.ctorOverride != undefined) {
+    return cnf.ctorOverride.prototype;
+  }
+  
+  let weakObjProtos = cnf.weakObjTypes.map(_getProtoFor);
+  // if only weak protos, use last proto
+  let proto = Object.getPrototypeOf(objs.at(-1));
+
+  // iterate backwards
+  let i = objs.length;
+  while(i --> 0){
+    let p = Object.getPrototypeOf(objs[i]);
+    if(!weakObjProtos.includes(p)){
+      // if encounter non-weak, will override all before so break
+      proto = p;
+      break;
+    }
+  }
+  return proto;
+}
+
+/**
+ * Return prototype for ctor or proto
+ * @param {*} p - Prototype or constructor
+ * @returns {*}  The prototype
+*/
+function _getProtoFor(p){
+  if(_isPrototype(p)){ return p; }
+  if(typeof p === 'function' && p.prototype!==undefined){
+    return p.prototype;
+  }
+  // assert(typeof p === 'object')
+  return p;
+}
+
+function _isPrototype(value){
+  // if(!value){
+  //   return false;
+  // } 
+  // if(typeof value.constructor !== 'function'){
+  //   return false;
+  // }
+  // return value === value.constructor.prototype;
+  // rephrased:
+  return value 
+    && typeof value.constructor === 'function' 
+    && value.constructor.prototype === value
 }
 
 

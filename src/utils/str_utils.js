@@ -30,8 +30,8 @@ export function removePrefix(/**@type{string}*/str, /**@type{string}*/prefix){
 }
 
 export function removeSuffix(/**@type{string}*/str, /**@type{string}*/suffix){
-  if(str.startsWith(suffix)){
-    str = str.substring(-suffix.length, suffix.length)
+  if(str.endsWith(suffix)){
+    str = str.substring(0,str.length-suffix.length)
   }
   return str;
 }
