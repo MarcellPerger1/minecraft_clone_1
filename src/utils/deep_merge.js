@@ -1,4 +1,5 @@
-import {  getTypeTag, isAnyObject, isArray, removePrefix, removeSuffix } from '../utils.js';
+import { assert } from './assert.js';
+import {  getTypeTag, isAnyObject, isArray, removePrefix, removeSuffix } from './index.js';
 
 
 /**
@@ -11,6 +12,9 @@ import {  getTypeTag, isAnyObject, isArray, removePrefix, removeSuffix } from '.
 * @returns {*}
 */
 export function objDeepMerge(objs, cnf) {
+  assert(isArray(objs), 
+         "deepMerge first arg must be an array; " +
+         "try putting the arguments into an array");
   cnf ??= {};
   // TODO use weakObjTypes - protos or ctors / detect=how??
   // dewtection: typeof ctor == function

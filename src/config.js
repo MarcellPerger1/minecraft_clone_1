@@ -8,7 +8,6 @@ export class BaseConfig {
 
   constructor(...configs) {
     assignNullSafe(this, objDeepMerge([...configs]));
-    // , _CONSTRUCTOR_OVERRIDES
   }
 
   getWithDefaults() {
