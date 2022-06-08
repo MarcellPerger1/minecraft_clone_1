@@ -1,13 +1,12 @@
-import { assignNullSafe, classOf, exportAs } from './utils.js';
+import { assignNullSafe, classOf, exportAs, deepMerge } from './utils.js';
 import { loadConfigFile } from "./config_loader.js";
-import { objDeepMerge } from "./utils/deep_merge.js";
 
 
 export class BaseConfig {
   static DEFAULT;
 
   constructor(...configs) {
-    assignNullSafe(this, objDeepMerge([...configs]));
+    assignNullSafe(this, deepMerge([...configs]));
   }
 
   getWithDefaults() {
@@ -102,7 +101,7 @@ export class Config extends BaseConfig { }
  */
 export async function getConfig(...extra) {
   let config = await loadConfigFile("./configs/config.json");
-  return objDeepMerge([config, ...extra]);
+  return deepMerge([config, ...extra]);
 }
 
 

@@ -1,6 +1,10 @@
 import { assert } from './assert.js';
 import {  getTypeTag, isAnyObject, isArray, removePrefix, removeSuffix } from './index.js';
 
+// this module is heavily inspired by lodash's cloneDeep
+// but adapted to make it more readable
+// and to support merging, not just cloning
+
 
 /**
 * deep copy and merge some objects
@@ -11,7 +15,7 @@ import {  getTypeTag, isAnyObject, isArray, removePrefix, removeSuffix } from '.
 * @param {*} [cnf.ctorOverride]
 * @returns {*}
 */
-export function objDeepMerge(objs, cnf=null) {
+export function deepMerge(objs, cnf=null) {
   assert(isArray(objs), 
          "deepMerge first arg must be an array; " +
          "try putting the arguments into an array");
@@ -46,7 +50,7 @@ export function objDeepMerge(objs, cnf=null) {
   let res = _constructFromTag(lastObj, ttag, proto);
   if (isArray(res)) {
     // arrays just override each other
-    lastObj.forEach((v, i) => { res[i] = objDeepMerge([v]) })
+    lastObj.forEach((v, i) => { res[i] = deepMerge([v]) })
     return res;
   } else {
     // for now, only copy ennumerable properties
@@ -56,7 +60,7 @@ export function objDeepMerge(objs, cnf=null) {
       Object.keys(o).forEach(k => (update_with[k] ??= []).push(o[k]));
     }
     for(let [k, vs] of Object.entries(update_with)){
-      res[k] = objDeepMerge(vs, cnf);
+      res[k] = deepMerge(vs, cnf);
     }
   }
   return res;

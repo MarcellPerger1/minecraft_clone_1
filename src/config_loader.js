@@ -1,7 +1,11 @@
 "use strict";
-import { isPureObject, isObject, fetchTextFile, isArray, trim } from "./utils.js";
+import {
+  isPureObject, isObject, isArray, 
+  fetchTextFile, 
+  trim, 
+  deepMerge 
+} from "./utils.js";
 import * as CNF_MOD from "./config.js";
-import { objDeepMerge } from "./utils/deep_merge.js";
 
 
 function configJsonReplacer(_key, value) {
@@ -95,7 +99,7 @@ export async function handleConfigInheritance(config) {
     .filter(base => !isComment(base))
     .map(base => loadConfigByName(base))
   );
-  return objDeepMerge([...parents, config]);
+  return deepMerge([...parents, config]);
 }
 
 export async function loadConfigByName(/**@type{string}*/name) {
