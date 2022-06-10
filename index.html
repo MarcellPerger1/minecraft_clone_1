@@ -1,33 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-    <title>stuff_webgl_4</title>
-    <link href="style.css" rel="stylesheet" type="text/css" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <link rel="modulepreload" href="src/game.js">
-    <link rel="modulepreload" href="src/utils/index.js">
-    <link rel="modulepreload" href="src/utils.js">
-    <link rel="modulepreload" href="src/world/index.js">
-    <link rel="modulepreload" href="src/world.js">
-    <link rel="modulepreload" href="src/renderer/renderer.js">
-    <link rel="modulepreload" href="src/renderer/vertex_bundle.js">
-    <link rel="modulepreload" href="src/renderer/shader_loader.js">
-    <link rel="modulepreload" href="src/renderer/cube_data.js">
-  </head>
-  <body>
-    <!-- Canvas-->
-    <canvas id="glCanvas" width="640" height="480"></canvas>
-    <div>
-      Made by Marcell Perger
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>stuff_webgl_4</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="modulepreload" href="src/game.js">
+  <link rel="modulepreload" href="src/utils/index.js">
+  <link rel="modulepreload" href="src/utils.js">
+  <link rel="modulepreload" href="src/world/index.js">
+  <link rel="modulepreload" href="src/world.js">
+  <link rel="modulepreload" href="src/renderer/renderer.js">
+  <link rel="modulepreload" href="src/renderer/vertex_bundle.js">
+  <link rel="modulepreload" href="src/renderer/shader_loader.js">
+  <link rel="modulepreload" href="src/renderer/cube_data.js">
+</head>
+
+<body>
+  <!-- Canvas-->
+  <div class="overlay-container">
+    <div class="overlay"> 
+      <div class="center">
+        <div style="text-align: center;">
+          Loading... 
+        </div>
+        <div>
+          <progress value="0.5">
+          </progress>
+        </div>
+      </div>
     </div>
-    <!-- 'Imports' from other places -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"
-      integrity="sha512-zhHQR0/H5SEBL3Wn6yYSaTTZej12z0hVZKOv3TwCUXT1z5qeqGcXJLLrbERYRScEDDpYIJhPC1fk31gqR783iQ=="
-      crossorigin="anonymous">
-    </script>
-    <!-- The code -->
-    <script src='main.js' type="module"></script>
-  </body>
+    <div class="behind-overlay">
+      <div>
+        <canvas id="glCanvas" width="640" height="480" hidden></canvas>
+        <div class="canv-size canv-bg" id="canvas-loading-bg"></div>
+      </div>
+    </div>
+  </div>
+  <div>
+    Made by Marcell Perger
+  </div>
+  <!-- 'Imports' from other places -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"
+    integrity="sha512-zhHQR0/H5SEBL3Wn6yYSaTTZej12z0hVZKOv3TwCUXT1z5qeqGcXJLLrbERYRScEDDpYIJhPC1fk31gqR783iQ=="
+    crossorigin="anonymous">
+  </script>
+  <!-- The code -->
+  <script src='main.js' type="module"></script>
+</body>
+
 </html>

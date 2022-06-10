@@ -64,6 +64,9 @@ export class Game {
     await this.init();
     this.addAllListeners();
     this.registerOnFrame();
+    document.querySelectorAll(".overlay").forEach(elem => elem.hidden=true);
+    this.canvas.hidden = false;
+    document.getElementById("canvas-loading-bg").hidden = true;
   }
 
   main() {
