@@ -5,9 +5,7 @@
   --canvas-bg: rgba(50%, 86%, 100%, 1);
 }
 
-.overlay-container {
-  width: var(--canvas-width);
-  height: var(--canvas-height);
+.absolute-root {
   position: relative;
 }
 
