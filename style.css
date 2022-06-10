@@ -14,6 +14,14 @@
   height: var(--canvas-height);
 }
 
+.overlay-container {
+  /* extends .canv-size */
+  width: var(--canvas-width);
+  height: var(--canvas-height);
+  /* extends .absolute-root */
+  position: relative;
+}
+
 .canv-bg {
   background: var(--canvas-bg);
 }
@@ -47,4 +55,24 @@
   left: 50%;
   transform: translate(-50%, -50%);
   position: absolute;
+}
+
+.load-progress {
+  width: 20em;
+}
+
+.center-text-h {
+  text-align: center;
+}
+
+.fade-out {
+  animation: overlay-fade-out 1s;
+  animation-fill-mode: forwards; 
+}
+
+@keyframes overlay-fade-out {
+  100% {
+    background-color: rgba(0, 0, 0, 0);
+    opacity: 0;
+  }
 }

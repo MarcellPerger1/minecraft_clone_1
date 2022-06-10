@@ -15,6 +15,7 @@ export class Game {
   constructor(cnf) {
     this.cnf_arg = cnf;
     this.onInit = null;
+    this.startTicks = false;
   }
 
   async init() {
@@ -68,7 +69,13 @@ export class Game {
   }
 
   endLoading(){
-    document.querySelectorAll(".overlay").forEach(elem => elem.hidden=true);
+    document.querySelectorAll(".overlay").forEach(elem => {
+      elem.classList.add("fade-out");
+      setTimeout(() => {
+        this.startTicks = true;
+        elem.hidden=true;
+      }, 1000);
+    });
     this.canvas.hidden = false;
     document.getElementById("canvas-loading-bg").hidden = true;
   }
@@ -90,7 +97,9 @@ export class Game {
   }
 
   onframe() {
-    this.tick();
+    if(this.startTicks){
+      this.tick();
+    }
     this.r.renderFrame();
   }
 
