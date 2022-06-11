@@ -1,23 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-    <title>stuff_webgl_4</title>
-    <link href="style.css" rel="stylesheet" type="text/css" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <link rel="modulepreload" href="src/game.js">
-    <link rel="modulepreload" href="src/utils/index.js">
-    <link rel="modulepreload" href="src/utils.js">
-    <link rel="modulepreload" href="src/world/index.js">
-    <link rel="modulepreload" href="src/world.js">
-    <link rel="modulepreload" href="src/renderer/renderer.js">
-    <link rel="modulepreload" href="src/renderer/vertex_bundle.js">
-    <link rel="modulepreload" href="src/renderer/shader_loader.js">
-    <link rel="modulepreload" href="src/renderer/cube_data.js">
-  </head>
-  <body>
-    <!--[if IE ]>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="A minecraft clone made using javascript and WebGL">
+  <meta name="keywords" content="Minecraft, minecraft clone, javascript, WebGL">
+  <title>minecraft_clone_1</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="modulepreload" href="src/game.js">
+  <link rel="modulepreload" href="src/config_loader.js">
+  <link rel="modulepreload" href="src/utils/index.js">
+  <link rel="modulepreload" href="src/utils.js">
+  <link rel="modulepreload" href="src/world/index.js">
+  <link rel="modulepreload" href="src/world.js">
+  <link rel="modulepreload" href="src/renderer/renderer.js">
+  <link rel="modulepreload" href="src/renderer/vertex_bundle.js">
+  <link rel="modulepreload" href="src/renderer/shader_loader.js">
+  <link rel="modulepreload" href="src/renderer/cube_data.js">
+  <link rel="modulepreload" href="src/libs/simplex-noise/simplex-noise.js">
+  <link rel="prefetch" href="configs/config.json" as="fetch">
+  <link rel="prefetch" href="configs/default.json" as="fetch">
+  <link rel="prefetch" href="shaders/fragment-shader.glsl" as="fetch">
+  <link rel="prefetch" href="shaders/vertex-shader.glsl" as="fetch">
+</head>
+<body>
+  <!--[if IE ]>
       <p>
         Unsuppported (ancient!) browser! 
         Please stop using Internet Explorer and 
@@ -26,18 +35,40 @@
           <a href="https://www.google.com/intl/en_uk/chrome/">Google Chrome</a> 
         instead.
       </p>
-    <![endif]-->
-    <!-- Canvas-->
-    <canvas id="glCanvas" width="640" height="480"></canvas>
-    <div>
-      Made by Marcell Perger
+  <![endif]-->
+  <div class="canv-size absolute-root">
+    <div class="overlay">
+      <div class="center">
+        <div class="center-text-h">
+          <label for="load-progress">
+            Loading...
+          </label>
+        </div>
+        <progress class="load-progress" id="load-progress" value="0.1"></progress>
+        <div>
+          <label for="load-progress" id="progress-amount">
+            10%
+          </label>
+        </div>
+      </div>
     </div>
-    <!-- 'Imports' from other places -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"
-      integrity="sha512-zhHQR0/H5SEBL3Wn6yYSaTTZej12z0hVZKOv3TwCUXT1z5qeqGcXJLLrbERYRScEDDpYIJhPC1fk31gqR783iQ=="
-      crossorigin="anonymous">
+    <div class="behind-overlay">
+      <div>
+        <canvas id="glCanvas" width="640" height="480" hidden></canvas>
+        <div class="canv-size canv-bg" id="canvas-loading-bg"></div>
+      </div>
+    </div>
+  </div>
+  <div>
+    Made by Marcell Perger
+  </div>
+  <!-- 'Imports' from other places -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"
+    integrity="sha512-zhHQR0/H5SEBL3Wn6yYSaTTZej12z0hVZKOv3TwCUXT1z5qeqGcXJLLrbERYRScEDDpYIJhPC1fk31gqR783iQ=="
+    crossorigin="anonymous">
     </script>
-    <!-- The code -->
-    <script src='main.js' type="module"></script>
-  </body>
+  <!-- The code -->
+  <script src="src/progress.js"></script>
+  <script src='main.js' type="module"></script>
+</body>
 </html>

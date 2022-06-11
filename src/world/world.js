@@ -27,6 +27,13 @@ export class World extends GameComponent {
     return this.blocks[x][y][z];
   }
 
+  getBlockUnsafe(at){
+    let ix = at[0]-this.origin[0];
+    let iy = at[1]-this.origin[1];
+    let iz = at[2]-this.origin[2];
+    return this.blocks[ix][iy][iz];
+  }
+
   setBlock(at, block=Blocks.air){
     this.wantInRange(at);
     const [x,y,z] = this.getIndex(at);
@@ -57,9 +64,12 @@ export class World extends GameComponent {
 
   *[Symbol.iterator]() {
     for(let x=0; x<this.size[0]; x++){
+      let at_x = this.blocks[x];
       for(let y=0; y<this.size[1]; y++){
+        let at_xy = at_x[y];
         for(let z=0; z<this.size[2]; z++){
-          let val = [this.getPos([x, y, z]), this.blocks[x][y][z]];
+          let at_xyz = at_xy[z];
+          let val = [this.getPos([x, y, z]), at_xyz];
           yield val;
         }
       }

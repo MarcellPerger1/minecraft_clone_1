@@ -4,17 +4,22 @@ import {GameComponent} from '../game_component.js';
 export class CubeVertexData extends GameComponent {
   constructor(game, p0, p1, textures){
     super(game);
+    // argument juggling
     if(textures==null && isObject(p1)){
       textures = p1;
       p1 = null;
     }
-    p1 ??= vec3.add([], p0, [1,1,1]);
-    [this.p0, this.p1] = sortCoords(p0, p1);
+    if(p1==null){
+      this.p0 = p0
+      this.p1 = vec3.add([], p0, [1,1,1]);
+    } else {
+      [this.p0, this.p1] = sortCoords(p0, p1);
+    }
     this.textures = textures;
   }
 
-  // NOTE: only x coords needed on a per-texture basis
-  // as y coords always just 0 and 1 as texture is flat long
+  // NOTE: only texture x coords needed on a per-texture basis
+  // as texture y coords always just 0 and 1 as texture is flat long
   side_x0(){
     const [x0, y0, z0] = this.p0;
     const [_x1, y1, z1] = this.p1;

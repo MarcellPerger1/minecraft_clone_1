@@ -7,3 +7,4 @@ export * from "./str_utils.js";
 export * from "./file_load.js";
 export * from "./gl_utils.js";
 export * from "./loader.js";
+export * from "./deep_merge.js";

@@ -48,7 +48,7 @@ export class CubeDataAdder extends GameComponent {
     if(!this.world.inRange(pos)){
       return true;  // no way for block to be there
     }
-    if(this.world.getBlock(pos).transparent){  
+    if(this.world.getBlockUnsafe(pos).transparent){  
       return true;
     }
     return false;

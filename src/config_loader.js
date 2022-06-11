@@ -1,7 +1,11 @@
 "use strict";
-import { isPureObject, isObject, fetchTextFile, isArray, trim } from "./utils.js";
+import {
+  isPureObject, isObject, isArray, 
+  fetchTextFile, 
+  trim, 
+  deepMerge 
+} from "./utils.js";
 import * as CNF_MOD from "./config.js";
-import { mergeConfigNested } from "./config.js";
 
 
 function configJsonReplacer(_key, value) {
@@ -17,9 +21,18 @@ function configJsonReplacer(_key, value) {
   return value;
 }
 
+/**
+ * Return if string should be interpretted as comment
+ * @param {string} s
+ * @returns {boolean}
+*/
+export function isComment(s){
+  // comments: key= $comment | $# | // | /* | #
+  return /^\s*(?:\$comment|\/\/|\/\*|\$#|#)/.test(s);
+}
+
 function configJsonReviver(key, value) {
-  // comments: key= $comment | $# | // | /*
-  if (''.match(/^\s+(?:\$comment|\/\/|\/\*|\$#|#)/)) {
+  if (isComment(key)) {
     return void 0;
   }
   if (value == "Infinity") {
@@ -60,7 +73,7 @@ export function stringifyJsonConfig(obj, space = 2) {
 
 /**
  * Load .json Config file
- * @param {String} path
+ * @param {string} path
  * @param {boolean} inheritance - Use inheritance?
  * @returns {Promise<CNF_MOD.ConfigT>} the loaded config
 */
@@ -74,20 +87,22 @@ export async function loadConfigFile(path, inheritance = true) {
 
 /**
  * Handle inheritance for Configs
- * @param {{$extends: (String|String[])}} config - the original config
+ * @param {{$extends: (string|string[])}} config - the original config
  * @returns {Promise<CNF_MOD.ConfigT>} the new config
 */
 export async function handleConfigInheritance(config) {
-  /** @type {String[]} */
+  /** @type {string[]} */
   let bases = config.$extends ?? "default";
   if (!isArray(bases)) { bases = [bases]; }
-  return mergeConfigNested(
-    ...await Promise.all(
-      bases.map(base => loadConfigByName(base))), 
-    config);
+  let parents = await Promise.all(
+    bases
+    .filter(base => !isComment(base))
+    .map(base => loadConfigByName(base))
+  );
+  return deepMerge([...parents, config]);
 }
 
-export async function loadConfigByName(/**@type{String}*/name) {
+export async function loadConfigByName(/**@type{string}*/name) {
   switch (name) {
     case "default":
       return loadConfigDefaults();
@@ -107,13 +122,14 @@ export async function loadConfigByFilename(path) {
   return loadConfigFile(getConfigFilename(path));
 }
 
-function getConfigFilename(/** @type {String} */path) {
+function getConfigFilename(/** @type {string} */path) {
   // NOTE: this input *may* eventually come from the user
   // so a bit of security can't hurt
   if (path.includes('..')) {
     throw new ReferenceError("Config paths shouldn't contain '..'");
   }
   path = trim(path, './', { start: true });
+  path = path.replace(/\/\/*/, '/');  // remove repeated /
   if (!path.endsWith('.json')) { path += '.json'; }
   return '/' + (path.startsWith("configs/") ? path : 'configs/' + path);
 }

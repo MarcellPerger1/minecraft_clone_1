@@ -21,3 +21,17 @@ export function trim(str, chars, opts=null) {
 
   return (start > 0 || end < str.length) ? str.substring(start, end) : str;
 }
+
+export function removePrefix(/**@type{string}*/str, /**@type{string}*/prefix){
+  if(str.startsWith(prefix)){
+    str = str.substring(prefix.length)
+  }
+  return str;
+}
+
+export function removeSuffix(/**@type{string}*/str, /**@type{string}*/suffix){
+  if(str.endsWith(suffix)){
+    str = str.substring(0,str.length-suffix.length)
+  }
+  return str;
+}
