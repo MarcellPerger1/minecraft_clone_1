@@ -115,7 +115,9 @@ export const INITIAL_TEX_DATA = new Uint8Array(INITIAL_TEX_ARR);
 export const INITIAL_TEX_SIZE = [2, 2];
 
 
-export function loadTexture(gl, url){
+export function loadTexture(gl, url, cnf=null){
+  cnf ??= {};
+  let prio = cnf.priority ?? 'high';
   return new Promise((resolve, reject) => {
     const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -151,6 +153,7 @@ export function loadTexture(gl, url){
     image.onerror = function(event) {
       reject(event);
     }
+    image.fetchPriority = prio;
     image.src = url;
   })
 }

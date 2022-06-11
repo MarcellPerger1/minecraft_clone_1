@@ -18,6 +18,7 @@ export class ShaderLoader extends GameComponent {
   async loadResources(){
     await this.getLoaders();
     const p = programFromShaders(this.gl, this.vs, this.fs);
+    progress.addPercent(10);
     return (this.program = p);
   }
 

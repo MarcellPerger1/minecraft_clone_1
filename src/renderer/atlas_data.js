@@ -38,10 +38,18 @@ export class AtlasLoader extends GameComponent {
     return Promise.all([
       fetchJsonFile(disableCaching(this.cnf.atlas.indexPath))
       .then(raw => new AtlasData(raw))
-      .then(v => (this.data = v)),
+      .then(v => {
+        this.data = v; 
+        progress.addPercent(10);
+        return this.data;
+      }),
       // TODO: don't think this 'hack' works for png files :(
       loadTexture(this.gl, disableCaching(this.cnf.atlas.imgPath))
-      .then(tex => (this.texture = tex)),
+      .then(tex => {
+        this.texture = tex;
+        progress.addPercent(10);
+        return this.texture;
+      }),
     ])
   }
 }

@@ -1,0 +1,78 @@
+:root {
+  --overlay-color: rgba(0,0,0,0.5);
+  --canvas-width: 640px;
+  --canvas-height: 480px;
+  --canvas-bg: rgba(50%, 86%, 100%, 1);
+}
+
+.absolute-root {
+  position: relative;
+}
+
+.canv-size {
+  width: var(--canvas-width);
+  height: var(--canvas-height);
+}
+
+.overlay-container {
+  /* extends .canv-size */
+  width: var(--canvas-width);
+  height: var(--canvas-height);
+  /* extends .absolute-root */
+  position: relative;
+}
+
+.canv-bg {
+  background: var(--canvas-bg);
+}
+
+.behind-overlay, .overlay{
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.overlay {
+  z-index: 10;
+  background-color: var(--overlay-color);
+}
+
+.center-flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.fill-space {
+  width: 100%;
+  height: 100%;
+}
+
+.center {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  position: absolute;
+}
+
+.load-progress {
+  width: 20em;
+}
+
+.center-text-h {
+  text-align: center;
+}
+
+.fade-out {
+  animation: overlay-fade-out 1s;
+  animation-fill-mode: forwards; 
+}
+
+@keyframes overlay-fade-out {
+  100% {
+    background-color: rgba(0, 0, 0, 0);
+    opacity: 0;
+  }
+}
