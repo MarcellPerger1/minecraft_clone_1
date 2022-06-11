@@ -28,10 +28,10 @@ export class World extends GameComponent {
   }
 
   getBlockUnsafe(at){
-    return this.blocks
-      [at[0]-this.origin[0]]
-      [at[1]-this.origin[1]]
-      [at[2]-this.origin[2]]
+    let ix = at[0]-this.origin[0];
+    let iy = at[1]-this.origin[1];
+    let iz = at[2]-this.origin[2];
+    return this.blocks[ix][iy][iz];
   }
 
   setBlock(at, block=Blocks.air){
