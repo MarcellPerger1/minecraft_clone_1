@@ -16,6 +16,7 @@ export class Game {
     this.cnf_arg = cnf;
     this.onInit = null;
     this.startTicks = false;
+    this.progress = window.progress;
   }
 
   async init() {
@@ -30,6 +31,7 @@ export class Game {
   async _init() {
     /** @type {ConfigT} */
     this.cnf = await getConfig(this.cnf_arg);
+    progress.addPercent(25);
     this.canvas = document.getElementById('glCanvas');
     this.r = this.renderer = new Renderer(this);
     this.ki = this.keyinput = new KeyInput();
@@ -65,16 +67,18 @@ export class Game {
     await this.init();
     this.addAllListeners();
     this.registerOnFrame();
+    progress.addPercent(5);
     this.endLoading();
   }
 
   endLoading(){
+    progress.setPercent(100);
     document.querySelectorAll(".overlay").forEach(elem => {
       elem.classList.add("fade-out");
       setTimeout(() => {
         this.startTicks = true;
         elem.hidden=true;
-      }, 1000);
+      }, 1001);
     });
     this.canvas.hidden = false;
     document.getElementById("canvas-loading-bg").hidden = true;

@@ -1,3 +1,5 @@
+progress.addPercent(10);
+
 import {isNumber, nameOrValue, expectValue} from "../utils.js";
 import {GameComponent} from "../game_component.js";
 
