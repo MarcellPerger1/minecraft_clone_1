@@ -95,6 +95,9 @@ function _constructFromTag(obj, /**@type{string}*/ttag, proto) {
     case 'Function':
       return obj;
   }
+  if(ttag.startsWith('HTML')){
+    return obj;
+  }
   throw new TypeError(`Don't know how to merge ${ttag} objects`);
 }
 
