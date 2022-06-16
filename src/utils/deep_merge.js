@@ -1,5 +1,5 @@
 import { assert } from './assert.js';
-import {  getTypeTag, isAnyObject, isArray, removePrefix, removeSuffix } from './index.js';
+import { getTypeTag, isAnyObject, isArray, removePrefix, removeSuffix } from './index.js';
 import { toStringTag } from './type_check.js';
 
 // this module is heavily inspired by lodash's cloneDeep
@@ -16,15 +16,15 @@ import { toStringTag } from './type_check.js';
 * @param {*} [cnf.ctorOverride]
 * @returns {*}
 */
-export function deepMerge(objs, cnf=null) {
-  assert(isArray(objs), 
-         "deepMerge first arg must be an array; " +
-         "try putting the arguments into an array");
+export function deepMerge(objs, cnf = null) {
+  assert(isArray(objs),
+    "deepMerge first arg must be an array; " +
+    "try putting the arguments into an array");
   cnf ??= {};
   // TODO use weakObjTypes - protos or ctors / detect=how??
   // dewtection: typeof ctor == function
   // typeof proto == 'object'
-  cnf.weakObjTypes ??= [Object];  
+  cnf.weakObjTypes ??= [Object];
   objs = objs.filter(v => v != null);
   if (!objs.length) {
     // all nullish so return undefined (could throw error?)
@@ -53,6 +53,21 @@ export function deepMerge(objs, cnf=null) {
     // arrays just override each other
     lastObj.forEach((v, i) => { res[i] = deepMerge([v]) })
     return res;
+  } else if (ttag === "Set") {
+    for (let o of objs) {
+      if (toStringTag(o) === "Set") {
+        o.forEach(v => res.add(v));
+        continue;
+      }
+      Object.keys(o).forEach(k => {
+        if (o[k] === undefined) { return; }
+        if (o[k]) {
+          res.add(k);
+        } else {
+          res.remove(k);
+        }
+      });
+    }
   } else {
     // for now, only copy ennumerable properties
     // TODO: option in cnf
@@ -60,7 +75,7 @@ export function deepMerge(objs, cnf=null) {
     for (let o of objs) {
       Object.keys(o).forEach(k => (update_with[k] ??= []).push(o[k]));
     }
-    for(let [k, vs] of Object.entries(update_with)){
+    for (let [k, vs] of Object.entries(update_with)) {
       res[k] = deepMerge(vs, cnf);
     }
   }
@@ -81,9 +96,9 @@ function _constructFromTag(obj, /**@type{string}*/ttag, proto) {
     case 'Date':
       return new Ctor(obj);
     case 'Map':
+      throw new TypeError("Map is not supported yet");
     case 'Set':
-      throw new TypeError("Map and Set are not supported yet");
-      // return new Ctor();
+      return new Ctor();
     case 'Symbol':
       return Object(Symbol.prototype.valueOf.call(obj));
     case 'RegExp':
@@ -95,13 +110,13 @@ function _constructFromTag(obj, /**@type{string}*/ttag, proto) {
     case 'Function':
       return obj;
   }
-  if(ttag.startsWith('HTML')){
+  if (ttag.startsWith('HTML')) {
     return obj;
   }
   throw new TypeError(`Don't know how to merge ${ttag} objects`);
 }
 
-function _constructObject(obj, proto=undefined){
+function _constructObject(obj, proto = undefined) {
   // if (protoOverride !== undefined) {
   //     return Object.create(protoOverride);
   //   }
@@ -113,7 +128,7 @@ function _constructObject(obj, proto=undefined){
   return Object.create(proto);
 }
 
-function _mergeProto(objs, cnf){
+function _mergeProto(objs, cnf) {
   // null is a vaild prototype so use '!== undefined'
   if (cnf.protoOverride !== undefined) {
     return cnf.protoOverride;
@@ -122,16 +137,16 @@ function _mergeProto(objs, cnf){
   if (cnf.ctorOverride != undefined) {
     return cnf.ctorOverride.prototype;
   }
-  
+
   let weakObjProtos = cnf.weakObjTypes.map(_getProtoFor);
   // if only weak protos, use last proto
   let proto = Object.getPrototypeOf(objs.at(-1));
 
   // iterate backwards
   let i = objs.length;
-  while(i --> 0){
+  while (i-- > 0) {
     let p = Object.getPrototypeOf(objs[i]);
-    if(!weakObjProtos.includes(p)){
+    if (!weakObjProtos.includes(p)) {
       // if encounter non-weak, will override all before so break
       proto = p;
       break;
@@ -145,16 +160,16 @@ function _mergeProto(objs, cnf){
  * @param {*} p - Prototype or constructor
  * @returns {*}  The prototype
 */
-function _getProtoFor(p){
-  if(_isPrototype(p)){ return p; }
-  if(typeof p === 'function' && p.prototype!==undefined){
+function _getProtoFor(p) {
+  if (_isPrototype(p)) { return p; }
+  if (typeof p === 'function' && p.prototype !== undefined) {
     return p.prototype;
   }
   // assert(typeof p === 'object')
   return p;
 }
 
-function _isPrototype(value){
+function _isPrototype(value) {
   // if(!value){
   //   return false;
   // } 
@@ -163,7 +178,7 @@ function _isPrototype(value){
   // }
   // return value === value.constructor.prototype;
   // rephrased:
-  return value 
-    && typeof value.constructor === 'function' 
+  return value
+    && typeof value.constructor === 'function'
     && value.constructor.prototype === value
 }
