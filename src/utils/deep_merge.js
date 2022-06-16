@@ -1,5 +1,6 @@
 import { assert } from './assert.js';
 import {  getTypeTag, isAnyObject, isArray, removePrefix, removeSuffix } from './index.js';
+import { toStringTag } from './type_check.js';
 
 // this module is heavily inspired by lodash's cloneDeep
 // but adapted to make it more readable
@@ -45,7 +46,7 @@ export function deepMerge(objs, cnf=null) {
   }
   objs.splice(0, lastPrimIndex);
   let lastObj = objs.at(-1);
-  let ttag = getTypeTag(lastObj);
+  let ttag = toStringTag(lastObj);
   let proto = _mergeProto(objs, cnf);
   let res = _constructFromTag(lastObj, ttag, proto);
   if (isArray(res)) {
@@ -72,7 +73,6 @@ function _constructFromTag(obj, /**@type{string}*/ttag, proto) {
     return new obj.constructor(obj.length);
   }
   let Ctor = obj.constructor;
-  ttag = removeSuffix(removePrefix(ttag, '[object '), ']');
   let res;
   switch (ttag) {
     case 'Number':
@@ -92,9 +92,10 @@ function _constructFromTag(obj, /**@type{string}*/ttag, proto) {
       return res;
     case 'Object':
       return _constructObject(obj, proto);
-    default:
-      throw new TypeError(`Don't know how to merge ${ttag} objects`);
+    case 'Function':
+      return obj;
   }
+  throw new TypeError(`Don't know how to merge ${ttag} objects`);
 }
 
 function _constructObject(obj, proto=undefined){
