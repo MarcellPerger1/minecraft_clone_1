@@ -17,33 +17,51 @@ import { isAnyObject, isArray, toStringTag } from './type_check.js';
 * @returns {*}
 */
 export function deepMerge(objs, cnf = null) {
+  cnf = _applyCnfDefaults(cnf);
+  objs = _filterObjs(objs);
+  if (!objs.length) {
+    return; // all nullish so return undefined (could throw error?)
+  }
+  if (!isAnyObject(objs.at(-1))) {
+    return objs.at(-1); // primitive so just return it
+  }
+  _trimObjsBeforePrimitive(objs);
+  let res = _construct(objs, cnf);
+  _setstate(res, objs, cnf);
+  return res;
+}
+export function deepCopy(obj, cnf){
+  return deepMerge([obj], cnf);
+}
+
+function _filterObjs(objs){
   assert(isArray(objs),
     "deepMerge first arg must be an array; " +
     "try putting the arguments into an array");
-  cnf = _applyCnfDefaults(cnf);
   objs = objs.filter(v => v != null);
-  if (!objs.length) {
-    // all nullish so return undefined (could throw error?)
-    return;
-  }
-  let primVal, lastPrimIndex;
+  return objs;
+}
+
+// inplace
+function _trimObjsBeforePrimitive(objs){
+  let lastPrimIndex;
   let i = -1;
   while (++i < objs.length) {
     let o = objs[i];
     if (!isAnyObject(o)) {
-      primVal = o;
       lastPrimIndex = i;
     }
   }
-  let isObjType = isAnyObject(objs.at(-1))
-  // if primitive, return it
-  if (!isObjType) {
-    return primVal;
-  }
   objs.splice(0, lastPrimIndex);
-  let lastObj = objs.at(-1);
+}
+
+function _construct(objs, cnf){
   let proto = _mergeProto(objs, cnf);
-  let res = _constructFromTag(lastObj, toStringTag(lastObj), proto);
+  let res = _constructFromTag(objs.at(-1), proto);
+  return res;
+}
+
+function _setstate(res, objs, cnf){
   let ttag = toStringTag(res);
   if (isArray(res)) {
     _setstateArray(res, objs, cnf);
@@ -53,9 +71,6 @@ export function deepMerge(objs, cnf = null) {
     _setstateObject(res, objs, cnf);
   }
   return res;
-}
-export function deepCopy(obj, cnf){
-  return deepMerge([obj], cnf);
 }
 
 // or Map-like
@@ -107,12 +122,13 @@ function _copySetItem(si, cnf){
 }
 
 // Importtant: undefined means detect prototype, null means null as prototype
-function _constructFromTag(obj, /**@type{string}*/ttag, proto) {
+function _constructFromTag(obj, proto) {
   if (isArray(obj)) {
     return new obj.constructor(obj.length);
   }
   let Ctor = obj.constructor;
   let res;
+  let ttag = toString(obj);
   switch (ttag) {
     case 'Number':
     case 'String':
