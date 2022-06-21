@@ -1,6 +1,5 @@
 import { assert } from './assert.js';
-import { getTypeTag, isAnyObject, isArray, removePrefix, removeSuffix } from './index.js';
-import { toStringTag } from './type_check.js';
+import { isAnyObject, isArray, toStringTag } from './type_check.js';
 
 // this module is heavily inspired by lodash's cloneDeep
 // but adapted to make it more readable
@@ -12,19 +11,16 @@ import { toStringTag } from './type_check.js';
 * @param {Array<*>} objs - Objects to deepmerge
 * @param {Object} [cnf] - Config
 * @param {Array<*>} [cnf.weakObjTypes=[Object]]
-* @param {*} [cnf.protoOverride]
-* @param {*} [cnf.ctorOverride]
+* @param {*} [cnf.protoOverride] override constructor of result
+* @param {*} [cnf.ctorOverride] override prototype of result
+* @param {boolean} [cnf.deepSetItems] copy items in Set?
 * @returns {*}
 */
 export function deepMerge(objs, cnf = null) {
   assert(isArray(objs),
     "deepMerge first arg must be an array; " +
     "try putting the arguments into an array");
-  cnf ??= {};
-  // TODO use weakObjTypes - protos or ctors / detect=how??
-  // dewtection: typeof ctor == function
-  // typeof proto == 'object'
-  cnf.weakObjTypes ??= [Object];
+  cnf = _applyCnfDefaults(cnf);
   objs = objs.filter(v => v != null);
   if (!objs.length) {
     // all nullish so return undefined (could throw error?)
@@ -51,35 +47,53 @@ export function deepMerge(objs, cnf = null) {
   let res = _constructFromTag(lastObj, ttag, proto);
   if (isArray(res)) {
     // arrays just override each other
-    lastObj.forEach((v, i) => { res[i] = deepMerge([v]) })
+    lastObj.forEach((v, i) => { res[i] = deepCopy(v, cnf) })
     return res;
   } else if (ttag === "Set") {
     for (let o of objs) {
-      if (toStringTag(o) === "Set") {
-        o.forEach(v => res.add(v));
-        continue;
+      switch (toStringTag(o)){
+        case "Set":
+          o.forEach((_v, k) => res.add(_copySetItem(k, cnf)));
+          break;
+        case "Map":
+          o.forEach((v, k) => v ? res.add(_copySetItem(k, cnf)) : res);
+          break;
       }
       Object.keys(o).forEach(k => {
         if (o[k] === undefined) { return; }
-        if (o[k]) {
-          res.add(k);
-        } else {
-          res.remove(k);
-        }
+        if (o[k]) { res.add(k); } else { res.remove(k); }
       });
     }
   } else {
-    // for now, only copy ennumerable properties
+    // for now, only copy own, ennumerable properties
     // TODO: option in cnf
     let update_with = {};
     for (let o of objs) {
-      Object.keys(o).forEach(k => (update_with[k] ??= []).push(o[k]));
+      Object.keys(o).forEach(k => (update_with[k] ??= []).push(
+        ttag==="Map" ? o.get(k) : o[k]));
     }
     for (let [k, vs] of Object.entries(update_with)) {
-      res[k] = deepMerge(vs, cnf);
+      let v = deepMerge(vs, cnf);
+      if(ttag==="Map") { res.set(k, v); } else { res[k] = v; }
     }
   }
   return res;
+}
+export function deepCopy(obj, cnf){
+  return deepMerge([obj], cnf);
+}
+
+function _applyCnfDefaults(cnf){
+  cnf ??= {};
+  cnf.weakObjTypes ??= [Object];
+  return cnf;
+}
+
+function _maybeCopy(v, cond, cnf){
+  return cond ? deepCopy(v, cnf) : v;
+}
+function _copySetItem(si, cnf){
+  return _maybeCopy(si, cnf.deepSetItems, cnf);
 }
 
 // Importtant: undefined means detect prototype, null means null as prototype
@@ -96,7 +110,6 @@ function _constructFromTag(obj, /**@type{string}*/ttag, proto) {
     case 'Date':
       return new Ctor(obj);
     case 'Map':
-      throw new TypeError("Map is not supported yet");
     case 'Set':
       return new Ctor();
     case 'Symbol':
@@ -170,14 +183,6 @@ function _getProtoFor(p) {
 }
 
 function _isPrototype(value) {
-  // if(!value){
-  //   return false;
-  // } 
-  // if(typeof value.constructor !== 'function'){
-  //   return false;
-  // }
-  // return value === value.constructor.prototype;
-  // rephrased:
   return value
     && typeof value.constructor === 'function'
     && value.constructor.prototype === value
