@@ -42,45 +42,55 @@ export function deepMerge(objs, cnf = null) {
   }
   objs.splice(0, lastPrimIndex);
   let lastObj = objs.at(-1);
-  let ttag = toStringTag(lastObj);
   let proto = _mergeProto(objs, cnf);
-  let res = _constructFromTag(lastObj, ttag, proto);
+  let res = _constructFromTag(lastObj, toStringTag(lastObj), proto);
+  let ttag = toStringTag(res);
   if (isArray(res)) {
-    // arrays just override each other
-    lastObj.forEach((v, i) => { res[i] = deepCopy(v, cnf) })
-    return res;
+    _setstateArray(res, objs, cnf);
   } else if (ttag === "Set") {
-    for (let o of objs) {
-      switch (toStringTag(o)){
-        case "Set":
-          o.forEach((_v, k) => res.add(_copySetItem(k, cnf)));
-          break;
-        case "Map":
-          o.forEach((v, k) => v ? res.add(_copySetItem(k, cnf)) : res);
-          break;
-      }
-      Object.keys(o).forEach(k => {
-        if (o[k] === undefined) { return; }
-        if (o[k]) { res.add(k); } else { res.remove(k); }
-      });
-    }
+    _setstateSetlike(res, objs, cnf);
   } else {
-    // for now, only copy own, ennumerable properties
-    // TODO: option in cnf
-    let update_with = {};
-    for (let o of objs) {
-      Object.keys(o).forEach(k => (update_with[k] ??= []).push(
-        ttag==="Map" ? o.get(k) : o[k]));
-    }
-    for (let [k, vs] of Object.entries(update_with)) {
-      let v = deepMerge(vs, cnf);
-      if(ttag==="Map") { res.set(k, v); } else { res[k] = v; }
-    }
+    _setstateObject(res, objs, cnf);
   }
   return res;
 }
 export function deepCopy(obj, cnf){
   return deepMerge([obj], cnf);
+}
+
+// or Map-like
+function _setstateObject(res, objs, cnf){
+  // for now, only copy own, ennumerable properties
+  // TODO: option in cnf
+  let ttag = toStringTag(res);
+  let update_with = {};
+  for (let o of objs) {
+    Object.keys(o).forEach(k => (update_with[k] ??= []).push(
+      ttag==="Map" ? o.get(k) : o[k]));
+  }
+  for (let [k, vs] of Object.entries(update_with)) {
+    let v = deepMerge(vs, cnf);
+    if(ttag==="Map") { res.set(k, v); } else { res[k] = v; }
+  }
+}
+function _setstateSetlike(res, objs, cnf){
+  for (let o of objs) {
+    switch (toStringTag(o)){
+      case "Set":
+        o.forEach((_v, k) => res.add(_copySetItem(k, cnf)));
+        break;
+      case "Map":
+        o.forEach((v, k) => v ? res.add(_copySetItem(k, cnf)) : res);
+        break;
+    }
+    Object.keys(o).forEach(k => {
+      if (o[k] === undefined) { return; }
+      if (o[k]) { res.add(k); } else { res.remove(k); }
+    });
+  }
+}
+function _setstateArray(res, objs, cnf){
+  objs.at(-1).forEach((v, i) => { res[i] = deepCopy(v, cnf) })
 }
 
 function _applyCnfDefaults(cnf){
