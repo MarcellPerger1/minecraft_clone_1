@@ -3,6 +3,7 @@
 // and to support merging, not just cloning
 
 import { assert } from './assert.js';
+import { findTypeProto } from './prototype_utils.js';
 import { isAnyObject, isArray, toStringTag } from './type_check.js';
 
 
@@ -46,6 +47,14 @@ export function deepCopy(obj, cnf){
   return deepMerge([obj], cnf);
 }
 
+
+// arg preprocessing
+function _applyCnfDefaults(cnf){
+  cnf ??= {};
+  cnf.weakObjTypes ??= [Object];
+  return cnf;
+}
+
 function _filterObjs(objs){
   assert(isArray(objs),
     "deepMerge first arg must be an array; " +
@@ -53,8 +62,6 @@ function _filterObjs(objs){
   objs = objs.filter(v => v != null);
   return objs;
 }
-
-// inplace
 function _trimObjsList(objs, _cnf){
   let lastPrimIndex;
   let i = -1;
@@ -67,6 +74,8 @@ function _trimObjsList(objs, _cnf){
   objs.splice(0, lastPrimIndex);
 }
 
+
+// construct
 function _construct(objs, cnf){
   let proto = _mergeProto(objs, cnf);
   let res = _construct.fromTag(objs.at(-1), proto);
@@ -112,6 +121,7 @@ _construct.object = function constructObject(obj, proto) {
 }
 
 
+// setstate
 /**
  * Internal, set state on `res` from `objs`
  * @param {object} res
@@ -151,10 +161,10 @@ _setstate.setlike = function setlike(res, objs, cnf){
   for (let o of objs) {
     switch (toStringTag(o)){
       case "Set":
-        o.forEach((_v, k) => res.add(_copySetItem(k, cnf)));
+        o.forEach((_v, k) => res.add(_maybeCopy.setItem(k, cnf)));
         break;
       case "Map":
-        o.forEach((v, k) => v ? res.add(_copySetItem(k, cnf)) : res);
+        o.forEach((v, k) => v ? res.add(_maybeCopy.setItem(k, cnf)) : res);
         break;
     }
     Object.keys(o).forEach(k => {
@@ -167,7 +177,6 @@ _setstate.array = function array(res, objs, cnf){
   objs.at(-1).forEach((v, i) => { res[i] = deepCopy(v, cnf) })
 }
 
-
 function _dontMerge(objs){
   let dontMerge = undefined;
   for (let o of objs){
@@ -176,19 +185,16 @@ function _dontMerge(objs){
   return dontMerge;
 }
 
-function _applyCnfDefaults(cnf){
-  cnf ??= {};
-  cnf.weakObjTypes ??= [Object];
-  return cnf;
-}
-
 function _maybeCopy(v, cond, cnf){
   return cond ? deepCopy(v, cnf) : v;
 }
-function _copySetItem(si, cnf){
+// item *in* set
+_maybeCopy.setItem = function _copySetItem(si, cnf){
   return _maybeCopy(si, cnf.deepSetItems, cnf);
 }
 
+
+// protoype handling
 function _mergeProto(objs, cnf) {
   // null is a vaild prototype so use '!== undefined'
   if (cnf.protoOverride !== undefined) {
@@ -199,7 +205,7 @@ function _mergeProto(objs, cnf) {
     return cnf.ctorOverride.prototype;
   }
 
-  let weakObjProtos = cnf.weakObjTypes.map(_findTypeProto);
+  let weakObjProtos = cnf.weakObjTypes.map(findTypeProto);
   // if only weak protos, use last proto
   let proto = Object.getPrototypeOf(objs.at(-1));
 
@@ -214,24 +220,4 @@ function _mergeProto(objs, cnf) {
     }
   }
   return proto;
-}
-
-/**
- * Return prototype for ctor or proto
- * @param {*} p - Prototype or constructor
- * @returns {*}  The prototype
-*/
-function _findTypeProto(p) {
-  if (_isPrototype(p)) { return p; }
-  if (typeof p === 'function' && p.prototype !== undefined) {
-    return p.prototype;
-  }
-  // assert(typeof p === 'object')
-  return p;
-}
-
-function _isPrototype(value) {
-  return value
-    && typeof value.constructor === 'function'
-    && value.constructor.prototype === value
 }
