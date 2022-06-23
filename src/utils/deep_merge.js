@@ -128,7 +128,7 @@ function _constructFromTag(obj, proto) {
   }
   let Ctor = obj.constructor;
   let res;
-  let ttag = toString(obj);
+  let ttag = toStringTag(obj);
   switch (ttag) {
     case 'Number':
     case 'String':
