@@ -69,8 +69,46 @@ function _trimObjsList(objs, _cnf){
 
 function _construct(objs, cnf){
   let proto = _mergeProto(objs, cnf);
-  let res = _constructFromTag(objs.at(-1), proto);
+  let res = _construct.fromTag(objs.at(-1), proto);
   return res;
+}
+_construct.fromTag = function constructFromTag(obj, proto) {
+  if (isArray(obj)) {
+    return new obj.constructor(obj.length);
+  }
+  let Ctor = obj.constructor;
+  let res;
+  let ttag = toStringTag(obj);
+  switch (ttag) {
+    case 'Number':
+    case 'String':
+    case 'Boolean':
+    case 'Date':
+      return new Ctor(obj);
+    case 'Map':
+    case 'Set':
+      return new Ctor();
+    case 'Symbol':
+      return Object(Symbol.prototype.valueOf.call(obj));
+    case 'RegExp':
+      res = new obj.constructor(obj.source, obj.flags);
+      res.lastIndex = obj.lastIndex;
+      return res;
+    case 'Object':
+      return _construct.object(obj, proto);
+    case 'Function':
+      return obj;
+  }
+  if (ttag.startsWith('HTML')) {
+    return obj;
+  }
+  throw new TypeError(`Don't know how to merge ${ttag} objects`);
+}
+_construct.object = function constructObject(obj, proto) {
+  if (typeof obj.constructor !== 'function') {
+    return {};
+  }
+  return Object.create(proto);
 }
 
 
@@ -151,7 +189,6 @@ function _copySetItem(si, cnf){
   return _maybeCopy(si, cnf.deepSetItems, cnf);
 }
 
-// Importtant: undefined means detect prototype, null means null as prototype
 function _constructFromTag(obj, proto) {
   if (isArray(obj)) {
     return new obj.constructor(obj.length);
@@ -185,15 +222,10 @@ function _constructFromTag(obj, proto) {
   throw new TypeError(`Don't know how to merge ${ttag} objects`);
 }
 
-function _constructObject(obj, proto = undefined) {
-  // if (protoOverride !== undefined) {
-  //     return Object.create(protoOverride);
-  //   }
-  // TODO or isPrototype()
+function _constructObject(obj, proto) {
   if (typeof obj.constructor !== 'function') {
     return {};
   }
-  // let proto = Object.getPrototypeOf(obj)
   return Object.create(proto);
 }
 
