@@ -7,9 +7,10 @@ import { findTypeProto } from './prototype_utils.js';
 import { isAnyObject, isArray, toStringTag } from './type_check.js';
 
 
+// EXPORTS
 Symbol.dontMerge = Symbol.for("dontMerge");
 
-
+// typedefs
 /**
  * @typedef {Object} deepMergeCnfT
  * @prop {Array<*>} [cnf.weakObjTypes=[Object]]
@@ -18,7 +19,7 @@ Symbol.dontMerge = Symbol.for("dontMerge");
  * @prop {boolean} [cnf.deepSetItems] copy items in Set?
 */
 
-
+// public functions
 /**
  * deep copy and merge some objects
  * @param {Array<*>} objs - Objects to deepmerge
@@ -48,7 +49,8 @@ export function deepCopy(obj, cnf){
 }
 
 
-// arg preprocessing
+// INTERNALS
+// arg processing
 function _applyCnfDefaults(cnf){
   cnf ??= {};
   cnf.weakObjTypes ??= [Object];
