@@ -1,9 +1,12 @@
-import { assert } from './assert.js';
-import { isAnyObject, isArray, toStringTag } from './type_check.js';
-
 // this module is heavily inspired by lodash's cloneDeep
 // but adapted to make it more readable
 // and to support merging, not just cloning
+
+import { assert } from './assert.js';
+import { isAnyObject, isArray, toStringTag } from './type_check.js';
+
+
+Symbol.dontMerge = Symbol.for("dontMerge");
 
 
 /**
@@ -25,7 +28,7 @@ export function deepMerge(objs, cnf = null) {
   if (!isAnyObject(objs.at(-1))) {
     return objs.at(-1); // primitive so just return it
   }
-  _trimObjsBeforePrimitive(objs);
+  objs = _trimObjsList(objs, cnf);
   let res = _construct(objs, cnf);
   _setstate(res, objs, cnf);
   return res;
@@ -43,9 +46,10 @@ function _filterObjs(objs){
 }
 
 // inplace
-function _trimObjsBeforePrimitive(objs){
+function _trimObjsList(objs, _cnf){
   let lastPrimIndex;
   let i = -1;
+  
   while (++i < objs.length) {
     let o = objs[i];
     if (!isAnyObject(o)) {
@@ -53,6 +57,7 @@ function _trimObjsBeforePrimitive(objs){
     }
   }
   objs.splice(0, lastPrimIndex);
+  return objs;
 }
 
 function _construct(objs, cnf){
@@ -62,6 +67,9 @@ function _construct(objs, cnf){
 }
 
 function _setstate(res, objs, cnf){
+  if(_dontMerge(objs)) {
+    objs.splice(0, objs.length - 1);
+  }
   let ttag = toStringTag(res);
   if (isArray(res)) {
     _setstateArray(res, objs, cnf);
@@ -71,6 +79,14 @@ function _setstate(res, objs, cnf){
     _setstateObject(res, objs, cnf);
   }
   return res;
+}
+
+function _dontMerge(objs){
+  let dontMerge = undefined;
+  for (let o of objs){
+    dontMerge = o?.[Symbol.dontMerge] ?? dontMerge;
+  }
+  return dontMerge;
 }
 
 // or Map-like
