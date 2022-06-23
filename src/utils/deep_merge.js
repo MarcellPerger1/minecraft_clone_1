@@ -194,8 +194,8 @@ function _mergeProto(objs, cnf) {
   if (cnf.protoOverride !== undefined) {
     return cnf.protoOverride;
   }
-  // use '!= undefined' because null is not a vaild constructor
-  if (cnf.ctorOverride != undefined) {
+  // use '!= null' because null is not a vaild constructor
+  if (cnf.ctorOverride != null) {
     return cnf.ctorOverride.prototype;
   }
 
