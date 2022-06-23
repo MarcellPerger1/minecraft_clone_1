@@ -49,3 +49,8 @@ export function isFunction(x) {
 export function getTypeTag(x){
   return Object.prototype.toString.call(x);
 }
+
+export function toStringTag(x){
+  var tag = getTypeTag(x);
+  return tag.substring('[object '.length, tag.length-']'.length);
+}
