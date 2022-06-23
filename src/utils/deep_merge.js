@@ -199,7 +199,7 @@ function _mergeProto(objs, cnf) {
     return cnf.ctorOverride.prototype;
   }
 
-  let weakObjProtos = cnf.weakObjTypes.map(_getProtoFor);
+  let weakObjProtos = cnf.weakObjTypes.map(_findTypeProto);
   // if only weak protos, use last proto
   let proto = Object.getPrototypeOf(objs.at(-1));
 
@@ -221,7 +221,7 @@ function _mergeProto(objs, cnf) {
  * @param {*} p - Prototype or constructor
  * @returns {*}  The prototype
 */
-function _getProtoFor(p) {
+function _findTypeProto(p) {
   if (_isPrototype(p)) { return p; }
   if (typeof p === 'function' && p.prototype !== undefined) {
     return p.prototype;
