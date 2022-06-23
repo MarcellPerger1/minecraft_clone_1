@@ -189,46 +189,6 @@ function _copySetItem(si, cnf){
   return _maybeCopy(si, cnf.deepSetItems, cnf);
 }
 
-function _constructFromTag(obj, proto) {
-  if (isArray(obj)) {
-    return new obj.constructor(obj.length);
-  }
-  let Ctor = obj.constructor;
-  let res;
-  let ttag = toStringTag(obj);
-  switch (ttag) {
-    case 'Number':
-    case 'String':
-    case 'Boolean':
-    case 'Date':
-      return new Ctor(obj);
-    case 'Map':
-    case 'Set':
-      return new Ctor();
-    case 'Symbol':
-      return Object(Symbol.prototype.valueOf.call(obj));
-    case 'RegExp':
-      res = new obj.constructor(obj.source, obj.flags);
-      res.lastIndex = obj.lastIndex;
-      return res;
-    case 'Object':
-      return _constructObject(obj, proto);
-    case 'Function':
-      return obj;
-  }
-  if (ttag.startsWith('HTML')) {
-    return obj;
-  }
-  throw new TypeError(`Don't know how to merge ${ttag} objects`);
-}
-
-function _constructObject(obj, proto) {
-  if (typeof obj.constructor !== 'function') {
-    return {};
-  }
-  return Object.create(proto);
-}
-
 function _mergeProto(objs, cnf) {
   // null is a vaild prototype so use '!== undefined'
   if (cnf.protoOverride !== undefined) {
