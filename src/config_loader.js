@@ -3,7 +3,8 @@ import {
   isPureObject, isObject, isArray, 
   fetchTextFile, 
   trim, 
-  deepMerge 
+  deepMerge, 
+  removePrefix
 } from "./utils.js";
 import * as CNF_MOD from "./config.js";
 
@@ -41,8 +42,23 @@ function configJsonReviver(key, value) {
   if (value == "-Infinity") {
     return -Infinity;
   }
+  if(isObject(value)){
+    value = _withSymbolKeys(value);
+  }
   let cnf_cls = _getConfigClass(key, value);
   return cnf_cls ? new cnf_cls(value) : value;
+}
+
+function _withSymbolKeys(value){
+  let newval = {};
+  for(let [k, v] of Object.entries(value)){
+    if(k.startsWith('@@')){
+      let symbol_name = removePrefix(k, "@@");
+      k = Symbol[symbol_name] ?? Symbol.for(symbol_name)
+    }
+    newval[k] = v;
+  }
+  return newval;
 }
 
 function _getConfigClass(_key, value) {
@@ -53,7 +69,7 @@ function _getConfigClass(_key, value) {
   if (!t_str.endsWith("Config")) {
     throw new TypeError("Not a Config class");
   }
-  if (!t_str.length > 64) {
+  if (t_str.length > 64) {
     throw new RangeError("Config classes should have reasonably short names ;-)");
   }
   let cnf_cls;
