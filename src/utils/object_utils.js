@@ -17,3 +17,7 @@ export function isPrototype(value) {
     && typeof value.constructor === 'function'
     && value.constructor.prototype === value
 }
+
+export function getOwnProperties(obj){
+  return Object.getOwnPropertyNames(obj).concat(Object.getOwnPropertySymbols(obj))
+}

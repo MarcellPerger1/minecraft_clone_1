@@ -3,7 +3,7 @@
 // and to support merging, not just cloning
 
 import { assert } from './assert.js';
-import { findTypeProto } from './prototype_utils.js';
+import { findTypeProto, getOwnProperties } from './object_utils.js';
 import { isAnyObject, isArray, toStringTag } from './type_check.js';
 
 
@@ -145,16 +145,17 @@ function _setstate(res, objs, cnf){
   return res;
 }
 _setstate.object = function object(res, objs, cnf){
-  // for now, only copy own, ennumerable properties
+  // for now, copy all own properties
   // TODO: option in cnf
   let ttag = toStringTag(res);
-  let update_with = {};
+  // dont pollute with Object methods
+  let update_with = Object.create(null);
   for (let o of objs) {
-    Object.keys(o).forEach(k => (update_with[k] ??= []).push(
+    getOwnProperties(o).forEach(k => (update_with[k] ??= []).push(
       ttag==="Map" ? o.get(k) : o[k]));
   }
-  for (let [k, vs] of Object.entries(update_with)) {
-    let v = deepMerge(vs, cnf);
+  for (let k of getOwnProperties(update_with)) {
+    let v = deepMerge(update_with[k], cnf);
     if(ttag==="Map") { res.set(k, v); } else { res[k] = v; }
   }
 }
