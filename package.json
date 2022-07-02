@@ -12,11 +12,12 @@
     "jest": "^28.1.1"
   },
   "scripts": {
-    "test": "jest --verbose ./test"
+    "test": "./scripts/test.sh"
   },
   "keywords": [
     "webgl", "minecraft"
   ],
   "author": "Marcell Perger",
-  "license": "MIT"
+  "license": "MIT",
+  "type": "module"
 }
