@@ -32,9 +32,10 @@ Symbol.dontMerge = Symbol.for("dontMerge");
 */
 export function deepMerge(objs, cnf = null) {
   cnf = _applyCnfDefaults(cnf);
+  let objs_arg = objs;
   objs = _filterObjs(objs);
   if (!objs.length) {
-    return; // all nullish so return undefined (could throw error?)
+    return objs_arg.at(-1); // all nullish so return last arg (could throw error?)
   }
   if (!isAnyObject(objs.at(-1))) {
     return objs.at(-1); // primitive so just return it
