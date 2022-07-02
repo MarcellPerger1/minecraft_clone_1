@@ -1,1 +1,2 @@
-NODE_OPTIONS=--experimental-vm-modules npx jest --verbose
+NODE_OPTIONS='--experimental-vm-modules --require=./test/helpers/loader.cjs' \
+  npx jest --verbose
