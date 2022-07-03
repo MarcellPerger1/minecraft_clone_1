@@ -19,6 +19,17 @@ describe("deep_merge.js", () => {
   it("Returns last null", () => {
     expect(deepMerge([null, void 0])).toBe(void 0);
     expect(deepMerge([void 0, null, null, void 0, null])).toBe(null);
+  });
+  describe("deepMerge mutli-arg", () => {
+    it("Doesn't modify inputs", () => {
+      let objs = [{a: "a1"}, {b: -9, a: "a2"}];
+      let objsClone = [{a: "a1"}, {b: -9, a: "a2"}];
+      // assumptions about input vars (otherwise test is broken)
+      expect(objsClone).toStrictEqual(objs);
+      expect(objsClone === objs).toBe(false);
+      deepMerge(objs);  // check return value elsewhere
+      expect(objs).toStrictEqual(objsClone);
+    })
   })
 })
 
