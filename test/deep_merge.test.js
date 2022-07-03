@@ -63,8 +63,10 @@ function test_deepCopy({ copier, id }) {
           null, Symbol('q'), 86, false, void 0, "v"
         ]
       },
+      /* eslint-disable no-sparse-arrays */
       { name: "empty sparse array", data: new Array(1000) },
-      { name: "Sparse array at end", data: [9, "e", Symbol('q'), , , , , ,] }
+      { name: "sparse array at end", data: [9, "e", Symbol('q'), , , , , ,] }
+      /* eslint-enable no-sparse-arrays */
     ])("$name", ({ data }) => {
       let arr = data;
       let arr2 = copier(arr);
