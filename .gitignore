@@ -1,8 +1,6 @@
 # my extra own stuff
 draws/
 **/libs/
-# dunno if this is a good idea:
-package-lock.json
 
 
 # Logs
