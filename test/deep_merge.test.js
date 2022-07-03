@@ -73,6 +73,27 @@ function test_deepCopy({ copier, id }) {
       expect(arr2.constructor).toBe(Array);
     });
   });
+  describe("Shallow Object handling", () => {
+    it.each([
+      { name: "empty object", data: {} },
+      { name: "object with single attr", data: {y: Symbol('o')}},
+      { name: "object with string keys", data: {e: 9, HellowWorld: -7373n, u: "r"}},
+      { name: "object with Some nulls", data: {o: null, v: false, sm: void 0}},
+    ])("$name", ({data}) => {
+      let obj = data;
+      let obj2 = copier(obj);
+      expect(obj === obj2).toBe(false);
+      expect(obj2).toStrictEqual(obj);
+      expect(obj2.constructor).toBe(Object);
+    });
+    it("Preserves .keys", () => {
+      let obj = {a: void 0, b: undefined, c: false, d: 0, e: "other values"};
+      let obj2 = copier(obj);
+      expect(obj == obj2).toBe(false);
+      expect(obj2).toStrictEqual(obj);
+      
+    })
+  })
 }
 
 
