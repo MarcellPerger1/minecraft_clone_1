@@ -91,7 +91,7 @@ function test_deepCopy({ copier, id }) {
       let obj2 = copier(obj);
       expect(obj == obj2).toBe(false);
       expect(obj2).toStrictEqual(obj);
-      
+      expect(Object.keys(obj2)).toStrictEqual(Object.keys(obj));
     })
   })
 }
