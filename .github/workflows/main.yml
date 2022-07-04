@@ -14,15 +14,11 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   linter:
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      
       - name: Install npm stuff
         run: npm ci
       - name: Run eslint
@@ -32,7 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install npm stuff
-        run: sudo npm install --unsafe-perm=true --allow-root
+        run: npm ci
       - name: Generate atlas
         run: node ./scripts/make_atlas.js
   build_libs:
@@ -40,7 +36,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install npm stuff
-        run: sudo npm install --unsafe-perm=true --allow-root
+        run: npm ci
       - name: Run build_libs.sh
         run: |
           chmod +x ./scripts/build_libs.sh
