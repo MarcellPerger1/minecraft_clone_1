@@ -22,8 +22,8 @@ describe("deep_merge.js", () => {
   });
   describe("deepMerge mutli-arg", () => {
     it("Doesn't modify inputs", () => {
-      let objs = [{a: "a1"}, {b: -9, a: "a2"}];
-      let objsClone = [{a: "a1"}, {b: -9, a: "a2"}];
+      let objs = [{ a: "a1" }, { b: -9, a: "a2" }];
+      let objsClone = [{ a: "a1" }, { b: -9, a: "a2" }];
       // assumptions about input vars (otherwise test is broken)
       expect(objsClone).toStrictEqual(objs);
       expect(objsClone === objs).toBe(false);
@@ -76,7 +76,9 @@ function test_deepCopy({ copier, id }) {
       },
       /* eslint-disable no-sparse-arrays */
       { name: "empty sparse array", data: new Array(1000) },
-      { name: "sparse array at end", data: [9, "e", Symbol('q'), , , , , ,] }
+      { name: "sparse array at end", data: [9, "e", Symbol('q'), , , ,] },
+      { name: "sparse array at start", data: [, , , 5, Symbol('p'), -7n, false, null] },
+      { name: "very sparse array", data: [, , void 0, -2n, , , null, , ,] }
       /* eslint-enable no-sparse-arrays */
     ])("$name", ({ data }) => {
       let arr = data;
@@ -84,15 +86,18 @@ function test_deepCopy({ copier, id }) {
       expect(arr === arr2).toBe(false);
       expect(arr2).toStrictEqual(arr);
       expect(arr2.constructor).toBe(Array);
+      for (let i = 0; i < data.length; i++) {
+        expect(i in arr).toEqual(i in arr2);
+      }
     });
   });
   describe("Shallow Object handling", () => {
     it.each([
       { name: "empty object", data: {} },
-      { name: "object with single attr", data: {y: Symbol('o')}},
-      { name: "object with string keys", data: {e: 9, HellowWorld: -7373n, u: "r"}},
-      { name: "object with Some nulls", data: {o: null, v: false, sm: void 0}},
-    ])("$name", ({data}) => {
+      { name: "object with single attr", data: { y: Symbol('o') } },
+      { name: "object with string keys", data: { e: 9, HellowWorld: -7373n, u: "r" } },
+      { name: "object with Some nulls", data: { o: null, v: false, sm: void 0 } },
+    ])("$name", ({ data }) => {
       let obj = data;
       let obj2 = copier(obj);
       expect(obj === obj2).toBe(false);
@@ -100,7 +105,7 @@ function test_deepCopy({ copier, id }) {
       expect(obj2.constructor).toBe(Object);
     });
     it("Preserves .keys", () => {
-      let obj = {a: void 0, b: undefined, c: false, d: 0, e: "other values"};
+      let obj = { a: void 0, b: undefined, c: false, d: 0, e: "other values" };
       let obj2 = copier(obj);
       expect(obj == obj2).toBe(false);
       expect(obj2).toStrictEqual(obj);
