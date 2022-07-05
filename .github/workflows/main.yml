@@ -1,5 +1,3 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
 on:
@@ -14,29 +12,31 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  linter:
+  npm_install:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
-      - name: Install npm stuff
+      - name: npm install
         run: npm ci
+  linter:
+    runs-on: ubuntu-latest
+    needs: [npm_install]
+    steps:
+      - uses: actions/checkout@v3
       - name: Run eslint
         run: npx eslint --max-warnings 0 ./
   texture_atlas:
     runs-on: ubuntu-latest
+    needs: [npm_install]
     steps:
       - uses: actions/checkout@v3
-      - name: Install npm stuff
-        run: npm ci
       - name: Generate atlas
         run: node ./scripts/make_atlas.js
   build_libs:
     runs-on: ubuntu-latest
+    needs: [npm_install]
     steps:
       - uses: actions/checkout@v3
-      - name: Install npm stuff
-        run: npm ci
       - name: Run build_libs.sh
         run: |
           chmod +x ./scripts/build_libs.sh
