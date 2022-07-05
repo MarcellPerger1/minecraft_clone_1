@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Run eslint
-        run: sudo npx eslint --max-warnings 0 ./
+        run: sudo npx eslint --max-warnings 0 ./ --unsafe-perm=true --allow-root
   texture_atlas:
     runs-on: ubuntu-latest
     needs: [npm_install]
