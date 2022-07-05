@@ -97,8 +97,8 @@ function test_deepCopy({ copier, id }) {
       { name: "object with single attr", data: { y: Symbol('o') } },
       { name: "object with string keys", data: { e: 9, HellowWorld: -7373n, u: "r" } },
       { name: "object with Some nulls", data: { o: null, v: false, sm: void 0 } },
-      { name: "object with Symbol keys", data: {[Symbol.isConcatSpreadable]: true, [Symbol('x')]: 9 } },
-      { name: "object with mixed keys", data: {[Symbol('M')]: Symbol('O'), aB: 9 } },
+      { name: "object with Symbol keys", data: { [Symbol.isConcatSpreadable]: true, [Symbol('x')]: 9 } },
+      { name: "object with mixed keys", data: { [Symbol('M')]: Symbol('O'), aB: 9 } },
     ])("$name", ({ data }) => {
       let obj = data;
       let obj2 = copier(obj);
@@ -113,6 +113,19 @@ function test_deepCopy({ copier, id }) {
       expect(obj2).toStrictEqual(obj);
       expect(Object.keys(obj2)).toStrictEqual(Object.keys(obj));
     });
+  });
+  describe("Deep object handling", () => {
+    let testData = [
+      { name: "object containing array", data: { a: [-8n, "str", 67.1], b: Symbol('f'), a2: [89, undefined] } },
+      { name: "object containing object", data: { o: { p: 9, q: "str" }, o2: { o: { e: 2.7, pi: 3.14, t: "math" }, v: "9f" } } },
+      { name: "array containing array", data: [[8.3, -9n, "s", [2]], false, [], "3"] },
+      { name: "array continaing object", data: [{ u: 9, p: "st" }, "f", { [Symbol.split]: NaN }] },
+    ]
+    it.each(testData)("Returns equal object: $name", ({ data }) => {
+      let obj2 = copier(data);
+      expect(obj2 === data).toBe(false);
+      expect(obj2).toStrictEqual(data);
+    })
   })
 }
 
