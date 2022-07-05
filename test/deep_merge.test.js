@@ -120,6 +120,7 @@ function test_deepCopy({ copier, id }) {
       { name: "object containing object", data: { o: { p: 9, q: "str" }, o2: { o: { e: 2.7, pi: 3.14, t: "math" }, v: "9f" } } },
       { name: "array containing array", data: [[8.3, -9n, "s", [2]], false, [], "3"] },
       { name: "array continaing object", data: [{ u: 9, p: "st" }, "f", { [Symbol.split]: NaN }] },
+      { name: "mixed object", data: [{ e: [{ w: "o", h: -3n }, 1.901], [Symbol('f')]: true }, [], null, 0, [{ r0: "ef", h: void 0 }, Symbol('f')]] }
     ]
     it.each(testData)("Returns equal object: $name", ({ data }) => {
       let obj2 = copier(data);
