@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: install eslint
-        run: sudo npm install -g eslint --unsafe-perm=true --allow-root
+        run: sudo npm install -g eslint eslint-plugin-jest --unsafe-perm=true --allow-root
       - name: Run eslint
         run: npx eslint --max-warnings 0 ./
   texture_atlas:
