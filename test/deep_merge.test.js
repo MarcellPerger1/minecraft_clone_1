@@ -97,7 +97,8 @@ function test_deepCopy({ copier, id }) {
       { name: "object with single attr", data: { y: Symbol('o') } },
       { name: "object with string keys", data: { e: 9, HellowWorld: -7373n, u: "r" } },
       { name: "object with Some nulls", data: { o: null, v: false, sm: void 0 } },
-      { name: "object with Symbol keys", data: {[Symbol.isConcatSpreadable]: true, [Symbol('x')]: 9} }
+      { name: "object with Symbol keys", data: {[Symbol.isConcatSpreadable]: true, [Symbol('x')]: 9 } },
+      { name: "object with mixed keys", data: {[Symbol('M')]: Symbol('O'), aB: 9 } },
     ])("$name", ({ data }) => {
       let obj = data;
       let obj2 = copier(obj);
@@ -111,7 +112,7 @@ function test_deepCopy({ copier, id }) {
       expect(obj == obj2).toBe(false);
       expect(obj2).toStrictEqual(obj);
       expect(Object.keys(obj2)).toStrictEqual(Object.keys(obj));
-    })
+    });
   })
 }
 
