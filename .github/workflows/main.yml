@@ -23,7 +23,7 @@ jobs:
           node-version: 16
           # Used to specify a package manager for caching in the default directory. Supported values: npm, yarn, pnpm.
           cache: npm
-          cache-depedency-path: ./package-lock.json
+          cache-dependency-path: ./package-lock.json
       - name: Run tests
         run: |
           chmod +x ./scripts/test.sh
