@@ -38,7 +38,7 @@ jobs:
   # linter / tests
   linter:
     runs-on: ubuntu-latest
-    needs: [setup_node]
+    needs: [npm_install]
     steps:
       - uses: actions/checkout@v3
       - name: Install eslint
