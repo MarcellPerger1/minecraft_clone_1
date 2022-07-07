@@ -41,6 +41,7 @@ jobs:
       - name: Run tests
         run: |
           echo $NODE_ENV
+          ls ./
           chmod +x ./scripts/test.sh
           ./scripts/test.sh
   
