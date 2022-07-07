@@ -15,7 +15,8 @@ describe("deep_merge.js", () => {
       name: "deepMerge with some nulls",
       id: "withNulls"
     }
-  ])("$name", test_deepCopy);
+  /* eslint-disable-next-line jest/valid-describe-callback */
+  ])("$name", test_deepCopy); 
   describe("deepMerge mutli-arg", () => {
     it("Doesn't modify inputs", () => {
       let objs = [{ a: "a1" }, { b: -9, a: "a2" }];
