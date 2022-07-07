@@ -12,6 +12,21 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          # Version Spec of the version to use. Examples: 12.x, 10.15.1, >=10.15.0.
+          node-version: 16
+          # Used to specify a package manager for caching in the default directory. Supported values: npm, yarn, pnpm.
+          cache: npm
+          # Used to specify the path to a dependency file: package-lock.json, yarn.lock, etc. Supports wildcards or a list of file names for caching multiple dependencies.
+          cache-dependency-path: ./package-lock.json
+      - name: Run tests
+        run: npm test
+  
   npm_install:
     runs-on: ubuntu-latest
     steps:
@@ -23,7 +38,7 @@ jobs:
   # linter / tests
   linter:
     runs-on: ubuntu-latest
-    needs: [npm_install]
+    needs: [setup_node]
     steps:
       - uses: actions/checkout@v3
       - name: Install eslint
@@ -32,18 +47,6 @@ jobs:
           npm install eslint-plugin-jest@latest --save-dev
       - name: Run eslint
         run: npx eslint --max-warnings 0 ./
-  
-  tests:
-    runs-on: ubuntu-latest
-    needs: [npm_install]
-    steps:
-      - uses: actions/checkout@v3
-      - name: Run tests
-        run: |
-          echo $NODE_ENV
-          ls ./node_modules
-          chmod +x ./scripts/test.sh
-          ./scripts/test.sh
   
   
   texture_atlas:
