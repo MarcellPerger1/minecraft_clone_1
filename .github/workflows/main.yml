@@ -25,7 +25,9 @@ jobs:
           cache: npm
           cache-depedency-path: ./package-lock.json
       - name: Run tests
-        run: npm test
+        run: |
+          chmod +x ./scripts/test.sh
+          npm test
   
   npm_install:
     runs-on: ubuntu-latest
