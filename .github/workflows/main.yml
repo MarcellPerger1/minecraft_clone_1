@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: npm install
-        run: npm ci
+        run: npm install
   linter:
     runs-on: ubuntu-latest
     needs: [npm_install]
@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: install eslint
         run: |
-          sudo npm install -g eslint eslint-plugin-jest --unsafe-perm=true --allow-root
+          sudo npm install -g eslint --unsafe-perm=true --allow-root
           npm install eslint-plugin-jest@latest --save-dev
       - name: Run eslint
         run: npx eslint --max-warnings 0 ./
