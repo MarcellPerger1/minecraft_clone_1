@@ -19,9 +19,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v3
         with:
-          # Version Spec of the version to use. Examples: 12.x, 10.15.1, >=10.15.0.
           node-version: 16
-          # Used to specify a package manager for caching in the default directory. Supported values: npm, yarn, pnpm.
           cache: npm
           cache-dependency-path: ./package-lock.json
       - name: Run tests
@@ -55,8 +53,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: install pkgs
-        run: npm install
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: npm
+          cache-dependency-path: ./package-lock.json
       - name: Generate atlas
         run: node ./scripts/make_atlas.cjs
   
