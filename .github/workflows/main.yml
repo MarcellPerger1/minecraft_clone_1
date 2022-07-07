@@ -27,15 +27,6 @@ jobs:
           chmod +x ./scripts/test.sh
           npm test
   
-#   npm_install:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v3
-#       - name: npm install
-#         run: npm install --production=false
-#       - run: ls ./node_modules
-  
-  # linter / tests
   linter:
     runs-on: ubuntu-latest
     steps:
@@ -54,7 +45,7 @@ jobs:
         run: npx eslint --max-warnings 0 ./
   
   
-  texture_atlas:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -65,21 +56,11 @@ jobs:
           cache-dependency-path: ./package-lock.json
       - name: npm install
         run: npm i
-      - name: Generate atlas
-        run: node ./scripts/make_atlas.cjs
-  
-  build_libs:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          cache: npm
-          cache-dependency-path: ./package-lock.json
       - name: Run build_libs.sh
         run: |
           chmod +x ./scripts/build_libs.sh
           ./scripts/build_libs.sh
+      - name: Generate testure atlas
+        run: node ./scripts/make_atlas.cjs
+      
 
