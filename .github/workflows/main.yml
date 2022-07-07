@@ -1,11 +1,9 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ main ]
+    branches: [ main, '**workflows?**' ]
   pull_request:
     branches: [ main ]
 
@@ -14,35 +12,55 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: npm
+          cache-dependency-path: ./package-lock.json
+      - name: Run tests
+        run: |
+          chmod +x ./scripts/test.sh
+          npm test
+  
   linter:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      
-      - name: Install npm stuff
-        run: sudo npm install -g eslint --unsafe-perm=true --allow-root
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: npm
+          cache-dependency-path: ./package-lock.json
+      - name: Install eslint
+        run: |
+          sudo npm install -g eslint --unsafe-perm=true --allow-root
+          npm install eslint-plugin-jest@latest --save-dev
       - name: Run eslint
         run: npx eslint --max-warnings 0 ./
-  texture_atlas:
+  
+  
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Install npm stuff
-        run: sudo npm install --unsafe-perm=true --allow-root
-      - name: Generate atlas
-        run: node ./scripts/make_atlas.js
-  build_libs:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install npm stuff
-        run: sudo npm install --unsafe-perm=true --allow-root
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: npm
+          cache-dependency-path: ./package-lock.json
+      - name: npm install
+        run: npm i
       - name: Run build_libs.sh
         run: |
           chmod +x ./scripts/build_libs.sh
           ./scripts/build_libs.sh
+      - name: Generate testure atlas
+        run: node ./scripts/make_atlas.cjs
+      
 
