@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: npm install
+      - name: npm install --production=false
         run: npm install
   linter:
     runs-on: ubuntu-latest
