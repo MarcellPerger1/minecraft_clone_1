@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: npm install
-        run: npm install
+        run: npm install --production=false
   
   # linter / tests
   linter:
