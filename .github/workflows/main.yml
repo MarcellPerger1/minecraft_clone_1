@@ -58,6 +58,8 @@ jobs:
           node-version: 16
           cache: npm
           cache-dependency-path: ./package-lock.json
+      - name: npm install
+        run: npm i
       - name: Generate atlas
         run: node ./scripts/make_atlas.cjs
   
