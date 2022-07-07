@@ -35,7 +35,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Generate atlas
-        run: node ./scripts/make_atlas.cjs
+        run: |
+          npm install
+          node ./scripts/make_atlas.cjs
   build_libs:
     runs-on: ubuntu-latest
     needs: [npm_install]
