@@ -87,6 +87,7 @@ function test_deepCopy({ copier, id }) {
       expect(arr === arr2).toBe(false);
       expect(arr2).toStrictEqual(arr);
       expect(arr2.constructor).toBe(Array);
+      expect(arr2).toHaveLength(arr.length);
       for (let i = 0; i < data.length; i++) {
         expect(i in arr).toEqual(i in arr2);
       }
@@ -120,14 +121,23 @@ function test_deepCopy({ copier, id }) {
       { name: "object containing array", data: { a: [-8n, "str", 67.1], b: Symbol('f'), a2: [89, undefined] } },
       { name: "object containing object", data: { o: { p: 9, q: "str" }, o2: { o: { e: 2.7, pi: 3.14, t: "math" }, v: "9f" } } },
       { name: "array containing array", data: [[8.3, -9n, "s", [2]], false, [], "3"] },
-      { name: "array continaing object", data: [{ u: 9, p: "st" }, "f", { [Symbol.split]: NaN }] },
-      { name: "mixed object", data: [{ e: [{ w: "o", h: -3n }, 1.901], [Symbol('f')]: true }, [], null, 0, [{ r0: "ef", h: void 0 }, Symbol('f')]] }
+      { name: "array continaing object", data: [{ u: 9, p: "st" }, "f", { [Symbol.split]: NaN }], },
+      { name: "mixed object",  data: [{ e: [{ w: "o", h: -3n }, 1.901], [Symbol('f')]: true }, [], null, 0, [{ r0: "ef", h: void 0 }, Symbol('f')]] , }
     ]
     it.each(testData)("Returns equal object: $name", ({ data }) => {
       let obj2 = copier(data);
       expect(obj2 === data).toBe(false);
       expect(obj2).toStrictEqual(data);
-    })
+    });
+    it("Doen't preserve referential identity", () => {
+      let obj = {a: []};
+      let obj2 = copier(obj);
+      expect(obj2).toStrictEqual(obj);
+      expect(obj2).not.toBe(obj);
+      expect(obj2.a).not.toBe(obj.a);
+      expect(obj2.a).toStrictEqual(obj.a);
+    });
+    
   })
 }
 
