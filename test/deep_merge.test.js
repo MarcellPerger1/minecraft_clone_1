@@ -142,7 +142,7 @@ function test_deepCopy({ copier, id }) {
     it("Copies objects only once (uses memo)", () => {
       let inner = {};
       let obj = [inner, inner];
-      let obj2 = copier(obj2);
+      let obj2 = copier(obj);
       expect(obj2[0]).toBe(obj2[1]);
     })
     it("Handles recursive objects (uses memo)", () => {
