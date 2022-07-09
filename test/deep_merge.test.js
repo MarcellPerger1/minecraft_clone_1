@@ -129,15 +129,28 @@ function test_deepCopy({ copier, id }) {
       expect(obj2 === data).toBe(false);
       expect(obj2).toStrictEqual(data);
     });
-    it("Doen't preserve referential identity", () => {
-      let obj = {a: []};
+    it("Is deep", () => {
+      let obj = {a: [2, {u: 9}]};
       let obj2 = copier(obj);
       expect(obj2).toStrictEqual(obj);
       expect(obj2).not.toBe(obj);
       expect(obj2.a).not.toBe(obj.a);
       expect(obj2.a).toStrictEqual(obj.a);
+      expect(obj2.a[1]).not.toBe(obj.a[1]);
+      expect(obj2.a[1]).toStrictEqual(obj.a[1]);
     });
-    
+    it("Copies objects only once (uses memo)", () => {
+      let inner = {};
+      let obj = [inner, inner];
+      let obj2 = copier(obj2);
+      expect(obj2[0]).toBe(obj2[1]);
+    })
+    it("Handles recursive objects (uses memo)", () => {
+      let obj = {};
+      obj.a = obj;
+      let obj2 = copier(obj);
+      expect(obj2.a).toBe(obj);
+    });
   })
 }
 
