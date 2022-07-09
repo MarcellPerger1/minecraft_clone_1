@@ -145,7 +145,7 @@ function _setstate(res, objs, cnf){
   }
   return res;
 }
-_setstate.object = function object(res, objs, cnf){
+_setstate.object = function setstate_object(res, objs, cnf){
   // for now, copy all own properties
   // TODO: option in cnf
   let ttag = toStringTag(res);
@@ -161,7 +161,7 @@ _setstate.object = function object(res, objs, cnf){
   }
 }
 _setstate.maplike = _setstate.object
-_setstate.setlike = function setlike(res, objs, cnf){
+_setstate.setlike = function setstate_setlike(res, objs, cnf){
   for (let o of objs) {
     switch (toStringTag(o)){
       case "Set":
@@ -177,7 +177,7 @@ _setstate.setlike = function setlike(res, objs, cnf){
     });
   }
 }
-_setstate.array = function array(res, objs, cnf){
+_setstate.array = function setstate_array(res, objs, cnf){
   objs.at(-1).forEach((v, i) => { res[i] = deepCopy(v, cnf) })
 }
 
