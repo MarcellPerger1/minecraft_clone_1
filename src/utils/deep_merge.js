@@ -28,9 +28,10 @@ Symbol.dontMerge = Symbol.for("dontMerge");
  * @param {*} [cnf.protoOverride] override constructor of result
  * @param {*} [cnf.ctorOverride] override prototype of result
  * @param {boolean} [cnf.deepSetItems] copy items in Set?
+ * @param {Map} [null] memo
  * @returns {*}
 */
-export function deepMerge(objs, cnf = null) {
+export function deepMerge(objs, cnf = null, memo = null) {
   cnf = _applyCnfDefaults(cnf);
   let objs_arg = objs;
   objs = _filterObjs(objs);
@@ -41,8 +42,16 @@ export function deepMerge(objs, cnf = null) {
     return objs.at(-1); // primitive so just return it
   }
   _trimObjsList(objs, cnf);
+  memo ??= new Map();
+  if(objs.length == 1 && memo.has(objs[0])){
+    return memo.get(objs[0]);
+  }
+  
   let res = _construct(objs, cnf);
-  _setstate(res, objs, cnf);
+  _setstate(res, objs, cnf, memo);
+  if(objs.length == 1){
+    memo.set(objs[0], res);
+  }
   return res;
 }
 export function deepCopy(obj, cnf){
@@ -131,21 +140,21 @@ _construct.object = function constructObject(obj, proto) {
  * @param {object[]} objs
  * @param {object} cnf
 */
-function _setstate(res, objs, cnf){
+function _setstate(res, objs, cnf, memo){
   if(_dontMerge(objs)) {
     objs.splice(0, objs.length - 1);
   }
   let ttag = toStringTag(res);
   if (isArray(res)) {
-    _setstate.array(res, objs, cnf);
+    _setstate.array(res, objs, cnf, memo);
   } else if (ttag === "Set") {
-    _setstate.setlike(res, objs, cnf);
+    _setstate.setlike(res, objs, cnf, memo);
   } else {
-    _setstate.object(res, objs, cnf);
+    _setstate.object(res, objs, cnf, memo);
   }
   return res;
 }
-_setstate.object = function setstate_object(res, objs, cnf){
+_setstate.object = function setstate_object(res, objs, cnf, memo){
   // for now, copy all own properties
   // TODO: option in cnf
   let ttag = toStringTag(res);
@@ -156,19 +165,19 @@ _setstate.object = function setstate_object(res, objs, cnf){
       ttag==="Map" ? o.get(k) : o[k]));
   }
   for (let k of getOwnProperties(update_with)) {
-    let v = deepMerge(update_with[k], cnf);
+    let v = deepMerge(update_with[k], cnf, memo);
     if(ttag==="Map") { res.set(k, v); } else { res[k] = v; }
   }
 }
 _setstate.maplike = _setstate.object
-_setstate.setlike = function setstate_setlike(res, objs, cnf){
+_setstate.setlike = function setstate_setlike(res, objs, cnf, memo){
   for (let o of objs) {
     switch (toStringTag(o)){
       case "Set":
-        o.forEach((_v, k) => res.add(_maybeCopy.setItem(k, cnf)));
+        o.forEach((_v, k) => res.add(_maybeCopy.setItem(k, cnf, memo)));
         break;
       case "Map":
-        o.forEach((v, k) => v ? res.add(_maybeCopy.setItem(k, cnf)) : res);
+        o.forEach((v, k) => v ? res.add(_maybeCopy.setItem(k, cnf, memo)) : res);
         break;
     }
     Object.keys(o).forEach(k => {
@@ -177,8 +186,8 @@ _setstate.setlike = function setstate_setlike(res, objs, cnf){
     });
   }
 }
-_setstate.array = function setstate_array(res, objs, cnf){
-  objs.at(-1).forEach((v, i) => { res[i] = deepCopy(v, cnf) })
+_setstate.array = function setstate_array(res, objs, cnf, memo){
+  objs.at(-1).forEach((v, i) => { res[i] = deepCopy(v, cnf, memo) })
 }
 
 function _dontMerge(objs){
@@ -189,12 +198,12 @@ function _dontMerge(objs){
   return dontMerge;
 }
 
-function _maybeCopy(v, cond, cnf){
+function _maybeCopy(v, cond, cnf, memo){
   return cond ? deepCopy(v, cnf) : v;
 }
 // item *in* set
-_maybeCopy.setItem = function _copySetItem(si, cnf){
-  return _maybeCopy(si, cnf.deepSetItems, cnf);
+_maybeCopy.setItem = function _copySetItem(si, cnf, memo){
+  return _maybeCopy(si, cnf.deepSetItems, cnf, memo);
 }
 
 
