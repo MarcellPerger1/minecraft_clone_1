@@ -32,6 +32,7 @@ Symbol.dontMerge = Symbol.for("dontMerge");
  * @returns {*}
 */
 export function deepMerge(objs, cnf = null, memo = null) {
+  console.log("call: ", objs, memo)
   cnf = _applyCnfDefaults(cnf);
   let objs_arg = objs;
   objs = _filterObjs(objs);
@@ -44,18 +45,23 @@ export function deepMerge(objs, cnf = null, memo = null) {
   _trimObjsList(objs, cnf);
   memo ??= new Map();
   if(objs.length == 1 && memo.has(objs[0])){
+    console.log("get", objs)
     return memo.get(objs[0]);
+  } else if (memo.size) {
+    console.log("not get", objs, memo);
   }
   
   let res = _construct(objs, cnf);
   _setstate(res, objs, cnf, memo);
   if(objs.length == 1){
+    console.log("set", objs, res, memo);
     memo.set(objs[0], res);
+    console.log("after set", memo);
   }
   return res;
 }
-export function deepCopy(obj, cnf){
-  return deepMerge([obj], cnf);
+export function deepCopy(obj, cnf, memo){
+  return deepMerge([obj], cnf, memo);
 }
 
 
