@@ -149,7 +149,7 @@ function test_deepCopy({ copier, id }) {
       let obj = {};
       obj.a = obj;
       let obj2 = copier(obj);
-      expect(obj2.a).toBe(obj);
+      expect(obj2.a).toBe(obj2);
     });
   })
 }

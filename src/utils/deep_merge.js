@@ -52,12 +52,12 @@ export function deepMerge(objs, cnf = null, memo = null) {
   }
   
   let res = _construct(objs, cnf);
-  _setstate(res, objs, cnf, memo);
   if(objs.length == 1){
     console.log("set", objs, res, memo);
     memo.set(objs[0], res);
     console.log("after set", memo);
   }
+  _setstate(res, objs, cnf, memo);
   return res;
 }
 export function deepCopy(obj, cnf, memo){
