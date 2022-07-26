@@ -83,7 +83,7 @@ function _trimObjsList(objs, _cnf){
       lastPrimIndex = i;
     }
   }
-  objs.splice(0, lastPrimIndex);
+  objs.splice(0, lastPrimIndex + 1);
 }
 
 
