@@ -50,13 +50,17 @@ describe("deep_merge.js", () => {
         expect(deepMerge([45, "rawstr", {obj: true, p: false}])).toStrictEqual({obj: true, p: false});
       });
       it("Doesn't merge arrays", () => {
-        expect(deepMerge([[12, 99], [-7, -8]])).toStrictEqual([-7, -8]);
+        expect(deepMerge([[12, 99, 7], [-7, -8]])).toStrictEqual([-7, -8]);
       })
       it("Doesn't combine arrays and objects", () => {
         expect(deepMerge([[54, "str"], {"1": 42, v: 9}])).toStrictEqual({"1": 42, v: 9});
+        expect(deepMerge([{"1": 42, v: 9, length: 4}, [54, "str"]])).toStrictEqual([54, "str"]);
       })
       it("Doesn't merge through primitives", () => {
         expect(deepMerge([{o: 7}, "primitive!", {a: 1}])).toStrictEqual({a: 1});
+      })
+      it("Doesn't merge through arrays", () => {
+        expect(deepMerge([{o: 7, "1": 9, length: 3}, ["array"], {a: 1}])).toStrictEqual({a: 1, "2": 2});
       })
     })
   })

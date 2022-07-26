@@ -9,6 +9,7 @@ import { isAnyObject, isArray, toStringTag } from './type_check.js';
 
 // EXPORTS
 Symbol.dontMerge = Symbol.for("dontMerge");
+Array.prototype[Symbol.dontMerge] = true;
 
 // typedefs
 /**
@@ -43,12 +44,13 @@ export function deepMerge(objs, cnf = null, memo = null) {
   }
   _trimObjsList(objs, cnf);
   memo ??= new Map();
-  if(objs.length == 1 && memo.has(objs[0])){
+  const use_memo = objs.length === 1;
+  if(use_memo && memo.has(objs[0])){
     return memo.get(objs[0]);
   }
   
   let res = _construct(objs, cnf);
-  if(objs.length == 1){
+  if(use_memo){
     memo.set(objs[0], res);
   }
   _setstate(res, objs, cnf, memo);
@@ -63,7 +65,7 @@ export function deepCopy(obj, cnf=null, memo=null){
 // arg processing
 function _applyCnfDefaults(cnf){
   cnf ??= {};
-  cnf.weakObjTypes ??= [Object];
+  cnf.weakObjTypes ??= [Object, Array];
   return cnf;
 }
 
@@ -141,9 +143,6 @@ _construct.object = function constructObject(obj, proto) {
  * @param {object} cnf
 */
 function _setstate(res, objs, cnf, memo){
-  if(_dontMerge(objs)) {
-    objs.splice(0, objs.length - 1);
-  }
   let ttag = toStringTag(res);
   if (isArray(res)) {
     _setstate.array(res, objs, cnf, memo);
@@ -160,7 +159,9 @@ _setstate.object = function setstate_object(res, objs, cnf, memo){
   let ttag = toStringTag(res);
   // dont pollute with Object methods
   let update_with = Object.create(null);
-  for (let o of objs) {
+  for (let [i, o] of Object.entries(objs)) {
+    console.log(o, _dontMerge(o));
+    if(_dontMerge(o) && i !== objs.length-1){ continue; }
     getOwnProperties(o).forEach(k => (update_with[k] ??= []).push(
       ttag==="Map" ? o.get(k) : o[k]));
   }
@@ -171,7 +172,8 @@ _setstate.object = function setstate_object(res, objs, cnf, memo){
 }
 _setstate.maplike = _setstate.object
 _setstate.setlike = function setstate_setlike(res, objs, cnf, memo){
-  for (let o of objs) {
+  for (let [i, o] of Object.entries(objs)) {
+    if(_dontMerge(o) && i !== objs.length-1){ continue; }
     switch (toStringTag(o)){
       case "Set":
         o.forEach((_v, k) => res.add(_maybeCopy.setItem(k, cnf, memo)));
@@ -190,12 +192,8 @@ _setstate.array = function setstate_array(res, objs, cnf, memo){
   objs.at(-1).forEach((v, i) => { res[i] = deepCopy(v, cnf, memo) })
 }
 
-function _dontMerge(objs){
-  let dontMerge = undefined;
-  for (let o of objs){
-    dontMerge = o?.[Symbol.dontMerge] ?? dontMerge;
-  }
-  return dontMerge;
+function _dontMerge(o){
+  return o?.[Symbol.dontMerge] ?? false;
 }
 
 function _maybeCopy(v, cond, cnf, memo){
