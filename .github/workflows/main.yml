@@ -22,6 +22,7 @@ jobs:
           node-version: 16
           cache: npm
           cache-dependency-path: ./package-lock.json
+      - run: npm install --production=false
       - name: Run tests
         run: |
           chmod +x ./scripts/test.sh
