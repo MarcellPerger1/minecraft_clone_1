@@ -9,7 +9,8 @@ import { isAnyObject, isArray, toStringTag } from './type_check.js';
 
 // EXPORTS
 Symbol.dontMerge = Symbol.for("dontMerge");
-Array.prototype[Symbol.dontMerge] = true;
+Symbol.overridePrev = Symbol.for("overridePrev");
+Array.prototype[Symbol.overridePrev] = true;
 
 // typedefs
 /**
@@ -160,8 +161,10 @@ _setstate.object = function setstate_object(res, objs, cnf, memo){
   // dont pollute with Object methods
   let update_with = Object.create(null);
   for (let [i, o] of Object.entries(objs)) {
-    console.log(o, _dontMerge(o));
-    if(_dontMerge(o) && i !== objs.length-1){ continue; }
+    if(o?.[Symbol.overridePrev] && i !== objs.length-1){
+      update_with = Object.create(null);
+      continue; 
+    }
     getOwnProperties(o).forEach(k => (update_with[k] ??= []).push(
       ttag==="Map" ? o.get(k) : o[k]));
   }
@@ -172,6 +175,9 @@ _setstate.object = function setstate_object(res, objs, cnf, memo){
 }
 _setstate.maplike = _setstate.object
 _setstate.setlike = function setstate_setlike(res, objs, cnf, memo){
+  if(_dontMergeObjs(objs)){
+    objs = [objs.at(-1)];
+  }
   for (let [i, o] of Object.entries(objs)) {
     if(_dontMerge(o) && i !== objs.length-1){ continue; }
     switch (toStringTag(o)){
@@ -194,6 +200,14 @@ _setstate.array = function setstate_array(res, objs, cnf, memo){
 
 function _dontMerge(o){
   return o?.[Symbol.dontMerge] ?? false;
+}
+
+function _dontMergeObjs(objs){
+  var dontMerge;
+  for(const o of objs){
+    dontMerge = _dontMerge(o) ?? dontMerge;
+  }
+  return dontMerge ?? false;
 }
 
 function _maybeCopy(v, cond, cnf, memo){
