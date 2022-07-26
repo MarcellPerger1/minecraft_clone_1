@@ -54,7 +54,7 @@ export function deepMerge(objs, cnf = null, memo = null) {
   _setstate(res, objs, cnf, memo);
   return res;
 }
-export function deepCopy(obj, cnf, memo){
+export function deepCopy(obj, cnf=null, memo=null){
   return deepMerge([obj], cnf, memo);
 }
 
@@ -199,7 +199,7 @@ function _dontMerge(objs){
 }
 
 function _maybeCopy(v, cond, cnf, memo){
-  return cond ? deepCopy(v, cnf) : v;
+  return cond ? deepCopy(v, cnf, memo) : v;
 }
 // item *in* set
 _maybeCopy.setItem = function _copySetItem(si, cnf, memo){
