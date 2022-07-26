@@ -45,17 +45,12 @@ export function deepMerge(objs, cnf = null, memo = null) {
   _trimObjsList(objs, cnf);
   memo ??= new Map();
   if(objs.length == 1 && memo.has(objs[0])){
-    console.log("get", objs)
     return memo.get(objs[0]);
-  } else if (memo.size) {
-    console.log("not get", objs, memo);
   }
   
   let res = _construct(objs, cnf);
   if(objs.length == 1){
-    console.log("set", objs, res, memo);
     memo.set(objs[0], res);
-    console.log("after set", memo);
   }
   _setstate(res, objs, cnf, memo);
   return res;
