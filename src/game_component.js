@@ -47,6 +47,6 @@ export class GameComponent {
   }
 
   addEvent(name, hdlr, thisArg=null, elem=null, opts=null){
-    this.game.addEvent(name, hdlr, thisArg, elem, opts);
+    this.game.addEvent(name, hdlr, thisArg, elem, opts ?? {});
   }
 }
