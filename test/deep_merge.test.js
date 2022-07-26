@@ -1,5 +1,8 @@
 import { deepMerge, deepCopy } from "../src/utils/deep_merge.js";
 
+const BIGINT_PLUS = 61617349738546589193737113n;
+const BIGINT_MINUS = -64547771112849427272721n;
+
 describe("deep_merge.js", () => {
   describe.each([
     {
@@ -31,6 +34,31 @@ describe("deep_merge.js", () => {
       expect(deepMerge([null, void 0])).toBe(void 0);
       expect(deepMerge([void 0, null, null, void 0, null])).toBe(null);
     });
+    describe("merging", () => {
+      it("Returns last primitive (just primitives)", () => {
+        expect(deepMerge([2, 5.8, -9])).toBe(-9);
+        expect(deepMerge(["a_str", "b"])).toBe("b");
+        expect(deepMerge([BIGINT_PLUS, -0])).toBe(-0);
+        expect(deepMerge([Symbol("some"), 42, "hello", BIGINT_MINUS])).toBe(BIGINT_MINUS);
+      });
+      it("Returns primitive if last (with objects)", () => {
+        expect(deepMerge([[7], -8])).toBe(-8);
+        expect(deepMerge(["some str", {v: "hello"}, 69.42, new Map, -1])).toBe(-1);
+      });
+      it("Returns object after primitive", () => {
+        expect(deepMerge([-0.49, ["str"]])).toStrictEqual(["str"]);
+        expect(deepMerge([45, "rawstr", {obj: true, p: false}])).toStrictEqual({obj: true, p: false});
+      });
+      it("Doesn't merge arrays", () => {
+        expect(deepMerge([[12, 99], [-7, -8]])).toStrictEqual([-7, -8]);
+      })
+      it("Doesn't combine arrays and objects", () => {
+        expect(deepMerge([[54, "str"], {"1": 42, v: 9}])).toStrictEqual({"1": 42, v: 9});
+      })
+      it("Doesn't merge through primitives", () => {
+        expect(deepMerge([{o: 7}, "primitive!", {a: 1}])).toStrictEqual({a: 1});
+      })
+    })
   })
 })
 
@@ -41,7 +69,7 @@ function test_deepCopy({ copier, id }) {
       { name: "numbers", data: [0, -12, 9.7, NaN, Infinity] },
       {
         name: "bigint", data: [
-          0n, 6543n, -8383n, -64547771112849427272721n, 61617349738546589193737113n
+          0n, 6543n, -8383n, BIGINT_MINUS, BIGINT_PLUS
         ]
       },
       { name: "strings", data: ["", "abc", "\x1b[0m\\+)"] },
