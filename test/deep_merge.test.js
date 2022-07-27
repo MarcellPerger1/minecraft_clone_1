@@ -60,7 +60,10 @@ describe("deep_merge.js", () => {
         expect(deepMerge([{o: 7}, "primitive!", {a: 1}])).toStrictEqual({a: 1});
       })
       it("Doesn't merge through arrays", () => {
-        expect(deepMerge([{o: 7, "1": 9, length: 3}, ["array"], {a: 1}])).toStrictEqual({a: 1, "2": 2});
+        expect(deepMerge([{o: 7, "1": 9, length: 3}, ["array"], {a: 1, "2": 2}])).toStrictEqual({a: 1, "2": 2});
+      })
+      it("Doesn't merge with Symbol.dontMerge", () => {
+        expect(deepMerge([{[Symbol.dontMerge]: true}, {a: 9}, {b: 4}])).toStrictEqual({b: 4, [Symbol.dontMerge]: true})
       })
     })
   })

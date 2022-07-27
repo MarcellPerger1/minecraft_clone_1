@@ -155,6 +155,9 @@ function _setstate(res, objs, cnf, memo){
   return res;
 }
 _setstate.object = function setstate_object(res, objs, cnf, memo){
+  if(_dontMergeObjs(objs)){
+    objs = [{[Symbol.dontMerge]: true}, objs.at(-1)];
+  }
   // for now, copy all own properties
   // TODO: option in cnf
   let ttag = toStringTag(res);
@@ -199,7 +202,7 @@ _setstate.array = function setstate_array(res, objs, cnf, memo){
 }
 
 function _dontMerge(o){
-  return o?.[Symbol.dontMerge] ?? false;
+  return o?.[Symbol.dontMerge];
 }
 
 function _dontMergeObjs(objs){
