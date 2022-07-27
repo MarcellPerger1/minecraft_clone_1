@@ -9,8 +9,6 @@ import { isAnyObject, isArray, toStringTag } from './type_check.js';
 
 // EXPORTS
 Symbol.dontMerge = Symbol.for("dontMerge");
-Symbol.overridePrev = Symbol.for("overridePrev");
-Array.prototype[Symbol.overridePrev] = true;
 
 // typedefs
 /**
@@ -71,6 +69,7 @@ function _applyCnfDefaults(cnf){
 }
 
 function _filterObjs(objs){
+  if(!isArray(objs)) console.log(objs)
   assert(isArray(objs),
     "deepMerge first arg must be an array; " +
     "try putting the arguments into an array");
@@ -145,9 +144,9 @@ _construct.object = function constructObject(obj, proto) {
 */
 function _setstate(res, objs, cnf, memo){
   let ttag = toStringTag(res);
-  if (isArray(res)) {
+  /*if (isArray(res)) {
     _setstate.array(res, objs, cnf, memo);
-  } else if (ttag === "Set") {
+  } else */ if (ttag === "Set") {
     _setstate.setlike(res, objs, cnf, memo);
   } else {
     _setstate.object(res, objs, cnf, memo);
@@ -163,14 +162,28 @@ _setstate.object = function setstate_object(res, objs, cnf, memo){
   let ttag = toStringTag(res);
   // dont pollute with Object methods
   let update_with = Object.create(null);
+  let update_type = 'object';
   for (let [i, o] of Object.entries(objs)) {
-    if(o?.[Symbol.overridePrev] && i !== objs.length-1){
+    let ttag = toStringTag(o);
+    let this_type = isArray(o) ? 'array' : 'object';
+    console.log("loop", o, this_type, update_type);
+    if(update_type !== this_type){
       update_with = Object.create(null);
-      continue; 
     }
-    getOwnProperties(o).forEach(k => (update_with[k] ??= []).push(
-      ttag==="Map" ? o.get(k) : o[k]));
+    update_type = this_type;
+    if(this_type == 'object'){
+      getOwnProperties(o).forEach(k => (update_with[k] ??= []).push(
+        ttag==="Map" ? o.get(k) : o[k]));
+    } else {
+      update_with.length = [Math.max(update_with?.length?.[0] ?? -Infinity, o.length)]
+      getOwnProperties(o).forEach(k => {
+        if(k !== "length"){
+          (update_with[k] ??= []).push(ttag==="Map" ? o.get(k) : o[k])
+        }
+      })
+    }
   }
+  console.log("with",update_with)
   for (let k of getOwnProperties(update_with)) {
     let v = deepMerge(update_with[k], cnf, memo);
     if(ttag==="Map") { res.set(k, v); } else { res[k] = v; }
@@ -199,6 +212,10 @@ _setstate.setlike = function setstate_setlike(res, objs, cnf, memo){
 }
 _setstate.array = function setstate_array(res, objs, cnf, memo){
   objs.at(-1).forEach((v, i) => { res[i] = deepCopy(v, cnf, memo) })
+}
+
+function getArrayKeys(x){
+  return [...Object.keys(x), ...Object.getOwnPropertySymbols(x)];
 }
 
 function _dontMerge(o){
