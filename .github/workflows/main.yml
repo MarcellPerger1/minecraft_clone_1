@@ -26,7 +26,7 @@ jobs:
       - name: Run tests
         run: |
           chmod +x ./scripts/test.sh
-          npm test
+          npm test -- --colors
   
   linter:
     runs-on: ubuntu-latest
