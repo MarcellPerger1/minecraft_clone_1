@@ -28,7 +28,7 @@ Symbol.dontMerge = Symbol.for("dontMerge");
  * @param {*} [cnf.protoOverride] override constructor of result
  * @param {*} [cnf.ctorOverride] override prototype of result
  * @param {boolean} [cnf.deepSetItems] copy items in Set?
- * @param {Map} [null] memo
+ * @param {Map} [memo=null]
  * @returns {*}
 */
 export function deepMerge(objs, cnf = null, memo = null) {
@@ -159,32 +159,27 @@ _setstate.object = function setstate_object(res, objs, cnf, memo){
   }
   // for now, copy all own properties
   // TODO: option in cnf
-  let ttag = toStringTag(res);
   // dont pollute with Object methods
   let update_with = Object.create(null);
   let update_type = 'object';
-  for (let [i, o] of Object.entries(objs)) {
-    let ttag = toStringTag(o);
+  for (let o of objs) {
     let this_type = isArray(o) ? 'array' : 'object';
     if(update_type !== this_type){
       update_with = Object.create(null);
     }
     update_type = this_type;
     if(this_type == 'object'){
-      getOwnProperties(o).forEach(k => (update_with[k] ??= []).push(
-        ttag==="Map" ? o.get(k) : o[k]));
+      getOwnProperties(o).forEach(k => (update_with[k] ??= []).push(getItem(o, k)));
     } else {
       update_with.length = [Math.max(update_with?.length?.[0] ?? -Infinity, o.length)]
       getOwnProperties(o).forEach(k => {
-        if(k !== "length"){
-          (update_with[k] ??= []).push(ttag==="Map" ? o.get(k) : o[k])
-        }
+        if(k === "length") { return }
+        (update_with[k] ??= []).push(getItem(o, k))
       })
     }
   }
   for (let k of getOwnProperties(update_with)) {
-    let v = deepMerge(update_with[k], cnf, memo);
-    if(ttag==="Map") { res.set(k, v); } else { res[k] = v; }
+    setItem(res, k, deepMerge(update_with[k], cnf, memo))
   }
 }
 _setstate.maplike = _setstate.object
@@ -212,8 +207,12 @@ _setstate.array = function setstate_array(res, objs, cnf, memo){
   objs.at(-1).forEach((v, i) => { res[i] = deepCopy(v, cnf, memo) })
 }
 
-function getArrayKeys(x){
-  return [...Object.keys(x), ...Object.getOwnPropertySymbols(x)];
+function getItem(o, k){
+  return toStringTag(o) === 'map' ? o.get(k) : o[k];
+}
+function setItem(o, k, v){
+  toStringTag(o) === 'map' ? o.set(k, v) : o[k] = v;
+  return o;
 }
 
 function _dontMerge(o){
