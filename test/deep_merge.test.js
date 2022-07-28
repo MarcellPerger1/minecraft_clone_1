@@ -241,6 +241,14 @@ function test_deepMerge_deep() {
       [6, {b: -1}]
     ])).toStrictEqual(MERGE_IN_ARRAY ? [6, {a: 9, b: -1}, 5] : [6, {b: -1}, 5]);
   })
+  it("Merges deep objcts and arrays", () => {
+    expect(deepMerge([
+      {a: [8], b: 7, c: {d: [2, 64, -3]}},
+      {b: -2, c: {e: 8}, f: {o: 9, h: {d: "str"}}},
+      {a: [69], f: {}},
+      {f: {h: {y: 2, d: null}}}
+    ])).toStrictEqual({a: [69], b: -2, c: {d: [2, 64, -3], e: 8}, f: {o: 9, h: {y: 2, d:"str"}}})
+  })
 }
 
 
