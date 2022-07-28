@@ -166,7 +166,6 @@ _setstate.object = function setstate_object(res, objs, cnf, memo){
   for (let [i, o] of Object.entries(objs)) {
     let ttag = toStringTag(o);
     let this_type = isArray(o) ? 'array' : 'object';
-    console.log("loop", o, this_type, update_type);
     if(update_type !== this_type){
       update_with = Object.create(null);
     }
@@ -183,7 +182,6 @@ _setstate.object = function setstate_object(res, objs, cnf, memo){
       })
     }
   }
-  console.log("with",update_with)
   for (let k of getOwnProperties(update_with)) {
     let v = deepMerge(update_with[k], cnf, memo);
     if(ttag==="Map") { res.set(k, v); } else { res[k] = v; }
