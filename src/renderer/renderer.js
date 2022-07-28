@@ -276,11 +276,11 @@ export class Renderer extends GameComponent {
 
   bufferDataFromBundler(){
     this.buffers.setData(
-      'position', new Float32Array(this.vertexData.positions));
+      'position', this.vertexData.positions);
     this.buffers.setData(
-      'textureCoord', new Float32Array(this.vertexData.texCoords));
+      'textureCoord', this.vertexData.texCoords);
     this.buffers.setData(
-      'indices', new Uint16Array(this.vertexData.indices), 
+      'indices', this.vertexData.indices, 
       this.gl.ELEMENT_ARRAY_BUFFER);
   }
 }
