@@ -34,6 +34,7 @@ export class ToplevelVertexBundle {
   }
 
   add(bundle) {
+    bundle.maxindex ??= Math.max(...bundle.indices, -1);
     let nElems = bundle.maxindex + 1;
     // NOTE: could use iextend here but the lists should never get that large
     this.positions.push(...bundle.positions);

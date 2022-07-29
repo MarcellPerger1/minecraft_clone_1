@@ -28,12 +28,12 @@ export class CubeVertexData extends GameComponent {
     const t0 = td.x0;
     const t1 = td.x1;
     const sides = {
-      position: [
+      positions: [
         x0, y0, z0,
         x0, y0, z1,
         x0, y1, z1,
         x0, y1, z0,
-      ], textureCoord: [
+      ], texCoords: [
         t0, 1,
         t1, 1,
         t1, 0,
@@ -52,12 +52,12 @@ export class CubeVertexData extends GameComponent {
     const t0 = td.x0;
     const t1 = td.x1;
     const sides = {
-      position: [
+      positions: [
         x1, y0, z0,
         x1, y1, z0,
         x1, y1, z1,
         x1, y0, z1,
-      ], textureCoord: [
+      ], texCoords: [
         t1, 1,
         t1, 0,
         t0, 0,
@@ -76,12 +76,12 @@ export class CubeVertexData extends GameComponent {
     const t0 = td.x0;
     const t1 = td.x1;
     const sides = {
-      position: [
+      positions: [
         x0, y0, z0,
         x0, y1, z0,
         x1, y1, z0,
         x1, y0, z0,
-      ], textureCoord: [
+      ], texCoords: [
         t1, 1,
         t1, 0,
         t0, 0,
@@ -100,12 +100,12 @@ export class CubeVertexData extends GameComponent {
     const t0 = td.x0;
     const t1 = td.x1;
     const sides = {
-      position: [
+      positions: [
         x0, y0, z1,
         x1, y0, z1,
         x1, y1, z1,
         x0, y1, z1,
-      ], textureCoord: [
+      ], texCoords: [
         t0, 1,
         t1, 1,
         t1, 0,
@@ -124,12 +124,12 @@ export class CubeVertexData extends GameComponent {
     const t0 = td.x0;
     const t1 = td.x1;
     const ret = {
-      position: [
+      positions: [
         x0, y1, z0,
         x0, y1, z1,
         x1, y1, z1,
         x1, y1, z0,
-      ], textureCoord: [
+      ], texCoords: [
         t0, 0,
         t1, 0,
         t1, 1,
@@ -148,12 +148,12 @@ export class CubeVertexData extends GameComponent {
     const t0 = td.x0;
     const t1 = td.x1;
     const ret = {
-      position: [
+      positions: [
         x0, y0, z0,
         x1, y0, z0,
         x1, y0, z1,
         x0, y0, z1,
-      ], textureCoord: [
+      ], texCoords: [
         t0, 1,
         t1, 1,
         t1, 0,
@@ -177,7 +177,7 @@ export class CubeVertexData extends GameComponent {
     const [x0, y0, z0] = this.p0;
     const [x1, y1, z1] = this.p1;
     const sides = {
-      position: [
+      positions: [
         // Front face
         x0, y0, z1,
         x1, y0, z1,
@@ -201,7 +201,7 @@ export class CubeVertexData extends GameComponent {
         x0, y0, z1,
         x0, y1, z1,
         x0, y1, z0,
-      ], textureCoord: [
+      ], texCoords: [
         // Front
         0.0, 1.0,
         1.0, 1.0,

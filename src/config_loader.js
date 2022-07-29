@@ -108,12 +108,12 @@ export async function loadConfigFile(path, inheritance = true) {
 */
 export async function handleConfigInheritance(config) {
   /** @type {string[]} */
-  let bases = config.$extends ?? "default";
+  let bases = config.$extends ?? [];
   if (!isArray(bases)) { bases = [bases]; }
+  bases = bases.filter(base => !isComment(base));
+  if(!bases.length) { bases = ["default"]; }
   let parents = await Promise.all(
-    bases
-    .filter(base => !isComment(base))
-    .map(base => loadConfigByName(base))
+    bases.map(base => loadConfigByName(base))
   );
   return deepMerge([...parents, config]);
 }
