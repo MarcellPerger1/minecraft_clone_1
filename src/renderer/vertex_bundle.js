@@ -5,12 +5,12 @@ import { GameComponent } from '../game_component.js';
 
 // simply a container utility class for each 'section' of vertex data eg a 'section' could be a cube
 export class VertexBundle {
-  constructor(positions = null, texCoords = null, indices = null) {
+  constructor(positions, texCoords, indices, maxindex = null) {
     this.positions = positions ?? [];
     this.texCoords = texCoords ?? [];
     this.indices = indices ?? [];
     // give -1 if no items instead of -Inf
-    this.maxindex = Math.max(...this.indices, -1);
+    this.maxindex = maxindex ?? Math.max(...this.indices, -1);
   }
 }
 
