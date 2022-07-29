@@ -5,12 +5,12 @@ import { GameComponent } from '../game_component.js';
 
 // simply a container utility class for each 'section' of vertex data eg a 'section' could be a cube
 export class VertexBundle {
-  constructor(positions = null, texCoords = null, indices = null) {
+  constructor(positions, texCoords, indices, maxindex = null) {
     this.positions = positions ?? [];
     this.texCoords = texCoords ?? [];
     this.indices = indices ?? [];
     // give -1 if no items instead of -Inf
-    this.maxindex = Math.max(...this.indices, -1);
+    this.maxindex = maxindex ?? Math.max(...this.indices, -1);
   }
 }
 
@@ -24,7 +24,6 @@ export class ToplevelVertexBundle {
     this.maxindex = -1;
     this.elemType = type ?? WebGLRenderingContext.UNSIGNED_SHORT;
     this.elemSize = glTypeSize(this.elemType);
-    this.nElems = 0;
   }
 
   calcMaxIndex() {
@@ -34,11 +33,13 @@ export class ToplevelVertexBundle {
   }
 
   add(bundle) {
+    bundle.maxindex ??= Math.max(...bundle.indices, -1);
     let nElems = bundle.maxindex + 1;
     // NOTE: could use iextend here but the lists should never get that large
     this.positions.push(...bundle.positions);
     this.texCoords.push(...bundle.texCoords);
-    this.indices.push(...bundle.indices.map(v => v + this.maxindex + 1));
+    let startFrom = this.maxindex + 1;
+    this.indices.push(...bundle.indices.map(v => v + startFrom));
     this.maxindex += nElems;
     return this;
   }

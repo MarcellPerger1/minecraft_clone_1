@@ -12,9 +12,9 @@
     "seed": "secret-seed",
     "isTestWorld": false,
     "nScale": [
-      11.14,
+      21.14,
       2,
-      11.14
+      21.14
     ],
     "wSize": [
       16,
