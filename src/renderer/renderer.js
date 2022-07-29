@@ -13,7 +13,7 @@ import {Buffers} from './buffers.js';
 import {AtlasLoader} from './atlas_data.js';
 import {ShaderLoader} from './shader_loader.js';
 import {CubeDataAdder} from './face_culling.js';
-import {ElementBundler, VertexBundle} from './vertex_bundle.js';
+import {ElementBundler} from './vertex_bundle.js';
 
 
 // NOTE: 
