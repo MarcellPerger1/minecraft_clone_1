@@ -24,7 +24,6 @@ export class ToplevelVertexBundle {
     this.maxindex = -1;
     this.elemType = type ?? WebGLRenderingContext.UNSIGNED_SHORT;
     this.elemSize = glTypeSize(this.elemType);
-    this.nElems = 0;
   }
 
   calcMaxIndex() {
@@ -39,7 +38,8 @@ export class ToplevelVertexBundle {
     // NOTE: could use iextend here but the lists should never get that large
     this.positions.push(...bundle.positions);
     this.texCoords.push(...bundle.texCoords);
-    this.indices.push(...bundle.indices.map(v => v + this.maxindex + 1));
+    let startFrom = this.maxindex + 1;
+    this.indices.push(...bundle.indices.map(v => v + startFrom));
     this.maxindex += nElems;
     return this;
   }
