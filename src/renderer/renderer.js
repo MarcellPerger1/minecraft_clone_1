@@ -177,7 +177,6 @@ export class Renderer extends GameComponent {
   }
 
   addData(data, texture){
-    // let bundle = new VertexBundle(data.position, data.textureCoord, data.indices, data.maxindex);
     return this.vertexData.addData(data, texture);
   }
 
