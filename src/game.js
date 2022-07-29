@@ -76,6 +76,9 @@ export class Game {
     document.querySelectorAll(".overlay").forEach(elem => {
       elem.classList.add("fade-out");
       setTimeout(() => {
+        elem.classList.add("click-thru");
+      }, 201);
+      setTimeout(() => {
         this.startTicks = true;
         elem.hidden=true;
       }, 1001);

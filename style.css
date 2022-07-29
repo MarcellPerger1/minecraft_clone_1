@@ -76,3 +76,7 @@
     opacity: 0;
   }
 }
+
+.click-thru {
+  pointer-events: none;
+}

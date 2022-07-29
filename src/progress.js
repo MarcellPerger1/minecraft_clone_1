@@ -1,4 +1,4 @@
-// NOTE: not a module
+// note: NOT a module
 
 class Progress {
   constructor(max, value=null){
@@ -59,5 +59,5 @@ class Progress {
   }
 }
 
-var progress = new Progress();
+var progress = new Progress();  // global
 progress.addPercent(10);
