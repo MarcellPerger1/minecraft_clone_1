@@ -17,6 +17,8 @@ export class Game {
     this.onInit = null;
     this.startTicks = false;
     this.progress = window.progress;
+    this.frameNo = -1;
+    this.tickNo  = -1;
   }
 
   async init() {
@@ -95,6 +97,7 @@ export class Game {
     if (now == null) {
       return this.registerOnFrame();
     }
+    this.frameNo++;
     this.now = now * 0.001;
     this.then ??= this.now;
     this.deltaT = this.now - this.then;
@@ -104,15 +107,23 @@ export class Game {
   }
 
   onframe() {
+    // unconditional re-render on first frame and every 30th frame
+    this.rerender ||= this.frameNo % 30 == 0;
     if(this.startTicks){
       this.tick();
     }
     this.r.renderFrame();
+    this.rerender = false;
   }
 
   tick() {
+    this.tickNo++;
     this.ki.tick(this.deltaT);
     this.player.tick();
+    if(this.tickNo==0){
+      // re-render on first tick
+      this.rerender = true;
+    }
   }
 
   registerOnFrame() {

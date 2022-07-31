@@ -138,7 +138,10 @@ export class Renderer extends GameComponent {
   // DRAW SCENE
   renderFrame(){
     this.initFrame();
-    this.addWorldData();
+    if(this.game.rerender){
+      // only update mesh if re-render
+      this.addWorldData();
+    }
     this.drawAll();
     this.checkGlFault();
   }
@@ -156,11 +159,11 @@ export class Renderer extends GameComponent {
 
   resetRender(){
     this.clearCanvas();
-    this.vertexData.reset();
   }
 
   // CUBE DATA HANDLING
   addWorldData(){
+    this.vertexData.reset();
     for(const [pos, block] of this.world){
       this.addBlock(pos, block);
     }

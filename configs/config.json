@@ -1,4 +1,7 @@
 {
   "$extends": ["#big_world"],
-  "#bgColor": [0.5, 0.8, 1.0, 1.0]
+  "#bgColor": [0.5, 0.8, 1.0, 1.0],
+  "generation": {
+    "wSize": [24, 16, 24]
+  }
 }
