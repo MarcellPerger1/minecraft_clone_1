@@ -112,8 +112,9 @@ export class Game {
     if(this.startTicks){
       this.tick();
     }
-    this.r.renderFrame();
+    let remakeMesh = this.rerender;
     this.rerender = false;
+    this.r.renderFrame(remakeMesh);
   }
 
   tick() {

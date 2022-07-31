@@ -22,9 +22,10 @@ import {ElementBundler} from './vertex_bundle.js';
 // North = +z
 
 
+// thing i could eventually read:
 // https://www.toptal.com/game/video-game-physics-part-i-an-introduction-to-rigid-body-dynamics
 
-// TODO: switch to typescript?
+// TODO: switch to typescript??
 export class Renderer extends GameComponent {
   constructor(game, do_init = true) {
     super(game);
@@ -136,11 +137,12 @@ export class Renderer extends GameComponent {
   }
   
   // DRAW SCENE
-  renderFrame(){
+  renderFrame(remakeMesh){
+    this.remakeMesh = remakeMesh;
     this.initFrame();
-    if(this.game.rerender){
+    if(this.remakeMesh){
       // only update mesh if re-render
-      this.addWorldData();
+      this.makeWorldMesh();
     }
     this.drawAll();
     this.checkGlFault();
@@ -162,7 +164,7 @@ export class Renderer extends GameComponent {
   }
 
   // CUBE DATA HANDLING
-  addWorldData(){
+  makeWorldMesh(){
     this.vertexData.reset();
     for(const [pos, block] of this.world){
       this.addBlock(pos, block);
