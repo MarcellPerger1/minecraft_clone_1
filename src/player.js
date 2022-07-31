@@ -34,12 +34,26 @@ export class Player extends GameComponent {
    */
   clampMouseMovementPart(e, part){
     return clamp(
-      part==0 ? e.movementX : e.movementY,
+      this.getMouseMovementPart(e, part),
       -this.cnf.controls.maxMouseMove[part],
       this.cnf.controls.maxMouseMove[part]
       );
   }
-
+  
+  /**
+   * Returns a part (x or y) of the mouse movement (from event `e`)
+   * (not clamped)
+   * @param {MouseEvent} e - The event to get values from
+   * @param {number} part - Which part of the movement (0=x, 1=y)
+   * @returns {number} the clamped value
+   */
+  getMouseMovementPart(e, part) {
+    return part==0 ? e.movementX : e.movementY
+  }
+  static getMouseMovementPart(e, part) {
+    return this.prototype.getMouseMovementPart(e, part);
+  }
+  
   clampRot(){
     this.rotation.v = clamp(
       this.rotation.v,
