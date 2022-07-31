@@ -24,7 +24,7 @@
   },
   "controls": {
     "$class": "ControlsConfig",
-    "sensitivity": 0.5,
+    "sensitivity": 0.2,
     "vRotRange": [
       -80,
       80
