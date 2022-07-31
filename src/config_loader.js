@@ -145,7 +145,7 @@ function getConfigFilename(/** @type {string} */path) {
     throw new ReferenceError("Config paths shouldn't contain '..'");
   }
   path = trim(path, './', { start: true });
-  path = path.replace(/\/\/*/, '/');  // remove repeated /
+  path = path.replace(/\/+/, '/');  // remove repeated /
   if (!path.endsWith('.json')) { path += '.json'; }
   return '/' + (path.startsWith("configs/") ? path : 'configs/' + path);
 }
