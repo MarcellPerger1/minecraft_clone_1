@@ -3,7 +3,11 @@ A minecraft clone using javascript &amp; webgl to learn js &amp; webgl.
 
 Help wanted with issues tagged `help_wanted`
 
-## WebAssebly
+Play the game: 
+- Website: [https://stuffwebgl4.marcellperger1.repl.co/](https://stuffwebgl4.marcellperger1.repl.co/) 
+- Repl (on replit): [https://replit.com/@MarcellPerger1/stuffwebgl4#](https://replit.com/@MarcellPerger1/stuffwebgl4)
+
+## WebAssembly
 - Some of this will eventually be written in WebAssembly 
 - This will improve performance **A LOT** (I hope...)
 - That would allow bigger world sizes which then allows me to test/experiment with world generation on a larger scale which would mean adding trees & that stuff
