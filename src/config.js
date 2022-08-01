@@ -35,6 +35,7 @@ BaseConfig[Symbol.isConfig] = true;
  * @property {boolean} isTestWorld
  * @property {Vec3} nScale
  * @property {Vec3} wSize
+ * @property {Vec3} octaveMult
 */
 export class GenerationConfig extends BaseConfig { }
 
