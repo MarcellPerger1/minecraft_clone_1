@@ -1,5 +1,7 @@
 :root {
   --overlay-color: rgba(0,0,0,0.5);
+/*   --canvas-width: 1680px;
+  --canvas-height: 960px; */
   --canvas-width: 640px;
   --canvas-height: 480px;
   --canvas-bg: rgba(50%, 86%, 100%, 1);

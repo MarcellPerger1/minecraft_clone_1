@@ -79,6 +79,7 @@ export class Game {
       elem.classList.add("fade-out");
       setTimeout(() => {
         elem.classList.add("click-thru");
+        document.getElementById("dyn-info").hidden = false;
       }, 201);
       setTimeout(() => {
         this.startTicks = true;
@@ -108,13 +109,16 @@ export class Game {
 
   onframe() {
     // unconditional re-render on first frame and every 30th frame
-    this.rerender ||= this.frameNo % 30 == 0;
+    this.rerender ||= this.frameNo % 120 == 0;
     if(this.startTicks){
       this.tick();
     }
     let remakeMesh = this.rerender;
     this.rerender = false;
     this.r.renderFrame(remakeMesh);
+    let rotSnapped = Math.round(this.player.rotation.h / 90) * 90;
+    rotSnapped %= 360;
+    document.getElementById("facing-info").innerText = DIR_TO_FACING[rotSnapped];
   }
 
   tick() {
@@ -169,4 +173,11 @@ export class Game {
   get pointerLocked() {
     return this.hasPointerLock();
   }
+}
+
+const DIR_TO_FACING = {
+  "0": "+X",
+  "90": "+Z",
+  "180": "-X",
+  "270": "-Z"
 }

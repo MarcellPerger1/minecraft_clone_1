@@ -94,3 +94,7 @@ export function nestedFor(arr, func, thisArg=null, path_prefix=[]){
     }
   })
 }
+
+export function rangeList(n){
+  return [...Array(n).keys()];
+}
