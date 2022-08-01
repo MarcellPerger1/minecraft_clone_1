@@ -48,8 +48,8 @@ export class WorldGenerator extends GameComponent {
     for (let x = 0; x < this.wSize[0]; x++) {
       for (let z = 0; z < this.wSize[2]; z++) {
         let y = this.getHeightAt(x, z);
-        if(y<0){
-          console.warn("Negative noise value in generation. Consider increasing noiseMedian");
+        if(y<0 || y>this.wSize[1]){
+          console.warn("Noise value outside of world. Consider tweaking noiseMedian or nScale");
           continue;
         }
         this.w.setBlock([x, y, z], Blocks.grass);
@@ -66,13 +66,19 @@ export class WorldGenerator extends GameComponent {
     let xm = this.gcnf.nScale[0];
     let zm = this.gcnf.nScale[2];
     let ym = this.gcnf.nScale[1];
+    let minValue = 0;
     for(let i=0;i<5;i++){
       ny += ym * this.noises[i].noise2D(x / xm, z / zm);
+      minValue += ym * -1;
       xm *= this.gcnf.octaveMult[0];
       ym *= this.gcnf.octaveMult[1];
       zm *= this.gcnf.octaveMult[2];
     }
-    let fval = this.gcnf.nScale[1] * (3 + ny)
+    let noiseMedian = -1; // todo config entry
+    if(noiseMedian == null || noiseMedian == -1){
+      noiseMedian = Math.ceil(-minValue);
+    }
+    let fval = ny + noiseMedian
     return Math.round(fval);
   }
 
