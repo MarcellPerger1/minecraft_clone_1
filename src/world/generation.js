@@ -9,7 +9,7 @@ export class WorldGenerator extends GameComponent {
   constructor(game) {
     super(game);
     this.init();
-    this.seeds = this.getSeeds(this.gcnf.seed, "base-terrain", 5);
+    this.seeds = this.getSeeds(this.gcnf.seed, "base-terrain", this.gcnf.layers);
     this.noises = this.seeds.map(s => new SimplexNoise(s))
   }
  
@@ -64,10 +64,10 @@ export class WorldGenerator extends GameComponent {
   getHeightAt(x, z) {
     let ny = 0;
     let xm = this.gcnf.nScale[0];
-    let zm = this.gcnf.nScale[2];
     let ym = this.gcnf.nScale[1];
+    let zm = this.gcnf.nScale[2];
     let minValue = 0;
-    for(let i=0;i<5;i++){
+    for(let i=0;i<this.gcnf.layers;i++){
       ny += ym * this.noises[i].noise2D(x / xm, z / zm);
       minValue += ym * -1;
       xm *= this.gcnf.octaveMult[0];
