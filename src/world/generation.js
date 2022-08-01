@@ -9,7 +9,7 @@ export class WorldGenerator extends GameComponent {
   constructor(game) {
     super(game);
     this.init();
-    this.seeds = this.getSeeds(this.gcnf.seed, "layer", 5);
+    this.seeds = this.getSeeds(this.gcnf.seed, "base-terrain", 5);
     this.noises = this.seeds.map(s => new SimplexNoise(s))
   }
  
