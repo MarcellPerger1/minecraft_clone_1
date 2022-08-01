@@ -12,16 +12,16 @@ export class WorldGenerator extends GameComponent {
     this.seeds = this.getSeeds(this.gcnf.seed, "base-terrain", this.gcnf.layers);
     this.noises = this.seeds.map(s => new SimplexNoise(s))
   }
- 
-  getSeedExtra(what, index){
+
+  getSeedExtra(what, index) {
     return (index == 0 ? "" : `.!${what}[${index}]`)
   }
 
-  getSeed(orig, what, index){
+  getSeed(orig, what, index) {
     return toString(orig) + this.getSeedExtra(what, index);
   }
 
-  getSeeds(seed, what, n){
+  getSeeds(seed, what, n) {
     // get `n` seeds from a single seed]
     return rangeList(n).map(i => this.getSeed(seed, what, i))
   }
@@ -48,7 +48,7 @@ export class WorldGenerator extends GameComponent {
     for (let x = 0; x < this.wSize[0]; x++) {
       for (let z = 0; z < this.wSize[2]; z++) {
         let y = this.getHeightAt(x, z);
-        if(y<0 || y>this.wSize[1]){
+        if (y < 0 || y >= this.wSize[1]) {
           console.warn("Noise value outside of world. Consider tweaking noiseMedian or nScale");
           continue;
         }
@@ -67,7 +67,7 @@ export class WorldGenerator extends GameComponent {
     let ym = this.gcnf.nScale[1];
     let zm = this.gcnf.nScale[2];
     let minValue = 0;
-    for(let i=0;i<this.gcnf.layers;i++){
+    for (let i = 0; i < this.gcnf.layers; i++) {
       ny += ym * this.noises[i].noise2D(x / xm, z / zm);
       minValue += ym * -1;
       xm *= this.gcnf.octaveMult[0];
@@ -75,7 +75,7 @@ export class WorldGenerator extends GameComponent {
       zm *= this.gcnf.octaveMult[2];
     }
     let noiseMedian = this.gcnf.nMedian;
-    if(noiseMedian == null || noiseMedian == -1){
+    if (noiseMedian == null || noiseMedian == -1) {
       noiseMedian = Math.round(-minValue);
     }
     let fval = ny + noiseMedian
@@ -95,8 +95,8 @@ export class WorldGenerator extends GameComponent {
   }
 }
 
-function _mash(v, bits){
-    var rpt = 1<<bits;
-    var r = (12345678.91011*v+12345.6789*v*v-123.456789-1234.56789*v*v*v+Math.cos(12.345*v-1.23*v*v+3.14)-Math.pow((v+3.1415)*Math.cos((v+1.23)*(v-2.718)), 7)*27.18+Math.sin((v+1.23)*(v-3.14159)*v-1234))%rpt
-    return Math.floor(r>0 ? r : r+rpt)
+function _mash(v, bits) {
+  var rpt = 1 << bits;
+  var r = (12345678.91011 * v + 12345.6789 * v * v - 123.456789 - 1234.56789 * v * v * v + Math.cos(12.345 * v - 1.23 * v * v + 3.14) - Math.pow((v + 3.1415) * Math.cos((v + 1.23) * (v - 2.718)), 7) * 27.18 + Math.sin((v + 1.23) * (v - 3.14159) * v - 1234)) % rpt
+  return Math.floor(r > 0 ? r : r + rpt)
 }
