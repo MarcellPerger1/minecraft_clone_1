@@ -59,6 +59,7 @@ export class Player extends GameComponent {
       this.rotation.v,
       ...this.cnf.controls.vRotRange);
     this.rotation.h %= 360;
+    this.rotation.h = this.rotation.h >= 0 ? this.rotation.h : this.rotation.h + 360;
   }
 
   tick(){
@@ -99,7 +100,7 @@ export class Player extends GameComponent {
 
   moveRelRotation(moveBy, scale=1) {
     let scaled = vec3.scale([], moveBy, scale);
-    let absMove = vec3.rotateY([], scaled, [0,0,0], toRad(-this.r.camRot.h));
+    let absMove = vec3.rotateY([], scaled, [0,0,0], toRad(-this.r.camRot.h+90));
     vec3.add(this.position, this.position, absMove);
   }
 }

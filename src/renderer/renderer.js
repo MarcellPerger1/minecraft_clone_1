@@ -243,7 +243,7 @@ export class Renderer extends GameComponent {
     // NOTEE: IMPORTANT!: does stuff in reverse order!!!
     // eg.: here, matrix will transalate, then rotateY, then rotateX
     mat4.rotateX(m1, m1, toRad(this.camRot.v));
-    mat4.rotateY(m1, m1, toRad(this.camRot.h + 180));
+    mat4.rotateY(m1, m1, toRad(this.camRot.h + 90));
     mat4.translate(m1, m1, amount);
     return m1;
   }
