@@ -9,11 +9,21 @@ export class WorldGenerator extends GameComponent {
   constructor(game) {
     super(game);
     this.init();
-    this.seeds = rangeList(5).map(i => 
-      toString(this.gcnf.seed) + (i == 0 ? "" : ".!layer[" + i + "]")
-    )
+    this.seeds = this.getSeeds(this.gcnf.seed, "layer", 5);
     this.noises = this.seeds.map(s => new SimplexNoise(s))
-    this.ns = new SimplexNoise(this.gcnf.seed);
+  }
+ 
+  getSeedExtra(what, index){
+    return (index == 0 ? "" : `.!${what}[${index}]`)
+  }
+
+  getSeed(orig, what, index){
+    return toString(orig) + this.getSeedExtra(what, index);
+  }
+
+  getSeeds(seed, what, n){
+    // get `n` seeds from a single seed]
+    return rangeList(n).map(i => this.getSeed(seed, what, i))
   }
 
   get gcnf() {
@@ -48,8 +58,6 @@ export class WorldGenerator extends GameComponent {
   }
 
   getHeightAt(x, z) {
-    // let nx = x / this.gcnf.nScale[0];
-    // let nz = z / this.gcnf.nScale[2];
     let ny = 0;
     let xm = this.gcnf.nScale[0];
     let zm = this.gcnf.nScale[2];
@@ -60,8 +68,7 @@ export class WorldGenerator extends GameComponent {
       xm *= 3;
       zm *= 3;
     }
-    // ny += this.ns.noise2D(nx, nz);
-    let fval = this.gcnf.nScale[1] * (2 + ny)
+    let fval = this.gcnf.nScale[1] * (3 + ny)
     return Math.round(fval);
   }
 
@@ -78,7 +85,7 @@ export class WorldGenerator extends GameComponent {
   }
 }
 
-function mash(v, bits){
+function _mash(v, bits){
     var rpt = 1<<bits;
     var r = (12345678.91011*v+12345.6789*v*v-123.456789-1234.56789*v*v*v+Math.cos(12.345*v-1.23*v*v+3.14)-Math.pow((v+3.1415)*Math.cos((v+1.23)*(v-2.718)), 7)*27.18+Math.sin((v+1.23)*(v-3.14159)*v-1234))%rpt
     return Math.floor(r>0 ? r : r+rpt)
