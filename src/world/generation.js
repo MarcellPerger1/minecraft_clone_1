@@ -74,9 +74,9 @@ export class WorldGenerator extends GameComponent {
       ym *= this.gcnf.octaveMult[1];
       zm *= this.gcnf.octaveMult[2];
     }
-    let noiseMedian = -1; // todo config entry
+    let noiseMedian = this.gcnf.nMedian;
     if(noiseMedian == null || noiseMedian == -1){
-      noiseMedian = Math.ceil(-minValue);
+      noiseMedian = Math.round(-minValue);
     }
     let fval = ny + noiseMedian
     return Math.round(fval);

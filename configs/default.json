@@ -26,7 +26,8 @@
       0.3,
       3
     ],
-    "layers": 5
+    "layers": 5,
+    "nMedian": -1
   },
   "controls": {
     "$class": "ControlsConfig",
