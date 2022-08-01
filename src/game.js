@@ -108,7 +108,7 @@ export class Game {
 
   onframe() {
     // unconditional re-render on first frame and every 30th frame
-    this.rerender ||= this.frameNo % 30 == 0;
+    this.rerender ||= this.frameNo % 120 == 0;
     if(this.startTicks){
       this.tick();
     }
