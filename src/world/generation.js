@@ -1,5 +1,3 @@
-import SimplexNoise from "../libs/simplex-noise/simplex-noise.js";
-
 import { GameComponent } from "../game_component.js";
 import { World, Blocks } from "./index.js";
 import { OctaveNoise } from "./octave_noise.js";
