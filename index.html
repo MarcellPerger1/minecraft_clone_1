@@ -27,34 +27,36 @@
 </head>
 
 <body>
-  <!-- Canvas-->
-  <div class="canv-size absolute-root">
-    <div class="overlay">
-      <div class="center">
-        <div class="center-text-h">
-          <label for="load-progress">
-            Loading...
-          </label>
+  <div id="game-content">
+    <!-- Canvas-->
+    <div class="canv-size absolute-root">
+      <div class="overlay">
+        <div class="center">
+          <div class="center-text-h">
+            <label for="load-progress">
+              Loading...
+            </label>
+          </div>
+          <progress class="load-progress" id="load-progress" value="0.1"></progress>
+          <div>
+            <label for="load-progress" id="progress-amount">
+              10%
+            </label>
+          </div>
         </div>
-        <progress class="load-progress" id="load-progress" value="0.1"></progress>
+      </div>
+      <div class="behind-overlay">
         <div>
-          <label for="load-progress" id="progress-amount">
-            10%
-          </label>
+  <!--         <canvas id="glCanvas" width="1680" height="960" hidden></canvas> -->
+          <canvas id="glCanvas" width="640" height="480" hidden></canvas>
+          <div class="canv-size canv-bg" id="canvas-loading-bg"></div>
         </div>
       </div>
     </div>
-    <div class="behind-overlay">
-      <div>
-<!--         <canvas id="glCanvas" width="1680" height="960" hidden></canvas> -->
-        <canvas id="glCanvas" width="640" height="480" hidden></canvas>
-        <div class="canv-size canv-bg" id="canvas-loading-bg"></div>
-      </div>
+    <div id="dyn-info" hidden>
+      <div id="facing-div">Facing: <span id="facing-info">N/A</span></div>
+      <br>
     </div>
-  </div>
-  <div id="dyn-info" hidden>
-    <div id="facing-div">Facing: <span id="facing-info">N/A</span></div>
-    <br>
   </div>
   <div id="links">
     Made by <a href="https://github.com/MarcellPerger1" target="_blank" rel="noopener noreferrer">Marcell Perger</a>.
