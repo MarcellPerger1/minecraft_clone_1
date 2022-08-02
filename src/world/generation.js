@@ -2,7 +2,9 @@ import SimplexNoise from "../libs/simplex-noise/simplex-noise.js";
 
 import { rangeList } from "../utils.js";
 import { GameComponent } from "../game_component.js";
-import { World, Blocks } from "../world.js";
+import { World, Blocks } from "./index.js";
+import {OctaveNoise} from "./octave_noise.js";
+
 
 
 export class WorldGenerator extends GameComponent {
@@ -14,7 +16,7 @@ export class WorldGenerator extends GameComponent {
   }
 
   getSeedExtra(what, index) {
-    return (index == 0 ? "" : `.!${what}[${index}]`)
+    return `.!${what}[${index}]`
   }
 
   getSeed(orig, what, index) {
@@ -62,24 +64,8 @@ export class WorldGenerator extends GameComponent {
   }
 
   getHeightAt(x, z) {
-    let ny = 0;
-    let xm = this.gcnf.nScale[0];
-    let ym = this.gcnf.nScale[1];
-    let zm = this.gcnf.nScale[2];
-    let minValue = 0;
-    for (let i = 0; i < this.gcnf.layers; i++) {
-      ny += ym * this.noises[i].noise2D(x / xm, z / zm);
-      minValue += ym * -1;
-      xm *= this.gcnf.octaveMult[0];
-      ym *= this.gcnf.octaveMult[1];
-      zm *= this.gcnf.octaveMult[2];
-    }
-    let noiseMedian = this.gcnf.nMedian;
-    if (noiseMedian == null || noiseMedian == "auto") {
-      noiseMedian = Math.round(-minValue);
-    }
-    let fval = ny + noiseMedian
-    return Math.round(fval);
+    return Math.round(new OctaveNoise(
+      this.gcnf.seed, "base-terrain", this.gcnf, n => -n.minValue()).noise2D(x, z));
   }
 
   generateTestWorld() {
