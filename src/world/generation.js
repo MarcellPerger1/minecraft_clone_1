@@ -10,8 +10,9 @@ export class WorldGenerator extends GameComponent {
   constructor(game) {
     super(game);
     this.init();
-    this.seeds = this.getSeeds(this.gcnf.seed, "base-terrain", this.gcnf.layers);
-    this.noises = this.seeds.map(s => new SimplexNoise(s))
+    this.baseTerrain = new OctaveNoise(
+      this.gcnf.seed, "base-terrain", this.gcnf, n => -n.minValue())
+    this.stoneOffset = new OctaveNoise(this.gcnf.seed, "stone-offset", {nScale: [15,2, 15], layers: 5, octaveMult: [3, 0.3, 3], nMedian: -3})
   }
 
   get gcnf() {
@@ -35,23 +36,28 @@ export class WorldGenerator extends GameComponent {
   generateTerrain() {
     for (let x = 0; x < this.wSize[0]; x++) {
       for (let z = 0; z < this.wSize[2]; z++) {
-        let y = this.getHeightAt(x, z);
-        if (y < 0 || y >= this.wSize[1]) {
-          console.warn("Noise value outside of world. Consider tweaking nMedian or nScale");
-          continue;
-        }
-        this.w.setBlock([x, y, z], Blocks.grass);
-        while (y--) {
-          this.w.setBlock([x, y, z], Blocks.dirt);
-        }
+        this.generateBlock(x, z);
       }
     }
     return this.w;
   }
 
+  generateBlock(x, z) {
+    let y = this.getHeightAt(x, z);
+    if (y < 0 || y >= this.wSize[1]) {
+      console.warn("Noise value outside of world. Consider tweaking nMedian or nScale");
+      return;
+    }
+    let stoneOffset = this.stoneOffset.noise2D(x, z);
+    let stoneBelow = y + stoneOffset;
+    this.w.setBlock([x, y, z], Blocks.grass);
+    while (y--) {
+      this.w.setBlock([x, y, z], y<=stoneBelow ? Blocks.stone : Blocks.dirt);
+    }
+  }
+
   getHeightAt(x, z) {
-    return Math.round(new OctaveNoise(
-      this.gcnf.seed, "base-terrain", this.gcnf, n => -n.minValue()).noise2D(x, z));
+    return Math.round(this.baseTerrain.noise2D(x, z));
   }
 
   generateTestWorld() {
