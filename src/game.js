@@ -177,9 +177,6 @@ export class Game {
   pointerlock_change(_e) {
     console.log('pointerlock change to ', document.pointerLockElement);
   }
-  pointerlock_error(_e) {
-    console.log('pointerlock error');
-  }
 
   addEvent(name, hdlr, thisArg = null, elem = null, opts = null) {
     elem ??= window;
@@ -188,7 +185,6 @@ export class Game {
   }
 
   addPointerEvents() {
-    this.addEvent('pointerlockerror', this.pointerlock_error, this, document);
     this.addEvent('pointerlockchange', this.pointerlock_change, this, document);
     this.canvas.addEventListener(
       'click', _e => {
