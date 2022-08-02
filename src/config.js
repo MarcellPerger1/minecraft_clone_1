@@ -37,7 +37,7 @@ BaseConfig[Symbol.isConfig] = true;
  * @property {Vec3} wSize
  * @property {Vec3} octaveMult
  * @property {number} layers
- * @property {number} nMedian
+ * @property {(number|'auto')} nMedian
 */
 export class GenerationConfig extends BaseConfig { }
 
