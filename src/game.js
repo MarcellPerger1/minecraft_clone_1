@@ -76,19 +76,39 @@ export class Game {
 
   endLoading(){
     progress.setPercent(100);
-    document.querySelectorAll(".overlay").forEach(elem => {
-      elem.classList.add("fade-out");
-      setTimeout(() => {
-        elem.classList.add("click-thru");
-        document.getElementById("dyn-info").hidden = false;
-      }, 201);
-      setTimeout(() => {
-        this.startTicks = true;
-        elem.hidden=true;
-      }, 1001);
-    });
+    setTimeout(() => this.onEarlyStart(), 201);
+    setTimeout(() => this.onStart(), 1001);
+    this.onLoadEnd();
+  }
+
+  showTrueCanvas() {
     this.canvas.hidden = false;
     document.getElementById("canvas-loading-bg").hidden = true;
+  }
+
+  onLoadEnd() {
+    this.overlayElems.forEach(elem => {
+      elem.classList.add("fade-out");
+    });
+    this.showTrueCanvas();
+  }
+
+  onEarlyStart() {
+    this.overlayElems.forEach(elem => {
+      elem.classList.add("click-thru");
+    })
+    document.getElementById("dyn-info").hidden = false;
+  }
+
+  onStart() {
+    this.startTicks = true;
+    this.overlayElems.forEach(elem => {
+      elem.hidden = true;
+    })
+  }
+
+  get overlayElems(){
+    return document.querySelectorAll(".overlay");
   }
 
   main() {
