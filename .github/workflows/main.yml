@@ -40,7 +40,7 @@ jobs:
           cache-dependency-path: ./package-lock.json
       - name: Install eslint
         run: |
-          sudo npm install -g eslint --unsafe-perm=true --allow-root
+          sudo npm install --location=global eslint --unsafe-perm=true --allow-root
           npm install eslint-plugin-jest@latest --save-dev
       - name: Run eslint
         run: npx eslint --max-warnings 0 ./

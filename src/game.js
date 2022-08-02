@@ -3,6 +3,7 @@ import { getConfig } from './config.js';
 import { KeyInput } from './keyinput.js';
 import { Player } from './player.js';
 import { WorldGenerator } from './world.js';
+import { roundNearest } from './utils.js';
 
 /**
  * @typedef {import('./config.js').ConfigT} ConfigT
@@ -22,12 +23,7 @@ export class Game {
   }
 
   async init() {
-    if (this.onInit == null) {
-      this.onInit = this._init();
-      return await this.onInit;
-    } else {
-      return this.onInit;
-    }
+    return (this.onInit ??= this._init());
   }
 
   async _init() {
@@ -75,26 +71,46 @@ export class Game {
 
   endLoading(){
     progress.setPercent(100);
-    document.querySelectorAll(".overlay").forEach(elem => {
-      elem.classList.add("fade-out");
-      setTimeout(() => {
-        elem.classList.add("click-thru");
-        document.getElementById("dyn-info").hidden = false;
-      }, 201);
-      setTimeout(() => {
-        this.startTicks = true;
-        elem.hidden=true;
-      }, 1001);
-    });
+    setTimeout(() => this.onEarlyStart(), 201);
+    setTimeout(() => this.onStart(), 1001);
+    this.onLoadEnd();
+  }
+
+  showTrueCanvas() {
     this.canvas.hidden = false;
     document.getElementById("canvas-loading-bg").hidden = true;
+  }
+
+  onLoadEnd() {
+    this.overlayElems.forEach(elem => {
+      elem.classList.add("fade-out");
+    });
+    this.showTrueCanvas();
+  }
+
+  onEarlyStart() {
+    this.overlayElems.forEach(elem => {
+      elem.classList.add("click-thru");
+    })
+    document.getElementById("dyn-info").hidden = false;
+  }
+
+  onStart() {
+    this.startTicks = true;
+    this.overlayElems.forEach(elem => {
+      elem.hidden = true;
+    })
+  }
+
+  get overlayElems(){
+    return document.querySelectorAll(".overlay");
   }
 
   main() {
     this.start();
   }
 
-  render(now = null) {
+  frameCallback(now = null) {
     if (now == null) {
       return this.registerOnFrame();
     }
@@ -108,39 +124,58 @@ export class Game {
   }
 
   onframe() {
-    // unconditional re-render on first frame and every 30th frame
+    // unconditional re-render on first frame and every 120th frame
     this.rerender ||= this.frameNo % 120 == 0;
     if(this.startTicks){
-      this.tick();
+      this.tickCallback();
     }
+    this.render();
+    this.updateDynInfo();
+  }
+
+  render() {
     let remakeMesh = this.rerender;
     this.rerender = false;
     this.r.renderFrame(remakeMesh);
-    let rotSnapped = Math.round(this.player.rotation.h / 90) * 90;
-    rotSnapped %= 360;
-    document.getElementById("facing-info").innerText = DIR_TO_FACING[rotSnapped];
+  }
+
+  tickCallback() {
+    this.tickNo++;
+    this.tick();
   }
 
   tick() {
-    this.tickNo++;
     this.ki.tick(this.deltaT);
     this.player.tick();
-    if(this.tickNo==0){
-      // re-render on first tick
-      this.rerender = true;
-    }
+    // rerender on first tick
+    this.rerender ||= this.tickNo==0;
+  }
+
+  updateDynInfo(){
+    this.updateFacingInfo();
+    this.updatePosInfo();
+  }
+
+  updatePosInfo() {
+    const coordStr = p => p.toFixed(4);
+    let coordTextBody = ["x", "y", "z"]
+        .map((s, i) => `${s}=${coordStr(this.player.position[i])}`)
+        .join(', ');
+    document.getElementById("pos-info").innerText = coordTextBody;
+  }
+
+  updateFacingInfo() {
+    let rotSnapped = roundNearest(this.player.rotation.h, 90) % 360;
+    document.getElementById("facing-info").innerText = DIR_TO_FACING[rotSnapped];
   }
 
   registerOnFrame() {
     let this_outer = this;
-    return requestAnimationFrame(now => { this_outer.render(now); });
+    return requestAnimationFrame(now => { this_outer.frameCallback(now); });
   }
 
   pointerlock_change(_e) {
     console.log('pointerlock change to ', document.pointerLockElement);
-  }
-  pointerlock_error(_e) {
-    console.log('pointerlock error');
   }
 
   addEvent(name, hdlr, thisArg = null, elem = null, opts = null) {
@@ -150,7 +185,6 @@ export class Game {
   }
 
   addPointerEvents() {
-    this.addEvent('pointerlockerror', this.pointerlock_error, this, document);
     this.addEvent('pointerlockchange', this.pointerlock_change, this, document);
     this.canvas.addEventListener(
       'click', _e => {
