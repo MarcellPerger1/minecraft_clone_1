@@ -1,9 +1,8 @@
 import SimplexNoise from "../libs/simplex-noise/simplex-noise.js";
 
-import { rangeList } from "../utils.js";
 import { GameComponent } from "../game_component.js";
 import { World, Blocks } from "./index.js";
-import {OctaveNoise} from "./octave_noise.js";
+import { OctaveNoise } from "./octave_noise.js";
 
 
 
@@ -13,19 +12,6 @@ export class WorldGenerator extends GameComponent {
     this.init();
     this.seeds = this.getSeeds(this.gcnf.seed, "base-terrain", this.gcnf.layers);
     this.noises = this.seeds.map(s => new SimplexNoise(s))
-  }
-
-  getSeedExtra(what, index) {
-    return `.!${what}[${index}]`
-  }
-
-  getSeed(orig, what, index) {
-    return toString(orig) + this.getSeedExtra(what, index);
-  }
-
-  getSeeds(seed, what, n) {
-    // get `n` seeds from a single seed]
-    return rangeList(n).map(i => this.getSeed(seed, what, i))
   }
 
   get gcnf() {
