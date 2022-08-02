@@ -124,7 +124,7 @@ export class Game {
   }
 
   onframe() {
-    // unconditional re-render on first frame and every 30th frame
+    // unconditional re-render on first frame and every 120th frame
     this.rerender ||= this.frameNo % 120 == 0;
     if(this.startTicks){
       this.tickCallback();
@@ -152,6 +152,19 @@ export class Game {
   }
 
   updateDynInfo(){
+    this.updateFacingInfo();
+    this.updatePosInfo();
+  }
+
+  updatePosInfo() {
+    const coordStr = p => p.toFixed(4);
+    let coordTextBody = ["x", "y", "z"]
+        .map((s, i) => `${s}=${coordStr(this.player.position[i])}`)
+        .join(', ');
+    document.getElementById("pos-info").innerText = coordTextBody;
+  }
+
+  updateFacingInfo() {
     let rotSnapped = roundNearest(this.player.rotation.h, 90) % 360;
     document.getElementById("facing-info").innerText = DIR_TO_FACING[rotSnapped];
   }
