@@ -72,4 +72,14 @@ export class OctaveNoise {
     }
     return y;
   }
+
+  maxValue() {
+    let ym = this.cnf.nScale[1];
+    let y = 0;
+    for(let i = 0; i < this.cnf.layers; i++) {
+      y += 1 * ym;
+      ym *= this.cnf.octaveMult[1];
+    }
+    return y;
+  }
 }
