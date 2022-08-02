@@ -28,12 +28,29 @@ export function toRad(x){
   return x*Math.PI/180;
 }
 
+/**
+ * Round `x` to nearest `n`
+ * @param {number} x
+ * @param {number} [n=1]
+ * @returns {number} result
+ */
 export function roundNearest(x, n=1){
-  return Math.round(x * n) / n;
+  return Math.round(x / n) * n;
 }
 
 export function nearRoundNearest(x, n=1, tol=0.00001){
   assert(x%n < tol || x%n > n-tol,
          `x should be within ${tol} of nearest ${n}`);
   return roundNearest(x, n);
+}
+
+/**
+ * Calculate `x % y` (always as poistive number; Python-like)
+ * @param {number} x
+ * @param {number} y
+ * @returns {number} result
+ */
+export function mod(x, y) {
+  let r = x % y;
+  return r < 0 ? r + y : r;
 }

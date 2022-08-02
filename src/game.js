@@ -3,6 +3,7 @@ import { getConfig } from './config.js';
 import { KeyInput } from './keyinput.js';
 import { Player } from './player.js';
 import { WorldGenerator } from './world.js';
+import { roundNearest } from './utils.js';
 
 /**
  * @typedef {import('./config.js').ConfigT} ConfigT
@@ -94,7 +95,7 @@ export class Game {
     this.start();
   }
 
-  render(now = null) {
+  frameCallback(now = null) {
     if (now == null) {
       return this.registerOnFrame();
     }
@@ -111,29 +112,38 @@ export class Game {
     // unconditional re-render on first frame and every 30th frame
     this.rerender ||= this.frameNo % 120 == 0;
     if(this.startTicks){
-      this.tick();
+      this.tickCallback();
     }
+    this.render();
+    this.updateDynInfo();
+  }
+
+  render() {
     let remakeMesh = this.rerender;
     this.rerender = false;
     this.r.renderFrame(remakeMesh);
-    let rotSnapped = Math.round(this.player.rotation.h / 90) * 90;
-    rotSnapped %= 360;
-    document.getElementById("facing-info").innerText = DIR_TO_FACING[rotSnapped];
+  }
+
+  tickCallback() {
+    this.tickNo++;
+    this.tick();
   }
 
   tick() {
-    this.tickNo++;
     this.ki.tick(this.deltaT);
     this.player.tick();
-    if(this.tickNo==0){
-      // re-render on first tick
-      this.rerender = true;
-    }
+    // rerender on first tick
+    this.rerender ||= this.tickNo==0;
+  }
+
+  updateDynInfo(){
+    let rotSnapped = roundNearest(this.player.rotation.h, 90) % 360;
+    document.getElementById("facing-info").innerText = DIR_TO_FACING[rotSnapped];
   }
 
   registerOnFrame() {
     let this_outer = this;
-    return requestAnimationFrame(now => { this_outer.render(now); });
+    return requestAnimationFrame(now => { this_outer.frameCallback(now); });
   }
 
   pointerlock_change(_e) {
