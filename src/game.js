@@ -23,12 +23,7 @@ export class Game {
   }
 
   async init() {
-    if (this.onInit == null) {
-      this.onInit = this._init();
-      return await this.onInit;
-    } else {
-      return this.onInit;
-    }
+    return (this.onInit ??= this._init());
   }
 
   async _init() {
