@@ -249,6 +249,27 @@ function test_deepMerge_deep() {
       {f: {h: {y: 2, d: null}}}
     ])).toStrictEqual({a: [69], b: -2, c: {d: [2, 64, -3], e: 8}, f: {o: 9, h: {y: 2, d:"str"}}})
   })
+  it("Merges classes", () => {
+    class A {}
+    class B {}
+    let a = new A();
+    a.value = 9;
+    let b = new B();
+    let res = deepMerge([a, b]);
+    expect(res.constructor).toBe(B);
+    let b2 = new B();
+    b2.value = 9;
+    expect(res.value).toBe(9);
+    expect(res).toStrictEqual(b2);
+  });
+  it("Treats Object as weak type", () => {
+    class A {}
+    let a = new A();
+    a.value = "str";
+    let res = deepMerge([a, {b: 7}]);
+    expect(res.constructor).toBe(A);
+    expect(res).toStrictEqual(Object.assign(new A(), {b: 7, value: "str"}));
+  })
 }
 
 
