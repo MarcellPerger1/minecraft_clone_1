@@ -13,7 +13,7 @@
     "jest": "^28.1.1"
   },
   "scripts": {
-    "test": "./scripts/test.sh"
+    "test": "chmod +x ./scripts/test.sh && ./scripts/test.sh"
   },
   "keywords": [
     "webgl",

@@ -1,5 +1,5 @@
 import {GameComponent} from '../game_component.js';
-import {disableCaching, fetchJsonFile, loadTexture} from '../utils.js';
+import {fetchJsonFile, loadTexture} from '../utils.js';
 
 export class AtlasEntry {
   constructor(aData, name, i){
@@ -37,15 +37,13 @@ export class AtlasLoader extends GameComponent {
 
   loadResources(){
     return Promise.all([
-      fetchJsonFile(disableCaching(this.cnf.atlas.indexPath))
-      .then(raw => new AtlasData(raw))
-      .then(v => {
-        this.data = v; 
+      fetchJsonFile(this.cnf.atlas.indexPath)
+      .then(raw => {
+        this.data = new AtlasData(raw); 
         progress.addPercent(10);
         return this.data;
       }),
-      // TODO: don't think this 'hack' works for png files :(
-      loadTexture(this.gl, disableCaching(this.cnf.atlas.imgPath))
+      loadTexture(this.gl, this.cnf.atlas.imgPath)
       .then(tex => {
         this.texture = tex;
         progress.addPercent(10);
