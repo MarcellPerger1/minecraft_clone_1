@@ -38,9 +38,8 @@ export class AtlasLoader extends GameComponent {
   loadResources(){
     return Promise.all([
       fetchJsonFile(this.cnf.atlas.indexPath)
-      .then(raw => new AtlasData(raw))
-      .then(v => {
-        this.data = v; 
+      .then(raw => {
+        this.data = new AtlasData(raw); 
         progress.addPercent(10);
         return this.data;
       }),
