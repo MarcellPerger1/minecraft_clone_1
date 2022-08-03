@@ -1,4 +1,4 @@
-import {rangeList} from "../utils.js";
+import { rangeList } from "../utils.js";
 import SimplexNoise from "../libs/simplex-noise/simplex-noise.js";
 
 
@@ -12,7 +12,7 @@ class SeedFork {
   }
 
   static getSeeds(seed, what, n) {
-    // get `n` seeds from a single seed]
+    // get `n` seeds from a single seed
     return rangeList(n).map(i => this.getSeed(seed, what, i))
   }
 }
@@ -34,7 +34,7 @@ export class OctaveNoise {
    * @param {?(number|'auto')} [config.nMedian=null]
    * @param {?(number|((n:OctaveNoise) => number))} nMedianDefault - Function to get noise median; default is ensure above 0
    */
-  constructor(seed, name, config, nMedianDefault=0) {
+  constructor(seed, name, config, nMedianDefault = 0) {
     this.name = name;
     this.seed = seed;
     this.cnf = config;
@@ -57,16 +57,18 @@ export class OctaveNoise {
     let nMed = this.cnf.nMedian;
     let nMedDef = this.nMedianDefault;
     if (nMed == null || nMed == "auto") {
-      nMed = (typeof nMedDef === "function" ? nMedDef(this): nMedDef) ?? 0;
+      nMed = (typeof nMedDef === "function" ? nMedDef(this) : nMedDef) ?? 0;
     }
     let fval = ny + nMed;
     return fval;
   }
 
+  // these function return min/max value
+  // **NOT** taking into account the median
   minValue() {
     let ym = this.cnf.nScale[1];
     let y = 0;
-    for(let i = 0; i < this.cnf.layers; i++) {
+    for (let i = 0; i < this.cnf.layers; i++) {
       y += -1 * ym;
       ym *= this.cnf.octaveMult[1];
     }
@@ -76,7 +78,7 @@ export class OctaveNoise {
   maxValue() {
     let ym = this.cnf.nScale[1];
     let y = 0;
-    for(let i = 0; i < this.cnf.layers; i++) {
+    for (let i = 0; i < this.cnf.layers; i++) {
       y += 1 * ym;
       ym *= this.cnf.octaveMult[1];
     }
