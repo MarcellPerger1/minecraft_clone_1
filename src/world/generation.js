@@ -9,8 +9,8 @@ export class WorldGenerator extends GameComponent {
     super(game);
     this.init();
     this.baseTerrain = new OctaveNoise(
-      this.gcnf.seed, "base-terrain", this.gcnf, n => -n.minValue())
-    this.stoneOffset = new OctaveNoise(this.gcnf.seed, "stone-offset", {nScale: [15,2, 15], layers: 5, octaveMult: [3, 0.3, 3], nMedian: -3})
+      this.gcnf.seed, "base-terrain", this.gcnf.baseTerrain, n => -n.minValue())
+    this.stoneOffset = new OctaveNoise(this.gcnf.seed, "stone-offset", this.gcnf.stoneOffset, -3)
   }
 
   get gcnf() {

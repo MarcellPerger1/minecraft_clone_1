@@ -20,12 +20,21 @@ BaseConfig[Symbol.isConfig] = true;
 /**
  * @typedef {string} path
  * @typedef {[number, number, number, number]} RGBA_Tuple
- * @typedef {[number, number number]} Vec3
+ * @typedef {[number, number, number]} Vec3
  * @typedef {[number, number]} Vec2
  * @typedef {(number|string)} SeedType
  * @typedef {{h: number, v: number}} Rot3
 */
 
+
+/**
+ * Config for octave noise
+ * @typedef {Object} NoiseConfigT
+ * @property {Vec3} nScale
+ * @property {Vec3} octaveMult
+ * @property {number} layers
+ * @property {(number|'auto')} nMedian
+ */
 
 
 /**
@@ -33,11 +42,9 @@ BaseConfig[Symbol.isConfig] = true;
  * @typedef {Object} GenerationConfigT
  * @property {SeedType} seed
  * @property {boolean} isTestWorld
- * @property {Vec3} nScale
  * @property {Vec3} wSize
- * @property {Vec3} octaveMult
- * @property {number} layers
- * @property {(number|'auto')} nMedian
+ * @property {NoiseConfigT} baseTerrain
+ * @property {NoiseConfigT} stoneOffset
 */
 export class GenerationConfig extends BaseConfig { }
 
