@@ -270,6 +270,16 @@ function test_deepMerge_deep() {
     expect(res.constructor).toBe(A);
     expect(res).toStrictEqual(Object.assign(new A(), {b: 7, value: "str"}));
   })
+  {
+    class A {}
+    class B {}
+    it.each([
+      {name: "constructor", cnf: {weakObjTypes: [B]}},
+      {name: "prototype", cnf: {weakObjTypes: [B.prototype]}}
+    ])("Handles custom weak types ($name)", ({cnf}) => {
+      expect(deepMerge([new A, new B], cnf).constructor).toBe(A);
+    })
+  }
 }
 
 
