@@ -9,8 +9,9 @@ export class WorldGenerator extends GameComponent {
     super(game);
     this.init();
     this.baseTerrain = new OctaveNoise(
-      this.gcnf.seed, "base-terrain", this.gcnf.baseTerrain, n => -n.minValue())
-    this.stoneOffset = new OctaveNoise(this.gcnf.seed, "stone-offset", this.gcnf.stoneOffset, -3)
+      this.gcnf.seed, "base-terrain", this.gcnf.baseTerrain, n => -n.minValue());
+    this.stoneOffset = new OctaveNoise(
+      this.gcnf.seed, "stone-offset", this.gcnf.stoneOffset, -3);
   }
 
   get gcnf() {
@@ -50,7 +51,7 @@ export class WorldGenerator extends GameComponent {
     let stoneBelow = y + stoneOffset;
     this.w.setBlock([x, y, z], Blocks.grass);
     while (y--) {
-      this.w.setBlock([x, y, z], y<=stoneBelow ? Blocks.stone : Blocks.dirt);
+      this.w.setBlock([x, y, z], y <= stoneBelow ? Blocks.stone : Blocks.dirt);
     }
   }
 
