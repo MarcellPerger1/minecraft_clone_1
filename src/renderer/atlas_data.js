@@ -8,8 +8,9 @@ export class AtlasEntry {
     this.i = i;
     this.y0 = 0;
     this.y1 = 1;
-    this.x0 = this[0] = this.i/this.aData.n;
-    this.x1 = this[1] = (this.i+1)/this.aData.n;
+    // see issue #86
+    this.x0 = this[0] = (this.i  +0.005)/this.aData.n;
+    this.x1 = this[1] = (this.i+1-0.005)/this.aData.n;
   }
 }
 
