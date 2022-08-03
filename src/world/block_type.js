@@ -2,7 +2,12 @@ import {isString, classOf, assert, fromKeys, setDefaults, assignNullSafe} from '
 
 /**
  * Type of the argument to `new BlockType()`
- * @typedef {{name: ?string}} ConfigObj
+ * @typedef {Object} ConfigObj
+ * @prop {string} [name]
+ * @prop {string} [texture]
+ * @prop {{top?: string, side?: string, bottom?: string, all?: string}} [textures]
+ * @prop {boolean} [visible=true]
+ * @prop {boolean} [transparent=false]
  */
 
 /**
