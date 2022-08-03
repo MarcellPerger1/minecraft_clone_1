@@ -11,23 +11,39 @@
     "$class": "GenerationConfig",
     "seed": "secret-seed",
     "isTestWorld": false,
-    "nScale": [
-      21.14,
-      4,
-      21.14
-    ],
     "wSize": [
       16,
       16,
       16
     ],
-    "octaveMult": [
-      3,
-      0.3,
-      3
-    ],
-    "layers": 5,
-    "nMedian": -1
+    "baseTerrain": {
+      "nScale": [
+        21.14,
+        4,
+        21.14
+      ],
+      "octaveMult": [
+        3,
+        0.3,
+        3
+      ],
+      "layers": 5,
+      "nMedian": "auto"
+    },
+    "stoneOffset": {
+      "nScale": [
+        15,
+        2,
+        15
+      ],
+      "layers": 5,
+      "octaveMult": [
+        3,
+        0.3,
+        3
+      ],
+      "nMedian": -3
+    }
   },
   "controls": {
     "$class": "ControlsConfig",
@@ -45,7 +61,7 @@
     "$class": "PlayerConfig",
     "startPos": [
       0.5,
-      5.5,
+      6.5,
       -5
     ],
     "startRot": {
