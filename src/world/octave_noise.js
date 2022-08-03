@@ -8,7 +8,7 @@ class SeedFork {
   }
 
   static getSeed(orig, what, index) {
-    return toString(orig) + this.getSeedExtra(what, index);
+    return String(orig) + this.getSeedExtra(what, index);
   }
 
   static getSeeds(seed, what, n) {
