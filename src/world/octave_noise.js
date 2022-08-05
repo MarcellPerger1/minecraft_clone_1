@@ -2,7 +2,7 @@ import { rangeList } from "../utils.js";
 import SimplexNoise from "../libs/simplex-noise/simplex-noise.js";
 
 
-class SeedFork {
+export class SeedFork {
   static getSeedExtra(what, index) {
     return `.!${what}[${index}]`
   }

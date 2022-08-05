@@ -95,6 +95,11 @@ export function nestedFor(arr, func, thisArg=null, path_prefix=[]){
   })
 }
 
+/**
+ * Similar to python range(n), returns integers 0 to n (end exculsive)
+ * @param {number} n
+ * @returns {Array<number>}
+ */
 export function rangeList(n){
   return [...Array(n).keys()];
 }

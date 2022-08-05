@@ -4,8 +4,24 @@ is based on code by Johannes Baagøe (see ALEA_LICENSE for the full license), mo
 Modified again by Marcell Perger.
 */
 
+/**
+ * @typedef {Object} RandomNS
+ * @prop {() => number} random
+ * @prop {() => number} randbits_32
+ * @prop {(n: number) => number} randbelow
+ * @prop {(lo: number, hi: number) => number} randrange
+ * @prop {(lo: number, hi: number) => number} randint
+ */
+/**
+ * @typedef {(RandomNS & () => number)} Random
+ */
 
-function alea(seed) {
+/**
+ * Create an ALEA PRNG initalised by a seed
+ * @param {(number|string)} seed
+ * @returns {Random & () => number} Function that generates random numbers
+ */
+export function alea(seed) {
   let s0 = 0;
   let s1 = 0;
   let s2 = 0;
@@ -28,7 +44,7 @@ function alea(seed) {
   if (s2 < 0) {
     s2 += 1;
   }
-
+  /** @type {(Random)} */
   let ret = function() {
     const t = 2091639 * s0 + c * 2.3283064365386963e-10; // 2^-32
     s0 = s1;
@@ -41,8 +57,20 @@ function alea(seed) {
     },
     randbits_32() {
       return (ret() * 0x100000000/* 2^32 */) | 0; // cast to int
+    },
+    randbelow(n) {
+      return ret() * n;
+    },
+    randrange(lo, hi) {
+      return lo + ret.randbelow(hi - lo);
+    },
+    randint(lo, hi) {
+      // return random int x where lo <= x < hi
+      let v = Math.floor(ret.randrange(lo, hi));
+      return v < hi ? v : hi - 1;
     }
-  })
+  });
+  return ret;
 }
 
 function masher() {
