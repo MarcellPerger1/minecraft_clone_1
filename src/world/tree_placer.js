@@ -50,12 +50,7 @@ export class TreePosGetter {
         numLeft--;
       }
       colData.forEach((v, i) => {
-        let sub = 0;
-        for(let rmIdx of removed) {
-          if(i>rmIdx) {
-            sub++;
-          }
-        }
+        let sub = removed.filter(rmIdx=>i>rmIdx).length;
         v[2] -= sub;
       })
     }
