@@ -22,6 +22,13 @@ export class TreePosGetter {
   }
 
   makeTrees() {
+    // TODO this is very bad complexity,
+    // should redo (see issue #95: option 3 best)
+    // This is O(trees * x * z * tree_size)
+    // and basically a lazier version of option 2
+    // but its better than nothing and
+    // when I can be bothered, I will redo this with option 3
+    // as it is by far the most complicated
     let positions = [];
     /** @type {Array<[boolean, number, number]>}*/
     var colData = rangeList(this.n).map(i => [/*free*/true, /*real*/i, /*cumulative*/i]);
@@ -36,6 +43,7 @@ export class TreePosGetter {
       let column = colData[realIdx];
       if (!column[0]) throw new Error("Assertion failed");
       positions.push(this.idxToCoord(realIdx));
+      /** @type {number[]} */
       var removed = [];
       for (let [xo, zo] of OFFSETS) {
         let idx = this.coordToIdx(xo, zo) + realIdx;
@@ -56,44 +64,21 @@ export class TreePosGetter {
     return positions;
   }
 
+  /**
+   * @param {number} x
+   * @param {number} z
+   * @returns {number}
+   */
   coordToIdx(x, z) {
     return this.wx * z + x;
   }
+  /**
+   * @param {number} idx
+   * @retuns {[number, number]}
+   */
   idxToCoord(idx) {
     let z = Math.floor(idx / this.wx);
     let x = idx % this.wx;
     return [x, z];
   }
-}
-
-function numCmp(a, b) {
-  return a == b ? 0 : (a < b ? -1 : 1)
-}
-
-/**
- * Binary search
- * @template T, S
- * @param {Array<T>} list
- * @param {S} item
- * @param {(item: S, v: T) => (0|1|-1)} threeWayCmp -1=>i<v,0=>i==v,+1=>i>v
- * @returns {number} index if found; else -1
- */
-function binarySearch(list, item, threeWayCmp) {
-  threeWayCmp ??= numCmp;
-  var lo = 0;
-  var hi = list.length;
-  while (lo <= hi) {
-    let mid = Math.floor((lo + hi) / 2);
-    let cmpRes = threeWayCmp(item, list[mid]);
-    if (cmpRes === 0) {
-      return mid;
-    }
-    if (cmpRes < 0) {
-      hi = mid - 1;
-    } else {
-      // cmpRes > 0
-      lo = mid + 1
-    }
-  }
-  return -1;
 }

@@ -1,3 +1,4 @@
+import { numCmp } from './math.js';
 import {isAnyArray} from './type_check.js';
 
 // may modify list inplace, but doesnt have to
@@ -102,4 +103,33 @@ export function nestedFor(arr, func, thisArg=null, path_prefix=[]){
  */
 export function rangeList(n){
   return [...Array(n).keys()];
+}
+
+
+/**
+ * Binary search
+ * @template T, S
+ * @param {Array<T>} list
+ * @param {S} item
+ * @param {(item: S, v: T) => (0|1|-1)} threeWayCmp -1=>i<v,0=>i==v,+1=>i>v
+ * @returns {number} index if found; else -1
+ */
+export function binarySearch(list, item, threeWayCmp) {
+  threeWayCmp ??= numCmp;
+  var lo = 0;
+  var hi = list.length;
+  while (lo <= hi) {
+    let mid = Math.floor((lo + hi) / 2);
+    let cmpRes = threeWayCmp(item, list[mid]);
+    if (cmpRes === 0) {
+      return mid;
+    }
+    if (cmpRes < 0) {
+      hi = mid - 1;
+    } else {
+      // cmpRes > 0
+      lo = mid + 1
+    }
+  }
+  return -1;
 }

@@ -54,3 +54,13 @@ export function mod(x, y) {
   let r = x % y;
   return r < 0 ? r + y : r;
 }
+
+/**
+ * Returns `-1` if `a < b`, `0` if `a == b`, `+1` if `a > b`
+ * @param {number} a
+ * @param {number} b
+ * @returns {(-1 | 0 | 1)}
+ */
+export function numCmp(a, b) {
+  return a == b ? 0 : (a < b ? -1 : 1);
+}
