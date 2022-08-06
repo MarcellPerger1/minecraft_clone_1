@@ -21,38 +21,37 @@ export class TreePosGetter {
     this.rng = alea(this.seed);
   }
 
-  makeTrees(){
+  makeTrees() {
     let positions = [];
     /** @type {Array<[boolean, number, number]>}*/
     var colData = rangeList(this.n).map(i => [/*free*/true, /*real*/i, /*cumulative*/i]);
     var numLeft = this.n;
-    for(let ti = 0; ti < this.n_trees; ti++){
-      if(numLeft<=0) {
-        console.warn("Not enough places for trees."); 
-        return positions; 
+    for (let ti = 0; ti < this.n_trees; ti++) {
+      if (numLeft <= 0) {
+        console.warn("Not enough places for trees.");
+        return positions;
       }
-      let colIdx = this.rng.randint(0, numLeft);
-      let spotsLeft = colData.filter(v=>v[0]);
-      let column = spotsLeft[
-        binarySearch(spotsLeft, colIdx, (item,v) => numCmp(item, v[2]))];
-      let realIdx = column[1];
-      if(!colData[realIdx][0]) throw new Error("Assertion failed");
+      let cumIdx = this.rng.randint(0, numLeft);
+      let realIdx = colData.findIndex(v => v[0] && v[2] === cumIdx);
+      let column = colData[realIdx];
+      if (!column[0]) throw new Error("Assertion failed");
       positions.push(this.idxToCoord(realIdx));
       var removed = [];
-      for(let [xo, zo] of OFFSETS) {
+      for (let [xo, zo] of OFFSETS) {
         let idx = this.coordToIdx(xo, zo) + realIdx;
         // out of chunk; ignore for now
-        if(idx<0 || idx>=this.n){ continue; }
+        if (idx < 0 || idx >= this.n) { continue; }
+        let thisCol = colData[idx];
         // already out
-        if(!colData[idx][0]) { continue; }
-        colData[idx][0] = false;
+        if (!thisCol[0]) { continue; }
+        thisCol[0] = false;
         removed.push(idx);
         numLeft--;
       }
       colData.forEach((v, i) => {
-        let sub = removed.filter(rmIdx=>i>rmIdx).length;
+        let sub = removed.filter(rmIdx => i > rmIdx).length;
         v[2] -= sub;
-      })
+      });
     }
     return positions;
   }
@@ -80,15 +79,16 @@ function numCmp(a, b) {
  * @returns {number} index if found; else -1
  */
 function binarySearch(list, item, threeWayCmp) {
+  threeWayCmp ??= numCmp;
   var lo = 0;
   var hi = list.length;
-  while(lo <= hi) {
+  while (lo <= hi) {
     let mid = Math.floor((lo + hi) / 2);
     let cmpRes = threeWayCmp(item, list[mid]);
-    if(cmpRes === 0) {
+    if (cmpRes === 0) {
       return mid;
     }
-    if(cmpRes < 0) {
+    if (cmpRes < 0) {
       hi = mid - 1;
     } else {
       // cmpRes > 0
