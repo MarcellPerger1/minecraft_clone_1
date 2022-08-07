@@ -99,5 +99,6 @@ BlockType.addTypes(
     top: 'oak_log_top',
     bottom: 'oak_log_top',
     side: 'oak_log_side'}
-  }
+  },
+  {name: "oak_leaves", texture: "oak_leaves_basic"},
 )
