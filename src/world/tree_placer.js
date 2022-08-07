@@ -1,6 +1,6 @@
-import { SeedFork } from "./octave_noise.js";
 import { alea } from "../libs/alea/alea.js";
 import { rangeList } from "../utils.js";
+import { SeedFork } from "./seed.js";
 
 
 /** @type {Array<[number, number]>} */
