@@ -56,20 +56,31 @@ export class WorldGenerator extends GameComponent {
   }
 
   placeTree(x, z) {
-    const setRel = (pos, block) => {
-      this.w.setBlock(vec3.add([], [x, terrainY, x], pos), block);
+    const setRelMaybe = (pos, block) => {
+      let p = vec3.add([], [x, terrainY, z], pos);
+      return (this.w.inRange(p) 
+        ? this.w.setBlock(p, block) 
+        : Blocks.air);
+    }
+    const getRelOrAir = (pos) => {
+      let p = vec3.add([], [x, terrainY, z], pos);
+      return (this.w.inRange(p) 
+        ? this.w.getBlock(p) 
+        : Blocks.air);
     }
     let terrainY = this.landHeights[x][z];
     for(let yo=3;yo<=5;yo++){
       let r = yo==5 ? 1 : 2;
       for(let xo=-r;xo<=r;xo++) {
         for(let zo=-r;zo<=r;zo++) {
-          setRel([xo, yo, zo], Blocks.oak_leaves);
+          if(getRelOrAir([xo, yo, zo]) == Blocks.air){
+            setRelMaybe([xo, yo, zo], Blocks.oak_leaves);
+          }
         }
       }
     }
     for(let offset=1;offset<=4;offset++){
-      setRel([0, offset, 0], Blocks.oak_log);
+      setRelMaybe([0, offset, 0], Blocks.oak_log);
     }
   }
 
