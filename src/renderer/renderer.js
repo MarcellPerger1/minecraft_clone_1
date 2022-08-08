@@ -5,7 +5,9 @@ import {
   // webgl
   getGL, glErrnoToMsg,
   // other
-  LoaderMerge
+  LoaderMerge,
+  rangeList,
+  numCmp
 } from '../utils.js';
 import {GameComponent} from '../game_component.js';
 
@@ -175,6 +177,7 @@ export class Renderer extends GameComponent {
     for(const [pos, block] of this.world){
       this.addBlock(pos, block);
     }
+    this.sortTransparentFaces();
     this.vertexData.main.addData(this.vertexData.transparent);
   }
 
@@ -185,9 +188,36 @@ export class Renderer extends GameComponent {
       texCoords: /* 4 Vec2 */8
     };
     let data = this.vertexData.transparent;
+    let posD = data.positions;
     // the decision to choose `positions` here is aribtrary
-    let nFaces = data.positions / numsPerFace.positions;
-    
+    let nFaces = data.positions.length / numsPerFace.positions;
+    const getDistance = (i) => {
+      let si = numsPerFace.positions*i;
+      let cx = (posD[si] + posD[si+3] + posD[si+6] + posD[si+9]) / 4;
+      let cy = (posD[si+1] + posD[si+4] + posD[si+7] + posD[si+10]) / 4;
+      let cz = (posD[si+2] + posD[si+5] + posD[si+8] + posD[si+11]) / 4;
+      let dx = cx - this.camPos[0];
+      let dy = cy - this.camPos[1];
+      let dz = cz - this.camPos[2];
+      let sqDist = dx*dx+dy*dy+dz*dz;
+      return sqDist;
+    }
+    let faceIndices = rangeList(nFaces);
+    faceIndices.sort((a, b) => {
+      let v = getDistance(a) - getDistance(b);
+      return -v;
+    });
+    for(let name of Object.keys(numsPerFace)) {
+      let old_list = data[name];
+      let new_list = Array(old_list.length);
+      let stride = numsPerFace[name];
+      faceIndices.forEach((old_i, new_i) => {
+        for(let offset=0;offset<stride;offset++){
+          new_list[new_i*stride+offset] = old_list[old_i*stride+offset];
+        }
+      })
+      data[name] = new_list;
+    }
   }
 
   addBlock(pos, block){
