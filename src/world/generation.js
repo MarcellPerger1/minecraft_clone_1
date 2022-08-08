@@ -4,7 +4,7 @@ import { rangeList } from "../utils.js";
 import { World } from "./world.js";
 import { Blocks } from "./block_type.js";
 import { OctaveNoise } from "./octave_noise.js";
-import { TreePosGetter } from "./tree_placer.js";
+import { TreePosGetter } from "./tree_generation.js";
 
 
 export class WorldGenerator extends GameComponent {
@@ -56,9 +56,20 @@ export class WorldGenerator extends GameComponent {
   }
 
   placeTree(x, z) {
+    const setRel = (pos, block) => {
+      this.w.setBlock(vec3.add([], [x, terrainY, x], pos), block);
+    }
     let terrainY = this.landHeights[x][z];
+    for(let yo=3;yo<=5;yo++){
+      let r = yo==5 ? 1 : 2;
+      for(let xo=-r;xo<=r;xo++) {
+        for(let zo=-r;zo<=r;zo++) {
+          setRel([xo, yo, zo], Blocks.oak_leaves);
+        }
+      }
+    }
     for(let offset=1;offset<=4;offset++){
-      this.w.setBlock([x, terrainY + offset, z], Blocks.oak_log);
+      setRel([0, offset, 0], Blocks.oak_log);
     }
   }
 
