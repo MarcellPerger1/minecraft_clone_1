@@ -102,7 +102,7 @@ export function nestedFor(arr, func, thisArg=null, path_prefix=[]){
  * @returns {Array<number>}
  */
 export function rangeList(n){
-  return [...Array(n).keys()];
+  return Array(n).fill(0).map((_, i) => i);
 }
 
 

@@ -178,6 +178,18 @@ export class Renderer extends GameComponent {
     this.vertexData.main.addData(this.vertexData.transparent);
   }
 
+  sortTransparentFaces() {
+    let numsPerFace = {
+      indices: /* 2 triangles */6, 
+      positions: /* 4 Vec3 */12, 
+      texCoords: /* 4 Vec2 */8
+    };
+    let data = this.vertexData.transparent;
+    // the decision to choose `positions` here is aribtrary
+    let nFaces = data.positions / numsPerFace.positions;
+    
+  }
+
   addBlock(pos, block){
     if(block.visible){
       this.addBlockTextures(pos, block.textures);
