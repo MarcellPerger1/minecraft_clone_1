@@ -51,10 +51,14 @@ export class WorldGenerator extends GameComponent {
   generateTrees() {
     let positions = this.treeGetter.makeTrees();
     for(let [tx, tz] of positions) {
-      let terrainY = this.landHeights[tx][tz];
-      for(let offset=1;offset<=4;offset++){
-        this.w.setBlock([tx, terrainY + offset, tz], Blocks.oak_log);
-      }
+      this.placeTree(tx, tz);
+    }
+  }
+
+  placeTree(x, z) {
+    let terrainY = this.landHeights[x][z];
+    for(let offset=1;offset<=4;offset++){
+      this.w.setBlock([x, terrainY + offset, z], Blocks.oak_log);
     }
   }
 
