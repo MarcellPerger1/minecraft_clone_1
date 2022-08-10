@@ -1,17 +1,10 @@
-import { assignNullSafe, classOf, exportAs, deepMerge } from './utils.js';
+import { assignNullSafe, exportAs, deepMerge } from './utils.js';
 import { loadConfigFile } from "./config_loader.js";
 
 
 export class BaseConfig {
-  static DEFAULT;
-
   constructor(...configs) {
     assignNullSafe(this, deepMerge([...configs]));
-  }
-
-  getWithDefaults() {
-    // allows overriding default in subclasses
-    return new classOf(this)(classOf(this).DEFAULT, this);
   }
 }
 BaseConfig[Symbol.isConfig] = true;
