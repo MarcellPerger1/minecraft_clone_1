@@ -44,14 +44,17 @@ export class WorldGenerator extends GameComponent {
         this.generateBlock(x, z);
       }
     }
+    progress.addPercent(3);
     this.generateTrees();
     return this.w;
   }
 
   generateTrees() {
     let positions = this.treeGetter.makeTrees();
+    progress.addPercent(3);
     for(let [tx, tz] of positions) {
       this.placeTree(tx, tz);
+      progress.addPercent(2/positions.length);
     }
   }
 

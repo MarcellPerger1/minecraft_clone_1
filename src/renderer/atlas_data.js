@@ -40,13 +40,13 @@ export class AtlasLoader extends GameComponent {
       fetchJsonFile(this.cnf.atlas.indexPath)
       .then(raw => {
         this.data = new AtlasData(raw); 
-        progress.addPercent(10);
+        progress.addPercent(6);
         return this.data;
       }),
       loadTexture(this.gl, this.cnf.atlas.imgPath)
       .then(tex => {
         this.texture = tex;
-        progress.addPercent(10);
+        progress.addPercent(6);
         return this.texture;
       }),
     ])
