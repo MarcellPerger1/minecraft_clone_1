@@ -87,7 +87,6 @@ export class WorldGenerator extends GameComponent {
     let y = this.getHeightAt(x, z);
     if (y < 0 || y >= this.wSize[1]) {
       console.warn("Noise value outside of world. Consider tweaking nMedian or nScale");
-      return;
     }
     this.landHeights[x][z] = y;
     let stoneOffset = this.stoneOffset.noise2D(x, z);

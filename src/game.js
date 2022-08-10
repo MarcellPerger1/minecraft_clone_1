@@ -38,20 +38,16 @@ export class Game {
     await this.loadResources();
   }
 
-  get gl() {
-    return this.r.gl;
-  }
-
   async loadResources() {
     this.makeResourceLoaders();
-    return await this.gatherResourceLoaders();
+    return await this.joinResourceLoaders();
   }
 
   makeResourceLoaders() {
     this.resourceLoaders = [this.r];
   }
 
-  gatherResourceLoaders() {
+  joinResourceLoaders() {
     this.loadProms = this.resourceLoaders.map(o => {
       let f = o?.loadResources;
       if (f == null) { return Promise.resolve(); }
@@ -123,6 +119,10 @@ export class Game {
     return this.registerOnFrame();
   }
 
+  registerOnFrame() {
+    return requestAnimationFrame(this.frameCallback.bind(this));
+  }
+
   onframe() {
     // unconditional re-render on first frame and every 120th frame
     this.rerender ||= this.frameNo % 120 == 0;
@@ -167,11 +167,6 @@ export class Game {
   updateFacingInfo() {
     let rotSnapped = roundNearest(this.player.rotation.h, 90) % 360;
     document.getElementById("facing-info").innerText = DIR_TO_FACING[rotSnapped];
-  }
-
-  registerOnFrame() {
-    let this_outer = this;
-    return requestAnimationFrame(now => { this_outer.frameCallback(now); });
   }
 
   pointerlock_change(_e) {
