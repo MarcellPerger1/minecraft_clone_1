@@ -7,7 +7,6 @@ export class BaseConfig {
     assignNullSafe(this, deepMerge([...configs]));
   }
 }
-BaseConfig[Symbol.isConfig] = true;
 
 
 /**
