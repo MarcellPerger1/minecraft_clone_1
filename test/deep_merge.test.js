@@ -23,10 +23,8 @@ describe("deep_merge.js", () => {
       name: "deepMerge with some nulls",
       id: "withNulls"
     }
-    /* eslint-disable-next-line jest/valid-describe-callback */
-  ])("$name", test_deepCopy);
-  /* eslint-disable-next-line jest/valid-describe-callback */
-  describe("deepMerge mutli-arg", test_deepMerge);
+  ])("$name", (o) => {test_deepCopy(o)});
+  describe("deepMerge mutli-arg", () => {test_deepMerge()});
 })
 
 function test_deepCopy({ copier, id }) {
@@ -164,16 +162,13 @@ function test_deepMerge(){
     expect(deepMerge([null, void 0])).toBe(void 0);
     expect(deepMerge([void 0, null, null, void 0, null])).toBe(null);
   });
-  /* eslint-disable-next-line jest/valid-describe-callback */
-  describe("Merging", test_deepMerge_merge);
+  describe("Merging", () => {test_deepMerge_merge()});
 }
 
 
 function test_deepMerge_merge() {
-  /* eslint-disable-next-line jest/valid-describe-callback */
-  describe("Shallow", test_deepMerge_shallow);
-  /* eslint-disable-next-line jest/valid-describe-callback */
-  describe("Deep", test_deepMerge_deep);
+  describe("Shallow", () => {test_deepMerge_shallow()});
+  describe("Deep", () => {test_deepMerge_deep()});
 }
 
 function test_deepMerge_shallow() {

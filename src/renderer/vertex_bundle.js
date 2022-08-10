@@ -3,7 +3,12 @@ import { GameComponent } from '../game_component.js';
 
 
 
-// simply a container utility class for each 'section' of vertex data eg a 'section' could be a cube
+// simply a container utility class for each 'section' of vertex data
+// eg a 'section' could be a cube
+// NOTE: this is simply an example of the structure of the data, 
+// using this class is not mandatory
+// but it may be helpful to automatically calculate `maxindex`
+// TODO make a JSDoc typedef and remove this class?
 export class VertexBundle {
   constructor(positions, texCoords, indices, maxindex = null) {
     this.positions = positions ?? [];
@@ -15,15 +20,20 @@ export class VertexBundle {
 }
 
 
-export class ToplevelVertexBundle {
-  constructor(type = null) {
+export class ElementBundler extends GameComponent {
+  constructor(game, type = null) {
+    super(game);
+    this.elemType = type ?? WebGLRenderingContext.UNSIGNED_SHORT;
+    this.elemSize = glTypeSize(this.elemType);
+    this.reset();
+  }
+
+  reset() {
     this.positions = [];
     this.texCoords = [];
     this.indices = [];
     // you can try set this to other than -1 and enjoy the CHAOS
     this.maxindex = -1;
-    this.elemType = type ?? WebGLRenderingContext.UNSIGNED_SHORT;
-    this.elemSize = glTypeSize(this.elemType);
   }
 
   calcMaxIndex() {
@@ -32,7 +42,7 @@ export class ToplevelVertexBundle {
     return this.maxindex;
   }
 
-  add(bundle) {
+  addData(bundle) {
     bundle.maxindex ??= Math.max(...bundle.indices, -1);
     let nElems = bundle.maxindex + 1;
     // NOTE: could use iextend here but the lists should never get that large
@@ -43,39 +53,10 @@ export class ToplevelVertexBundle {
     this.maxindex += nElems;
     return this;
   }
-}
-
-
-export class ElementBundler extends GameComponent {
-  constructor(game) {
-    super(game);
-    this.reset();
-  }
-
-  reset() {
-    this.bundle = new ToplevelVertexBundle();
-  }
-
-  addData(bundle) {
-    this.bundle.add(bundle);
-  }
-
-  getPositionData() {
-    return this.bundle.positions;
-  }
-  getTexCoords() {
-    return this.bundle.texCoords;
-  }
-  getIndices() {
-    return this.bundle.indices;
-  }
-  get positions() { return this.getPositionData(); }
-  get texCoords() { return this.getTexCoords(); }
-  get indices() { return this.getIndices(); }
 
   drawElements() {
     this.gl.drawElements(
-      this.gl.TRIANGLES, this.bundle.indices.length, this.bundle.elemType, 0);
+      this.gl.TRIANGLES, this.indices.length, this.elemType, 0);
   }
 }
 

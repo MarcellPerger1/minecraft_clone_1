@@ -10,14 +10,15 @@ export class CubeDataAdder extends GameComponent {
     this.pos = pos;
     this.textureData = textureData; 
     this.cData = new CubeVertexData(this.game, pos, this.textureData);
-    this.world.wantInRange(pos);
+    this.block = this.world.getBlock(this.pos);
   }
 
   addData(){
+    if(!this.block.visible) { return; }
     for(const [offset,name] of _OFFSET_NAMES){
-      if(this.renderBlock(offset)){
+      if(this.shouldRenderSide(offset)){
         let data = this.cData[name]();
-        this.r.addData(data, this.getOffsetTexture(offset));
+        this.r.addData(data, this.getOffsetTexture(offset), this.block.transparent);
       }
     }
   }
@@ -43,12 +44,19 @@ export class CubeDataAdder extends GameComponent {
     this.r.addData(data, texture);
   }
 
-  renderBlock(offset){
+  shouldRenderSide(offset){
     let pos = vec3.add([], this.pos, offset);
     if(!this.world.inRange(pos)){
       return true;  // no way for block to be there
     }
-    if(this.world.getBlockUnsafe(pos).transparent){  
+    let side_block = this.world.getBlockUnsafe(pos);
+    if(!side_block.visible) {
+      return true;
+    }
+    if(this.block.transparent && side_block.transparent && offset.some(c=>c>0)) {
+      return false;
+    }
+    if(side_block.transparent){  
       return true;
     }
     return false;

@@ -4,7 +4,7 @@ import {isPowerOf2} from "./math.js";
 
 export function getGL(canv_id="glCanvas"){
   const canvas = document.getElementById(canv_id);
-  const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+  const gl = canvas.getContext("webgl");
   if (gl == null) {
     let msg = "Unable to initialize WebGL. Your browser or machine may not support it.";
     alert(msg);

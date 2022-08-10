@@ -2,6 +2,7 @@
 { pkgs }: { 
   deps = [ 
     # pkgs.nodejs
+    pkgs.htop
     pkgs.nodejs-16_x
     pkgs.libuuid 
     pkgs.nodePackages.vscode-langservers-extracted

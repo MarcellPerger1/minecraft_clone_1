@@ -66,7 +66,10 @@ export class Renderer extends GameComponent {
   onResourcesLoaded(){
     this.initProgramInfo(this.loader.shader.program);
     this.initAtlasInfo(this.loader.atlas);
-    this.vertexData = new ElementBundler(this.game);
+    this.vertexData = {
+      main: new ElementBundler(this.game),
+      transparent: new ElementBundler(this.game),
+    };
     this.buffers = new Buffers(this.game);
     this.makeBuffers();
     this.configArrayBuffers();
@@ -100,6 +103,8 @@ export class Renderer extends GameComponent {
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.depthFunc(this.gl.LEQUAL);
     this.gl.enable(this.gl.SCISSOR_TEST);
+    this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+    this.gl.enable(this.gl.BLEND);
     this.checkGlFault();
   }
 
@@ -156,7 +161,7 @@ export class Renderer extends GameComponent {
   drawAll(){
     this.bufferDataFromBundler();
     this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
-    this.vertexData.drawElements();
+    this.vertexData.main.drawElements();
   }
 
   resetRender(){
@@ -165,10 +170,12 @@ export class Renderer extends GameComponent {
 
   // CUBE DATA HANDLING
   makeWorldMesh(){
-    this.vertexData.reset();
+    this.vertexData.main.reset();
+    this.vertexData.transparent.reset();
     for(const [pos, block] of this.world){
       this.addBlock(pos, block);
     }
+    this.vertexData.main.addData(this.vertexData.transparent);
   }
 
   addBlock(pos, block){
@@ -181,8 +188,9 @@ export class Renderer extends GameComponent {
     new CubeDataAdder(this.game, pos, tData).addData();
   }
 
-  addData(data, texture){
-    return this.vertexData.addData(data, texture);
+  addData(data, texture, transparent=false){
+    return this.vertexData[transparent ? 'transparent' : 'main']
+      .addData(data, texture);
   }
 
   // ARRAY BUFFERS
@@ -280,11 +288,11 @@ export class Renderer extends GameComponent {
 
   bufferDataFromBundler(){
     this.buffers.setData(
-      'position', new Float32Array(this.vertexData.positions));
+      'position', new Float32Array(this.vertexData.main.positions));
     this.buffers.setData(
-      'textureCoord', new Float32Array(this.vertexData.texCoords));
+      'textureCoord', new Float32Array(this.vertexData.main.texCoords));
     this.buffers.setData(
-      'indices', new Uint16Array(this.vertexData.indices), 
+      'indices', new Uint16Array(this.vertexData.main.indices), 
       this.gl.ELEMENT_ARRAY_BUFFER);
   }
 }

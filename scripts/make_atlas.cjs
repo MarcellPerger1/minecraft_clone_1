@@ -19,7 +19,7 @@ async function getTexturePaths(dir){
 }
 
 function isTextureFile(f){
-  return f.endsWith('.min.png') && !f.endsWith('atlas.min.png')
+  return f.endsWith('.min.png')
 }
 
 /**
@@ -31,14 +31,6 @@ function getProjectRoot(trustCwd=true){
     : path.resolve(__dirname, '..');
 }
 
-
-/**
-* @param trustCwd {boolean} is cwd set properly (ie. to project root)
-**/
-function getTexturesDir(trustCwd=true){
-  return path.resolve(getProjectRoot(trustCwd), 'textures/');
-}
-
 function drawNthImage(ctx, img, i){
   ctx.drawImage(img, i*16, 0);
 }
@@ -46,7 +38,7 @@ function drawNthImage(ctx, img, i){
 function main(){
   const root = getProjectRoot();
   const resDir = path.resolve(root, 'res/');
-  const texDir = getTexturesDir();
+  const texDir = path.resolve(root, 'textures/');
   var canv, ctx, n;
   var i = 0;
   var data = [];

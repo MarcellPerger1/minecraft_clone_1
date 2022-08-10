@@ -1,7 +1,10 @@
 import { GameComponent } from "../game_component.js";
-import { World, Blocks } from "./index.js";
-import { OctaveNoise } from "./octave_noise.js";
+import { rangeList } from "../utils.js";
 
+import { World } from "./world.js";
+import { Blocks } from "./block_type.js";
+import { OctaveNoise } from "./octave_noise.js";
+import { TreePosGetter } from "./tree_generation.js";
 
 
 export class WorldGenerator extends GameComponent {
@@ -12,6 +15,7 @@ export class WorldGenerator extends GameComponent {
       this.gcnf.seed, "base-terrain", this.gcnf.baseTerrain, n => -n.minValue());
     this.stoneOffset = new OctaveNoise(
       this.gcnf.seed, "stone-offset", this.gcnf.stoneOffset, -3);
+    this.treeGetter = new TreePosGetter(this.gcnf.seed, this.wSize[0], this.wSize[2], 5);
   }
 
   get gcnf() {
@@ -24,6 +28,8 @@ export class WorldGenerator extends GameComponent {
 
   init() {
     this.w = new World(this.game, [0, 0, 0], this.wSize);
+    this.landHeights = rangeList(this.wSize[0])
+      .map(_ => new Array(this.wSize[2]));
   }
 
   generate() {
@@ -38,7 +44,44 @@ export class WorldGenerator extends GameComponent {
         this.generateBlock(x, z);
       }
     }
+    this.generateTrees();
     return this.w;
+  }
+
+  generateTrees() {
+    let positions = this.treeGetter.makeTrees();
+    for(let [tx, tz] of positions) {
+      this.placeTree(tx, tz);
+    }
+  }
+
+  placeTree(x, z) {
+    const setRelMaybe = (pos, block) => {
+      let p = vec3.add([], [x, terrainY, z], pos);
+      return (this.w.inRange(p) 
+        ? this.w.setBlock(p, block) 
+        : Blocks.air);
+    }
+    const getRelOrAir = (pos) => {
+      let p = vec3.add([], [x, terrainY, z], pos);
+      return (this.w.inRange(p) 
+        ? this.w.getBlock(p) 
+        : Blocks.air);
+    }
+    let terrainY = this.landHeights[x][z];
+    for(let yo=3;yo<=5;yo++){
+      let r = yo==5 ? 1 : 2;
+      for(let xo=-r;xo<=r;xo++) {
+        for(let zo=-r;zo<=r;zo++) {
+          if(getRelOrAir([xo, yo, zo]) == Blocks.air){
+            setRelMaybe([xo, yo, zo], Blocks.oak_leaves);
+          }
+        }
+      }
+    }
+    for(let offset=1;offset<=4;offset++){
+      setRelMaybe([0, offset, 0], Blocks.oak_log);
+    }
   }
 
   generateBlock(x, z) {
@@ -47,6 +90,7 @@ export class WorldGenerator extends GameComponent {
       console.warn("Noise value outside of world. Consider tweaking nMedian or nScale");
       return;
     }
+    this.landHeights[x][z] = y;
     let stoneOffset = this.stoneOffset.noise2D(x, z);
     let stoneBelow = y + stoneOffset;
     this.w.setBlock([x, y, z], Blocks.grass);
