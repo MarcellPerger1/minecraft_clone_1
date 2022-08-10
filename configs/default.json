@@ -16,6 +16,7 @@
       16,
       16
     ],
+    "nTrees": 5,
     "baseTerrain": {
       "nScale": [
         21.14,
