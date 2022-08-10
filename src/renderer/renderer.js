@@ -71,6 +71,7 @@ export class Renderer extends GameComponent {
     this.vertexData = {
       main: new ElementBundler(this.game),
       transparent: new ElementBundler(this.game),
+      opaque: new ElementBundler(this.game),
     };
     this.buffers = new Buffers(this.game);
     this.makeBuffers();
@@ -147,10 +148,14 @@ export class Renderer extends GameComponent {
   renderFrame(remakeMesh){
     this.remakeMesh = remakeMesh;
     this.initFrame();
+    this.vertexData.main.reset();
     if(this.remakeMesh){
       // only update mesh if re-render
       this.makeWorldMesh();
     }
+    this.sortTransparentFaces();
+    this.vertexData.main.addData(this.vertexData.opaque);
+    this.vertexData.main.addData(this.vertexData.transparent);
     this.drawAll();
     this.checkGlFault();
   }
@@ -172,13 +177,11 @@ export class Renderer extends GameComponent {
 
   // CUBE DATA HANDLING
   makeWorldMesh(){
-    this.vertexData.main.reset();
+    this.vertexData.opaque.reset();
     this.vertexData.transparent.reset();
     for(const [pos, block] of this.world){
       this.addBlock(pos, block);
     }
-    this.sortTransparentFaces();
-    this.vertexData.main.addData(this.vertexData.transparent);
   }
 
   sortTransparentFaces() {
@@ -205,8 +208,8 @@ export class Renderer extends GameComponent {
     let faceIndices = rangeList(nFaces);
     faceIndices.sort((a, b) => {
       let v = getDistance(a) - getDistance(b);
-      return -v;
-    });
+      return v;
+    }).reverse().reverse(); // -> descending
     for(let name of Object.keys(numsPerFace)) {
       let old_list = data[name];
       let new_list = Array(old_list.length);
@@ -231,7 +234,7 @@ export class Renderer extends GameComponent {
   }
 
   addData(data, texture, transparent=false){
-    return this.vertexData[transparent ? 'transparent' : 'main']
+    return this.vertexData[transparent ? 'transparent' : 'opaque']
       .addData(data, texture);
   }
 
