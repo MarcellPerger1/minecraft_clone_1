@@ -89,9 +89,9 @@ export class WorldGenerator extends GameComponent {
     this.landHeights[x][z] = y;
     let stoneOffset = this.stoneOffset.noise2D(x, z);
     let stoneBelow = y + stoneOffset;
-    this.w.setBlock([x, y, z], Blocks.grass);
-    while (y--) {
-      this.w.setBlock([x, y, z], y <= stoneBelow ? Blocks.stone : Blocks.dirt);
+    this.w.setBlockOr([x, y, z], Blocks.grass);
+    while (y-->0) {
+      this.w.setBlockOr([x, y, z], y <= stoneBelow ? Blocks.stone : Blocks.dirt);
     }
   }
 
