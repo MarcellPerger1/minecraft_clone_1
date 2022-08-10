@@ -27,6 +27,11 @@ export class World extends GameComponent {
     return this.blocks[x][y][z];
   }
 
+  getBlockOr(at, d) {
+    if(!this.inRange(at)) { return d; }
+    return this.getBlockUnsafe(at);
+  }
+
   getBlockUnsafe(at){
     let ix = at[0]-this.origin[0];
     let iy = at[1]-this.origin[1];
@@ -38,6 +43,19 @@ export class World extends GameComponent {
     this.wantInRange(at);
     const [x,y,z] = this.getIndex(at);
     return (this.blocks[x][y][z] = block);
+  }
+
+  setBlockUnsafe(at, block) {
+    let ix = at[0]-this.origin[0];
+    let iy = at[1]-this.origin[1];
+    let iz = at[2]-this.origin[2];
+    return (this.blocks[ix][iy][iz] = block);
+  }
+
+  setBlockOr(at, block) {
+    if(!this.inRange(at)) {return false; }
+    this.setBlockUnsafe(at, block);
+    return true;
   }
 
   setBlocks(block, positions){
