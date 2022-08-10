@@ -27,7 +27,7 @@ export class World extends GameComponent {
     return this.blocks[x][y][z];
   }
 
-  getBlockOr(at, d) {
+  getBlockOr(at, d=Blocks.air) {
     if(!this.inRange(at)) { return d; }
     return this.getBlockUnsafe(at);
   }
