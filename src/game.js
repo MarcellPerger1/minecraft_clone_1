@@ -86,7 +86,9 @@ export class Game {
     }
     this.frameNo++;
     this.now = now * 0.001;
-    this.then ??= this.now;
+    if(this.then==null) {
+      this.then = this.now;
+    }
     this.deltaT = this.now - this.then;
     this.onframe();
     this.then = this.now;
@@ -147,20 +149,13 @@ export class Game {
     console.log('pointerlock change to ', document.pointerLockElement);
   }
 
-  addEvent(name, hdlr, thisArg = null, elem = null, opts = null) {
-    elem ??= window;
-    return elem.addEventListener(
-      name, event => hdlr.call(thisArg, event), opts);
-  }
-
   addPointerEvents() {
-    this.addEvent('pointerlockchange', this.pointerlock_change, this, document);
-    this.canvas.addEventListener(
-      'click', _e => {
-        if (!this.pointerLocked) {
-          this.canvas.requestPointerLock();
-        }
-      });
+    document.addEventListener('pointerlockchange', this.pointerlock_change.bind(this));
+    this.canvas.addEventListener('click', _e => {
+      if (!this.pointerLocked) {
+        this.canvas.requestPointerLock();
+      }
+    });
   }
 
   addAllListeners() {

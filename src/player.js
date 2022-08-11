@@ -12,7 +12,7 @@ export class Player extends GameComponent {
 
   addListeners(){
     this.addMoveBindings();
-    this.addEvent('pointermove', this.pointer_move, this, this.canvas);
+    this.canvas.addEventListener('pointermove', this.pointer_move.bind(this));
   }
 
   pointer_move(e){

@@ -45,8 +45,4 @@ export class GameComponent {
   get gl(){
     return this.r.gl;
   }
-
-  addEvent(name, hdlr, thisArg=null, elem=null, opts=null){
-    this.game.addEvent(name, hdlr, thisArg, elem, opts ?? {});
-  }
 }
