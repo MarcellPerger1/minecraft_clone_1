@@ -6,7 +6,13 @@
  * Anything that use the Game object should inherit from this
  */
 export class GameComponent {
+  /**
+   * @param {(Game | GameComponent)} game
+   */
   constructor(game){
+    if(game instanceof GameComponent) {
+      game = game.game;
+    }
     /**
      * The Game object
      * @type {Game}
