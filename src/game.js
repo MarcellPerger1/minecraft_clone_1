@@ -5,6 +5,7 @@ import { Player } from './player.js';
 import { WorldGenerator } from './world.js';
 import { roundNearest } from './utils.js';
 import { LoadingEndMgr } from './loading_end.js';
+import { DynInfo } from './dyn_info.js';
 
 
 /**
@@ -37,6 +38,7 @@ export class Game {
     this.ki = this.keyinput = new KeyInput();
     this.player = new Player(this);
     this.w = this.world = new WorldGenerator(this).generate();
+    this.info = new DynInfo(this);
     await this.loadResources();
   }
 
@@ -52,7 +54,7 @@ export class Game {
   joinResourceLoaders() {
     this.loadProms = this.resourceLoaders.map(o => {
       let f = o?.loadResources;
-      if (f == null) { return Promise.resolve(); }
+      if (f == null) { return; }
       return o.loadResources();
     });
     this.onReady = Promise.all(this.loadProms);
@@ -106,7 +108,7 @@ export class Game {
       this.tickCallback();
     }
     this.render();
-    this.updateDynInfo();
+    this.info.update();
   }
 
   render() {
@@ -125,24 +127,6 @@ export class Game {
     this.player.tick();
     // rerender on first tick
     this.rerender ||= this.tickNo==0;
-  }
-
-  updateDynInfo(){
-    this.updateFacingInfo();
-    this.updatePosInfo();
-  }
-
-  updatePosInfo() {
-    const coordStr = p => p.toFixed(4);
-    let coordTextBody = ["x", "y", "z"]
-        .map((s, i) => `${s}=${coordStr(this.player.position[i])}`)
-        .join(', ');
-    document.getElementById("pos-info").innerText = coordTextBody;
-  }
-
-  updateFacingInfo() {
-    let rotSnapped = roundNearest(this.player.rotation.h, 90) % 360;
-    document.getElementById("facing-info").innerText = DIR_TO_FACING[rotSnapped];
   }
 
   pointerlock_change(_e) {
@@ -171,11 +155,4 @@ export class Game {
   get pointerLocked() {
     return this.hasPointerLock();
   }
-}
-
-const DIR_TO_FACING = {
-  "0": "+X",
-  "90": "+Z",
-  "180": "-X",
-  "270": "-Z"
 }
