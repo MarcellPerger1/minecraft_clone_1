@@ -4,6 +4,8 @@ import { KeyInput } from './keyinput.js';
 import { Player } from './player.js';
 import { WorldGenerator } from './world.js';
 import { roundNearest } from './utils.js';
+import { LoadingEndMgr } from './loading_end.js';
+
 
 /**
  * @typedef {import('./config.js').ConfigT} ConfigT
@@ -67,39 +69,11 @@ export class Game {
 
   endLoading(){
     progress.setPercent(100);
-    setTimeout(() => this.onEarlyStart(), 201);
-    setTimeout(() => this.onStart(), 1001);
-    this.onLoadEnd();
-  }
-
-  showTrueCanvas() {
-    this.canvas.hidden = false;
-    document.getElementById("canvas-loading-bg").hidden = true;
-  }
-
-  onLoadEnd() {
-    this.overlayElems.forEach(elem => {
-      elem.classList.add("fade-out");
-    });
-    this.showTrueCanvas();
-  }
-
-  onEarlyStart() {
-    this.overlayElems.forEach(elem => {
-      elem.classList.add("click-thru");
+    this.ls = new LoadingEndMgr(this);
+    this.ls.endLoading();
+    this.ls.start.then(() => {
+      this.startTicks = true;
     })
-    document.getElementById("dyn-info").hidden = false;
-  }
-
-  onStart() {
-    this.startTicks = true;
-    this.overlayElems.forEach(elem => {
-      elem.hidden = true;
-    })
-  }
-
-  get overlayElems(){
-    return document.querySelectorAll(".overlay");
   }
 
   main() {
