@@ -3,7 +3,6 @@ import { getConfig } from './config.js';
 import { KeyInput } from './keyinput.js';
 import { Player } from './player.js';
 import { WorldGenerator } from './world.js';
-import { roundNearest } from './utils.js';
 import { LoadingEndMgr } from './loading_end.js';
 import { DynInfo } from './dyn_info.js';
 
@@ -48,6 +47,9 @@ export class Game {
   }
 
   makeResourceLoaders() {
+    /**
+     * @type {Array<{loadResources: () => void}>}
+     */
     this.resourceLoaders = [this.r];
   }
 
@@ -129,7 +131,7 @@ export class Game {
     this.rerender ||= this.tickNo==0;
   }
 
-  pointerlock_change(_e) {
+  pointerlock_change() {
     console.log('pointerlock change to ', document.pointerLockElement);
   }
 
