@@ -1,3 +1,4 @@
+#!/bin/sh
 npm install
 
 # NOTE: replit doesn't serve node_modules/ so have to copy out
@@ -7,5 +8,10 @@ remake_dir () {
   mkdir $1
 }
 
-remake_dir ./src/libs
-cp -r ./node_modules/simplex-noise/dist/esm/ ./src/libs/simplex-noise
+copy_lib() {
+  pkg=$1
+  remake_dir ./src/libs/$pkg
+  cp -r ./node_modules/$pkg ./src/libs/
+}
+
+copy_lib simplex-noise

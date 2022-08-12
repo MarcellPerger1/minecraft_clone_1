@@ -1,4 +1,4 @@
-import SimplexNoise from "../libs/simplex-noise/simplex-noise.js";
+import SimplexNoise from "../libs/simplex-noise/dist/esm/simplex-noise.js";
 
 import { SeedFork } from "./seed.js";
 
