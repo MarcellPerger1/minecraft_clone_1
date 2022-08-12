@@ -75,8 +75,8 @@ export class ShaderConfig extends BaseConfig { }
 /**
  * Atlas Configs
  * @typedef {Object} AtlasConfigT
- * @property {Path} imgPath
- * @property {Path} indexPath
+ * @property {path} imgPath
+ * @property {path} indexPath
 */
 export class AtlasConfig extends BaseConfig { }
 
