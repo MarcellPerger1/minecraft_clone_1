@@ -80,7 +80,7 @@ export function getAutoEventStr(event_str){
 export function getEventStr(event_str, mode){
   mode ??= KeyEvent.AUTO;
   if(mode==KeyEvent.AUTO){
-    [event_str, mode] = getAutoEventStr(event_str);
+    return getAutoEventStr(event_str);
   }
   return [event_str, mode];
 }

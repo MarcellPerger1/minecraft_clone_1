@@ -1,17 +1,11 @@
 import { alea } from "../libs/alea/alea.js";
-import { rangeList } from "../utils.js";
+import { rangeFrom, rangeList } from "../utils.js";
 import { SeedFork } from "./seed.js";
 
 
-/** @type {Array<[number, number]>} */
-var OFFSETS = [
-  [-1, -1], [0, -1], [1, -1],
-  [-1, 0], [0, 0], [1, 0],
-  [-1, 1], [0, 1], [1, 1]
-];
 
 export class TreePosGetter {
-  constructor(seed, x, z, n_trees) {
+  constructor(seed, x, z, n_trees, treeRadius) {
     this.wx = x;
     this.wz = z;
     this.n = this.wx * this.wz;
@@ -19,6 +13,12 @@ export class TreePosGetter {
     this.globSeed = seed;
     this.seed = SeedFork.getSeed(this.globSeed, "tree-pos", 0);
     this.rng = alea(this.seed);
+    let w = treeRadius[0];
+    let h = treeRadius[1];
+    /** @type {Array<[number, number]>} */
+    this.excludeOffsets = rangeFrom(-w, w+1)
+      .flatMap(x => rangeFrom(-h, h+1)
+        .map(y => [x, y]));
   }
 
   makeTrees() {
@@ -45,7 +45,7 @@ export class TreePosGetter {
       positions.push(this.idxToCoord(realIdx));
       /** @type {number[]} */
       var removed = [];
-      for (let [xo, zo] of OFFSETS) {
+      for (let [xo, zo] of this.excludeOffsets) {
         let idx = this.coordToIdx(xo, zo) + realIdx;
         // out of chunk; ignore for now
         if (idx < 0 || idx >= this.n) { continue; }

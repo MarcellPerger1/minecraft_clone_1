@@ -1,4 +1,4 @@
-import { assignNullSafe, exportAs, deepMerge } from './utils.js';
+import { assignNullSafe, deepMerge } from './utils.js';
 import { loadConfigFile } from "./config_loader.js";
 
 
@@ -36,6 +36,7 @@ export class BaseConfig {
  * @property {boolean} isTestWorld
  * @property {Vec3} wSize
  * @property {number} nTrees
+ * @property {Vec2} treeRadius
  * @property {NoiseConfigT} baseTerrain
  * @property {NoiseConfigT} stoneOffset
 */
@@ -74,8 +75,8 @@ export class ShaderConfig extends BaseConfig { }
 /**
  * Atlas Configs
  * @typedef {Object} AtlasConfigT
- * @property {Path} imgPath
- * @property {Path} indexPath
+ * @property {path} imgPath
+ * @property {path} indexPath
 */
 export class AtlasConfig extends BaseConfig { }
 
@@ -90,7 +91,6 @@ export class AtlasConfig extends BaseConfig { }
  * @property {PlayerConfigT} player
  * @property {ShaderConfigT} shader
  * @property {AtlasConfigT} atlas
- * @property {function():ConfigT} getWithDefaults
 */
 export class Config extends BaseConfig { }
 
@@ -106,7 +106,3 @@ export async function getConfig(...extra) {
   let config = await loadConfigFile("./configs/config.json");
   return deepMerge([config, ...extra]);
 }
-
-
-exportAs(Config);
-

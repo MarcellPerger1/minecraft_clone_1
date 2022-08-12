@@ -1,5 +1,4 @@
 import {
-  exportAs, 
   // math
   toRad,
   // webgl
@@ -296,6 +295,3 @@ export class Renderer extends GameComponent {
       this.gl.ELEMENT_ARRAY_BUFFER);
   }
 }
-
-
-exportAs(Renderer);

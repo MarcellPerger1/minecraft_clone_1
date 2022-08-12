@@ -1,4 +1,4 @@
-import { exportAs, glTypeSize } from '../utils.js';
+import { glTypeSize } from '../utils.js';
 import { GameComponent } from '../game_component.js';
 
 
@@ -59,7 +59,3 @@ export class ElementBundler extends GameComponent {
       this.gl.TRIANGLES, this.indices.length, this.elemType, 0);
   }
 }
-
-
-
-exportAs(ElementBundler);

@@ -105,6 +105,21 @@ export function rangeList(n){
   return Array(n).fill(0).map((_, i) => i);
 }
 
+/**
+ * Almost exactly like python range but without `step`
+ * @param {number} start
+ * @param {number} stop
+ * @returns {number[]}
+ */
+export function rangeFrom(start, stop=null) {
+  // argument juggling
+  if(stop==null) {
+    stop = start;
+    start = 0;
+  }
+  return Array(stop - start).fill(0).map((_, i) => start + i);
+}
+
 
 /**
  * Binary search
