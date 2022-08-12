@@ -1,4 +1,3 @@
-import {expectValue} from "./general.js";
 import {isPowerOf2} from "./math.js";
 
 
@@ -7,7 +6,6 @@ export function getGL(canv_id="glCanvas"){
   const gl = canvas.getContext("webgl");
   if (gl == null) {
     let msg = "Unable to initialize WebGL. Your browser or machine may not support it.";
-    alert(msg);
     throw new Error(msg);
   }
   return gl;
@@ -49,7 +47,6 @@ export function programFromShaders(gl, vs, fs){
     let msg = (
       'Unable to initialize the shader program: ' 
       + gl.getProgramInfoLog(shaderProgram));
-    alert(msg);
     throw new Error(msg);
   }
 
@@ -67,8 +64,6 @@ export function loadShader(gl, type, source) {
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
     let etext = 'An error occurred compiling the shaders: ' 
       + gl.getShaderInfoLog(shader);
-    alert(etext);
-    gl.deleteShader(shader);
     throw new Error(etext);
   }
   return shader;
@@ -87,9 +82,16 @@ export class TextureLoadInfo{
 
 // gl type sizes
 export function glTypeSize(type){
-  return expectValue(glTypeToSize[type], "gl type (to size)")
+  let size = glTypeToSize[type];
+  if(size==null) {
+    throw new ReferenceError(`${type} is not a WebGL type`);
+  }
+  return size;
 }
-  
+
+/**
+ * @type {{[type: (string | number)]: number}}
+ */
 export const glTypeToSize = {
   BYTE: 1,
   UNSIGNED_BYTE: 1,
