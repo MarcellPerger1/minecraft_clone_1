@@ -91,7 +91,6 @@ export class AtlasConfig extends BaseConfig { }
  * @property {PlayerConfigT} player
  * @property {ShaderConfigT} shader
  * @property {AtlasConfigT} atlas
- * @property {function():ConfigT} getWithDefaults
 */
 export class Config extends BaseConfig { }
 
