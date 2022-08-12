@@ -5,7 +5,7 @@ import { SeedFork } from "./seed.js";
 
 
 export class TreePosGetter {
-  constructor(seed, x, z, n_trees) {
+  constructor(seed, x, z, n_trees, treeRadius) {
     this.wx = x;
     this.wz = z;
     this.n = this.wx * this.wz;
@@ -13,8 +13,8 @@ export class TreePosGetter {
     this.globSeed = seed;
     this.seed = SeedFork.getSeed(this.globSeed, "tree-pos", 0);
     this.rng = alea(this.seed);
-    let w = 1;
-    let h = 1;
+    let w = treeRadius[0];
+    let h = treeRadius[1];
     /** @type {Array<[number, number]>} */
     this.excludeOffsets = rangeFrom(-w, w+1)
       .flatMap(x => rangeFrom(-h, h+1)

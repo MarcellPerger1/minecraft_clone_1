@@ -15,7 +15,7 @@ export class WorldGenerator extends GameComponent {
       this.gcnf.seed, "base-terrain", this.gcnf.baseTerrain, n => -n.minValue());
     this.stoneOffset = new OctaveNoise(
       this.gcnf.seed, "stone-offset", this.gcnf.stoneOffset, -3);
-    this.treeGetter = new TreePosGetter(this.gcnf.seed, this.wSize[0], this.wSize[2], this.gcnf.nTrees);
+    this.treeGetter = new TreePosGetter(this.gcnf.seed, this.wSize[0], this.wSize[2], this.gcnf.nTrees, this.gcnf.treeRadius);
   }
 
   get gcnf() {
