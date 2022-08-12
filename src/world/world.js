@@ -1,4 +1,4 @@
-import {fromNested, exportAs, assert} from '../utils.js';
+import {fromNested, assert} from '../utils.js';
 import {GameComponent} from '../game_component.js';
 
 import {Blocks} from './block_type.js';
@@ -94,6 +94,3 @@ export class World extends GameComponent {
     }
   }
 }
-
-
-exportAs(World);

@@ -1,4 +1,4 @@
-import { assignNullSafe, exportAs, deepMerge } from './utils.js';
+import { assignNullSafe, deepMerge } from './utils.js';
 import { loadConfigFile } from "./config_loader.js";
 
 
@@ -106,7 +106,3 @@ export async function getConfig(...extra) {
   let config = await loadConfigFile("./configs/config.json");
   return deepMerge([config, ...extra]);
 }
-
-
-exportAs(Config);
-

@@ -8,7 +8,6 @@ export function globExport(obj, name=null){
   }
   window[name] = obj;
 }
-export var exportAs = globExport;
 
 export function expectValue(v, name=null){
   name = name ?? v?.name;
@@ -28,16 +27,6 @@ export function nameOrValue(v, obj, name=null){
   return expectValue(v, name);
 }
 
-
-export function callCallback(callback, thisArg, ...args){
-  if(callback!=null){
-    if(thisArg==null){
-      callback(...args);
-    } else{
-      callback.call(thisArg, ...args);
-    }
-  }
-}
 
 /**
  * Return an object with all of `keys` set to `value`
