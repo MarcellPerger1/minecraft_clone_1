@@ -3,7 +3,9 @@ import { getConfig } from './config.js';
 import { KeyInput } from './keyinput.js';
 import { Player } from './player.js';
 import { WorldGenerator } from './world.js';
-import { roundNearest } from './utils.js';
+import { LoadingEndMgr } from './loading_end.js';
+import { DynInfo } from './dyn_info.js';
+
 
 /**
  * @typedef {import('./config.js').ConfigT} ConfigT
@@ -35,26 +37,26 @@ export class Game {
     this.ki = this.keyinput = new KeyInput();
     this.player = new Player(this);
     this.w = this.world = new WorldGenerator(this).generate();
+    this.info = new DynInfo(this);
     await this.loadResources();
-  }
-
-  get gl() {
-    return this.r.gl;
   }
 
   async loadResources() {
     this.makeResourceLoaders();
-    return await this.gatherResourceLoaders();
+    return await this.joinResourceLoaders();
   }
 
   makeResourceLoaders() {
+    /**
+     * @type {Array<{loadResources: () => void}>}
+     */
     this.resourceLoaders = [this.r];
   }
 
-  gatherResourceLoaders() {
+  joinResourceLoaders() {
     this.loadProms = this.resourceLoaders.map(o => {
       let f = o?.loadResources;
-      if (f == null) { return Promise.resolve(); }
+      if (f == null) { return; }
       return o.loadResources();
     });
     this.onReady = Promise.all(this.loadProms);
@@ -71,39 +73,11 @@ export class Game {
 
   endLoading(){
     progress.setPercent(100);
-    setTimeout(() => this.onEarlyStart(), 201);
-    setTimeout(() => this.onStart(), 1001);
-    this.onLoadEnd();
-  }
-
-  showTrueCanvas() {
-    this.canvas.hidden = false;
-    document.getElementById("canvas-loading-bg").hidden = true;
-  }
-
-  onLoadEnd() {
-    this.overlayElems.forEach(elem => {
-      elem.classList.add("fade-out");
-    });
-    this.showTrueCanvas();
-  }
-
-  onEarlyStart() {
-    this.overlayElems.forEach(elem => {
-      elem.classList.add("click-thru");
+    this.ls = new LoadingEndMgr(this);
+    this.ls.endLoading();
+    this.ls.start.then(() => {
+      this.startTicks = true;
     })
-    document.getElementById("dyn-info").hidden = false;
-  }
-
-  onStart() {
-    this.startTicks = true;
-    this.overlayElems.forEach(elem => {
-      elem.hidden = true;
-    })
-  }
-
-  get overlayElems(){
-    return document.querySelectorAll(".overlay");
   }
 
   main() {
@@ -116,11 +90,17 @@ export class Game {
     }
     this.frameNo++;
     this.now = now * 0.001;
-    this.then ??= this.now;
+    if(this.then==null) {
+      this.then = this.now;
+    }
     this.deltaT = this.now - this.then;
     this.onframe();
     this.then = this.now;
     return this.registerOnFrame();
+  }
+
+  registerOnFrame() {
+    return requestAnimationFrame(this.frameCallback.bind(this));
   }
 
   onframe() {
@@ -130,7 +110,7 @@ export class Game {
       this.tickCallback();
     }
     this.render();
-    this.updateDynInfo();
+    this.info.update();
   }
 
   render() {
@@ -151,47 +131,17 @@ export class Game {
     this.rerender ||= this.tickNo==0;
   }
 
-  updateDynInfo(){
-    this.updateFacingInfo();
-    this.updatePosInfo();
-  }
-
-  updatePosInfo() {
-    const coordStr = p => p.toFixed(4);
-    let coordTextBody = ["x", "y", "z"]
-        .map((s, i) => `${s}=${coordStr(this.player.position[i])}`)
-        .join(', ');
-    document.getElementById("pos-info").innerText = coordTextBody;
-  }
-
-  updateFacingInfo() {
-    let rotSnapped = roundNearest(this.player.rotation.h, 90) % 360;
-    document.getElementById("facing-info").innerText = DIR_TO_FACING[rotSnapped];
-  }
-
-  registerOnFrame() {
-    let this_outer = this;
-    return requestAnimationFrame(now => { this_outer.frameCallback(now); });
-  }
-
-  pointerlock_change(_e) {
+  pointerlock_change() {
     console.log('pointerlock change to ', document.pointerLockElement);
   }
 
-  addEvent(name, hdlr, thisArg = null, elem = null, opts = null) {
-    elem ??= window;
-    return elem.addEventListener(
-      name, event => hdlr.call(thisArg, event), opts);
-  }
-
   addPointerEvents() {
-    this.addEvent('pointerlockchange', this.pointerlock_change, this, document);
-    this.canvas.addEventListener(
-      'click', _e => {
-        if (!this.pointerLocked) {
-          this.canvas.requestPointerLock();
-        }
-      });
+    document.addEventListener('pointerlockchange', this.pointerlock_change.bind(this));
+    this.canvas.addEventListener('click', _e => {
+      if (!this.pointerLocked) {
+        this.canvas.requestPointerLock();
+      }
+    });
   }
 
   addAllListeners() {
@@ -207,11 +157,4 @@ export class Game {
   get pointerLocked() {
     return this.hasPointerLock();
   }
-}
-
-const DIR_TO_FACING = {
-  "0": "+X",
-  "90": "+Z",
-  "180": "-X",
-  "270": "-Z"
 }

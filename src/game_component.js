@@ -6,7 +6,13 @@
  * Anything that use the Game object should inherit from this
  */
 export class GameComponent {
+  /**
+   * @param {(Game | GameComponent)} game
+   */
   constructor(game){
+    if(game instanceof GameComponent) {
+      game = game.game;
+    }
     /**
      * The Game object
      * @type {Game}
@@ -44,9 +50,5 @@ export class GameComponent {
 
   get gl(){
     return this.r.gl;
-  }
-
-  addEvent(name, hdlr, thisArg=null, elem=null, opts=null){
-    this.game.addEvent(name, hdlr, thisArg, elem, opts ?? {});
   }
 }
