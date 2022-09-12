@@ -9,7 +9,7 @@ export var LOW = [-8, -8, -8];
 export var HIGH = vec3.add([], LOW, SIZE);
 
 
-export class World extends GameComponent {
+export class Chunk extends GameComponent {
   constructor(game, low=LOW, size=SIZE){
     super(game);
     
