@@ -64,3 +64,11 @@ export function mod(x, y) {
 export function numCmp(a, b) {
   return a == b ? 0 : (a < b ? -1 : 1);
 }
+
+export function divmod(a, b, jsMod=false) {
+  return [Math.floor(a / b), jsMod ? a % b : mod(a, b)];
+}
+
+export function moddiv(a, b, jsMod=false) {
+  return [jsMod ? a % b : mod(a, b), Math.floor(a / b)];
+}

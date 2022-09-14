@@ -1,4 +1,4 @@
-import {fromNested, assert} from '../utils.js';
+import {assert, divmod} from '../utils.js';
 import {GameComponent} from '../game_component.js';
 
 import {Blocks} from './block_type.js';
@@ -13,18 +13,18 @@ export class Chunk extends GameComponent {
   constructor(game, low=LOW, size=SIZE){
     super(game);
     
-    this.size = size.slice();
-    this.low = low.slice();
+    this.size = vec3.clone(size);
+    this.low = vec3.clone(low);
     this.high = vec3.add(vec3.create(), this.low, this.size);
     this.origin = this.low;
-    
-    this.blocks = fromNested(this.size, _ => Blocks.air);
+    this.volume = this.size[0] * this.size[1] * this.size[2];
+
+    this.blocks = Array(this.volume).fill(Blocks.air);
   }
 
   getBlock(at){
     this.wantInRange(at);
-    const [x,y,z] = this.getIndex(at);
-    return this.blocks[x][y][z];
+    return this.getBlockUnsafe(at);
   }
 
   getBlockOr(at, d=Blocks.air) {
@@ -36,20 +36,19 @@ export class Chunk extends GameComponent {
     let ix = at[0]-this.origin[0];
     let iy = at[1]-this.origin[1];
     let iz = at[2]-this.origin[2];
-    return this.blocks[ix][iy][iz];
+    return this.blocks[this.indexFromIndexVec([ix, iy, iz])];
   }
 
   setBlock(at, block=Blocks.air){
     this.wantInRange(at);
-    const [x,y,z] = this.getIndex(at);
-    return (this.blocks[x][y][z] = block);
+    return this.setBlockUnsafe(at, block);
   }
 
   setBlockUnsafe(at, block) {
     let ix = at[0]-this.origin[0];
     let iy = at[1]-this.origin[1];
     let iz = at[2]-this.origin[2];
-    return (this.blocks[ix][iy][iz] = block);
+    return (this.blocks[this.indexFromIndexVec([ix, iy, iz])] = block);
   }
 
   setBlockOr(at, block) {
@@ -64,12 +63,35 @@ export class Chunk extends GameComponent {
     }
   }
 
-  getIndex(at){
-    return vec3.sub([], at, this.origin);
+  getIndexVec(at){
+    let v = vec3.sub([], at, this.origin);
+    return v;
   }
 
-  getPos(at){
-    return vec3.add([], at, this.origin);
+  getIndex(at) {
+    return this.indexFromIndexVec(this.getIndexVec(at));
+  }
+  getPos(i) {
+    return this.getPosFromVec(this.indexVecFromIndex(i));
+  }
+
+  getPosFromVec(at){
+    let v = vec3.add([], at, this.origin);
+    return v;
+  }
+
+  indexVecFromIndex(i) {
+    let xyz = i;
+    let [z, xy] = divmod(xyz, this.size[0] * this.size[1]);
+    let [y, x] = divmod(xy, this.size[0]);
+    let v = [x, y, z];
+    return v;
+  }
+  indexFromIndexVec(v) {
+    let i = v[0] 
+      + v[1] * this.size[0] 
+      + v[2] * this.size[0] * this.size[1];
+    return i;
   }
 
   inRange(pos){
@@ -81,16 +103,10 @@ export class Chunk extends GameComponent {
   }
 
   *[Symbol.iterator]() {
-    for(let x=0; x<this.size[0]; x++){
-      let at_x = this.blocks[x];
-      for(let y=0; y<this.size[1]; y++){
-        let at_xy = at_x[y];
-        for(let z=0; z<this.size[2]; z++){
-          let at_xyz = at_xy[z];
-          let val = [this.getPos([x, y, z]), at_xyz];
-          yield val;
-        }
-      }
+    for(let i=0; i<this.blocks.length; i++) {
+      const posVec = this.getPos(i);
+      const block = this.blocks[i];
+      yield [posVec, block,];
     }
   }
 }
