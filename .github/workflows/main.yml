@@ -14,7 +14,10 @@ on:
 jobs:
   test:
     if: >-
-      ${{ !(contains(github.event.pull_request.title, '[ci-skip]')) }}
+      ${{ !((github.event_name == 'pull_request' 
+          && contains(github.event.pull_request.title, '[ci-skip]'))
+        || (github.event_name == 'push' 
+          && contains(github.event.head_commit.message, '[ci-skip]'))) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
