@@ -130,7 +130,7 @@ export async function loadConfigByName(/**@type{string}*/name) {
 
 export async function loadConfigDefaults() {
   return loadConfigFile(
-    "/configs/default.json",
+    "./configs/default.json",
     // IMPORTANT: this is so that no infinite recursion getting defaults for default
     false);
 }
