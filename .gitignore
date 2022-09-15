@@ -1,6 +1,3 @@
-# my extra own stuff
-draws/
-
 
 # Logs
 logs
@@ -84,7 +81,8 @@ typings/
 
 # Nuxt.js build / generate output
 .nuxt
-dist
+# src/libs/simplex-noise/dist is required 
+# dist
 
 # Gatsby files
 .cache/
