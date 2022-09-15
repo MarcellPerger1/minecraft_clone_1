@@ -23,6 +23,8 @@
 - This way, the main 'thread' isn't blocked by recalculating the mesh
 - Also, a serial number also needs to exist so that an earlier mesh doesn't accidentally override later mesh that finished earlier
 - Actually, there is no real way to make it truly async apart from using workers (?)
+  - is the time creating a worker worth it for doing the calculaion that should take < 10ms
+  - Could reuse workers to avoid the long (?) creation times
 - However, if 2 changes happened very quickly it might be a waste to recalculate the mesh twice (if the first one has not been calculated by the time the second changes take place).
 
 ##### Cancelling outdated calculations

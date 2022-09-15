@@ -64,3 +64,25 @@ export function mod(x, y) {
 export function numCmp(a, b) {
   return a == b ? 0 : (a < b ? -1 : 1);
 }
+
+/** 
+ * Returns `[a/b, a%b]`
+ * @param {number} a
+ * @param {number} b
+ * @param {boolean} [jsMod=false] - Use the js `%` instead of python `%`
+ * @returns {[number, number]}
+ */
+export function divmod(a, b, jsMod=false) {
+  return [Math.floor(a / b), jsMod ? a % b : mod(a, b)];
+}
+
+/** 
+ * Returns `[a%b, a/b]`
+ * @param {number} a
+ * @param {number} b
+ * @param {boolean} [jsMod=false] - Use the js `%` instead of python `%`
+ * @returns {[number, number]}
+ */
+export function moddiv(a, b, jsMod=false) {
+  return [jsMod ? a % b : mod(a, b), Math.floor(a / b)];
+}

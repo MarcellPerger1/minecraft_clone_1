@@ -1,4 +1,4 @@
-export * from "./world.js";
+export * from "./chunk.js";
 export * from "./block_type.js";
 export * from "./generation.js";
 export * from "./octave_noise.js";
