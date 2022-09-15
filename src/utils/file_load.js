@@ -4,22 +4,24 @@ export function loadTextFromTag(id){
   return vse.innerText;
 }
 
-export async function fetchTextFile(path){
+export async function fetchResponse(path) {
+  if(path.startsWith('/')) {
+    console.warn("Using absolute paths that will not work when used with github pages")
+  }
   // todo use XMLHttpRequest for progress event (only needed when bigger files)
   const response = await fetch(path);
   if (!response.ok) {
     throw new Error(`cant load resource at ${path}`);
   }
-  return response.text();
+  return response;
+}
+
+export async function fetchTextFile(path){
+  return (await fetchResponse(path)).text();
 }
 
 export async function fetchJsonFile(path){
-  // todo use XMLHttpRequest for progress event (only needed when bigger files)
-  const response = await fetch(path);
-  if (!response.ok) {
-    throw new Error(`cant load resource at ${path}`);
-  }
-  return response.json();
+  return (await fetchResponse(path)).json();
 }
 
 /**
