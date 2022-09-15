@@ -148,6 +148,7 @@ function getConfigFilename(/** @type {string} */path) {
   path = trim(path, './', { start: true });
   path = path.replace(/\/+/, '/');  // remove repeated /
   if (!path.endsWith('.json')) { path += '.json'; }
-  return '/' + (path.startsWith("configs/") ? path : 'configs/' + path);
+  // './' is to make it work with gh pages
+  return './' + (path.startsWith("configs/") ? path : 'configs/' + path);
 }
 
