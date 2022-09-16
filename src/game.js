@@ -33,6 +33,8 @@ export class Game {
     this.cnf = await getConfig(this.cnf_arg);
     progress.addPercent(25);
     this.canvas = document.getElementById('glCanvas');
+    this.styleSheet = Array.from(document.styleSheets)
+      .filter(s => s.title == 'css-styles')[0];
     this.setCanvasSize();
     this.r = this.renderer = new Renderer(this);
     this.ki = this.keyinput = new KeyInput();
@@ -42,9 +44,37 @@ export class Game {
     await this.loadResources();
   }
 
+  /**
+   * Returns a style rule that matches selector
+   * @param {string} target - the selector
+   * @param {Object} opts - extra options
+   * @param {boolean} [opts.exact=true] - if false, only require containment, not equality
+   * @param {boolean} [opts.all=false] - Return all matches in a list
+   * @returns {CSSStyleRule | CSSStyleRule[]}
+   */
+  getStyleBySelector(target, opts = null) {
+    opts = {exact: true, all: false, ...(opts ?? {})};
+    target = target.trim();
+    let fullMatch = Array.from(this.styleSheet.cssRules)
+      .filter(rule => {
+        if(!rule instanceof CSSStyleRule) { return false; }
+        let selector = rule.selectorText;
+        if(!selector) { return false; }
+        selector = selector.trim();
+        return opts.exact ? selector === target : selector.includes(target);
+      });
+    return opts.all ? fullMatch : fullMatch[0];
+  }
+
   setCanvasSize() {
     this.canvas.width = this.cnf.canvasSize[0];
     this.canvas.height = this.cnf.canvasSize[1];
+    /** @type {CSSStyleRule} */
+    this.rootStyle = this.getStyleBySelector(':root');
+    this.rootStyle.style.setProperty(
+      "--canvas-width", this.cnf.canvasSize[0].toString() + 'px');
+    this.rootStyle.style.setProperty(
+      "--canvas-height", this.cnf.canvasSize[1].toString() + 'px');
   }
 
   async loadResources() {
