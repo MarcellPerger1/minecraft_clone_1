@@ -33,12 +33,18 @@ export class Game {
     this.cnf = await getConfig(this.cnf_arg);
     progress.addPercent(25);
     this.canvas = document.getElementById('glCanvas');
+    this.setCanvasSize();
     this.r = this.renderer = new Renderer(this);
     this.ki = this.keyinput = new KeyInput();
     this.player = new Player(this);
     this.w = this.world = new WorldGenerator(this).generate();
     this.info = new DynInfo(this);
     await this.loadResources();
+  }
+
+  setCanvasSize() {
+    this.canvas.width = this.cnf.canvasSize[0];
+    this.canvas.height = this.cnf.canvasSize[1];
   }
 
   async loadResources() {

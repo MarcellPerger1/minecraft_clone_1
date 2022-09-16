@@ -6,6 +6,7 @@
     1,
     1
   ],
+  "canvasSize": [640, 480],
   "checkError": false,
   "generation": {
     "$class": "GenerationConfig",

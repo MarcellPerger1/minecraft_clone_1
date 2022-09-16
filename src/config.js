@@ -85,6 +85,7 @@ export class AtlasConfig extends BaseConfig { }
  * Root Config object
  * @typedef {Object} ConfigT
  * @property {RGBA_Tuple} bgColor
+ * @property {Vec2} canvasSize
  * @property {boolean} checkError
  * @property {GenerationConfigT} generation
  * @property {ControlsConfigT} controls
