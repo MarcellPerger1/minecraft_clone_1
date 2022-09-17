@@ -55,7 +55,7 @@ export class Game {
     target = target.trim();
     let fullMatch = Array.from(this.styleSheet.cssRules)
       .filter(rule => {
-        if(!rule instanceof CSSStyleRule) { return false; }
+        if(!(rule instanceof CSSStyleRule)) { return false; }
         let selector = rule.selectorText;
         if(!selector) { return false; }
         selector = selector.trim();
