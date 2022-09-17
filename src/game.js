@@ -33,6 +33,7 @@ export class Game {
     this.cnf = await getConfig(this.cnf_arg);
     progress.addPercent(25);
     this.canvas = document.getElementById('glCanvas');
+    /** @type {CSSStyleSheet} */
     this.styleSheet = document.getElementById("main-stylesheet").sheet;
     this.setCanvasSize();
     this.r = this.renderer = new Renderer(this);
@@ -44,15 +45,12 @@ export class Game {
   }
 
   /**
-   * Returns a style rule that matches selector
+   * Returns all style rules that match a selector
    * @param {string} target - the selector
-   * @param {Object} opts - extra options
-   * @param {boolean} [opts.exact=true] - if false, only require containment, not equality
-   * @param {boolean} [opts.all=false] - Return all matches in a list
-   * @returns {CSSStyleRule | CSSStyleRule[]}
+   * @param {boolean} [exact=true] - if false, only require containment, not equality
+   * @returns {CSSStyleRule[]}
    */
-  getStyleBySelector(target, opts = null) {
-    opts = {exact: true, all: false, ...(opts ?? {})};
+  getStyleBySelectorAll(target, exact = true) {
     target = target.trim();
     let fullMatch = Array.from(this.styleSheet.cssRules)
       .filter(rule => {
@@ -60,19 +58,28 @@ export class Game {
         let selector = rule.selectorText;
         if(!selector) { return false; }
         selector = selector.trim();
-        return opts.exact ? selector === target : selector.includes(target);
+        return exact ? selector === target : selector.includes(target);
       });
-    return opts.all ? fullMatch : fullMatch[0];
+    return fullMatch;
+  }
+
+  /**
+   * Returns the first style rule that matches a selector
+   * @param {string} target - the selector
+   * @param {boolean} [exact=true] - if false, only require containment, not equality
+   * @returns {CSSStyleRule}
+   */
+  getStyleBySelector(target, exact=true) {
+    return this.getStyleBySelectorAll(target, exact)[0];
   }
 
   setCanvasSize() {
     this.canvas.width = this.cnf.canvasSize[0];
     this.canvas.height = this.cnf.canvasSize[1];
-    /** @type {CSSStyleRule} */
-    this.rootStyle = this.getStyleBySelector(':root');
-    this.rootStyle.style.setProperty(
+    this.cssVars = this.getStyleBySelector(':root').style;
+    this.cssVars.setProperty(
       "--canvas-width", this.cnf.canvasSize[0].toString() + 'px');
-    this.rootStyle.style.setProperty(
+    this.cssVars.setProperty(
       "--canvas-height", this.cnf.canvasSize[1].toString() + 'px');
   }
 
