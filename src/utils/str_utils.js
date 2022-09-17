@@ -2,7 +2,7 @@
  * Trim chars from string
  * @param {string} str
  * @param {string} chars - chars to trim
- * @param {?({start: boolean, end: boolean})} opts
+ * @param {?({start?: boolean, end?: boolean})} opts
  * @param {boolean} opts.start - trim from start?
  * @param {boolean} opts.end - trim from end?
  */

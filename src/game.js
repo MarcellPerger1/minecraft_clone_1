@@ -32,6 +32,7 @@ export class Game {
     /** @type {ConfigT} */
     this.cnf = await getConfig(this.cnf_arg);
     progress.addPercent(25);
+    /** @type {HTMLCanvasElement} */
     this.canvas = document.getElementById('glCanvas');
     /** @type {CSSStyleSheet} */
     this.styleSheet = document.getElementById("main-stylesheet").sheet;
