@@ -59,5 +59,8 @@ class Progress {
   }
 }
 
-var progress = new Progress();  // global
-progress.addPercent(10);
+if(!window.progress) {
+  /** @type {Progress} */
+  var progress = window.progress = new Progress();  // global
+  progress.addPercent(10);
+}

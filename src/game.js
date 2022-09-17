@@ -32,13 +32,56 @@ export class Game {
     /** @type {ConfigT} */
     this.cnf = await getConfig(this.cnf_arg);
     progress.addPercent(25);
+    /** @type {HTMLCanvasElement} */
     this.canvas = document.getElementById('glCanvas');
+    /** @type {CSSStyleSheet} */
+    this.styleSheet = document.getElementById("main-stylesheet").sheet;
+    this.setCanvasSize();
     this.r = this.renderer = new Renderer(this);
     this.ki = this.keyinput = new KeyInput();
     this.player = new Player(this);
     this.w = this.world = new WorldGenerator(this).generate();
     this.info = new DynInfo(this);
     await this.loadResources();
+  }
+
+  /**
+   * Returns all style rules that match a selector
+   * @param {string} target - the selector
+   * @param {boolean} [exact=true] - if false, only require containment, not equality
+   * @returns {CSSStyleRule[]}
+   */
+  getStyleBySelectorAll(target, exact = true) {
+    target = target.trim();
+    let fullMatch = Array.from(this.styleSheet.cssRules)
+      .filter(rule => {
+        if(!(rule instanceof CSSStyleRule)) { return false; }
+        let selector = rule.selectorText;
+        if(!selector) { return false; }
+        selector = selector.trim();
+        return exact ? selector === target : selector.includes(target);
+      });
+    return fullMatch;
+  }
+
+  /**
+   * Returns the first style rule that matches a selector
+   * @param {string} target - the selector
+   * @param {boolean} [exact=true] - if false, only require containment, not equality
+   * @returns {CSSStyleRule}
+   */
+  getStyleBySelector(target, exact=true) {
+    return this.getStyleBySelectorAll(target, exact)[0];
+  }
+
+  setCanvasSize() {
+    this.canvas.width = this.cnf.canvasSize[0];
+    this.canvas.height = this.cnf.canvasSize[1];
+    this.cssVars = this.getStyleBySelector(':root').style;
+    this.cssVars.setProperty(
+      "--canvas-width", this.cnf.canvasSize[0].toString() + 'px');
+    this.cssVars.setProperty(
+      "--canvas-height", this.cnf.canvasSize[1].toString() + 'px');
   }
 
   async loadResources() {
@@ -136,7 +179,8 @@ export class Game {
   }
 
   addPointerEvents() {
-    document.addEventListener('pointerlockchange', this.pointerlock_change.bind(this));
+    document.addEventListener(
+      'pointerlockchange', this.pointerlock_change.bind(this));
     this.canvas.addEventListener('click', _e => {
       if (!this.pointerLocked) {
         this.canvas.requestPointerLock();

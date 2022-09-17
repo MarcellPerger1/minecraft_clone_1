@@ -32,6 +32,10 @@ export class WorldGenerator extends GameComponent {
       .map(_ => new Array(this.wSize[2]));
   }
 
+  /**
+   * Generate new world, and return it
+   * @returns {Chunk}
+   */
   generate() {
     return this.gcnf.isTestWorld ?
       this.generateTestWorld()
