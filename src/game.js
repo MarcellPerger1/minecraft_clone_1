@@ -33,8 +33,7 @@ export class Game {
     this.cnf = await getConfig(this.cnf_arg);
     progress.addPercent(25);
     this.canvas = document.getElementById('glCanvas');
-    this.styleSheet = Array.from(document.styleSheets)
-      .filter(s => s.title == 'css-styles')[0];
+    this.styleSheet = document.getElementById("main-stylesheet").sheet;
     this.setCanvasSize();
     this.r = this.renderer = new Renderer(this);
     this.ki = this.keyinput = new KeyInput();
@@ -172,7 +171,8 @@ export class Game {
   }
 
   addPointerEvents() {
-    document.addEventListener('pointerlockchange', this.pointerlock_change.bind(this));
+    document.addEventListener(
+      'pointerlockchange', this.pointerlock_change.bind(this));
     this.canvas.addEventListener('click', _e => {
       if (!this.pointerLocked) {
         this.canvas.requestPointerLock();
