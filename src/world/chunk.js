@@ -4,13 +4,19 @@ import { GameComponent } from '../game_component.js';
 import { Blocks } from './block_type.js';
 
 
-export var SIZE = [16, 16, 16];
-export var LOW = [-8, -8, -8];
-export var HIGH = vec3.add([], LOW, SIZE);
-
+/**
+ * @typedef {import('../game.js').Game} Game
+ * @typedef {[number, number, number]} Vec3
+*/
 
 export class Chunk extends GameComponent {
-  constructor(game, low = LOW, size = SIZE) {
+  /**
+   * Create a `Chunk` instance
+   * @param {Game | GameComponent} game
+   * @param {Vec3} low
+   * @param {Vec3} size
+   */
+  constructor(game, low, size) {
     super(game);
 
     this.size = vec3.clone(size);

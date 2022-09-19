@@ -24,6 +24,7 @@
     - slow/hard to access when direction is not known statically
   - stored as array:
     - either nested `[[-X,+X], [-Y,+Y], [-Z,+Z]]`
+    - or nested the other way `[[-X,-Y,-Z], [+X,+Y,+Z]]`
     - or flat `[-X,+X, -Y,+Y, -Z,+Z]`
-    - I prefer nestedas it looks nicer
+    - I prefer nested as it looks nicer
 - On its own, this would be quite useless but in combination with one of the other ones, it could be quite good
