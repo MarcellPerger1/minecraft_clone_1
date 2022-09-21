@@ -1,5 +1,6 @@
 import { assert, divmod } from '../utils.js';
 import { GameComponent } from '../game_component.js';
+import { ElementBundler } from "../renderer/vertex_bundler.js";
 
 import { Blocks } from './block_type.js';
 
@@ -26,6 +27,11 @@ export class Chunk extends GameComponent {
     this.volume = this.size[0] * this.size[1] * this.size[2];
 
     this.blocks = Array(this.volume).fill(Blocks.air);
+    this.mesh = new ElementBundler(this);
+  }
+
+  resetMesh() {
+    this.mesh.reset();
   }
 
   getBlock(at) {
