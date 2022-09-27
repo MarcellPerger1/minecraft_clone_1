@@ -5,12 +5,14 @@ import {CubeVertexData} from './cube_data.js';
 
 export class CubeDataAdder extends GameComponent {
   constructor(game, pos,
-              /** @type {{side: string, top: string, bottom: string}} */textureData){
+              /** @type {{side: string, top: string, bottom: string}} */textureData, 
+              renderTarget){
     super(game);
     this.pos = pos;
     this.textureData = textureData; 
     this.cData = new CubeVertexData(this.game, pos, this.textureData);
     this.block = this.world.getBlock(this.pos);
+    this.renderTarget = renderTarget ?? this.r;
   }
 
   addData(){
@@ -18,7 +20,7 @@ export class CubeDataAdder extends GameComponent {
     for(const [offset,name] of _OFFSET_NAMES){
       if(this.shouldRenderSide(offset)){
         let data = this.cData[name]();
-        this.r.addData(data, this.getOffsetTexture(offset), this.block.transparent);
+        this.renderTarget.addData(data, this.getOffsetTexture(offset), this.block.transparent);
       }
     }
   }

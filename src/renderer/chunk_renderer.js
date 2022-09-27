@@ -1,4 +1,7 @@
-import { GameComponent } from "../game_component";
+import { GameComponent } from "../game_component.js";
+import { CubeDataAdder } from "./face_culling.js";
+import { ElementBundler } from "./vertex_bundle.js";
+
 
 /**
  * @typedef {import("../world/chunk.js").Chunk} Chunk
@@ -32,7 +35,6 @@ export class ChunkRenderer extends GameComponent {
     for(const [pos, block] of this.chunk){
       this.addBlock(pos, block);
     }
-    this.mesh.main.addData(this.mesh.transparent);
   }
   
   addData(data, texture, transparent=false){
@@ -47,6 +49,6 @@ export class ChunkRenderer extends GameComponent {
   }
 
   addBlockTextures(pos, tData){
-    new CubeDataAdder(this.game, pos, tData).addData();
+    new CubeDataAdder(this.game, pos, tData, this).addData();
   }
 }

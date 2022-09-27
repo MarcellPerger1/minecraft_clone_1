@@ -15,6 +15,7 @@ export class World extends GameComponent {
     this.low = [0, 0, 0];
     this.size = vec3.mul([], CHUNK_SIZE, this.nChunks);
     this.high = vec3.add([], this.low, this.size);
+    /** @type {Chunk[][][]} */
     this.chunks = fromNested(this.nChunks, chunk_i => 
       new Chunk(this, vec3.mul([], CHUNK_SIZE, chunk_i), CHUNK_SIZE));
   }
@@ -67,6 +68,9 @@ export class World extends GameComponent {
     assert(this.inRange(pos), msg);
   }
 
+  /**
+   * @yields {Chunk}
+  */
   *iterChunks() {
     for(let icx=0;icx<this.nChunks[0];icx++) {
       for(let icy=0;icy<this.nChunks[1];icy++) {

@@ -14,7 +14,7 @@ pattern = "**/*.html"
   [languages.html.languageServer]
   start = ["vscode-html-language-server", "--stdio"]
   [languages.html.languageServer.initializationOptions]
-  provideFormatter = true
+provideFormatter = true
   [languages.html.languageServer.configuration.html]
   customData = [ ]
   autoCreateQuotes = true

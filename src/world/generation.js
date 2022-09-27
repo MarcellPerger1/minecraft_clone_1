@@ -36,7 +36,7 @@ export class WorldGenerator extends GameComponent {
 
   /**
    * Generate new world, and return it
-   * @returns {Chunk}
+   * @returns {World}
    */
   generate() {
     return this.gcnf.isTestWorld ?

@@ -1,9 +1,8 @@
 import { assert, divmod } from '../utils.js';
 import { GameComponent } from '../game_component.js';
-import { ElementBundler } from "../renderer/vertex_bundle.js";
-import { CubeDataAdder } from '../renderer/face_culling.js';
 
 import { Blocks } from './block_type.js';
+import { ChunkRenderer } from '../renderer/chunk_renderer.js';
 
 
 /**
@@ -28,6 +27,7 @@ export class Chunk extends GameComponent {
     this.volume = this.size[0] * this.size[1] * this.size[2];
 
     this.blocks = Array(this.volume).fill(Blocks.air);
+    this.chunkRenderer = new ChunkRenderer(this);
   }
 
   getBlock(at) {
