@@ -5,7 +5,7 @@ import {CubeVertexData} from './cube_data.js';
 
 export class CubeDataAdder extends GameComponent {
   constructor(game, pos,
-              textureData/*{side: <name>, top: <name>, bottom: <name>}*/){
+              /** @type {{side: string, top: string, bottom: string}} */textureData){
     super(game);
     this.pos = pos;
     this.textureData = textureData; 

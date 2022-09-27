@@ -1,5 +1,6 @@
 import { GameComponent } from "../game_component.js";
 import { assert, fromNested } from "../utils.js";
+import { Blocks } from "./block_type.js";
 import { Chunk } from "./chunk.js";
 
 
@@ -64,6 +65,16 @@ export class World extends GameComponent {
   }
   wantInRange(pos, msg = "Position out of range") {
     assert(this.inRange(pos), msg);
+  }
+
+  *iterChunks() {
+    for(let icx=0;icx<this.nChunks[0];icx++) {
+      for(let icy=0;icy<this.nChunks[1];icy++) {
+        for(let icz=0;icz<this.nChunks[2];icz++) {
+          yield this.chunks[icx][icy][icz];
+        }
+      }
+    }
   }
 
   *[Symbol.iterator]() {
