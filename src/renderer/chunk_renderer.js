@@ -18,6 +18,7 @@ export class ChunkRenderer extends GameComponent {
       main: new ElementBundler(this),
       transparent: new ElementBundler(this),
     };
+    this.remakeMesh = false;
   }
 
   resetMesh() {
@@ -25,8 +26,9 @@ export class ChunkRenderer extends GameComponent {
   }
 
   updateMesh(recalculate=false){
-    if(recalculate) {
+    if(this.remakeMesh || recalculate) {
       this.makeMesh();
+      this.remakeMesh = false;
     }
   }
 

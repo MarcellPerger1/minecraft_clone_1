@@ -179,7 +179,10 @@ export class Renderer extends GameComponent {
     for(const c of this.world.iterChunks()){
       /** @type {ChunkRenderer} */
       let cr = c.chunkRenderer;
-      cr.updateMesh(this.game.frameNo % 120 == i);
+      if(this.game.frameNo % 120 == i) {
+        cr.remakeMesh = true;
+      }
+      cr.updateMesh();
       this.vertexData.main.addData(cr.mesh.main);
       this.vertexData.transparent.addData(cr.mesh.transparent);
       i++;
