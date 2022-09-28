@@ -2,15 +2,25 @@ import {GameComponent} from '../game_component.js';
 import {unreachable} from '../utils.js';
 import {CubeVertexData} from './cube_data.js';
 
+/**
+ * @typedef {[number, number, number]} Vec3
+*/
 
 export class CubeDataAdder extends GameComponent {
-  constructor(game, pos,
-              textureData/*{side: <name>, top: <name>, bottom: <name>}*/){
+  /**
+   * 
+   * @param {GameComponent | Game} game
+   * @param {Vec3} pos
+   * @param {{side: string, top: string, bottom: string}} textureData
+   * @param {Object} renderTarget - TODO type=?
+  */
+  constructor(game, pos, textureData, renderTarget){
     super(game);
     this.pos = pos;
-    this.textureData = textureData; 
+    this.textureData = textureData;
     this.cData = new CubeVertexData(this.game, pos, this.textureData);
     this.block = this.world.getBlock(this.pos);
+    this.renderTarget = renderTarget ?? this.r;
   }
 
   addData(){
@@ -18,7 +28,7 @@ export class CubeDataAdder extends GameComponent {
     for(const [offset,name] of _OFFSET_NAMES){
       if(this.shouldRenderSide(offset)){
         let data = this.cData[name]();
-        this.r.addData(data, this.getOffsetTexture(offset), this.block.transparent);
+        this.renderTarget.addData(data, this.block.transparent);
       }
     }
   }
@@ -41,7 +51,7 @@ export class CubeDataAdder extends GameComponent {
   }
 
   addDataToRenderer(data, texture){
-    this.r.addData(data, texture);
+    this.renderTarget.addData(data, texture);
   }
 
   shouldRenderSide(offset){

@@ -4,6 +4,11 @@
   "canvasSize": [1000, 640],
   "generation": {
     "wSize": [24, 16, 24],
-    "#nMedian": 5
+    "nTrees": 5,
+    "baseTerrain": {
+      "nScale": [28.14, 2, 28.14],
+      "#nScale": [21.14, 4, 21.14]
+    },
+    "#seed": "something else"
   }
 }

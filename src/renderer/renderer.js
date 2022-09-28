@@ -15,6 +15,12 @@ import {CubeDataAdder} from './face_culling.js';
 import {ElementBundler} from './vertex_bundle.js';
 
 
+/**
+ * @typedef {import('../world/chunk.js').Chunk} Chunk
+ * @typedef {import('./chunk_renderer.js').ChunkRenderer} ChunkRenderer
+*/
+
+
 // NOTE: 
 // West  = +x
 // Up    = +y 
@@ -144,10 +150,8 @@ export class Renderer extends GameComponent {
   renderFrame(remakeMesh){
     this.remakeMesh = remakeMesh;
     this.initFrame();
-    if(this.remakeMesh){
-      // only update mesh if re-render
-      this.makeWorldMesh();
-    }
+    // only update mesh if re-render
+    this.makeWorldMesh();
     this.drawAll();
     this.checkGlFault();
   }
@@ -171,8 +175,17 @@ export class Renderer extends GameComponent {
   makeWorldMesh(){
     this.vertexData.main.reset();
     this.vertexData.transparent.reset();
-    for(const [pos, block] of this.world){
-      this.addBlock(pos, block);
+    let i = 0;
+    for(const c of this.world.iterChunks()){
+      /** @type {ChunkRenderer} */
+      let cr = c.chunkRenderer;
+      if(this.game.frameNo % 120 == i) {
+        cr.remakeMesh = true;
+      }
+      cr.updateMesh();
+      this.vertexData.main.addData(cr.mesh.main);
+      this.vertexData.transparent.addData(cr.mesh.transparent);
+      i++;
     }
     this.vertexData.main.addData(this.vertexData.transparent);
   }
@@ -187,9 +200,9 @@ export class Renderer extends GameComponent {
     new CubeDataAdder(this.game, pos, tData).addData();
   }
 
-  addData(data, texture, transparent=false){
+  addData(data, transparent=false){
     return this.vertexData[transparent ? 'transparent' : 'main']
-      .addData(data, texture);
+      .addData(data);
   }
 
   // ARRAY BUFFERS

@@ -18,7 +18,7 @@ export class Buffers extends GameComponent {
   }
   
   makeWithData(buf_name, data, buf_type=null, usage=null){
-    let raw_args = this._get_makeBufferWithDataRaw_args(
+    let raw_args = this._get_makeWithDataRaw_args(
       buf_name, data, buf_type, usage);
     if(raw_args!=null){
       return this.makeWithDataRaw(...raw_args);

@@ -1,7 +1,7 @@
 import { GameComponent } from "../game_component.js";
 import { rangeList } from "../utils.js";
 
-import { Chunk } from "./chunk.js";
+import { World } from "./world.js";
 import { Blocks } from "./block_type.js";
 import { OctaveNoise } from "./octave_noise.js";
 import { TreePosGetter } from "./tree_generation.js";
@@ -27,14 +27,14 @@ export class WorldGenerator extends GameComponent {
   }
 
   init() {
-    this.w = new Chunk(this.game, [0, 0, 0], this.wSize);
+    this.w = new World(this);
     this.landHeights = rangeList(this.wSize[0])
       .map(_ => new Array(this.wSize[2]));
   }
 
   /**
    * Generate new world, and return it
-   * @returns {Chunk}
+   * @returns {World}
    */
   generate() {
     return this.gcnf.isTestWorld ?
