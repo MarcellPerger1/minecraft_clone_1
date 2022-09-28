@@ -197,9 +197,9 @@ export class Renderer extends GameComponent {
     new CubeDataAdder(this.game, pos, tData).addData();
   }
 
-  addData(data, texture, transparent=false){
+  addData(data, transparent=false){
     return this.vertexData[transparent ? 'transparent' : 'main']
-      .addData(data, texture);
+      .addData(data);
   }
 
   // ARRAY BUFFERS

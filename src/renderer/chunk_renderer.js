@@ -37,9 +37,9 @@ export class ChunkRenderer extends GameComponent {
     }
   }
   
-  addData(data, texture, transparent=false){
+  addData(data, transparent=false){
     return this.mesh[transparent ? 'transparent' : 'main']
-      .addData(data, texture);
+      .addData(data);
   }
 
   addBlock(pos, block){

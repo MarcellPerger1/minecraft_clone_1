@@ -15,6 +15,7 @@ export class CubeVertexData extends GameComponent {
     } else {
       [this.p0, this.p1] = sortCoords(p0, p1);
     }
+    /** @type {{side: string, top: string, bottom: string}} */
     this.textures = textures;
   }
 
