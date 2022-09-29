@@ -4,24 +4,22 @@ import { Blocks } from "./block_type.js";
 import { Chunk } from "./chunk.js";
 
 
-const CHUNK_SIZE = [8, 8, 8];
 
 export class World extends GameComponent {
   constructor(game) {
     super(game);
-    // hard-coded values for now
-    /** @type {[number, number, number]} */
-    this.nChunks = [3, 2, 3];
+    this.nChunks = this.cnf.generation.nChunks;
+    this.chunkSize = this.cnf.generation.chunkSize;
     this.low = [0, 0, 0];
-    this.size = vec3.mul([], CHUNK_SIZE, this.nChunks);
+    this.size = vec3.mul([], this.chunkSize, this.nChunks);
     this.high = vec3.add([], this.low, this.size);
     /** @type {Chunk[][][]} */
     this.chunks = fromNested(this.nChunks, chunk_i => 
-      new Chunk(this, vec3.mul([], CHUNK_SIZE, chunk_i), CHUNK_SIZE));
+      new Chunk(this, vec3.mul([], this.chunkSize, chunk_i), this.chunkSize));
   }
 
   getChunkIndex(pos) {
-    return vec3.floor([], vec3.div([], pos, CHUNK_SIZE));
+    return vec3.floor([], vec3.div([], pos, this.chunkSize));
   }
   /** @returns {Chunk} */
   getChunkAt(pos) {

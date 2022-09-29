@@ -17,6 +17,8 @@
       16,
       16
     ],
+    "chunkSize": [8, 8, 8],
+    "nChunks": [3, 2, 3],
     "nTrees": 5,
     "treeRadius": [1, 1],
     "baseTerrain": {
