@@ -9,6 +9,7 @@
       "nScale": [28.14, 2, 28.14],
       "#nScale": [21.14, 4, 21.14]
     },
-    "#seed": "something else"
+    "#seed": "something else",
+    "isTestWorld": false
   }
 }
