@@ -8,14 +8,31 @@ import { Chunk } from "./chunk.js";
 export class World extends GameComponent {
   constructor(game) {
     super(game);
-    this.nChunks = this.cnf.generation.nChunks;
     this.chunkSize = this.cnf.generation.chunkSize;
+    this.nChunksFraction = vec3.div([], this.cnf.generation.wSize, this.chunkSize);
+    this.nChunksFull = vec3.floor([], this.nChunksFraction);
+    this.nChunks = vec3.ceil([], this.nChunksFraction);
+
     this.low = [0, 0, 0];
-    this.size = vec3.mul([], this.chunkSize, this.nChunks);
+    this.size = this.cnf.generation.wSize; // vec3.mul([], this.chunkSize, this.nChunks);
     this.high = vec3.add([], this.low, this.size);
+    this.wholeChunksSize = vec3.mul([], this.chunkSize, this.nChunksFull);
+    this.totalSize = this.cnf.generation.wSize;
+    this.lastChunkSize = vec3.sub([], this.totalSize, this.wholeChunksSize);
+    
+    
     /** @type {Chunk[][][]} */
-    this.chunks = fromNested(this.nChunks, chunk_i => 
-      new Chunk(this, vec3.mul([], this.chunkSize, chunk_i), this.chunkSize));
+    this.chunks = fromNested(this.nChunks, chunk_i => {
+      let cSize = this.chunkSize.slice();
+      for(let i of [1, 2, 3]) {
+        if(chunk_i[i] == this.nChunks[i] - 1) {
+          // last chunk
+          cSize[i] =  this.lastChunkSize[i] || cSize[i]
+        }
+      }
+      if(cSize.some(i => i == 0)) { console.warn('Creating chunk with 0 size!'); }
+      return new Chunk(this, vec3.mul([], this.chunkSize, chunk_i), cSize)
+    });
   }
 
   getChunkIndex(pos) {
