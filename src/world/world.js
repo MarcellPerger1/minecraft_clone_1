@@ -8,31 +8,48 @@ import { Chunk } from "./chunk.js";
 export class World extends GameComponent {
   constructor(game) {
     super(game);
-    this.chunkSize = this.cnf.generation.chunkSize;
-    this.nChunksFraction = vec3.div([], this.cnf.generation.wSize, this.chunkSize);
-    this.nChunksFull = vec3.floor([], this.nChunksFraction);
-    this.nChunks = vec3.ceil([], this.nChunksFraction);
-
     this.low = [0, 0, 0];
-    this.size = this.cnf.generation.wSize; // vec3.mul([], this.chunkSize, this.nChunks);
+    this.size = this.cnf.generation.wSize;
     this.high = vec3.add([], this.low, this.size);
-    this.wholeChunksSize = vec3.mul([], this.chunkSize, this.nChunksFull);
-    this.totalSize = this.cnf.generation.wSize;
-    this.lastChunkSize = vec3.sub([], this.totalSize, this.wholeChunksSize);
+    this.chunkSize = this.cnf.generation.chunkSize;
     
+    let nChunksFraction = vec3.div([], this.size, this.chunkSize);
+    this.nFullChunks = vec3.floor([], nChunksFraction);
+    this.nChunks = vec3.ceil([], nChunksFraction);
+
+    this.fullChunksSize = vec3.mul([], this.chunkSize, this.nFullChunks);
+    this.lastChunkSize = vec3.sub([], this.size, this.fullChunksSize);
     
     /** @type {Chunk[][][]} */
     this.chunks = fromNested(this.nChunks, chunk_i => {
-      let cSize = this.chunkSize.slice();
-      for(let i of [1, 2, 3]) {
-        if(chunk_i[i] == this.nChunks[i] - 1) {
-          // last chunk
-          cSize[i] =  this.lastChunkSize[i] || cSize[i]
-        }
-      }
-      if(cSize.some(i => i == 0)) { console.warn('Creating chunk with 0 size!'); }
+      let cSize = this._getChunkSize(chunk_i);
       return new Chunk(this, vec3.mul([], this.chunkSize, chunk_i), cSize)
     });
+  }
+
+  checkChunkSize(cSize) {
+    if(cSize.some(i => i === 0)) {
+      throw new Error('Creating chunk with 0 size! This should never ' +
+                      'happen if the code above works properly.'); 
+    }
+  }
+
+  _getChunkSize(chunk_i) {
+    // used at init-time to calculate chunk size
+    let cSize = this.chunkSize.slice();
+    for(let dir of [1, 2, 3]) {
+      if(this.isLastChunkInDirection(dir, chunk_i)) {
+        // if lastChunkSize == 0, there is no fractional chunk at the end
+        // so the last chunk is full chunk so use orig (full) size
+        cSize[dir] = this.lastChunkSize[dir] || cSize[dir];
+      }
+    }
+    this.checkChunkSize(cSize);
+    return cSize;
+  }
+
+  isLastChunkInDirection(direction, full_index) {
+    return full_index[direction] == this.nChunks[direction] - 1;
   }
 
   getChunkIndex(pos) {
