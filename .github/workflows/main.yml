@@ -48,12 +48,11 @@ jobs:
           node-version: 16
           cache: npm
           cache-dependency-path: ./package-lock.json
-      - name: Install eslint
-        run: |
-          sudo npm install --location=global eslint --unsafe-perm=true --allow-root
-          npm install eslint-plugin-jest@latest --save-dev
+      - name: Install npm pacakges
+        run: npm ci
+      # see https://www.npmjs.com/package/eslint#installation-and-usage
       - name: Run eslint
-        run: npx eslint --max-warnings 0 ./
+        run: ./node_modules/.bin/eslint --max-warnings 0 ./
   
   
   build:
