@@ -70,13 +70,18 @@ jobs:
           node-version: 16
           cache: npm
           cache-dependency-path: ./package-lock.json
-      - name: npm install
-        run: npm i
+      - name: Install npm pacakges
+        run: npm ci
       - name: Run build_libs.sh
         run: |
           chmod +x ./scripts/build_libs.sh
           ./scripts/build_libs.sh
-      - name: Generate testure atlas
+      - name: Generate texture atlas
         run: node ./scripts/make_atlas.cjs
+        
+      - name: Commit texture atlas
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Build texture atlas
       
 
