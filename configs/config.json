@@ -3,12 +3,13 @@
   "#bgColor": [0.9, 0.8, 1.0, 1.0],
   "canvasSize": [1000, 640],
   "generation": {
-    "wSize": [24, 16, 24],
+    "wSize": [24, 16, 30],
     "nTrees": 5,
     "baseTerrain": {
       "nScale": [28.14, 2, 28.14],
       "#nScale": [21.14, 4, 21.14]
     },
-    "#seed": "something else"
+    "#seed": "something else",
+    "isTestWorld": false
   }
 }

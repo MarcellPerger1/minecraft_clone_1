@@ -36,6 +36,7 @@ export class BaseConfig {
  * @property {boolean} isTestWorld
  * @property {Vec3} wSize
  * @property {number} nTrees
+ * @property {Vec3} chunkSize
  * @property {Vec2} treeRadius
  * @property {NoiseConfigT} baseTerrain
  * @property {NoiseConfigT} stoneOffset
