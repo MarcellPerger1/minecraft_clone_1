@@ -37,7 +37,6 @@ export class BaseConfig {
  * @property {Vec3} wSize
  * @property {number} nTrees
  * @property {Vec3} chunkSize
- * @property {Vec3} nChunks
  * @property {Vec2} treeRadius
  * @property {NoiseConfigT} baseTerrain
  * @property {NoiseConfigT} stoneOffset
