@@ -144,9 +144,7 @@ _construct.object = function constructObject(obj, proto) {
 */
 function _setstate(res, objs, cnf, memo){
   let ttag = toStringTag(res);
-  /*if (isArray(res)) {
-    _setstate.array(res, objs, cnf, memo);
-  } else */ if (ttag === "Set") {
+  if (ttag === "Set") {
     _setstate.setlike(res, objs, cnf, memo);
   } else {
     _setstate.object(res, objs, cnf, memo);
@@ -202,9 +200,6 @@ _setstate.setlike = function setstate_setlike(res, objs, cnf, memo){
       if (o[k]) { res.add(k); } else { res.remove(k); }
     });
   }
-}
-_setstate.array = function setstate_array(res, objs, cnf, memo){
-  objs.at(-1).forEach((v, i) => { res[i] = deepCopy(v, cnf, memo) })
 }
 
 function getItem(o, k){

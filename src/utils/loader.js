@@ -1,4 +1,3 @@
-// TODO this should be in utils/
 import {isArray, isObject} from './type_check.js';
 
 
