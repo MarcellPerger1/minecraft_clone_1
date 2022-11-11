@@ -1,10 +1,29 @@
 import { alea } from "../libs/alea/alea.js";
 import { rangeFrom, rangeList } from "../utils.js";
 import { SeedFork } from "./seed.js";
+import { BaseGenerator } from "./base_generator.js";
+
+
+export class TreePlacer extends BaseGenerator {
+  constructor(game) {
+    super(game);
+  }
+
+  makeTrees() {
+    switch (this.gcnf.treeCollideAction) {
+      case "avoid":
+        return new AvoidTreePlacer(
+          this.seed, this.wSize[0], this.wSize[2], 
+          this.gcnf.nTrees, this.gcnf.treeRadius);
+      default:
+        throw new ReferenceError("Unknown treePlaceMode");
+    }
+  }
+}
 
 
 
-export class TreePosGetter {
+export class AvoidTreePlacer {
   constructor(seed, x, z, n_trees, treeRadius) {
     this.wx = x;
     this.wz = z;

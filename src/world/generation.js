@@ -4,7 +4,7 @@ import { rangeList } from "../utils.js";
 import { World } from "./world.js";
 import { Blocks } from "./block_type.js";
 import { OctaveNoise } from "./octave_noise.js";
-import { TreePosGetter } from "./tree_generation.js";
+import { AvoidTreePlacer } from "./tree_generation.js";
 
 
 export class WorldGenerator extends GameComponent {
@@ -12,10 +12,10 @@ export class WorldGenerator extends GameComponent {
     super(game);
     this.init();
     this.baseTerrain = new OctaveNoise(
-      this.gcnf.seed, "base-terrain", this.gcnf.baseTerrain, n => -n.minValue());
+      this.gcnf.seed, "base-terrain", this.gcnf.baseTerrain, n => -n.minRawValue());
     this.stoneOffset = new OctaveNoise(
       this.gcnf.seed, "stone-offset", this.gcnf.stoneOffset, -3);
-    this.treeGetter = new TreePosGetter(this.gcnf.seed, this.wSize[0], this.wSize[2], this.gcnf.nTrees, this.gcnf.treeRadius);
+    this.treeGetter = new AvoidTreePlacer(this.gcnf.seed, this.wSize[0], this.wSize[2], this.gcnf.nTrees, this.gcnf.treeRadius);
   }
 
   get gcnf() {
