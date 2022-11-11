@@ -33,7 +33,7 @@ export function nameOrValue(v, obj, name=null){
  * @template KT, VT
  * @param {Array<KT>} keys
  * @param {VT} value
- * @returns {(Object.<KT, VT> | Map.<KT, VT)}
+ * @returns {(Object.<KT, VT> | Map.<KT, VT>)}
  */
 export function fromKeys(keys, value){
   return Object.fromEntries(keys.map(k => [k, value]));

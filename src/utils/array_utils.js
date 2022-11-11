@@ -119,7 +119,7 @@ export function fromNested(shape, func, thisArg = null) {
  *
  * @template T
  * @param {RecursiveArray<T>} arr
- * @param {(v: T, i: number[], RecursiveArray<T>, T[])} func
+ * @param {(v: T, i: number[], arr: RecursiveArray<T>, a: T[]) => void} func
  * @praram {Object} thisArg
  * @param {number[]} [path_prefix]
 */
