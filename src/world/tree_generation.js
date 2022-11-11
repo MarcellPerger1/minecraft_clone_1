@@ -17,6 +17,8 @@ export class TreePlacer extends BaseGenerator {
           this.gcnf.nTrees, this.gcnf.treeRadius);
       case "place":
         return new IgnoreTreePlacer(this);
+      case "skip":
+        return new SkipTreePlacer(this);
       default:
         throw new ReferenceError("Unknown treePlaceMode");
     }
@@ -43,6 +45,54 @@ export class IgnoreTreePlacer extends BaseGenerator {
     let z = Math.floor(idx / this.wSize[0]);
     let x = idx % this.wSize[0];
     return [x, z];
+  }
+}
+
+
+export class SkipTreePlacer extends BaseGenerator {
+  constructor(game) {
+    super(game);
+    this.n = this.wSize[0] * this.wSize[2];
+    this.seed = this.getSeed("tree-pos", 0);
+    this.rng = alea(this.seed);
+    let w = this.gcnf.treeRadius[0];
+    let h = this.gcnf.treeRadius[1];
+    /** @type {Array<[number, number]>} */
+    this.excludeOffsets = rangeFrom(-w, w+1)
+      .flatMap(x => rangeFrom(-h, h+1)
+        .map(y => [x, y]));
+  }
+
+  makeTrees() {
+    let columns = new Uint8Array(this.n);
+    return rangeList(this.n).map(_ => {
+      let idx = this.rng.randint(0, this.n);
+      let c = this.idxToCoord(idx);
+      if(!columns[idx]) {
+        for(const [xo, yo] of this.excludeOffsets) {
+          columns[this.coordToIdx([c[0] + xo, c[1] + yo])] = 1;
+        }
+        return c;
+      }
+    }).filter(c => c != null);
+  }
+  /**
+   * @param {number} idx
+   * @retuns {[number, number]}
+   */
+  idxToCoord(idx) {
+    let z = Math.floor(idx / this.wSize[0]);
+    let x = idx % this.wSize[0];
+    return [x, z];
+  }
+
+  /**
+   * @param {number} x
+   * @param {number} z
+   * @returns {number}
+   */
+  coordToIdx(x, z) {
+    return this.wSize[0] * z + x;
   }
 }
 
