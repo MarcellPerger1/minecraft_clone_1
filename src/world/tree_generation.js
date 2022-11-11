@@ -15,12 +15,36 @@ export class TreePlacer extends BaseGenerator {
         return new AvoidTreePlacer(
           this.seed, this.wSize[0], this.wSize[2], 
           this.gcnf.nTrees, this.gcnf.treeRadius);
+      case "place":
+        return new IgnoreTreePlacer(this);
       default:
         throw new ReferenceError("Unknown treePlaceMode");
     }
   }
 }
 
+
+export class IgnoreTreePlacer extends BaseGenerator {
+  constructor(game) {
+    super(game);
+    this.n = this.wSize[0] * this.wSize[2];
+    this.seed = this.getSeed("tree-pos", 0);
+    this.rng = alea(this.seed);
+  }
+
+  makeTrees() {
+    return rangeList(this.n).map(_ => this.idxToCoord(this.rng.randint(0, this.n)));
+  }
+  /**
+   * @param {number} idx
+   * @retuns {[number, number]}
+   */
+  idxToCoord(idx) {
+    let z = Math.floor(idx / this.wSize[0]);
+    let x = idx % this.wSize[0];
+    return [x, z];
+  }
+}
 
 
 export class AvoidTreePlacer {
