@@ -210,4 +210,4 @@ src/world/world.js:26:69 - error TS2345: Argument of type 'number[]' is not assi
 
 
 
-Found 62 errors.
+Found 34 errors.
