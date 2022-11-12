@@ -13,7 +13,7 @@ export class TreePlacer extends BaseGenerator {
     switch (this.gcnf.treeCollideAction) {
       case "avoid":
         return new AvoidTreePlacer(
-          this.seed, this.wSize[0], this.wSize[2], 
+          this.globSeed, this.wSize[0], this.wSize[2], 
           this.gcnf.nTrees, this.gcnf.treeRadius);
       case "place":
         return new IgnoreTreePlacer(this);
@@ -70,7 +70,7 @@ export class SkipTreePlacer extends BaseGenerator {
       let c = this.idxToCoord(idx);
       if(!columns[idx]) {
         for(const [xo, yo] of this.excludeOffsets) {
-          columns[this.coordToIdx([c[0] + xo, c[1] + yo])] = 1;
+          columns[this.coordToIdx(c[0] + xo, c[1] + yo)] = 1;
         }
         return c;
       }

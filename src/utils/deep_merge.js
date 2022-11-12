@@ -185,7 +185,7 @@ _setstate.setlike = function setstate_setlike(res, objs, cnf, memo){
   if(_dontMergeObjs(objs)){
     objs = [objs.at(-1)];
   }
-  for (let [i, o] of Object.entries(objs)) {
+  for (let [i, o] of objs.entries()) {
     if(_dontMerge(o) && i !== objs.length-1){ continue; }
     switch (toStringTag(o)){
       case "Set":

@@ -64,7 +64,7 @@ export class KeyEvent extends BaseKeyEvent {
   }
   
   shouldTrigger(ki){
-    var down_o = this.mode == this.KEY ? ki.key_down : ki.code_down;
+    var down_o = this.mode == KeyEvent.KEY ? ki.key_down : ki.code_down;
     return down_o[this.event_str] ?? false;
   }
 }

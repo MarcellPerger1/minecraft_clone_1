@@ -18,6 +18,11 @@ export function isPrototype(value) {
     && value.constructor.prototype === value
 }
 
+/**
+ * Retuns all own symbol and string property keys on `obj`
+ * @param {object} obj
+ * @returns {(string | symbol)[]}
+*/
 export function getOwnProperties(obj){
   return Object.getOwnPropertyNames(obj).concat(Object.getOwnPropertySymbols(obj))
 }

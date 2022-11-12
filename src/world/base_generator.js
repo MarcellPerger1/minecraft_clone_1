@@ -1,5 +1,5 @@
 import { GameComponent } from "../game_component.js";
-
+import { SeedFork } from "./seed.js"
 
 export class BaseGenerator extends GameComponent {
   constructor(game) {
