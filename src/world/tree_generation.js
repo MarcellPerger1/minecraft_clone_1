@@ -9,7 +9,7 @@ export class TreePlacer extends BaseGenerator {
     super(game);
   }
 
-  makeTrees() {
+  getGenerator() {
     switch (this.gcnf.treeCollideAction) {
       case "avoid":
         return new AvoidTreePlacer(
@@ -22,6 +22,10 @@ export class TreePlacer extends BaseGenerator {
       default:
         throw new ReferenceError("Unknown treePlaceMode");
     }
+  }
+
+  makeTrees() {
+    return this.getGenerator().makeTrees();
   }
 }
 
