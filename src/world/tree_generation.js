@@ -1,6 +1,5 @@
 import { alea } from "../libs/alea/alea.js";
 import { rangeFrom, rangeList } from "../utils.js";
-import { SeedFork } from "./seed.js";
 import { BaseGenerator } from "./base_generator.js";
 
 
@@ -12,9 +11,7 @@ export class TreePlacer extends BaseGenerator {
   getGenerator() {
     switch (this.gcnf.treeCollideAction) {
       case "avoid":
-        return new AvoidTreePlacer(
-          this.globSeed, this.wSize[0], this.wSize[2], 
-          this.gcnf.nTrees, this.gcnf.treeRadius);
+        return new AvoidTreePlacer(this);
       case "place":
         return new IgnoreTreePlacer(this);
       case "skip":
@@ -101,17 +98,15 @@ export class SkipTreePlacer extends BaseGenerator {
 }
 
 
-export class AvoidTreePlacer {
-  constructor(seed, x, z, n_trees, treeRadius) {
-    this.wx = x;
-    this.wz = z;
-    this.n = this.wx * this.wz;
-    this.n_trees = n_trees;
-    this.globSeed = seed;
-    this.seed = SeedFork.getSeed(this.globSeed, "tree-pos", 0);
+export class AvoidTreePlacer extends BaseGenerator {
+  constructor(game) {
+    super(game);
+    this.n = this.wSize[0] * this.wSize[2];
+    this.seed = this.getSeed("tree-pos", 0);
     this.rng = alea(this.seed);
-    let w = treeRadius[0];
-    let h = treeRadius[1];
+    
+    let w = this.gcnf.treeRadius[0];
+    let h = this.gcnf.treeRadius[1];
     /** @type {Array<[number, number]>} */
     this.excludeOffsets = rangeFrom(-w, w+1)
       .flatMap(x => rangeFrom(-h, h+1)
@@ -130,7 +125,7 @@ export class AvoidTreePlacer {
     /** @type {Array<[boolean, number, number]>}*/
     var colData = rangeList(this.n).map(i => [/*free*/true, /*real*/i, /*cumulative*/i]);
     var numLeft = this.n;
-    for (let ti = 0; ti < this.n_trees; ti++) {
+    for (let ti = 0; ti < this.gcnf.nTrees; ti++) {
       if (numLeft <= 0) {
         console.warn("Not enough places for trees.");
         return positions;
@@ -167,15 +162,15 @@ export class AvoidTreePlacer {
    * @returns {number}
    */
   coordToIdx(x, z) {
-    return this.wx * z + x;
+    return this.wSize[0] * z + x;
   }
   /**
    * @param {number} idx
    * @retuns {[number, number]}
    */
   idxToCoord(idx) {
-    let z = Math.floor(idx / this.wx);
-    let x = idx % this.wx;
+    let z = Math.floor(idx / this.wSize[0]);
+    let x = idx % this.wSize[0];
     return [x, z];
   }
 }
