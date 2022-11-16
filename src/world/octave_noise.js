@@ -51,7 +51,7 @@ export class OctaveNoise {
 
   // these function return min/max value
   // **NOT** taking into account the median
-  minValue() {
+  minRawValue() {
     let ym = this.cnf.nScale[1];
     let y = 0;
     for (let i = 0; i < this.cnf.layers; i++) {
@@ -61,7 +61,7 @@ export class OctaveNoise {
     return y;
   }
 
-  maxValue() {
+  maxRawValue() {
     let ym = this.cnf.nScale[1];
     let y = 0;
     for (let i = 0; i < this.cnf.layers; i++) {

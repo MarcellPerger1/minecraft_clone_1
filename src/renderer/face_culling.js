@@ -3,6 +3,7 @@ import {unreachable} from '../utils.js';
 import {CubeVertexData} from './cube_data.js';
 
 /**
+ * @typedef {import('./game.js').Game} Game
  * @typedef {[number, number, number]} Vec3
 */
 

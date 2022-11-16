@@ -147,8 +147,7 @@ export class Renderer extends GameComponent {
   }
   
   // DRAW SCENE
-  renderFrame(remakeMesh){
-    this.remakeMesh = remakeMesh;
+  renderFrame(){
     this.initFrame();
     // only update mesh if re-render
     this.makeWorldMesh();

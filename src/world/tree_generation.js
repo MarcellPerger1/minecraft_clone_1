@@ -1,24 +1,112 @@
 import { alea } from "../libs/alea/alea.js";
 import { rangeFrom, rangeList } from "../utils.js";
-import { SeedFork } from "./seed.js";
+import { BaseGenerator } from "./base_generator.js";
 
 
+export class TreePlacer extends BaseGenerator {
+  constructor(game) {
+    super(game);
+  }
 
-export class TreePosGetter {
-  constructor(seed, x, z, n_trees, treeRadius) {
-    this.wx = x;
-    this.wz = z;
-    this.n = this.wx * this.wz;
-    this.n_trees = n_trees;
-    this.globSeed = seed;
-    this.seed = SeedFork.getSeed(this.globSeed, "tree-pos", 0);
-    this.rng = alea(this.seed);
-    let w = treeRadius[0];
-    let h = treeRadius[1];
-    /** @type {Array<[number, number]>} */
-    this.excludeOffsets = rangeFrom(-w, w+1)
-      .flatMap(x => rangeFrom(-h, h+1)
-        .map(y => [x, y]));
+  getGenerator() {
+    switch (this.gcnf.treeCollideAction) {
+      case "avoid":
+        return new AvoidTreePlacer(this);
+      case "place":
+        return new IgnoreTreePlacer(this);
+      case "skip":
+        return new SkipTreePlacer(this);
+      default:
+        throw new ReferenceError("Unknown treePlaceMode");
+    }
+  }
+
+  makeTrees() {
+    return this.getGenerator().makeTrees();
+  }
+}
+
+
+export class BaseTreePlacer extends BaseGenerator {
+  constructor(game, {seed=true, treeBounds=true}={}) {
+    super(game);
+    this.n = this.wSize[0] * this.wSize[2];
+    if(seed) {
+      this.seed = this.getSeed("tree-pos", 0);
+      this.rng = alea(this.seed);
+    }
+    if(treeBounds) {
+      let w = this.gcnf.treeRadius[0];
+      let h = this.gcnf.treeRadius[1];
+      /** @type {Array<[number, number]>} */
+      this.excludeOffsets = rangeFrom(-w, w+1)
+        .flatMap(x => rangeFrom(-h, h+1)
+          .map(y => [x, y]));
+    }
+  }
+
+  makeTrees() {
+    throw new ReferenceError(
+      "makeTrees must be implemented on TreePlacers " +
+      "(i.e. classes that inherit from BaseTreePlacer)")
+  }
+
+  /**
+   * @param {number} idx
+   * @retuns {[number, number]}
+   */
+  idxToCoord(idx) {
+    let z = Math.floor(idx / this.wSize[0]);
+    let x = idx % this.wSize[0];
+    return [x, z];
+  }
+
+  /**
+   * @param {number} x
+   * @param {number} z
+   * @returns {number}
+   */
+  coordToIdx(x, z) {
+    return this.wSize[0] * z + x;
+  }
+}
+
+
+export class IgnoreTreePlacer extends BaseTreePlacer {
+  constructor(game) {
+    super(game, {treeBounds: false});
+  }
+
+  makeTrees() {
+    return rangeList(this.n).map(_ => this.idxToCoord(this.rng.randint(0, this.n)));
+  }
+}
+
+
+export class SkipTreePlacer extends BaseTreePlacer {
+  constructor(game) {
+    super(game);
+  }
+
+  makeTrees() {
+    let columns = new Uint8Array(this.n);
+    return rangeList(this.n).map(_ => {
+      let idx = this.rng.randint(0, this.n);
+      let c = this.idxToCoord(idx);
+      if(!columns[idx]) {
+        for(const [xo, yo] of this.excludeOffsets) {
+          columns[this.coordToIdx(c[0] + xo, c[1] + yo)] = 1;
+        }
+        return c;
+      }
+    }).filter(c => c != null);
+  }
+}
+
+
+export class AvoidTreePlacer extends BaseTreePlacer {
+  constructor(game) {
+    super(game);
   }
 
   makeTrees() {
@@ -31,9 +119,10 @@ export class TreePosGetter {
     // as it is by far the most complicated
     let positions = [];
     /** @type {Array<[boolean, number, number]>}*/
-    var colData = rangeList(this.n).map(i => [/*free*/true, /*real*/i, /*cumulative*/i]);
+    var colData = rangeList(this.n)
+      .map(i => [/*free*/true, /*real*/i, /*cumulative*/i]);
     var numLeft = this.n;
-    for (let ti = 0; ti < this.n_trees; ti++) {
+    for (let ti = 0; ti < this.gcnf.nTrees; ti++) {
       if (numLeft <= 0) {
         console.warn("Not enough places for trees.");
         return positions;
@@ -62,23 +151,5 @@ export class TreePosGetter {
       });
     }
     return positions;
-  }
-
-  /**
-   * @param {number} x
-   * @param {number} z
-   * @returns {number}
-   */
-  coordToIdx(x, z) {
-    return this.wx * z + x;
-  }
-  /**
-   * @param {number} idx
-   * @retuns {[number, number]}
-   */
-  idxToCoord(idx) {
-    let z = Math.floor(idx / this.wx);
-    let x = idx % this.wx;
-    return [x, z];
   }
 }

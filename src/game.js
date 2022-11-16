@@ -147,8 +147,6 @@ export class Game {
   }
 
   onframe() {
-    // unconditional re-render on first frame and every 120th frame
-    this.rerender ||= this.frameNo % 120 == 0;
     if(this.startTicks){
       this.tickCallback();
     }
@@ -157,9 +155,7 @@ export class Game {
   }
 
   render() {
-    let remakeMesh = this.rerender;
-    this.rerender = false;
-    this.r.renderFrame(remakeMesh);
+    this.r.renderFrame();
   }
 
   tickCallback() {
@@ -170,8 +166,6 @@ export class Game {
   tick() {
     this.ki.tick(this.deltaT);
     this.player.tick();
-    // rerender on first tick
-    this.rerender ||= this.tickNo==0;
   }
 
   pointerlock_change() {

@@ -13,13 +13,13 @@ Modified again by Marcell Perger.
  * @prop {(lo: number, hi: number) => number} randint
  */
 /**
- * @typedef {(RandomNS & () => number)} Random
+ * @typedef {(RandomNS & (() => number))} Random
  */
 
 /**
  * Create an ALEA PRNG initalised by a seed
  * @param {(number|string)} seed
- * @returns {Random & () => number} Function that generates random numbers
+ * @returns {Random & (() => number)} Function that generates random numbers
  */
 export function alea(seed) {
   let s0 = 0;

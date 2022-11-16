@@ -20,6 +20,7 @@
     "chunkSize": [8, 8, 8],
     "nTrees": 5,
     "treeRadius": [1, 1],
+    "treeCollideAction": "avoid",
     "baseTerrain": {
       "nScale": [
         21.14,

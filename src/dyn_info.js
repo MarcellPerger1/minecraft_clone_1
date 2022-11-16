@@ -13,12 +13,18 @@ export class DynInfo extends GameComponent {
     let coordTextBody = ["x", "y", "z"]
         .map((s, i) => `${s}=${coordStr(this.player.position[i])}`)
         .join(', ');
-    document.getElementById("pos-info").innerText = coordTextBody;
+    this.setText(document.getElementById("pos-info"), coordTextBody);
   }
 
   updateFacingInfo() {
     let rotSnapped = roundNearest(this.player.rotation.h, 90) % 360;
-    document.getElementById("facing-info").innerText = DIR_TO_FACING[rotSnapped];
+    this.setText(document.getElementById("facing-info"), DIR_TO_FACING[rotSnapped]);
+  }
+
+  setText(elem, text) {
+    if(elem.innerText !== text) {
+      elem.innerText = text;
+    }
   }
 }
 
