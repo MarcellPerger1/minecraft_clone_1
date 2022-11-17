@@ -94,10 +94,11 @@ export function stringifyJsonConfig(obj, space = 2) {
  * @param {boolean} inheritance - Use inheritance?
  * @returns {Promise<CNF_MOD.ConfigT>} the loaded config
 */
-export async function loadConfigFile(path, inheritance = true) {
+export async function loadConfigFile(path, inheritance = true, 
+                                     configsRoot="configs") {
   let data = parseJsonConfig(await fetchTextFile(path));
   if (inheritance) {
-    data = await handleConfigInheritance(data);
+    data = await handleConfigInheritance(data, configsRoot);
   }
   return data;
 }
@@ -107,39 +108,39 @@ export async function loadConfigFile(path, inheritance = true) {
  * @param {{$extends: (string|string[])}} config - the original config
  * @returns {Promise<CNF_MOD.ConfigT>} the new config
 */
-export async function handleConfigInheritance(config) {
+export async function handleConfigInheritance(config, configsRoot) {
   /** @type {string[]} */
   let bases = config.$extends ?? [];
   if (!isArray(bases)) { bases = [bases]; }
   bases = bases.filter(base => !isComment(base));
   if(!bases.length) { bases = ["default"]; }
   let parents = await Promise.all(
-    bases.map(base => loadConfigByName(base))
+    bases.map(base => loadConfigByName(base, configsRoot))
   );
   return deepMerge([...parents, config]);
 }
 
-export async function loadConfigByName(/**@type{string}*/name) {
+export async function loadConfigByName(/**@type{string}*/name, configsRoot) {
   switch (name) {
     case "default":
       return loadConfigDefaults();
     default:
-      return loadConfigByFilename(name);
+      return loadConfigByFilename(name, configsRoot);
   }
 }
 
-export async function loadConfigDefaults() {
+export async function loadConfigDefaults(configsRoot) {
   return loadConfigFile(
-    "./configs/default.json",
+    `./${configsRoot}/default.json`,
     // IMPORTANT: this is so that no infinite recursion getting defaults for default
-    false);
+    false, configsRoot);
 }
 
-export async function loadConfigByFilename(path) {
-  return loadConfigFile(getConfigFilename(path));
+export async function loadConfigByFilename(path, configsRoot) {
+  return loadConfigFile(getConfigFilename(path, configsRoot), true, configsRoot);
 }
 
-function getConfigFilename(/** @type {string} */path) {
+function getConfigFilename(/** @type {string} */path, configsRoot) {
   // NOTE: this input *may* eventually come from the user
   // so a bit of security can't hurt
   if (path.includes('..')) {
@@ -148,7 +149,8 @@ function getConfigFilename(/** @type {string} */path) {
   path = trim(path, './', { start: true });
   path = path.replace(/\/+/, '/');  // remove repeated /
   if (!path.endsWith('.json')) { path += '.json'; }
+  if(!path.startsWith(`${configsRoot}/`)) { path = `${configsRoot}/${path}`}
   // './' is to make it work with gh pages
-  return './' + (path.startsWith("configs/") ? path : 'configs/' + path);
+  return './' + path;
 }
 
