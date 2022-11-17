@@ -19,7 +19,7 @@ Modified again by Marcell Perger.
 /**
  * Create an ALEA PRNG initalised by a seed
  * @param {(number|string)} seed
- * @returns {Random & (() => number)} Function that generates random numbers
+ * @returns {Random} Function that generates random numbers
  */
 export function alea(seed) {
   let s0 = 0;
@@ -62,6 +62,8 @@ export function alea(seed) {
       return ret() * n;
     },
     randrange(lo, hi) {
+      // aka uniform distribution
+      // lo <= x < hi (but exclusivity is not guranteed at top end of range)
       return lo + ret.randbelow(hi - lo);
     },
     randint(lo, hi) {
