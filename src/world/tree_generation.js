@@ -1,4 +1,4 @@
-import { alea } from "../libs/alea/alea.js";
+import { alea } from "../alea/alea.js";
 import { rangeFrom, rangeList } from "../utils.js";
 import { BaseGenerator } from "./base_generator.js";
 
