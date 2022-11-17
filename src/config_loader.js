@@ -123,7 +123,7 @@ export async function handleConfigInheritance(config, configsRoot) {
 export async function loadConfigByName(/**@type{string}*/name, configsRoot) {
   switch (name) {
     case "default":
-      return loadConfigDefaults();
+      return loadConfigDefaults(configsRoot);
     default:
       return loadConfigByFilename(name, configsRoot);
   }
