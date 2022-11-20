@@ -25,6 +25,14 @@ describe("config_loader.js", () => {
         expect(isComment("xy " + prefix)).toBe(false);
         expect(isComment("  qr" + prefix)).toBe(false);
       })
-    })
+    });
+    it.each([
+      "a",
+      "%extends",
+      "  something",
+      "  \t \n  "
+    ])("Doesn't recognise %o as a comment", (s) => {
+      expect(isComment(s)).toBe(false);
+    });
   })
 })
