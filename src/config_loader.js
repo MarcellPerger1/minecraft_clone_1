@@ -9,6 +9,77 @@ import {
 import * as CNF_MOD from "./config.js";
 
 
+export class LoaderContext {
+  constructor(configsRoot="configs") {
+    this.configsRoot = configsRoot;
+  }
+  /**
+   * Load .json Config file
+   * @param {string} path
+   * @param {boolean} inheritance - Use inheritance?
+   * @returns {Promise<CNF_MOD.ConfigT>} the loaded config
+  */
+  async loadConfigFile(path, inheritance = true) {
+    let data = parseJsonConfig(await fetchTextFile(path));
+    if (inheritance) {
+      data = await this.handleConfigInheritance(data);
+    }
+    return data;
+  }
+
+  /**
+   * Handle inheritance for Configs
+   * @param {{$extends: (string|string[])}} config - the original config
+   * @returns {Promise<CNF_MOD.ConfigT>} the new config
+  */
+  async handleConfigInheritance(config) {
+    /** @type {string[]} */
+    let bases = config.$extends ?? [];
+    if (!isArray(bases)) { bases = [bases]; }
+    bases = bases.filter(base => !isComment(base));
+    if(!bases.length) { bases = ["default"]; }
+    let parents = await Promise.all(
+      bases.map(base => this.loadConfigByName(base))
+    );
+    return deepMerge([...parents, config]);
+  }
+
+  async loadConfigByName(/**@type{string}*/name) {
+    switch (name) {
+      case "default":
+        return this.loadConfigDefaults();
+      default:
+        return this.loadConfigByFilename(name);
+    }
+  }
+
+  async loadConfigDefaults() {
+    return this.loadConfigFile(
+      `./${this.configsRoot}/default.json`,
+      // IMPORTANT: this is so that no infinite recursion getting defaults for default
+      false);
+  }
+
+  async loadConfigByFilename(path) {
+    return this.loadConfigFile(this.getConfigFilename(path));
+  }
+
+  getConfigFilename(/** @type {string} */path) {
+    // NOTE: this input *may* eventually come from the user
+    // so a bit of security can't hurt
+    if (path.includes('..')) {
+      throw new ReferenceError("Config paths shouldn't contain '..'");
+    }
+    path = trim(path, './', { start: true });
+    path = path.replace(/\/+/, '/');  // remove repeated /
+    if (!path.endsWith('.json')) { path += '.json'; }
+    if(!path.startsWith(`${this.configsRoot}/`)) { path = `${this.configsRoot}/${path}`}
+    // './' is to make it work with gh pages
+    return './' + path;
+  }
+}
+
+
 function configJsonReplacer(_key, value) {
   if (value == Infinity) {
     return "Infinity"
