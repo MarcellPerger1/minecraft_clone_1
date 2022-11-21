@@ -54,6 +54,13 @@ describe("config_loader.js", () => {
         expect(parseJsonConfig("769.02")).toBe(769.02);
         expect(parseJsonConfig("-902.4")).toBe(-902.4);
       });
+      it("Handles null", () => {
+        expect(parseJsonConfig("null")).toBe(null);
+      });
+      it("Handles booleans", () => {
+        expect(parseJsonConfig("true")).toBe(true);
+        expect(parseJsonConfig("false")).toBe(false);
+      });
       describe("object/list handling", () => {
         describe("Non-nested array handling", () => {
           it.each([
@@ -61,15 +68,15 @@ describe("config_loader.js", () => {
             {name: "array of strings",
              data: ["a string", "a \nother \t str\n\nthis:\\ is a \"backslash'", '']},
             {name: "mixed array (string and number)", 
-             data: [-0, "string\n\ts\nstr \\not a newline", 5.6, ""],
-             str: `[-0, ${
+             data: [-0.0, "string\n\ts\nstr \\not a newline", 5.6, ""],
+             str: `[-0.0, ${
                JSON.stringify("string\n\ts\nstr \\not a newline")
              }, 5.6, ""]`},
             ])("$name", ({data, str=null}) => {
               str = str ?? JSON.stringify(data);
               expect(parseJsonConfig(str)).toStrictEqual(data);
             })
-        })
+        });
       })
     });
   })
