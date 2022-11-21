@@ -72,6 +72,7 @@ describe("config_loader.js", () => {
              str: `[-0.0, ${
                JSON.stringify("string\n\ts\nstr \\not a newline")
              }, 5.6, ""]`},
+            {name: "empty array", data: []},
             ])("$name", ({data, str=null}) => {
               str = str ?? JSON.stringify(data);
               expect(parseJsonConfig(str)).toStrictEqual(data);
