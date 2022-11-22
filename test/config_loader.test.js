@@ -72,12 +72,29 @@ describe("config_loader.js", () => {
              str: `[-0.0, ${
                JSON.stringify("string\n\ts\nstr \\not a newline")
              }, 5.6, ""]`},
+            {name: "array with nulls", data: [2.4, null, "text", null]},
             {name: "empty array", data: []},
             ])("$name", ({data, str=null}) => {
               str = str ?? JSON.stringify(data);
               expect(parseJsonConfig(str)).toStrictEqual(data);
             })
         });
+        describe("Non-nested objct handling", () => {
+          it.each([
+            {name: "object of number values", data: {d: 4.2, e: -9, f: 0.0}},
+            {name: "object of string values",
+             data: {r: "abc", d: "", c: "  \n\t\t\\\t\n, not a \\newline"}},
+            {name: "mixed object: (string and number values)", 
+             data: {q: -0, a: "string\n\ts\nstr \\not a newline", c: 5.6, d: ""},
+             str: `{"q": -0, "a":${
+               JSON.stringify("string\n\ts\nstr \\not a newline")
+             }, "c": 5.6, "d": ""}`},
+            {name: "empty object", data: {}},
+            ])("$name", ({data, str=null}) => {
+              str = str ?? JSON.stringify(data);
+              expect(parseJsonConfig(str)).toStrictEqual(data);
+            })
+        })
       })
     });
   })
