@@ -79,7 +79,7 @@ describe("config_loader.js", () => {
               expect(parseJsonConfig(str)).toStrictEqual(data);
             })
         });
-        describe("Non-nested objct handling", () => {
+        describe("Non-nested object handling", () => {
           it.each([
             {name: "object of number values", data: {d: 4.2, e: -9, f: 0.0}},
             {name: "object of string values",
