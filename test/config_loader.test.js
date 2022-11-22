@@ -43,6 +43,7 @@ describe("config_loader.js", () => {
           .toStrictEqual("a string value");
         expect(parseJsonConfig(`"a str \\t\\n\\\\ value"`))
           .toStrictEqual("a str \t\n\\ value");
+        expect(parseJsonConfig(`""`)).toStrictEqual("");
       });
       it("Handles whole numbers", () => {
         expect(parseJsonConfig("123")).toBe(123);
