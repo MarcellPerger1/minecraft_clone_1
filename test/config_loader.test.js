@@ -46,23 +46,47 @@ describe("config_loader.js", () => {
         "#",
         "/*"
       ])("Handling of '%s' comments", (prefix) => {
-        it("Handles single-key objects", () => {
-          let data = {[`${prefix}xyz`]: -3.4};
-          let s = JSON.stringify(data);
-          expect(parseJsonConfig(s)).toStrictEqual({});
-        });
-        it("Handles normal objects", () => {
-          function getData() {
-            return {attr: {y: [""]}, normal: [{t: 0}]};
+        it.each([
+          {
+            name: "object inside array", 
+            getData() {
+              return [3, {x: -2.3, y: "\ta\\n<-same line"}, null, []]
+            },
+            setAttr(data, k) {
+              data[1][k] = {d: 5.6, e: "aa", f: [{}]};
+            }
+          },
+          {
+            name: "single-key object",
+            getData() { return {}; },
+            setAttr(data, k) { data[k] = -3.4}
+          },
+          {
+            name: "normal object",
+            getData() {
+              return {attr: {y: [""]}, normal: [{t: 0}]};
+            },
+            setAttr(data, k) {
+              data[k] = {q: 8, i: [2, "a"]};
+            }
+          },
+          {
+            name: "big nested object",
+            getData() {
+              return {a: null, b: [{y: "\\t=\t", d: {}}]}
+            },
+            setAttr(data, k) {
+              data.b[0][k] = [[[], null, {}], {v: "2"}]
+            }
           }
+        ])("$name", ({getData, setAttr}) => {
           let data = getData();
-          data[`${prefix}xyz`] = {q: 8, i: [2, "a"]};
-          let s = JSON.stringify(data);
-          expect(parseJsonConfig(s)).toStrictEqual(getData());
+          setAttr(data, `${prefix}xyz`);
+          expect(parseJsonConfig(JSON.stringify(data))).toStrictEqual(getData());
         })
       })
       
-    })
+    });
   })
 })
 
