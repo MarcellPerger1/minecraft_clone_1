@@ -1,6 +1,6 @@
 import './helpers/fetch_local_polyfill.js';
 import "./helpers/dummy_dom.js"
-import { LoaderContext, isComment, parseJsonConfig } from "../src/config_loader.js";
+import { isComment, parseJsonConfig } from "../src/config_loader.js";
 
 describe("config_loader.js", () => {
   describe("isComment", () => {
@@ -37,7 +37,7 @@ describe("config_loader.js", () => {
     });
   });
   describe("parseJsonConfig", () => {
-    describe("Normal JSON handling", () => test_normalJsonHandling());
+    describe("Normal JSON handling", () => {test_normalJsonHandling()});
   })
 })
 
