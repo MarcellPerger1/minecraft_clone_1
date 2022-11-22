@@ -3,7 +3,7 @@ import "./helpers/dummy_dom.js"
 import { isComment, parseJsonConfig } from "../src/config_loader.js";
 
 describe("config_loader.js", () => {
-  describe("isComment", () => {
+  describe("isComment (unit test)", () => {
     describe.each([
       "$comment",
       "//",
@@ -38,6 +38,31 @@ describe("config_loader.js", () => {
   });
   describe("parseJsonConfig", () => {
     describe("Normal JSON handling", () => {test_normalJsonHandling()});
+    describe("Comment handling (integration test)", () => {
+      describe.each([
+        "$comment",
+        "//",
+        "$#",
+        "#",
+        "/*"
+      ])("Handling of '%s' comments", (prefix) => {
+        it("Handles single-key objects", () => {
+          let data = {[`${prefix}xyz`]: -3.4};
+          let s = JSON.stringify(data);
+          expect(parseJsonConfig(s)).toStrictEqual({});
+        });
+        it("Handles normal objects", () => {
+          function getData() {
+            return {attr: {y: [""]}, normal: [{t: 0}]};
+          }
+          let data = getData();
+          data[`${prefix}xyz`] = {q: 8, i: [2, "a"]};
+          let s = JSON.stringify(data);
+          expect(parseJsonConfig(s)).toStrictEqual(getData());
+        })
+      })
+      
+    })
   })
 })
 
