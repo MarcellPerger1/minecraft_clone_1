@@ -54,6 +54,8 @@ describe("config_loader.js", () => {
       it("Handles floating point numbers", () => {
         expect(parseJsonConfig("769.02")).toBe(769.02);
         expect(parseJsonConfig("-902.4")).toBe(-902.4);
+        expect(parseJsonConfig("-3.2e-40")).toBe(-3.2e-40);
+        expect(parseJsonConfig("7.6e80")).toBe(7.6e80);
       });
       it("Handles null", () => {
         expect(parseJsonConfig("null")).toBe(null);
