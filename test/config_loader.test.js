@@ -89,6 +89,7 @@ describe("config_loader.js", () => {
              str: `{"q": -0, "a":${
                JSON.stringify("string\n\ts\nstr \\not a newline")
              }, "c": 5.6, "d": ""}`},
+            {name: "object with nulls", data: {a: 4.5, b: null, c: "str"}},
             {name: "empty object", data: {}},
             ])("$name", ({data, str=null}) => {
               str = str ?? JSON.stringify(data);
