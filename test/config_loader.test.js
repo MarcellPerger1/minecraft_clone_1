@@ -1,16 +1,16 @@
 import './helpers/fetch_local_polyfill.js';
 import "./helpers/dummy_dom.js"
-import {LoaderContext, isComment, parseJsonConfig} from "../src/config_loader.js";
+import { LoaderContext, isComment, parseJsonConfig } from "../src/config_loader.js";
 
 describe("config_loader.js", () => {
-  describe("isComment" , () => {
+  describe("isComment", () => {
     describe.each([
       "$comment",
       "//",
       "$#",
       "#",
       "/*"
-    ])("Handling of '%s' comments" , (prefix) => {
+    ])("Handling of '%s' comments", (prefix) => {
       it("Recognises it as a comment", () => {
         expect(isComment(prefix)).toBe(true);
         expect(isComment(prefix + " xy")).toBe(true);
@@ -64,37 +64,54 @@ describe("config_loader.js", () => {
       describe("object/list handling", () => {
         describe("Non-nested array handling", () => {
           it.each([
-            {name: "array of numbers", data: [0, 1.76, -0.1, -76, 0.0]},
-            {name: "array of strings",
-             data: ["a string", "a \nother \t str\n\nthis:\\ is a \"backslash'", '']},
-            {name: "mixed array (string and number)", 
-             data: [-0.0, "string\n\ts\nstr \\not a newline", 5.6, ""],
-             str: `[-0.0, ${
-               JSON.stringify("string\n\ts\nstr \\not a newline")
-             }, 5.6, ""]`},
-            {name: "array with nulls", data: [2.4, null, "text", null]},
-            {name: "empty array", data: []},
-            ])("$name", ({data, str=null}) => {
-              str = str ?? JSON.stringify(data);
-              expect(parseJsonConfig(str)).toStrictEqual(data);
-            })
+            { name: "array of numbers", data: [0, 1.76, -0.1, -76, 0.0] },
+            {
+              name: "array of strings",
+              data: ["a string", "a \nother \t str\n\nthis:\\ is a \"backslash'", '']
+            },
+            {
+              name: "mixed array (string and number)",
+              data: [-0.0, "string\n\ts\nstr \\not a newline", 5.6, ""],
+              str: `[-0.0, ${JSON.stringify("string\n\ts\nstr \\not a newline")
+                }, 5.6, ""]`
+            },
+            { name: "array with nulls", data: [2.4, null, "text", null] },
+            { name: "empty array", data: [] },
+          ])("$name", ({ data, str = null }) => {
+            str = str ?? JSON.stringify(data);
+            expect(parseJsonConfig(str)).toStrictEqual(data);
+          })
         });
         describe("Non-nested object handling", () => {
           it.each([
-            {name: "object of number values", data: {d: 4.2, e: -9, f: 0.0}},
-            {name: "object of string values",
-             data: {r: "abc", d: "", c: "  \n\t\t\\\t\n, not a \\newline"}},
-            {name: "mixed object: (string and number values)", 
-             data: {q: -0, a: "string\n\ts\nstr \\not a newline", c: 5.6, d: ""},
-             str: `{"q": -0, "a":${
-               JSON.stringify("string\n\ts\nstr \\not a newline")
-             }, "c": 5.6, "d": ""}`},
-            {name: "object with nulls", data: {a: 4.5, b: null, c: "str"}},
-            {name: "empty object", data: {}},
-            ])("$name", ({data, str=null}) => {
-              str = str ?? JSON.stringify(data);
-              expect(parseJsonConfig(str)).toStrictEqual(data);
-            })
+            { name: "object of number values", data: { d: 4.2, e: -9, f: 0.0 } },
+            {
+              name: "object of string values",
+              data: { r: "abc", d: "", c: "  \n\t\t\\\t\n, not a \\newline" }
+            },
+            {
+              name: "mixed object: (string and number values)",
+              data: { q: -0, a: "string\n\ts\nstr \\not a newline", c: 5.6, d: "" },
+              str: `{"q": -0, "a":${JSON.stringify("string\n\ts\nstr \\not a newline")
+                }, "c": 5.6, "d": ""}`
+            },
+            { name: "object with nulls", data: { a: 4.5, b: null, c: "str" } },
+            { name: "empty object", data: {} },
+          ])("$name", ({ data, str = null }) => {
+            str = str ?? JSON.stringify(data);
+            expect(parseJsonConfig(str)).toStrictEqual(data);
+          });
+        });
+        describe("Nested object/array handling", () => {
+          it.each([
+            {name: "nested object (no arrays)", 
+             data: {a: 2.3, b: {}, c: {r: "9.3", d: null, e: {f: 6}}, g: {e: 2.2}}},
+            {name: "nested array (no objects)",
+            data: [-4, null, ["a\n  \t\\n", 4.2, []], "e", 3.30227, [5.5]]}
+          ])("$name", ({ data, str = null }) => {
+            str = str ?? JSON.stringify(data);
+            expect(parseJsonConfig(str)).toStrictEqual(data);
+          });
         })
       })
     });
