@@ -91,6 +91,18 @@ describe("config_loader.js", () => {
       it("Handles infinity as the root",  () => {
         expect(parseJsonConfig(`"Infinity"`)).toBe(Infinity);
         expect(parseJsonConfig(`"-Infinity"`)).toBe(-Infinity);
+      });
+      it("Handles infinity in array", () => {
+        expect(parseJsonConfig(`[3.2, "Infinity", "str", null]`))
+          .toStrictEqual([3.2, Infinity, "str", null]);
+        expect(parseJsonConfig(`[3.2, "-Infinity", "str", null]`))
+          .toStrictEqual([3.2, -Infinity, "str", null]);
+      })
+      it("Handles infinity in object", () => {
+        expect(parseJsonConfig(`{"a": 3.2, "f":"Infinity", "e":"str", "q":null}`))
+          .toStrictEqual({a: 3.2, f:Infinity, e:"str", q:null};
+        expect(parseJsonConfig(`{"a": 3.2, "f":"-Infinity", "e":"str", "q":null}`))
+          .toStrictEqual({a: 3.2, f:-Infinity, e:"str", q:null});
       })
     })
   });
