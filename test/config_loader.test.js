@@ -100,7 +100,7 @@ describe("config_loader.js", () => {
       })
       it("Handles infinity in object", () => {
         expect(parseJsonConfig(`{"a": 3.2, "f":"Infinity", "e":"str", "q":null}`))
-          .toStrictEqual({a: 3.2, f:Infinity, e:"str", q:null};
+          .toStrictEqual({a: 3.2, f:Infinity, e:"str", q:null});
         expect(parseJsonConfig(`{"a": 3.2, "f":"-Infinity", "e":"str", "q":null}`))
           .toStrictEqual({a: 3.2, f:-Infinity, e:"str", q:null});
       })
