@@ -87,7 +87,13 @@ describe("config_loader.js", () => {
       })
       
     });
-  })
+    describe("Infinity handling", () => {
+      it("Handles infinity as the root",  () => {
+        expect(parseJsonConfig(`"Infinity"`)).toBe(Infinity);
+        expect(parseJsonConfig(`"-Infinity"`)).toBe(-Infinity);
+      })
+    })
+  });
 })
 
 
