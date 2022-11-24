@@ -104,7 +104,36 @@ describe("config_loader.js", () => {
         expect(parseJsonConfig(`{"a": 3.2, "f":"-Infinity", "e":"str", "q":null}`))
           .toStrictEqual({a: 3.2, f:-Infinity, e:"str", q:null});
       })
-    })
+      it("Handles infinity nestedly", () => {
+        let s = `{"a": 3.2, "f":"-Infinity", "e":"str", ` +
+          `"q": [null, "Infinity", {"y": "-Infinity", "z": {}}]}`
+        expect(parseJsonConfig(s)).toStrictEqual(
+          {a: 3.2, f:-Infinity, e:"str", q: [null, Infinity, {y: -Infinity, z: {}}]})
+      })
+    });
+    describe("Symbol handling", () => {
+      it("Handles builtin symbols", () => {
+        expect(parseJsonConfig(`{"@@unscopables": ["abc"]}`))
+          .toStrictEqual({[Symbol.unscopables]: ["abc"]});
+        expect(parseJsonConfig(`[{"@@isConcatSpreadable": false}]`))
+          .toStrictEqual([{[Symbol.isConcatSpreadable]: false}]);
+      });
+      it("Handles global symbols", () => {
+        let s = Symbol.for("__not_builtin");
+        expect(parseJsonConfig(`{"e": {"@@__not_builtin": 1}}`))
+          .toStrictEqual({e: {[s]: 1}});
+      });
+      it("Prefers builtin over global symbols", () => {
+        Symbol.for("symbol_name");  // <- 'global' symbol
+        Symbol._symbol_name = Symbol.for('_builtin_symbol');  // <- 'builtin' symbol
+        try {
+          expect(parseJsonConfig(`{"e": {"@@_symbol_name": 1}}`))
+          .toStrictEqual({e: {[Symbol._symbol_name]: 1}});
+        } finally {
+          delete Symbol._symbol_name;
+        }
+      })
+    });
   });
 })
 
