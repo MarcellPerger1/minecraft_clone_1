@@ -125,8 +125,9 @@ function _withSymbolKeys(value){
   for(let [k, v] of Object.entries(value)){
     if(k.startsWith('@@')){
       let symbol_name = removePrefix(k, "@@");
-      // just use text if symbol not found
-      k = Symbol[symbol_name] ?? Symbol.for(symbol_name) ?? k;
+      // prefer 'builtin' symbols over 
+      // symbols in the registry ('global' symbols)
+      k = Symbol[symbol_name] ?? Symbol.for(symbol_name);
     }
     newval[k] = v;
   }
