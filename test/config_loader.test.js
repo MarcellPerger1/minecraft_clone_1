@@ -9,6 +9,7 @@ describe("config_loader.js", () => {
     describe("Comment handling (integration test)", () => {test_commentHandling()});
     describe("Infinity handling", () => {test_infinityHandling()});
     describe("Symbol handling", () => {test_symbolHandling()});
+    describe("Config class handling", () => {test_configClassHandling()});
   });
 })
 
@@ -219,8 +220,8 @@ function test_infinityHandling() {
   it("Ignores infinity as keys", () => {
     expect(parseJsonConfig(`{"Infinity": [2.3, ""]}`))
       .toStrictEqual({"Infinity": [2.3, ""]});
-    expect(parseJsonConfig(`{"-Infinity": {"k": null}`))
-      .toStrictEqual({"-Infinity": {k: null});
+    expect(parseJsonConfig(`{"-Infinity": {"k": null}}`))
+      .toStrictEqual({"-Infinity": {k: null}});
   })
 }
 
@@ -254,5 +255,13 @@ function test_symbolHandling() {
     expect(parseJsonConfig(`["@@a_symbol"]`)).toStrictEqual(["@@a_symbol"]);
     expect(parseJsonConfig(`{"@@unscopables": "@@a_symbol"}`))
       .toStrictEqual({[Symbol.unscopables]: "@@a_symbol"});
+  })
+}
+
+function test_configClassHandling() {
+  it("Throws error if class isn't a config class", () => {
+    expect(() => {
+      parseJsonConfig(JSON.stringify({$class: "Invalid"}))
+    }).toThrow(/not a config class/i);
   })
 }
