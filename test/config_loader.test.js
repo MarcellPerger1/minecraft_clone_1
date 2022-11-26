@@ -23,6 +23,39 @@ describe("config_loader.js", () => {
         expect(new LoaderContext()).toHaveProperty('configsRoot', "configs")
       })
     });
+    describe("LoaderContext.getConfigFilename", () => {
+      it("Raises error if name contains '..'", () => {
+        for(const name of ["..", "a/../b", "/a/../f", "./../r.j"]) {
+          expect(() => {
+            new LoaderContext().getConfigFilename(name)
+          }).toThrow();
+          for(const root of ["/root/path", "./rel/path/", "1", "p/", "a/b"]) {
+            expect(() => {
+              new LoaderContext(root).getConfigFilename(name)
+            }).toThrow("..");
+          }
+        }
+      });
+      it("Removes leading '.' and '/'", () => {
+        expect(new LoaderContext("root/path").getConfigFilename("./r.json"))
+          .toBe("./root/path/r.json");
+        expect(new LoaderContext("root/path").getConfigFilename("/r.json"))
+          .toBe("./root/path/r.json");
+        expect(new LoaderContext("root/path").getConfigFilename("/./r.json"))
+          .toBe("./root/path/r.json");
+      });
+      it("Adds leading `./` if needed", () => {
+        const lc = new LoaderContext("config/path");
+        expect(lc.getConfigFilename("xyx.json")).toBe("./config/path/xyx.json");
+        expect(lc.getConfigFilename("d/z.json")).toBe("./config/path/d/z.json");
+      });
+      it("Remove duplicated `/`", () => {
+        const lc = new LoaderContext("config/path");
+        expect(lc.getConfigFilename("h//r.json")).toBe("./config/path/h/r.json");
+        expect(lc.getConfigFilename(".///h////r///u.json"))
+          .toBe("./config/path/h/r/u.json");
+      })
+    })
   });
 })
 

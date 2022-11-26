@@ -3,7 +3,7 @@
   "testMatch": [
     "**/test/**/*.?(m)[jt]s?(x)", 
     "!**/test/**/*.util.?(m)[jt]s?(x)",
-    "!**/test/helpers/**",
+    "!**/test/(helpers|coverage)/**",
     "**/?(*.)+(spec|test).?(m)[jt]s?(x)"
   ]
 }
