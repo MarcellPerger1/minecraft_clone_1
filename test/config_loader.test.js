@@ -3,139 +3,49 @@ import "./helpers/dummy_dom.js"
 import { isComment, parseJsonConfig } from "../src/config_loader.js";
 
 describe("config_loader.js", () => {
-  describe("isComment (unit test)", () => {
-    describe.each([
-      "$comment",
-      "//",
-      "$#",
-      "#",
-      "/*"
-    ])("Handling of '%s' comments", (prefix) => {
-      it("Recognises it as a comment", () => {
-        expect(isComment(prefix)).toBe(true);
-        expect(isComment(prefix + " xy")).toBe(true);
-        expect(isComment(prefix + "abcd")).toBe(true);
-      })
-      it("Allows leading whitespace", () => {
-        expect(isComment(" " + prefix)).toBe(true);
-        expect(isComment("   \t " + prefix)).toBe(true);
-      })
-      it("Disallows leading non-whitespace chracters", () => {
-        expect(isComment("ab" + prefix)).toBe(false);
-        expect(isComment("xy " + prefix)).toBe(false);
-        expect(isComment("  qr" + prefix)).toBe(false);
-      })
-    });
-    it.each([
-      "a",
-      "%extends",
-      "  something",
-      "  \t \n  ",
-      ""
-    ])("Doesn't recognise %o as a comment", (s) => {
-      expect(isComment(s)).toBe(false);
-    });
-  });
+  describe("isComment (unit test)", () => {test_isComment()});
   describe("parseJsonConfig", () => {
     describe("Normal JSON handling", () => {test_normalJsonHandling()});
-    describe("Comment handling (integration test)", () => {
-      describe.each([
-        "$comment",
-        "//",
-        "$#",
-        "#",
-        "/*"
-      ])("Handling of '%s' comments", (prefix) => {
-        it.each([
-          {
-            name: "object inside array", 
-            getData() {
-              return [3, {x: -2.3, y: "\ta\\n<-same line"}, null, []]
-            },
-            setAttr(data, k) {
-              data[1][k] = {d: 5.6, e: "aa", f: [{}]};
-            }
-          },
-          {
-            name: "single-key object",
-            getData() { return {}; },
-            setAttr(data, k) { data[k] = -3.4}
-          },
-          {
-            name: "normal object",
-            getData() {
-              return {attr: {y: [""]}, normal: [{t: 0}]};
-            },
-            setAttr(data, k) {
-              data[k] = {q: 8, i: [2, "a"]};
-            }
-          },
-          {
-            name: "big nested object",
-            getData() {
-              return {a: null, b: [{y: "\\t=\t", d: {}}]}
-            },
-            setAttr(data, k) {
-              data.b[0][k] = [[[], null, {}], {v: "2"}]
-            }
-          }
-        ])("$name", ({getData, setAttr}) => {
-          let data = getData();
-          setAttr(data, `${prefix}xyz`);
-          expect(parseJsonConfig(JSON.stringify(data))).toStrictEqual(getData());
-        })
-      })
-      
-    });
-    describe("Infinity handling", () => {
-      it("Handles infinity as the root",  () => {
-        expect(parseJsonConfig(`"Infinity"`)).toBe(Infinity);
-        expect(parseJsonConfig(`"-Infinity"`)).toBe(-Infinity);
-      });
-      it("Handles infinity in array", () => {
-        expect(parseJsonConfig(`[3.2, "Infinity", "str", null]`))
-          .toStrictEqual([3.2, Infinity, "str", null]);
-        expect(parseJsonConfig(`[3.2, "-Infinity", "str", null]`))
-          .toStrictEqual([3.2, -Infinity, "str", null]);
-      })
-      it("Handles infinity in object", () => {
-        expect(parseJsonConfig(`{"a": 3.2, "f":"Infinity", "e":"str", "q":null}`))
-          .toStrictEqual({a: 3.2, f:Infinity, e:"str", q:null});
-        expect(parseJsonConfig(`{"a": 3.2, "f":"-Infinity", "e":"str", "q":null}`))
-          .toStrictEqual({a: 3.2, f:-Infinity, e:"str", q:null});
-      })
-      it("Handles infinity nestedly", () => {
-        let s = `{"a": 3.2, "f":"-Infinity", "e":"str", ` +
-          `"q": [null, "Infinity", {"y": "-Infinity", "z": {}}]}`
-        expect(parseJsonConfig(s)).toStrictEqual(
-          {a: 3.2, f:-Infinity, e:"str", q: [null, Infinity, {y: -Infinity, z: {}}]})
-      })
-    });
-    describe("Symbol handling", () => {
-      it("Handles builtin symbols", () => {
-        expect(parseJsonConfig(`{"@@unscopables": ["abc"]}`))
-          .toStrictEqual({[Symbol.unscopables]: ["abc"]});
-        expect(parseJsonConfig(`[{"@@isConcatSpreadable": false}]`))
-          .toStrictEqual([{[Symbol.isConcatSpreadable]: false}]);
-      });
-      it("Handles global symbols", () => {
-        let s = Symbol.for("__not_builtin");
-        expect(parseJsonConfig(`{"e": {"@@__not_builtin": 1}}`))
-          .toStrictEqual({e: {[s]: 1}});
-      });
-      it("Prefers builtin over global symbols", () => {
-        Symbol.for("symbol_name");  // <- 'global' symbol
-        Symbol._symbol_name = Symbol.for('_builtin_symbol');  // <- 'builtin' symbol
-        try {
-          expect(parseJsonConfig(`{"e": {"@@_symbol_name": 1}}`))
-          .toStrictEqual({e: {[Symbol._symbol_name]: 1}});
-        } finally {
-          delete Symbol._symbol_name;
-        }
-      })
-    });
+    describe("Comment handling (integration test)", () => {test_commentHandling()});
+    describe("Infinity handling", () => {test_infinityHandling()});
+    describe("Symbol handling", () => {test_symbolHandling()});
   });
 })
+
+
+function test_isComment() {
+  describe.each([
+    "$comment",
+    "//",
+    "$#",
+    "#",
+    "/*"
+  ])("Handling of '%s' comments", (prefix) => {
+    it("Recognises it as a comment", () => {
+      expect(isComment(prefix)).toBe(true);
+      expect(isComment(prefix + " xy")).toBe(true);
+      expect(isComment(prefix + "abcd")).toBe(true);
+    })
+    it("Allows leading whitespace", () => {
+      expect(isComment(" " + prefix)).toBe(true);
+      expect(isComment("   \t " + prefix)).toBe(true);
+    })
+    it("Disallows leading non-whitespace chracters", () => {
+      expect(isComment("ab" + prefix)).toBe(false);
+      expect(isComment("xy " + prefix)).toBe(false);
+      expect(isComment("  qr" + prefix)).toBe(false);
+    })
+  });
+  it.each([
+    "a",
+    "%extends",
+    "  something",
+    "  \t \n  ",
+    ""
+  ])("Doesn't recognise %o as a comment", (s) => {
+    expect(isComment(s)).toBe(false);
+  });
+}
 
 
 function test_normalJsonHandling() {
@@ -231,4 +141,107 @@ function test_normalJsonHandling() {
       });
     })
   })
+}
+
+function test_commentHandling() {
+  describe.each([
+    "$comment",
+    "//",
+    "$#",
+    "#",
+    "/*"
+  ])("Handling of '%s' comments", (prefix) => {
+    it.each([
+      {
+        name: "object inside array", 
+        getData() {
+          return [3, {x: -2.3, y: "\ta\\n<-same line"}, null, []]
+        },
+        setAttr(data, k) {
+          data[1][k] = {d: 5.6, e: "aa", f: [{}]};
+        }
+      },
+      {
+        name: "single-key object",
+        getData() { return {}; },
+        setAttr(data, k) { data[k] = -3.4}
+      },
+      {
+        name: "normal object",
+        getData() {
+          return {attr: {y: [""]}, normal: [{t: 0}]};
+        },
+        setAttr(data, k) {
+          data[k] = {q: 8, i: [2, "a"]};
+        }
+      },
+      {
+        name: "big nested object",
+        getData() {
+          return {a: null, b: [{y: "\\t=\t", d: {}}]}
+        },
+        setAttr(data, k) {
+          data.b[0][k] = [[[], null, {}], {v: "2"}]
+        }
+      }
+    ])("$name", ({getData, setAttr}) => {
+      let data = getData();
+      setAttr(data, `${prefix}xyz`);
+      expect(parseJsonConfig(JSON.stringify(data))).toStrictEqual(getData());
+    })
+  });
+}
+
+function test_infinityHandling() {
+  it("Handles infinity as the root",  () => {
+    expect(parseJsonConfig(`"Infinity"`)).toBe(Infinity);
+    expect(parseJsonConfig(`"-Infinity"`)).toBe(-Infinity);
+  });
+  it("Handles infinity in array", () => {
+    expect(parseJsonConfig(`[3.2, "Infinity", "str", null]`))
+      .toStrictEqual([3.2, Infinity, "str", null]);
+    expect(parseJsonConfig(`[3.2, "-Infinity", "str", null]`))
+      .toStrictEqual([3.2, -Infinity, "str", null]);
+  })
+  it("Handles infinity in object", () => {
+    expect(parseJsonConfig(`{"a": 3.2, "f":"Infinity", "e":"str", "q":null}`))
+      .toStrictEqual({a: 3.2, f:Infinity, e:"str", q:null});
+    expect(parseJsonConfig(`{"a": 3.2, "f":"-Infinity", "e":"str", "q":null}`))
+      .toStrictEqual({a: 3.2, f:-Infinity, e:"str", q:null});
+  })
+  it("Handles infinity nestedly", () => {
+    let s = `{"a": 3.2, "f":"-Infinity", "e":"str", ` +
+      `"q": [null, "Infinity", {"y": "-Infinity", "z": {}}]}`
+    expect(parseJsonConfig(s)).toStrictEqual(
+      {a: 3.2, f:-Infinity, e:"str", q: [
+        null, Infinity, {y: -Infinity, z: {}}]});
+  });
+}
+
+function test_symbolHandling() {
+  it("Handles builtin symbols", () => {
+    expect(parseJsonConfig(`{"@@unscopables": ["abc"]}`))
+      .toStrictEqual({[Symbol.unscopables]: ["abc"]});
+    expect(parseJsonConfig(`[{"@@isConcatSpreadable": false}]`))
+      .toStrictEqual([{[Symbol.isConcatSpreadable]: false}]);
+  });
+  it("Handles global symbols", () => {
+    let s = Symbol.for("__not_builtin");
+    expect(parseJsonConfig(`{"e": {"@@__not_builtin": 1}}`))
+      .toStrictEqual({e: {[s]: 1}});
+  });
+  it("Prefers builtin over global symbols", () => {
+    Symbol.for("symbol_name");  // <- 'global' symbol
+    Symbol._symbol_name = Symbol.for('_builtin_symbol');  // <- 'builtin' symbol
+    try {
+      expect(parseJsonConfig(`{"e": {"@@_symbol_name": 1}}`))
+        .toStrictEqual({e: {[Symbol._symbol_name]: 1}});
+    } finally {
+      delete Symbol._symbol_name;
+    }
+  });
+  it("Creates symbol in global registry if required", () => {
+    expect(parseJsonConfig(`{"@@_not_a_symbol": 7}`))
+      .toStrictEqual({[Symbol.for('_not_a_symbol')]: 7});
+  });
 }
