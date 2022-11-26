@@ -216,6 +216,12 @@ function test_infinityHandling() {
       {a: 3.2, f:-Infinity, e:"str", q: [
         null, Infinity, {y: -Infinity, z: {}}]});
   });
+  it("Ignores infinity as keys", () => {
+    expect(parseJsonConfig(`{"Infinity": [2.3, ""]}`))
+      .toStrictEqual({"Infinity": [2.3, ""]});
+    expect(parseJsonConfig(`{"-Infinity": {"k": null}`))
+      .toStrictEqual({"-Infinity": {k: null});
+  })
 }
 
 function test_symbolHandling() {
