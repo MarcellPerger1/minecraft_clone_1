@@ -54,6 +54,34 @@ describe("config_loader.js", () => {
         expect(lc.getConfigFilename("h//r.json")).toBe("./config/path/h/r.json");
         expect(lc.getConfigFilename(".///h////r///u.json"))
           .toBe("./config/path/h/r/u.json");
+      });
+      it("Adds `.json` ending if not present", () => {
+        const lc = new LoaderContext("config/path");
+        expect(lc.getConfigFilename("./x/y/z.json"))
+          .toBe('./config/path/x/y/z.json');
+        expect(lc.getConfigFilename("./x/y/z")).toBe('./config/path/x/y/z.json');
+        expect(lc.getConfigFilename("y")).toBe('./config/path/y.json');
+      });
+      it("Doesn't add `configsRoot` to path if already present", () => {
+        const lc = new LoaderContext("config/path");
+        expect(lc.getConfigFilename('config/path/j.json'))
+          .toBe("./config/path/j.json");
+        expect(lc.getConfigFilename("./config/path/nested/k"))
+          .toBe("./config/path/nested/k.json");
+      });
+      it("Leaves '.' in middle of path inteact", () => {
+        const lc = new LoaderContext("config/path");
+        expect(lc.getConfigFilename(".///h////.r////u.json"))
+          .toBe("./config/path/h/.r/u.json");
+        expect(lc.getConfigFilename(".///h///./r///u.json"))
+          .toBe("./config/path/h/./r/u.json");
+        expect(lc.getConfigFilename(".///h///././/./.r///u.json"))
+          .toBe("./config/path/h/./././.r/u.json");
+      })
+      it("Handles everythin together", () => {
+        const lc = new LoaderContext("config/path");
+        expect(lc.getConfigFilename("///config///path//0-num.e"))
+          .toBe("./config/path/0-num.e.json");
       })
     })
   });
