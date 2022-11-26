@@ -71,7 +71,7 @@ export class LoaderContext {
       throw new ReferenceError("Config paths shouldn't contain '..'");
     }
     path = trim(path, './', { start: true });
-    path = path.replace(/\/+/, '/');  // remove repeated /
+    path = path.replaceAll(/\/+/g, '/');  // remove repeated /
     if (!path.endsWith('.json')) { path += '.json'; }
     if(!path.startsWith(`${this.configsRoot}/`)) { path = `${this.configsRoot}/${path}`}
     // './' is to make it work with gh pages
