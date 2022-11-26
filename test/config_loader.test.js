@@ -1,6 +1,6 @@
 import './helpers/fetch_local_polyfill.js';
 import "./helpers/dummy_dom.js"
-import { isComment, parseJsonConfig } from "../src/config_loader.js";
+import { isComment, LoaderContext, parseJsonConfig } from "../src/config_loader.js";
 import { PlayerConfig } from "../src/config.js";
 
 describe("config_loader.js", () => {
@@ -12,6 +12,17 @@ describe("config_loader.js", () => {
     describe("Infinity handling", () => { test_infinityHandling() });
     describe("Symbol handling", () => { test_symbolHandling() });
     describe("Config class handling", () => { test_configClassHandling() });
+  });
+  describe("LoaderContext", () => {
+    describe("LoaderContext constructor", () => {
+      it("Uses the passed configsRoot", () => {
+        expect(new LoaderContext("some/path/to/a/file"))
+          .toHaveProperty('configsRoot', "some/path/to/a/file")
+      });
+      it("Defaults to the configs directory", () => {
+        expect(new LoaderContext()).toHaveProperty('configsRoot', "configs")
+      })
+    });
   });
 })
 
