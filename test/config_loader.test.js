@@ -4,13 +4,14 @@ import { isComment, parseJsonConfig } from "../src/config_loader.js";
 import { PlayerConfig } from "../src/config.js";
 
 describe("config_loader.js", () => {
-  describe("isComment (unit test)", () => {test_isComment()});
+  describe("isComment (unit test)", () => { test_isComment() });
   describe("parseJsonConfig", () => {
-    describe("Normal JSON handling", () => {test_normalJsonHandling()});
-    describe("Comment handling (integration test)", () => {test_commentHandling()});
-    describe("Infinity handling", () => {test_infinityHandling()});
-    describe("Symbol handling", () => {test_symbolHandling()});
-    describe("Config class handling", () => {test_configClassHandling()});
+    describe("Normal JSON handling", () => { test_normalJsonHandling() });
+    describe("Comment handling (integration test)", 
+             () => { test_commentHandling() });
+    describe("Infinity handling", () => { test_infinityHandling() });
+    describe("Symbol handling", () => { test_symbolHandling() });
+    describe("Config class handling", () => { test_configClassHandling() });
   });
 })
 
@@ -122,7 +123,11 @@ function test_normalJsonHandling() {
       it.each([
         {
           name: "nested object (no arrays)",
-          data: { a: 2.3, b: {}, c: { r: "9.3", d: null, e: { f: 6 } }, g: { e: 2.2 } }
+          data: {
+            a: 2.3, b: {}, c: {
+              r: "9.3", d: null, e: { f: 6 }
+            }, g: { e: 2.2 }
+          }
         },
         {
           name: "nested array (no objects)",
@@ -130,7 +135,11 @@ function test_normalJsonHandling() {
         },
         {
           name: "object as toplevel",
-          data: { a: 54, d: null, c: [-0.2, "qw", { a: "\\\t", abc: [] }], e: { w: {} } }
+          data: {
+            a: 54, d: null, c: [-0.2, "qw", {
+              a: "\\\t", abc: []
+            }], e: { w: {} }
+          }
         },
         {
           name: "array as toplevel",
@@ -155,38 +164,38 @@ function test_commentHandling() {
   ])("Handling of '%s' comments", (prefix) => {
     it.each([
       {
-        name: "object inside array", 
+        name: "object inside array",
         getData() {
-          return [3, {x: -2.3, y: "\ta\\n<-same line"}, null, []]
+          return [3, { x: -2.3, y: "\ta\\n<-same line" }, null, []]
         },
         setAttr(data, k) {
-          data[1][k] = {d: 5.6, e: "aa", f: [{}]};
+          data[1][k] = { d: 5.6, e: "aa", f: [{}] };
         }
       },
       {
         name: "single-key object",
         getData() { return {}; },
-        setAttr(data, k) { data[k] = -3.4}
+        setAttr(data, k) { data[k] = -3.4 }
       },
       {
         name: "normal object",
         getData() {
-          return {attr: {y: [""]}, normal: [{t: 0}]};
+          return { attr: { y: [""] }, normal: [{ t: 0 }] };
         },
         setAttr(data, k) {
-          data[k] = {q: 8, i: [2, "a"]};
+          data[k] = { q: 8, i: [2, "a"] };
         }
       },
       {
         name: "big nested object",
         getData() {
-          return {a: null, b: [{y: "\\t=\t", d: {}}]}
+          return { a: null, b: [{ y: "\\t=\t", d: {} }] }
         },
         setAttr(data, k) {
-          data.b[0][k] = [[[], null, {}], {v: "2"}]
+          data.b[0][k] = [[[], null, {}], { v: "2" }]
         }
       }
-    ])("$name", ({getData, setAttr}) => {
+    ])("$name", ({ getData, setAttr }) => {
       let data = getData();
       setAttr(data, `${prefix}xyz`);
       expect(parseJsonConfig(JSON.stringify(data))).toStrictEqual(getData());
@@ -195,7 +204,7 @@ function test_commentHandling() {
 }
 
 function test_infinityHandling() {
-  it("Handles infinity as the root",  () => {
+  it("Handles infinity as the root", () => {
     expect(parseJsonConfig(`"Infinity"`)).toBe(Infinity);
     expect(parseJsonConfig(`"-Infinity"`)).toBe(-Infinity);
   });
@@ -207,81 +216,83 @@ function test_infinityHandling() {
   })
   it("Handles infinity in object", () => {
     expect(parseJsonConfig(`{"a": 3.2, "f":"Infinity", "e":"str", "q":null}`))
-      .toStrictEqual({a: 3.2, f:Infinity, e:"str", q:null});
+      .toStrictEqual({ a: 3.2, f: Infinity, e: "str", q: null });
     expect(parseJsonConfig(`{"a": 3.2, "f":"-Infinity", "e":"str", "q":null}`))
-      .toStrictEqual({a: 3.2, f:-Infinity, e:"str", q:null});
+      .toStrictEqual({ a: 3.2, f: -Infinity, e: "str", q: null });
   })
   it("Handles infinity nestedly", () => {
     let s = `{"a": 3.2, "f":"-Infinity", "e":"str", ` +
       `"q": [null, "Infinity", {"y": "-Infinity", "z": {}}]}`
     expect(parseJsonConfig(s)).toStrictEqual(
-      {a: 3.2, f:-Infinity, e:"str", q: [
-        null, Infinity, {y: -Infinity, z: {}}]});
+      {
+        a: 3.2, f: -Infinity, e: "str", q: [
+          null, Infinity, { y: -Infinity, z: {} }]
+      });
   });
   it("Ignores infinity as keys", () => {
     expect(parseJsonConfig(`{"Infinity": [2.3, ""]}`))
-      .toStrictEqual({"Infinity": [2.3, ""]});
+      .toStrictEqual({ "Infinity": [2.3, ""] });
     expect(parseJsonConfig(`{"-Infinity": {"k": null}}`))
-      .toStrictEqual({"-Infinity": {k: null}});
+      .toStrictEqual({ "-Infinity": { k: null } });
   })
 }
 
 function test_symbolHandling() {
   it("Handles builtin symbols", () => {
     expect(parseJsonConfig(`{"@@unscopables": ["abc"]}`))
-      .toStrictEqual({[Symbol.unscopables]: ["abc"]});
+      .toStrictEqual({ [Symbol.unscopables]: ["abc"] });
     expect(parseJsonConfig(`[{"@@isConcatSpreadable": false}]`))
-      .toStrictEqual([{[Symbol.isConcatSpreadable]: false}]);
+      .toStrictEqual([{ [Symbol.isConcatSpreadable]: false }]);
   });
   it("Handles global symbols", () => {
     let s = Symbol.for("__not_builtin");
     expect(parseJsonConfig(`{"e": {"@@__not_builtin": 1}}`))
-      .toStrictEqual({e: {[s]: 1}});
+      .toStrictEqual({ e: { [s]: 1 } });
   });
   it("Prefers builtin over global symbols", () => {
     let globalSymbol = Symbol.for("_symbol_name");  // <- 'global' symbol
     Symbol._symbol_name = Symbol.for('_builtin_symbol');  // <- 'builtin' symbol
     try {
       let v = parseJsonConfig(`{"e": {"@@_symbol_name": 1}}`)
-      expect(v).toStrictEqual({e: {[Symbol._symbol_name]: 1}});
-      expect(v).not.toStrictEqual({e: {[globalSymbol]: 1}});
+      expect(v).toStrictEqual({ e: { [Symbol._symbol_name]: 1 } });
+      expect(v).not.toStrictEqual({ e: { [globalSymbol]: 1 } });
     } finally {
       delete Symbol._symbol_name;
     }
   });
   it("Creates symbol in global registry if required", () => {
     expect(parseJsonConfig(`{"@@_not_a_symbol": 7}`))
-      .toStrictEqual({[Symbol.for('_not_a_symbol')]: 7});
+      .toStrictEqual({ [Symbol.for('_not_a_symbol')]: 7 });
   });
   it("Ignores symbol values", () => {
     expect(parseJsonConfig(`["@@a_symbol"]`)).toStrictEqual(["@@a_symbol"]);
     expect(parseJsonConfig(`{"@@unscopables": "@@a_symbol"}`))
-      .toStrictEqual({[Symbol.unscopables]: "@@a_symbol"});
+      .toStrictEqual({ [Symbol.unscopables]: "@@a_symbol" });
   })
 }
 
-const LONG_STR = "VeryVeryExtremelyIncredibly" + 
+const LONG_STR = "VeryVeryExtremelyIncredibly" +
   "UnbeleivablyIncomprehensiblyLongString";
 
 function test_configClassHandling() {
   // the no $class branch is checked thoroughly in other tests
   it("Throws error if class isn't a config class", () => {
-    expect(() => 
-      parseJsonConfig(JSON.stringify({$class: "Invalid"}))
+    expect(() =>
+      parseJsonConfig(JSON.stringify({ $class: "Invalid" }))
     ).toThrow(/not a config class/i);
   });
   it("Throws error if class name is too long", () => {
-    expect(() => 
-      parseJsonConfig(JSON.stringify({$class: LONG_STR + "Config"}))
+    expect(() =>
+      parseJsonConfig(JSON.stringify({ $class: LONG_STR + "Config" }))
     ).toThrow(/config classes should have reasonably short names/i);
   });
   it("Throws an error if class does not exist", () => {
-    expect(() => 
-      parseJsonConfig(JSON.stringify({$class: "NotA_Config"}))
+    expect(() =>
+      parseJsonConfig(JSON.stringify({ $class: "NotA_Config" }))
     ).toThrow(/cant find config class/i);
   });
   it("Uses config class if it exists", () => {
-    expect(parseJsonConfig(JSON.stringify({$class: "PlayerConfig"})))
-      .toStrictEqual(new PlayerConfig({$class: "PlayerConfig"}));
+    expect(parseJsonConfig(JSON.stringify({ $class: "PlayerConfig" })))
+      .toStrictEqual(new PlayerConfig({ $class: "PlayerConfig" }));
   })
 }
