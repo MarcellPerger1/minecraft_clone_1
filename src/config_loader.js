@@ -135,8 +135,8 @@ function _withSymbolKeys(value){
 }
 
 function _getConfigClass(_key, value) {
-  let /** @type{string} */ t_str;
-  if (!(t_str = value?.$class)) {
+  let /** @type {string} */ t_str = value?.$class;
+  if (!t_str) {
     return null;
   }
   if (!t_str.endsWith("Config")) {
@@ -145,8 +145,8 @@ function _getConfigClass(_key, value) {
   if (t_str.length > 64) {
     throw new RangeError("Config classes should have reasonably short names ;-)");
   }
-  let cnf_cls;
-  if (!(cnf_cls = CNF_MOD?.[t_str])) {
+  let cnf_cls = CNF_MOD[t_str];
+  if (!cnf_cls) {
     throw new ReferenceError("Cant find config class");
   }
   return cnf_cls;
