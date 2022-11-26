@@ -239,11 +239,12 @@ function test_symbolHandling() {
       .toStrictEqual({e: {[s]: 1}});
   });
   it("Prefers builtin over global symbols", () => {
-    Symbol.for("symbol_name");  // <- 'global' symbol
+    let globalSymbol = Symbol.for("_symbol_name");  // <- 'global' symbol
     Symbol._symbol_name = Symbol.for('_builtin_symbol');  // <- 'builtin' symbol
     try {
-      expect(parseJsonConfig(`{"e": {"@@_symbol_name": 1}}`))
-        .toStrictEqual({e: {[Symbol._symbol_name]: 1}});
+      let v = parseJsonConfig(`{"e": {"@@_symbol_name": 1}}`)
+      expect(v).toStrictEqual({e: {[Symbol._symbol_name]: 1}});
+      expect(v).not.toStrictEqual({e: {[globalSymbol]: 1}});
     } finally {
       delete Symbol._symbol_name;
     }
