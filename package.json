@@ -15,6 +15,7 @@
   },
   "scripts": {
     "test": "chmod +x ./scripts/test.sh && ./scripts/test.sh",
+    "coverage": "chmod +x ./scripts/coverage.sh && ./scripts/coverage.sh",
     "lint": "chmod +x ./scripts/linter.sh && ./scripts/linter.sh"
   },
   "keywords": [
