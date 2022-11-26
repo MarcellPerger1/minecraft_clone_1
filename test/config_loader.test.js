@@ -1,6 +1,7 @@
 import './helpers/fetch_local_polyfill.js';
 import "./helpers/dummy_dom.js"
 import { isComment, parseJsonConfig } from "../src/config_loader.js";
+import { PlayerConfig } from "../src/config.js";
 
 describe("config_loader.js", () => {
   describe("isComment (unit test)", () => {test_isComment()});
@@ -258,10 +259,28 @@ function test_symbolHandling() {
   })
 }
 
+const LONG_STR = "VeryVeryExtremelyIncredibly" + 
+  "UnbeleivablyIncomprehensiblyLongString";
+
 function test_configClassHandling() {
+  // the no $class branch is checked thoroughly in other tests
   it("Throws error if class isn't a config class", () => {
-    expect(() => {
+    expect(() => 
       parseJsonConfig(JSON.stringify({$class: "Invalid"}))
-    }).toThrow(/not a config class/i);
+    ).toThrow(/not a config class/i);
+  });
+  it("Throws error if class name is too long", () => {
+    expect(() => 
+      parseJsonConfig(JSON.stringify({$class: LONG_STR + "Config"}))
+    ).toThrow(/config classes should have reasonably short names/i);
+  });
+  it("Throws an error if class does not exist", () => {
+    expect(() => 
+      parseJsonConfig(JSON.stringify({$class: "NotA_Config"}))
+    ).toThrow(/cant find config class/i);
+  });
+  it("Uses config class if it exists", () => {
+    expect(parseJsonConfig(JSON.stringify({$class: "PlayerConfig"})))
+      .toStrictEqual(new PlayerConfig({$class: "PlayerConfig"}));
   })
 }
