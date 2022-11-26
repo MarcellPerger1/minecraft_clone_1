@@ -244,4 +244,9 @@ function test_symbolHandling() {
     expect(parseJsonConfig(`{"@@_not_a_symbol": 7}`))
       .toStrictEqual({[Symbol.for('_not_a_symbol')]: 7});
   });
+  it("Ignores symbol values", () => {
+    expect(parseJsonConfig(`["@@a_symbol"]`)).toStrictEqual(["@@a_symbol"]);
+    expect(parseJsonConfig(`{"@@unscopables": "@@a_symbol"}`))
+      .toStrictEqual({[Symbol.unscopables]: "@@a_symbol"});
+  })
 }
