@@ -23,67 +23,7 @@ describe("config_loader.js", () => {
         expect(new LoaderContext()).toHaveProperty('configsRoot', "configs")
       })
     });
-    describe("LoaderContext.getConfigFilename", () => {
-      it("Raises error if name contains '..'", () => {
-        for(const name of ["..", "a/../b", "/a/../f", "./../r.j"]) {
-          expect(() => {
-            new LoaderContext().getConfigFilename(name)
-          }).toThrow();
-          for(const root of ["/root/path", "./rel/path/", "1", "p/", "a/b"]) {
-            expect(() => {
-              new LoaderContext(root).getConfigFilename(name)
-            }).toThrow("..");
-          }
-        }
-      });
-      it("Removes leading '.' and '/'", () => {
-        expect(new LoaderContext("root/path").getConfigFilename("./r.json"))
-          .toBe("./root/path/r.json");
-        expect(new LoaderContext("root/path").getConfigFilename("/r.json"))
-          .toBe("./root/path/r.json");
-        expect(new LoaderContext("root/path").getConfigFilename("/./r.json"))
-          .toBe("./root/path/r.json");
-      });
-      it("Adds leading `./` if needed", () => {
-        const lc = new LoaderContext("config/path");
-        expect(lc.getConfigFilename("xyx.json")).toBe("./config/path/xyx.json");
-        expect(lc.getConfigFilename("d/z.json")).toBe("./config/path/d/z.json");
-      });
-      it("Remove duplicated `/`", () => {
-        const lc = new LoaderContext("config/path");
-        expect(lc.getConfigFilename("h//r.json")).toBe("./config/path/h/r.json");
-        expect(lc.getConfigFilename(".///h////r///u.json"))
-          .toBe("./config/path/h/r/u.json");
-      });
-      it("Adds `.json` ending if not present", () => {
-        const lc = new LoaderContext("config/path");
-        expect(lc.getConfigFilename("./x/y/z.json"))
-          .toBe('./config/path/x/y/z.json');
-        expect(lc.getConfigFilename("./x/y/z")).toBe('./config/path/x/y/z.json');
-        expect(lc.getConfigFilename("y")).toBe('./config/path/y.json');
-      });
-      it("Doesn't add `configsRoot` to path if already present", () => {
-        const lc = new LoaderContext("config/path");
-        expect(lc.getConfigFilename('config/path/j.json'))
-          .toBe("./config/path/j.json");
-        expect(lc.getConfigFilename("./config/path/nested/k"))
-          .toBe("./config/path/nested/k.json");
-      });
-      it("Leaves '.' in middle of path inteact", () => {
-        const lc = new LoaderContext("config/path");
-        expect(lc.getConfigFilename(".///h////.r////u.json"))
-          .toBe("./config/path/h/.r/u.json");
-        expect(lc.getConfigFilename(".///h///./r///u.json"))
-          .toBe("./config/path/h/./r/u.json");
-        expect(lc.getConfigFilename(".///h///././/./.r///u.json"))
-          .toBe("./config/path/h/./././.r/u.json");
-      })
-      it("Handles everythin together", () => {
-        const lc = new LoaderContext("config/path");
-        expect(lc.getConfigFilename("///config///path//0-num.e"))
-          .toBe("./config/path/0-num.e.json");
-      })
-    })
+    describe("LoaderContext.getConfigFilename", () => {test_getFilename()});
   });
 })
 
@@ -366,5 +306,68 @@ function test_configClassHandling() {
   it("Uses config class if it exists", () => {
     expect(parseJsonConfig(JSON.stringify({ $class: "PlayerConfig" })))
       .toStrictEqual(new PlayerConfig({ $class: "PlayerConfig" }));
+  })
+}
+
+
+function test_getFilename() {
+  it("Raises error if name contains '..'", () => {
+    for(const name of ["..", "a/../b", "/a/../f", "./../r.j"]) {
+      expect(() => {
+        new LoaderContext().getConfigFilename(name)
+      }).toThrow();
+      for(const root of ["/root/path", "./rel/path/", "1", "p/", "a/b"]) {
+        expect(() => {
+          new LoaderContext(root).getConfigFilename(name)
+        }).toThrow("..");
+      }
+    }
+  });
+  it("Removes leading '.' and '/'", () => {
+    expect(new LoaderContext("root/path").getConfigFilename("./r.json"))
+      .toBe("./root/path/r.json");
+    expect(new LoaderContext("root/path").getConfigFilename("/r.json"))
+      .toBe("./root/path/r.json");
+    expect(new LoaderContext("root/path").getConfigFilename("/./r.json"))
+      .toBe("./root/path/r.json");
+  });
+  it("Adds leading `./` if needed", () => {
+    const lc = new LoaderContext("config/path");
+    expect(lc.getConfigFilename("xyx.json")).toBe("./config/path/xyx.json");
+    expect(lc.getConfigFilename("d/z.json")).toBe("./config/path/d/z.json");
+  });
+  it("Remove duplicated `/`", () => {
+    const lc = new LoaderContext("config/path");
+    expect(lc.getConfigFilename("h//r.json")).toBe("./config/path/h/r.json");
+    expect(lc.getConfigFilename(".///h////r///u.json"))
+      .toBe("./config/path/h/r/u.json");
+  });
+  it("Adds `.json` ending if not present", () => {
+    const lc = new LoaderContext("config/path");
+    expect(lc.getConfigFilename("./x/y/z.json"))
+      .toBe('./config/path/x/y/z.json');
+    expect(lc.getConfigFilename("./x/y/z")).toBe('./config/path/x/y/z.json');
+    expect(lc.getConfigFilename("y")).toBe('./config/path/y.json');
+  });
+  it("Doesn't add `configsRoot` to path if already present", () => {
+    const lc = new LoaderContext("config/path");
+    expect(lc.getConfigFilename('config/path/j.json'))
+      .toBe("./config/path/j.json");
+    expect(lc.getConfigFilename("./config/path/nested/k"))
+      .toBe("./config/path/nested/k.json");
+  });
+  it("Leaves '.' in middle of path intact", () => {
+    const lc = new LoaderContext("config/path");
+    expect(lc.getConfigFilename(".///h////.r////u.json"))
+      .toBe("./config/path/h/.r/u.json");
+    expect(lc.getConfigFilename(".///h///./r///u.json"))
+      .toBe("./config/path/h/./r/u.json");
+    expect(lc.getConfigFilename(".///h///././/./.r///u.json"))
+      .toBe("./config/path/h/./././.r/u.json");
+  })
+  it("Handles everythin together", () => {
+    const lc = new LoaderContext("config/path");
+    expect(lc.getConfigFilename("///config///path//0-num.e"))
+      .toBe("./config/path/0-num.e.json");
   })
 }
