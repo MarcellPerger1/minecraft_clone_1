@@ -14,15 +14,8 @@ describe("config_loader.js", () => {
     describe("Config class handling", () => { test_configClassHandling() });
   });
   describe("LoaderContext", () => {
-    describe("LoaderContext constructor", () => {
-      it("Uses the passed configsRoot", () => {
-        expect(new LoaderContext("some/path/to/a/file"))
-          .toHaveProperty('configsRoot', "some/path/to/a/file")
-      });
-      it("Defaults to the configs directory", () => {
-        expect(new LoaderContext()).toHaveProperty('configsRoot', "configs")
-      })
-    });
+    describe("LoaderContext constructor", 
+             () => {test_ConfigLoader_constructor()});
     describe("LoaderContext.getConfigFilename", () => {test_getFilename()});
   });
 })
@@ -306,6 +299,17 @@ function test_configClassHandling() {
   it("Uses config class if it exists", () => {
     expect(parseJsonConfig(JSON.stringify({ $class: "PlayerConfig" })))
       .toStrictEqual(new PlayerConfig({ $class: "PlayerConfig" }));
+  })
+}
+
+
+function test_ConfigLoader_constructor() {
+  it("Uses the passed configsRoot", () => {
+    expect(new LoaderContext("some/path/to/a/file"))
+      .toHaveProperty('configsRoot', "some/path/to/a/file")
+  });
+  it("Defaults to the configs directory", () => {
+    expect(new LoaderContext()).toHaveProperty('configsRoot', "configs")
   })
 }
 
