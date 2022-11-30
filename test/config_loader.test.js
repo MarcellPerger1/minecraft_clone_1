@@ -1,3 +1,5 @@
+import {jest} from '@jest/globals';
+
 import './helpers/fetch_local_polyfill.js';
 import "./helpers/dummy_dom.js"
 import { isComment, LoaderContext, parseJsonConfig } from "../src/config_loader.js";
@@ -28,7 +30,21 @@ describe("config_loader.js", () => {
             "E": null, 
             "r": {}
           }
-        }))
+        }));
+      });
+      it("Loads config file without inheritance", async () => {
+        let lc = new LoaderContext("test/dummy_configs");
+        let loaderFn = lc.loadConfigFile = jest.fn(() => ({}));
+        let result = await lc.loadConfigDefaults();
+        expect(loaderFn).toBeCalledTimes(1);
+        expect(loaderFn)
+          .toBeCalledWith("./test/dummy_configs/default.json", false);
+      });
+      it("Returns result from loadConfigFile", async () => {
+        let ref = {key: "value"};
+        let lc = new LoaderContext("test/dummy_configs");
+        lc.loadConfigFile = () => ref;
+        expect(await lc.loadConfigDefaults()).toBe(ref);
       })
     })
   });
