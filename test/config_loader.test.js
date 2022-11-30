@@ -1,7 +1,7 @@
 import './helpers/fetch_local_polyfill.js';
 import "./helpers/dummy_dom.js"
 import { isComment, LoaderContext, parseJsonConfig } from "../src/config_loader.js";
-import { PlayerConfig } from "../src/config.js";
+import { Config, PlayerConfig } from "../src/config.js";
 
 describe("config_loader.js", () => {
   describe("isComment (unit test)", () => { test_isComment() });
@@ -17,6 +17,20 @@ describe("config_loader.js", () => {
     describe("LoaderContext constructor", 
              () => {test_ConfigLoader_constructor()});
     describe("LoaderContext.getConfigFilename", () => {test_getFilename()});
+    describe("LoaderContext.loadConfigDefaults", () => {
+      it("Loads from default.json file", async () => {
+        let lc = new LoaderContext("test/dummy_configs");
+        let result = await lc.loadConfigDefaults();
+        expect(result).toStrictEqual(new Config({
+          "$class": "Config",
+          "some_value": [23, "str"], 
+          "obj": {
+            "E": null, 
+            "r": {}
+          }
+        }))
+      })
+    })
   });
 })
 
