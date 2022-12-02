@@ -19,34 +19,7 @@ describe("config_loader.js", () => {
     describe("LoaderContext constructor", 
              () => {test_ConfigLoader_constructor()});
     describe("LoaderContext.getConfigFilename", () => {test_getFilename()});
-    describe("LoaderContext.loadConfigDefaults", () => {
-      it("Loads from default.json file", async () => {
-        let lc = new LoaderContext("test/dummy_configs");
-        let result = await lc.loadConfigDefaults();
-        expect(result).toStrictEqual(new Config({
-          "$class": "Config",
-          "some_value": [23, "str"], 
-          "obj": {
-            "E": null, 
-            "r": {}
-          }
-        }));
-      });
-      it("Loads config file without inheritance", async () => {
-        let lc = new LoaderContext("test/dummy_configs");
-        let loaderFn = lc.loadConfigFile = jest.fn(() => ({}));
-        let result = await lc.loadConfigDefaults();
-        expect(loaderFn).toBeCalledTimes(1);
-        expect(loaderFn)
-          .toBeCalledWith("./test/dummy_configs/default.json", false);
-      });
-      it("Returns result from loadConfigFile", async () => {
-        let ref = {key: "value"};
-        let lc = new LoaderContext("test/dummy_configs");
-        lc.loadConfigFile = () => ref;
-        expect(await lc.loadConfigDefaults()).toBe(ref);
-      })
-    })
+    describe("LoaderContext.loadConfigDefaults", () => {test_loadDefaults()});
   });
 })
 
@@ -403,5 +376,34 @@ function test_getFilename() {
     const lc = new LoaderContext("config/path");
     expect(lc.getConfigFilename("///config///path//0-num.e"))
       .toBe("./config/path/0-num.e.json");
+  })
+}
+
+function test_loadDefaults() {
+  it("Loads from default.json file", async () => {
+    let lc = new LoaderContext("test/dummy_configs");
+    let result = await lc.loadConfigDefaults();
+    expect(result).toStrictEqual(new Config({
+      "$class": "Config",
+      "some_value": [23, "str"], 
+      "obj": {
+        "E": null, 
+        "r": {}
+      }
+    }));
+  });
+  it("Loads config file without inheritance", async () => {
+    let lc = new LoaderContext("test/dummy_configs");
+    let loaderFn = lc.loadConfigFile = jest.fn(() => ({}));
+    let result = await lc.loadConfigDefaults();
+    expect(loaderFn).toBeCalledTimes(1);
+    expect(loaderFn)
+      .toBeCalledWith("./test/dummy_configs/default.json", false);
+  });
+  it("Returns result from loadConfigFile", async () => {
+    let ref = {key: "value"};
+    let lc = new LoaderContext("test/dummy_configs");
+    lc.loadConfigFile = () => ref;
+    expect(await lc.loadConfigDefaults()).toBe(ref);
   })
 }
