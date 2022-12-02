@@ -1,9 +1,10 @@
-import {jest} from '@jest/globals';
+import {jest, expect, it, describe} from '@jest/globals';
 
 import './helpers/fetch_local_polyfill.js';
 import "./helpers/dummy_dom.js"
 import { isComment, LoaderContext, parseJsonConfig } from "../src/config_loader.js";
 import { Config, PlayerConfig } from "../src/config.js";
+
 
 describe("config_loader.js", () => {
   describe("isComment (unit test)", () => { test_isComment() });
@@ -20,6 +21,11 @@ describe("config_loader.js", () => {
              () => {test_ConfigLoader_constructor()});
     describe("LoaderContext.getConfigFilename", () => {test_getFilename()});
     describe("LoaderContext.loadConfigDefaults", () => {test_loadDefaults()});
+    describe("LoaderContext.loadConfigByFilename", () => {
+      test_loadByName((lc, path) => {
+        return lc.loadConfigByFilename(path);
+      })
+    })
   });
 })
 
@@ -407,3 +413,17 @@ function test_loadDefaults() {
     expect(await lc.loadConfigDefaults()).toBe(ref);
   })
 }
+
+function test_loadByName(/** @type {(lc: LoaderContext, path: string) => Promise<object>} */loadFn) {
+  it("Calls loadConfigFile", async () => {
+    let lc = new LoaderContext("test/dummy_configs");
+    let ref = {};
+    lc.loadConfigFile = jest.fn(async () => ref);
+    let result = await loadFn(lc, "something");
+    expect(result).toBe(ref);
+    expect(lc.loadConfigFile).toBeCalledTimes(1);
+    expect(lc.loadConfigFile)
+      .toBeCalledWith("./test/dummy_configs/something.json");
+  });
+}
+
