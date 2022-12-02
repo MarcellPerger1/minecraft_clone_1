@@ -24,6 +24,21 @@ describe("config_loader.js", () => {
     describe("LoaderContext.loadConfigByFilename", () => {
       test_loadByName((lc, path) => {
         return lc.loadConfigByFilename(path);
+      });
+    })
+    describe("LoaderContext.loadConfigByName", () => {
+      test_loadByName((lc, path) => {
+        return lc.loadConfigByName(path);
+      });
+      it("Disables inheritance for default", async () => {
+        let lc = new LoaderContext("test/dummy_configs");
+        let ref = {};
+        lc.loadConfigFile = jest.fn(async () => ref);
+        let result = await lc.loadConfigByName("default");
+        expect(result).toBe(ref);
+        expect(lc.loadConfigFile).toBeCalledTimes(1);
+        expect(lc.loadConfigFile)
+          .toBeCalledWith("./test/dummy_configs/default.json", false);
       })
     })
   });
@@ -424,6 +439,16 @@ function test_loadByName(/** @type {(lc: LoaderContext, path: string) => Promise
     expect(lc.loadConfigFile).toBeCalledTimes(1);
     expect(lc.loadConfigFile)
       .toBeCalledWith("./test/dummy_configs/something.json");
+  });
+  it("Handles nested directories", async () => {
+    let lc = new LoaderContext("test/dummy_configs");
+    let ref = {};
+    lc.loadConfigFile = jest.fn(async () => ref);
+    let result = await loadFn(lc, "nested_dir/inner");
+    expect(result).toBe(ref);
+    expect(lc.loadConfigFile).toBeCalledTimes(1);
+    expect(lc.loadConfigFile)
+      .toBeCalledWith("./test/dummy_configs/nested_dir/inner.json");
   });
 }
 
