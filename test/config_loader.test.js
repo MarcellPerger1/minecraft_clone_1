@@ -39,7 +39,7 @@ describe("config_loader.js", () => {
         expect(lc.loadConfigFile).toBeCalledTimes(1);
         expect(lc.loadConfigFile)
           .toBeCalledWith("./test/dummy_configs/default.json", false);
-      })
+      });
     })
   });
 })

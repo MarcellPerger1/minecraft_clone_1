@@ -33,15 +33,24 @@ export class LoaderContext {
    * @returns {Promise<CNF_MOD.ConfigT>} the new config
   */
   async handleConfigInheritance(config) {
-    /** @type {string[]} */
-    let bases = config.$extends ?? [];
-    if (!isArray(bases)) { bases = [bases]; }
-    bases = bases.filter(base => !isComment(base));
-    if(!bases.length) { bases = ["default"]; }
+    let bases = this.getConfigBases();
     let parents = await Promise.all(
       bases.map(base => this.loadConfigByName(base))
     );
     return deepMerge([...parents, config]);
+  }
+
+  /**
+   * Return bases for `config`
+   * @param {{$extends?: string|string[]}} config
+   * @returns {string[]}
+   */
+  getConfigBases(config) {
+    let bases = config.$extends ?? [];
+    if (!Array.isArray(bases)) { bases = [bases]; }
+    bases = bases.filter(base => !isComment(base));
+    if(!bases.length) { bases = ["default"]; }
+    return bases;
   }
 
   async loadConfigByName(/**@type{string}*/name) {
