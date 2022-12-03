@@ -438,16 +438,16 @@ function test_loadByName(/** @type {(lc: LoaderContext, path: string) => Promise
 
 function test_loadConfigByName() {
   test_loadByName((lc, path) => {
-        return lc.loadConfigByName(path);
-      });
-      it("Disables inheritance for default", async () => {
-        let lc = new LoaderContext("test/dummy_configs");
-        let ref = {};
-        lc.loadConfigFile = jest.fn(async () => ref);
-        let result = await lc.loadConfigByName("default");
-        expect(result).toBe(ref);
-        expect(lc.loadConfigFile).toBeCalledTimes(1);
-        expect(lc.loadConfigFile)
-          .toBeCalledWith("./test/dummy_configs/default.json", false);
-      });
+    return lc.loadConfigByName(path);
+  });
+  it("Disables inheritance for default", async () => {
+    let lc = new LoaderContext("test/dummy_configs");
+    let ref = {};
+    lc.loadConfigFile = jest.fn(async () => ref);
+    let result = await lc.loadConfigByName("default");
+    expect(result).toBe(ref);
+    expect(lc.loadConfigFile).toBeCalledTimes(1);
+    expect(lc.loadConfigFile)
+      .toBeCalledWith("./test/dummy_configs/default.json", false);
+  });
 }

@@ -1,6 +1,6 @@
 "use strict";
 import {
-  isPureObject, isObject, isArray, 
+  isPureObject, isObject,
   fetchTextFile, 
   trim, 
   deepMerge, 
@@ -33,7 +33,7 @@ export class LoaderContext {
    * @returns {Promise<CNF_MOD.ConfigT>} the new config
   */
   async handleConfigInheritance(config) {
-    let bases = this.getConfigBases();
+    let bases = this.getConfigBases(config);
     let parents = await Promise.all(
       bases.map(base => this.loadConfigByName(base))
     );
