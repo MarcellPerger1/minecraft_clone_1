@@ -24,7 +24,19 @@ describe("config_loader.js", () => {
     describe("LoaderContext.loadConfigByFilename", () => {
       test_loadByName((lc, path) => lc.loadConfigByFilename(path));
     })
-    describe("LoaderContext.loadConfigByName", () => {test_loadConfigByName()})
+    describe("LoaderContext.loadConfigByName", () => {test_loadConfigByName()});
+    describe("LoaderContext.getConfigBases", () => {
+      it("Defaults to 'default'", () => {
+        let lc = new LoaderContext("test/dummy_configs");
+        let result = lc.getConfigBases({attr: 8});
+        expect(result).toStrictEqual(["default"]);
+      });
+      it("Allows empty list", () => {
+        let lc = new LoaderContext("test/dummy_configs");
+        let result = lc.getConfigBases({$extends: []});
+        expect(result).toStrictEqual([]);
+      })
+    })
   });
 })
 
