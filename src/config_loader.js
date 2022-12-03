@@ -46,7 +46,10 @@ export class LoaderContext {
    * @returns {string[]}
    */
   getConfigBases(config) {
-    let bases = config.$extends ?? [];
+    let bases = config.$extends ?? ["default"];
+    if(bases.length == 0) {
+      return [];  // if explicitly empty
+    }
     if (!Array.isArray(bases)) { bases = [bases]; }
     bases = bases.filter(base => !isComment(base));
     if(!bases.length) { bases = ["default"]; }

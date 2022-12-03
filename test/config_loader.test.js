@@ -35,6 +35,11 @@ describe("config_loader.js", () => {
         let lc = new LoaderContext("test/dummy_configs");
         let result = lc.getConfigBases({$extends: []});
         expect(result).toStrictEqual([]);
+      });
+      it("Treats list with just comments as non-empty", () => {
+        let lc = new LoaderContext("test/dummy_configs");
+        let result = lc.getConfigBases({$extends: ["#comment", "//a comment"]});
+        expect(result).toStrictEqual(["default"]);
       })
     })
   });
