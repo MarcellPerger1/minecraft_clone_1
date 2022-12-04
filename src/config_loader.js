@@ -15,11 +15,12 @@ export class LoaderContext {
   }
   /**
    * Load .json Config file
-   * @param {string} path
+   * @param {string} name
    * @param {boolean} inheritance - Use inheritance?
    * @returns {Promise<CNF_MOD.ConfigT>} the loaded config
   */
-  async loadConfigFile(path, inheritance = true) {
+  async loadConfigFile(name, inheritance = true) {
+    let path = this.getConfigFilename(name);
     let data = parseJsonConfig(await fetchTextFile(path));
     if (inheritance) {
       data = await this.handleConfigInheritance(data);
