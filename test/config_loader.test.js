@@ -37,15 +37,22 @@ describe("config_loader.js", () => {
         {name: "Allows empty list", $extends: [], expected: []},
         {name: "Treats list with just comments as non-empty", 
          $extends: ["#comment", "//a comment"], expected: ["default"]},
-        {name: "Handles one-item list", $extends: ["something"], expected: ["something"]}
+        {name: "Handles one-item list", $extends: ["something"], expected: ["something"]},
+        {name: "Handles multi-item list", $extends: ["something", "nested_dir/inner"], 
+         expected: ["something", "nested_dir/inner"]},
+        {name: "Handles comment string as base", 
+         $extends: "#a comment", expected: ["default"]},
+        {name: "Handles comments in multiple inheritance", 
+         $extends: ["#", "something", "//a", "default", "$comment:a"], 
+         expected: ["something", "default"]}
       ])("$name", ({$extends, expected}) => {
         let lc = new LoaderContext("test/dummy_configs");
         let result = lc.getConfigBases({$extends});
         expect(result).toStrictEqual(expected);
-      })
-    })
+      });
+    });
   });
-})
+});
 
 
 function test_isComment() {
