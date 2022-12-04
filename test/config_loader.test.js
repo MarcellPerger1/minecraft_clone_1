@@ -4,11 +4,20 @@ import {readFile} from 'fs/promises';
 import './helpers/fetch_local_polyfill.js';
 import "./helpers/dummy_dom.js"
 import { isComment, LoaderContext, parseJsonConfig, loadConfigFile } from "../src/config_loader.js";
+import { deepMerge } from '../src/utils/deep_merge.js';
 import { Config, PlayerConfig } from "../src/config.js";
 
 function makeLoader(configsRoot=null) {
   configsRoot ??= "test/dummy_configs";
   return new LoaderContext(configsRoot);
+}
+
+async function _getConfig(rawPath) {
+  return parseJsonConfig(await readFile(rawPath));
+}
+
+async function _getConfigRel(path) {
+  return _getConfig(`./test/dummy_configs/${path}.json`)
 }
 
 
@@ -68,6 +77,18 @@ describe("config_loader.js", () => {
         let expected = parseJsonConfig(
           await readFile("./test/dummy_configs/default.json"));
         expect(result).toStrictEqual(expected);
+      });
+      it("Defaults to inheritance=true", async () => {
+        let result = await fn("something", void 0, "test/dummy_configs");
+        expect(result).toStrictEqual(await fn("something", true, "test/dummy_configs"));
+      });
+      it("Uses single inheritance from default", async () => {
+        let expected = deepMerge(await Promise.all([
+          _getConfigRel("default"),
+          _getConfigRel("something")
+        ]));
+        let result = await fn("something", true, "test/dummy_configs");
+        expect(expected).toStrictEqual(result);
       })
     })
     describe("LoaderContext.loadConfigFile", () => {
