@@ -82,6 +82,10 @@ describe("config_loader.js", () => {
         let result = await fn("something", void 0, "test/dummy_configs");
         expect(result).toStrictEqual(await fn("something", true, "test/dummy_configs"));
       });
+      it("Defaults to configsRoot='configs'", async () => {
+        let result = await fn("_for_test", false);
+        expect(result).toStrictEqual(await _getConfig("./configs/_for_test.json"));
+      })
       it("Uses single inheritance from default", async () => {
         let expected = deepMerge(await Promise.all([
           _getConfigRel("default"),
@@ -100,6 +104,14 @@ describe("config_loader.js", () => {
           await readFile("./test/dummy_configs/something.json"));
         expect(result).toStrictEqual(expected);
         expect(lc.handleConfigInheritance).not.toHaveBeenCalled();
+      })
+    });
+    describe("root loadConfigFile", () => {
+      it("Doens't use inheritance if inheritance is false", async () => {
+        let result = await loadConfigFile("something", false, "test/dummy_configs");
+        let expected = parseJsonConfig(
+          await readFile("./test/dummy_configs/something.json"));
+        expect(result).toStrictEqual(expected);
       })
     })
   });
