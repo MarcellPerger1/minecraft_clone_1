@@ -1,8 +1,9 @@
 import {jest, expect, it, describe} from '@jest/globals';
+import {readFile} from 'fs/promises';
 
 import './helpers/fetch_local_polyfill.js';
 import "./helpers/dummy_dom.js"
-import { isComment, LoaderContext, parseJsonConfig } from "../src/config_loader.js";
+import { isComment, LoaderContext, parseJsonConfig, loadConfigFile } from "../src/config_loader.js";
 import { Config, PlayerConfig } from "../src/config.js";
 
 function makeLoader(configsRoot=null) {
@@ -56,12 +57,27 @@ describe("config_loader.js", () => {
         expect(result).toStrictEqual(expected);
       });
     });
+    describe.each([
+      {name: "LoaderContext.loadConfigFile", fn(p, i, configsRoot) {
+        return new LoaderContext(configsRoot).loadConfigFile(p, i);
+      }},
+      {name: "root loadConfigFile", fn: loadConfigFile}
+    ])("$name", ({fn}) => {
+      it("Processes config path berfore usage", async () => {
+        let result = await fn("default", false, "test/dummy_configs");
+        let expected = parseJsonConfig(
+          await readFile("./test/dummy_configs/default.json"));
+        expect(result).toStrictEqual(expected);
+      })
+    })
     describe("LoaderContext.loadConfigFile", () => {
       it("Doens't use inheritance if inheritance is false", async () => {
         let lc = makeLoader();
         lc.handleConfigInheritance = jest.fn(cnf => cnf);
         let result = await lc.loadConfigFile("something", false);
-        expect(result).toStrictEqual({k: 7, obj: {i: -1, v: 7}, some_value: null});
+        let expected = parseJsonConfig(
+          await readFile("./test/dummy_configs/something.json"));
+        expect(result).toStrictEqual(expected);
         expect(lc.handleConfigInheritance).not.toHaveBeenCalled();
       })
     })
@@ -428,14 +444,8 @@ function test_loadDefaults() {
   it("Loads from default.json file", async () => {
     let lc = new LoaderContext("test/dummy_configs");
     let result = await lc.loadConfigDefaults();
-    expect(result).toStrictEqual(new Config({
-      "$class": "Config",
-      "some_value": [23, "str"], 
-      "obj": {
-        "E": null, 
-        "r": {}
-      }
-    }));
+    expect(result).toStrictEqual(
+      parseJsonConfig(await readFile("./test/dummy_configs/default.json")));
   });
   it("Loads config file without inheritance", async () => {
     let lc = new LoaderContext("test/dummy_configs");
