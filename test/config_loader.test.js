@@ -5,6 +5,11 @@ import "./helpers/dummy_dom.js"
 import { isComment, LoaderContext, parseJsonConfig } from "../src/config_loader.js";
 import { Config, PlayerConfig } from "../src/config.js";
 
+function makeLoader(configsRoot=null) {
+  configsRoot ??= "test/dummy_configs";
+  return new LoaderContext(configsRoot);
+}
+
 
 describe("config_loader.js", () => {
   describe("isComment (unit test)", () => { test_isComment() });
@@ -27,7 +32,7 @@ describe("config_loader.js", () => {
     describe("LoaderContext.loadConfigByName", () => {test_loadConfigByName()});
     describe("LoaderContext.getConfigBases", () => {
       it("Defaults to 'default'", () => {
-        let lc = new LoaderContext("test/dummy_configs");
+        let lc = makeLoader("test/dummy_configs");
         let result = lc.getConfigBases({attr: 8});
         expect(result).toStrictEqual(["default"]);
       });
@@ -46,11 +51,20 @@ describe("config_loader.js", () => {
          $extends: ["#", "something", "//a", "default", "$comment:a"], 
          expected: ["something", "default"]}
       ])("$name", ({$extends, expected}) => {
-        let lc = new LoaderContext("test/dummy_configs");
+        let lc = makeLoader();
         let result = lc.getConfigBases({$extends});
         expect(result).toStrictEqual(expected);
       });
     });
+    describe("LoaderContext.loadConfigFile", () => {
+      it("Doens't use inheritance if inheritance is false", async () => {
+        let lc = makeLoader();
+        lc.handleConfigInheritance = jest.fn(cnf => cnf);
+        let result = await lc.loadConfigFile("something", false);
+        expect(result).toStrictEqual({k: 7, obj: {i: -1, v: 7}, some_value: null});
+        expect(lc.handleConfigInheritance).not.toHaveBeenCalled();
+      })
+    })
   });
 });
 

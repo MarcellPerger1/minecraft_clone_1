@@ -3,6 +3,7 @@
   "some_value": [23, "str"], 
   "obj": {
     "E": null, 
-    "r": {}
+    "r": {},
+    "v": 1
   }
 }
