@@ -31,6 +31,11 @@ describe("config_loader.js", () => {
         let result = lc.getConfigBases({attr: 8});
         expect(result).toStrictEqual(["default"]);
       });
+      it("Treats null as default", () => {
+        let lc = new LoaderContext("test/dummy_configs");
+        let result = lc.getConfigBases({$extends: null});
+        expect(result).toStrictEqual(["default"]);
+      })
       it("Allows empty list", () => {
         let lc = new LoaderContext("test/dummy_configs");
         let result = lc.getConfigBases({$extends: []});
@@ -40,6 +45,13 @@ describe("config_loader.js", () => {
         let lc = new LoaderContext("test/dummy_configs");
         let result = lc.getConfigBases({$extends: ["#comment", "//a comment"]});
         expect(result).toStrictEqual(["default"]);
+      });
+      it.each([
+        {name: "Handles one-item list", $extends: ["something"], expected: ["something"]}
+      ])("$name", ({$extends, expected}) => {
+        let lc = new LoaderContext("test/dummy_configs");
+        let result = lc.getConfigBases({$extends});
+        expect(result).toStrictEqual(expected);
       })
     })
   });
