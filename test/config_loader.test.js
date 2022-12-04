@@ -5,7 +5,8 @@ import './helpers/fetch_local_polyfill.js';
 import "./helpers/dummy_dom.js"
 import { isComment, LoaderContext, parseJsonConfig, loadConfigFile } from "../src/config_loader.js";
 import { deepMerge } from '../src/utils/deep_merge.js';
-import { Config, PlayerConfig } from "../src/config.js";
+import { PlayerConfig } from "../src/config.js";
+
 
 function makeLoader(configsRoot=null) {
   configsRoot ??= "test/dummy_configs";
@@ -38,7 +39,7 @@ describe("config_loader.js", () => {
     describe("LoaderContext.loadConfigDefaults", () => {test_loadDefaults()});
     describe("LoaderContext.loadConfigByFilename", () => {
       test_loadByName((lc, path) => lc.loadConfigByFilename(path));
-    })
+    });
     describe("LoaderContext.loadConfigByName", () => {test_loadConfigByName()});
     describe("LoaderContext.getConfigBases", () => {
       it("Defaults to 'default'", () => {
@@ -85,7 +86,7 @@ describe("config_loader.js", () => {
       it("Defaults to configsRoot='configs'", async () => {
         let result = await fn("_for_test", false);
         expect(result).toStrictEqual(await _getConfig("./configs/_for_test.json"));
-      })
+      });
       it("Uses single inheritance from default", async () => {
         let expected = deepMerge(await Promise.all([
           _getConfigRel("default"),
@@ -93,8 +94,8 @@ describe("config_loader.js", () => {
         ]));
         let result = await fn("something", true, "test/dummy_configs");
         expect(expected).toStrictEqual(result);
-      })
-    })
+      });
+    });
     describe("LoaderContext.loadConfigFile", () => {
       it("Doens't use inheritance if inheritance is false", async () => {
         let lc = makeLoader();
@@ -104,7 +105,7 @@ describe("config_loader.js", () => {
           await readFile("./test/dummy_configs/something.json"));
         expect(result).toStrictEqual(expected);
         expect(lc.handleConfigInheritance).not.toHaveBeenCalled();
-      })
+      });
     });
     describe("root loadConfigFile", () => {
       it("Doens't use inheritance if inheritance is false", async () => {
@@ -112,8 +113,8 @@ describe("config_loader.js", () => {
         let expected = parseJsonConfig(
           await readFile("./test/dummy_configs/something.json"));
         expect(result).toStrictEqual(expected);
-      })
-    })
+      });
+    });
   });
 });
 
@@ -483,7 +484,7 @@ function test_loadDefaults() {
   it("Loads config file without inheritance", async () => {
     let lc = new LoaderContext("test/dummy_configs");
     let loaderFn = lc.loadConfigFile = jest.fn(() => ({}));
-    let result = await lc.loadConfigDefaults();
+    await lc.loadConfigDefaults();
     expect(loaderFn).toBeCalledTimes(1);
     expect(loaderFn)
       .toBeCalledWith("./test/dummy_configs/default.json", false);
