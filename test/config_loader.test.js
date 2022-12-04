@@ -31,22 +31,12 @@ describe("config_loader.js", () => {
         let result = lc.getConfigBases({attr: 8});
         expect(result).toStrictEqual(["default"]);
       });
-      it("Treats null as default", () => {
-        let lc = new LoaderContext("test/dummy_configs");
-        let result = lc.getConfigBases({$extends: null});
-        expect(result).toStrictEqual(["default"]);
-      })
-      it("Allows empty list", () => {
-        let lc = new LoaderContext("test/dummy_configs");
-        let result = lc.getConfigBases({$extends: []});
-        expect(result).toStrictEqual([]);
-      });
-      it("Treats list with just comments as non-empty", () => {
-        let lc = new LoaderContext("test/dummy_configs");
-        let result = lc.getConfigBases({$extends: ["#comment", "//a comment"]});
-        expect(result).toStrictEqual(["default"]);
-      });
       it.each([
+        {name: "Treats null as default", $extends: null, expected: ["default"]},
+        {name: "Treats undefined as default", $extends: void 0, expected: ["default"]},
+        {name: "Allows empty list", $extends: [], expected: []},
+        {name: "Treats list with just comments as non-empty", 
+         $extends: ["#comment", "//a comment"], expected: ["default"]},
         {name: "Handles one-item list", $extends: ["something"], expected: ["something"]}
       ])("$name", ({$extends, expected}) => {
         let lc = new LoaderContext("test/dummy_configs");
