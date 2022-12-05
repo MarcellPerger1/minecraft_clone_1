@@ -1,4 +1,4 @@
-find . ! -wholename "**/libs/**" ! -wholename "**/node_modules/**" ! -wholename "**/res/**" ! -name "package-lock.json" ! -wholename "**/.cache/**" ! -wholename "**/.config/**" \
+find . ! -wholename "**/libs/**" ! -wholename "**/node_modules/**" ! -wholename "**/res/**" ! -name "package-lock.json" ! -wholename "**/.cache/**" ! -wholename "**/.config/**" ! -wholename "**/coverage/**" \
 \( -name "*.js" \
   -o -name "*.[mc]js" \
   -o -name "*.json" \
