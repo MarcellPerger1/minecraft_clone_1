@@ -41,32 +41,7 @@ describe("config_loader.js", () => {
       test_loadByName((lc, path) => lc.loadConfigByFilename(path));
     });
     describe("LoaderContext.loadConfigByName", () => {test_loadConfigByName()});
-    describe("LoaderContext.getConfigBases", () => {
-      it("Defaults to 'default'", () => {
-        let lc = makeLoader("test/dummy_configs");
-        let result = lc.getConfigBases({attr: 8});
-        expect(result).toStrictEqual(["default"]);
-      });
-      it.each([
-        {name: "Treats null as default", $extends: null, expected: ["default"]},
-        {name: "Treats undefined as default", $extends: void 0, expected: ["default"]},
-        {name: "Allows empty list", $extends: [], expected: []},
-        {name: "Treats list with just comments as non-empty", 
-         $extends: ["#comment", "//a comment"], expected: ["default"]},
-        {name: "Handles one-item list", $extends: ["something"], expected: ["something"]},
-        {name: "Handles multi-item list", $extends: ["something", "nested_dir/inner"], 
-         expected: ["something", "nested_dir/inner"]},
-        {name: "Handles comment string as base", 
-         $extends: "#a comment", expected: ["default"]},
-        {name: "Handles comments in multiple inheritance", 
-         $extends: ["#", "something", "//a", "default", "$comment:a"], 
-         expected: ["something", "default"]}
-      ])("$name", ({$extends, expected}) => {
-        let lc = makeLoader();
-        let result = lc.getConfigBases({$extends});
-        expect(result).toStrictEqual(expected);
-      });
-    });
+    describe("LoaderContext.getConfigBases", () => {test_getBases()});
     describe.each([
       {name: "LoaderContext.loadConfigFile", fn(p, i, configsRoot) {
         return new LoaderContext(configsRoot).loadConfigFile(p, i);
@@ -533,5 +508,32 @@ function test_loadConfigByName() {
     expect(lc.loadConfigFile).toBeCalledTimes(1);
     expect(lc.loadConfigFile)
       .toBeCalledWith("./test/dummy_configs/default.json", false);
+  });
+}
+
+function test_getBases() {
+  it("Defaults to 'default'", () => {
+    let lc = makeLoader("test/dummy_configs");
+    let result = lc.getConfigBases({attr: 8});
+    expect(result).toStrictEqual(["default"]);
+  });
+  it.each([
+    {name: "Treats null as default", $extends: null, expected: ["default"]},
+    {name: "Treats undefined as default", $extends: void 0, expected: ["default"]},
+    {name: "Allows empty list", $extends: [], expected: []},
+    {name: "Treats list with just comments as non-empty", 
+     $extends: ["#comment", "//a comment"], expected: ["default"]},
+    {name: "Handles one-item list", $extends: ["something"], expected: ["something"]},
+    {name: "Handles multi-item list", $extends: ["something", "nested_dir/inner"], 
+     expected: ["something", "nested_dir/inner"]},
+    {name: "Handles comment string as base", 
+     $extends: "#a comment", expected: ["default"]},
+    {name: "Handles comments in multiple inheritance", 
+     $extends: ["#", "something", "//a", "default", "$comment:a"], 
+     expected: ["something", "default"]}
+  ])("$name", ({$extends, expected}) => {
+    let lc = makeLoader();
+    let result = lc.getConfigBases({$extends});
+    expect(result).toStrictEqual(expected);
   });
 }
