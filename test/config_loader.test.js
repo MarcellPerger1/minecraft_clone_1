@@ -113,6 +113,17 @@ describe("config_loader.js", () => {
         await expect(fn("indirect_recursive/config1", true, "test/dummy_configs"))
           .rejects.toThrow();
       }, 500);
+      it("Allows non-recusive multi inheritance", async () => {
+        let expected = deepMerge(await Promise.all([
+          _getConfigRel("default"),
+          _getConfigRel("base2"),
+          _getConfigRel("multi_inherit"),
+          _getConfigRel("something"),
+          _getConfigRel("multi_inherit_2")
+        ]));
+        let result = await fn("multi_inherit_2", true, "test/dummy_configs");
+        expect(expected).toStrictEqual(result);
+      })
     });
     describe("LoaderContext.loadConfigFile", () => {
       it("Doens't use inheritance if inheritance is false", async () => {
