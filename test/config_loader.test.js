@@ -589,7 +589,7 @@ function test_loadConfig_common(fn) {
 }
 
 function test_loadConfig_class() {
-  it("Doens't use inheritance if inheritance is false", async () => {
+  it("Doesn't use inheritance if inheritance is false (class)", async () => {
     let lc = makeLoader();
     lc.handleConfigInheritance = jest.fn(cnf => cnf);
     let result = await lc.loadConfigFile("something", false);
@@ -601,7 +601,7 @@ function test_loadConfig_class() {
 }
 
 function test_loadConfig_root() {
-  it("Doens't use inheritance if inheritance is false", async () => {
+  it("Doesn't use inheritance if inheritance is false (root)", async () => {
     let result = await loadConfigFile("something", false, "test/dummy_configs");
     let expected = parseJsonConfig(
       await readFile("./test/dummy_configs/something.json"));
