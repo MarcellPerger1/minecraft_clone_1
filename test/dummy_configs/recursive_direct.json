@@ -1,0 +1,4 @@
+{
+    "$extends": "recursive_direct",
+    "a": 9
+}

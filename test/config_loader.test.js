@@ -104,7 +104,11 @@ describe("config_loader.js", () => {
         ]));
         let result = await fn("multi_inherit", true, "test/dummy_configs");
         expect(expected).toStrictEqual(result);
-      })
+      });
+      it("Throws error for directly recursive inheritance", async () => {
+        await expect(fn("recursive_direct", true, "test/dummy_configs"))
+          .rejects.toThrow();
+      }, 500);
     });
     describe("LoaderContext.loadConfigFile", () => {
       it("Doens't use inheritance if inheritance is false", async () => {
