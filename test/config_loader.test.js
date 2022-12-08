@@ -21,6 +21,22 @@ async function _getConfigRel(path) {
   return _getConfig(`./test/dummy_configs/${path}.json`)
 }
 
+function _withProto(obj, proto, {allNames=true, symbols=true}={}) {
+  // create *new* object (shallow copy of `obj`) with prototype of `proto`
+  let res = Object.create(proto);
+  if(allNames) {
+    Object.assign(res, Object.fromEntries(
+      Object.getOwnPropertyNames(obj).map(k => [k, obj[k]])));
+  } else {
+    Object.assign(res, obj);
+  }
+  if(symbols) {
+    Object.assign(res, Object.fromEntries(
+      Object.getOwnPropertySymbols(obj).map(k => [k, obj[k]])));
+  }
+  return res;
+}
+
 
 describe("config_loader.js", () => {
   describe("isComment (unit test)", () => { test_isComment() });
@@ -70,6 +86,25 @@ describe("config_loader.js", () => {
         let result = await fn("something", true, "test/dummy_configs");
         expect(expected).toStrictEqual(result);
       });
+      it("Handles single inheritance", async () => {
+        let expected = deepMerge(await Promise.all([
+          _getConfigRel("default"),
+          _getConfigRel("something"),
+          _getConfigRel("nested_dir/inner")
+        ]));
+        let result = await fn("nested_dir/inner.json", true, "test/dummy_configs");
+        expect(expected).toStrictEqual(result);
+      });
+      it("Handles multiple inheritance", async () => {
+        let expected = deepMerge(await Promise.all([
+          _getConfigRel("default"),
+          _getConfigRel("something"),
+          _getConfigRel("base2"),
+          _getConfigRel("multi_inherit")
+        ]));
+        let result = await fn("multi_inherit", true, "test/dummy_configs");
+        expect(expected).toStrictEqual(result);
+      })
     });
     describe("LoaderContext.loadConfigFile", () => {
       it("Doens't use inheritance if inheritance is false", async () => {
@@ -89,6 +124,25 @@ describe("config_loader.js", () => {
           await readFile("./test/dummy_configs/something.json"));
         expect(result).toStrictEqual(expected);
       });
+      it("Calls LoaderContext.loadConfigFile", async () => {
+        let proto = LoaderContext.prototype;
+        let orig = proto.loadConfigFile;
+        let ref = {};
+        let thisValue = null;
+        function impl() {
+          thisValue = this;
+          return ref;
+        }
+        try {
+          let mockFn = proto.loadConfigFile = jest.fn(impl);
+          expect(await loadConfigFile("xyz", true, "root")).toBe(ref);
+          expect(mockFn).toHaveBeenCalledTimes(1);
+          expect(mockFn).toHaveBeenCalledWith("xyz", true);
+          expect(thisValue).toStrictEqual(_withProto({configsRoot: "root"}, proto));
+        } finally {
+          proto.loadConfigFile = orig;
+        }
+      })
     });
   });
 });

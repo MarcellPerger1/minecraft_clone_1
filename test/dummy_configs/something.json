@@ -4,5 +4,6 @@
     "i": -1,
     "v": 7
   },
-  "some_value": null
+  "some_value": null,
+  "w": "Infinity"
 }

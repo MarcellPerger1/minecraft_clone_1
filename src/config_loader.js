@@ -35,6 +35,7 @@ export class LoaderContext {
   */
   async handleConfigInheritance(config) {
     let bases = this.getConfigBases(config);
+    bases.reverse();
     let parents = await Promise.all(
       bases.map(base => this.loadConfigByName(base))
     );
