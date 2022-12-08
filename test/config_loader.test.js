@@ -520,7 +520,7 @@ function test_loadDefaults() {
     await lc.loadConfigDefaults();
     expect(loaderFn).toBeCalledTimes(1);
     expect(loaderFn)
-      .toBeCalledWith("./test/dummy_configs/default.json", false);
+      .toBeCalledWith("./test/dummy_configs/default.json", false, void 0);
   });
   it("Returns result from loadConfigFile", async () => {
     let ref = {key: "value"};
@@ -539,7 +539,7 @@ function test_loadByName(/** @type {(lc: LoaderContext, path: string) => Promise
     expect(result).toBe(ref);
     expect(lc.loadConfigFile).toBeCalledTimes(1);
     expect(lc.loadConfigFile)
-      .toBeCalledWith("./test/dummy_configs/something.json");
+      .toBeCalledWith("./test/dummy_configs/something.json", void 0, void 0);
   });
   it("Handles nested directories", async () => {
     let lc = new LoaderContext("test/dummy_configs");
@@ -549,7 +549,7 @@ function test_loadByName(/** @type {(lc: LoaderContext, path: string) => Promise
     expect(result).toBe(ref);
     expect(lc.loadConfigFile).toBeCalledTimes(1);
     expect(lc.loadConfigFile)
-      .toBeCalledWith("./test/dummy_configs/nested_dir/inner.json");
+      .toBeCalledWith("./test/dummy_configs/nested_dir/inner.json", void 0, void 0);
   });
 }
 
@@ -565,7 +565,7 @@ function test_loadConfigByName() {
     expect(result).toBe(ref);
     expect(lc.loadConfigFile).toBeCalledTimes(1);
     expect(lc.loadConfigFile)
-      .toBeCalledWith("./test/dummy_configs/default.json", false);
+      .toBeCalledWith("./test/dummy_configs/default.json", false, void 0);
   });
 }
 
