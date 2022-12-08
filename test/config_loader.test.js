@@ -58,111 +58,7 @@ describe("config_loader.js", () => {
     });
     describe("LoaderContext.loadConfigByName", () => {test_loadConfigByName()});
     describe("LoaderContext.getConfigBases", () => {test_getBases()});
-    describe.each([
-      {name: "LoaderContext.loadConfigFile", fn(p, i, configsRoot) {
-        return new LoaderContext(configsRoot).loadConfigFile(p, i);
-      }},
-      {name: "root loadConfigFile", fn: loadConfigFile}
-    ])("$name", ({fn}) => {
-      it("Processes config path berfore usage", async () => {
-        let result = await fn("default", false, "test/dummy_configs");
-        let expected = parseJsonConfig(
-          await readFile("./test/dummy_configs/default.json"));
-        expect(result).toStrictEqual(expected);
-      });
-      it("Defaults to inheritance=true", async () => {
-        let result = await fn("something", void 0, "test/dummy_configs");
-        expect(result).toStrictEqual(await fn("something", true, "test/dummy_configs"));
-      });
-      it("Defaults to configsRoot='configs'", async () => {
-        let result = await fn("_for_test", false);
-        expect(result).toStrictEqual(await _getConfig("./configs/_for_test.json"));
-      });
-      it("Uses single inheritance from default", async () => {
-        let expected = deepMerge(await Promise.all([
-          _getConfigRel("default"),
-          _getConfigRel("something")
-        ]));
-        let result = await fn("something", true, "test/dummy_configs");
-        expect(expected).toStrictEqual(result);
-      });
-      it("Handles single inheritance", async () => {
-        let expected = deepMerge(await Promise.all([
-          _getConfigRel("default"),
-          _getConfigRel("something"),
-          _getConfigRel("nested_dir/inner")
-        ]));
-        let result = await fn("nested_dir/inner.json", true, "test/dummy_configs");
-        expect(expected).toStrictEqual(result);
-      });
-      it("Handles multiple inheritance", async () => {
-        let expected = deepMerge(await Promise.all([
-          _getConfigRel("default"),
-          _getConfigRel("something"),
-          _getConfigRel("base2"),
-          _getConfigRel("multi_inherit")
-        ]));
-        let result = await fn("multi_inherit", true, "test/dummy_configs");
-        expect(expected).toStrictEqual(result);
-      });
-      it("Throws error for directly recursive inheritance", async () => {
-        await expect(fn("recursive_direct", true, "test/dummy_configs"))
-          .rejects.toThrow();
-      }, 500);
-      it("Throws error for indirecly recursive configs", async () => {
-        await expect(fn("indirect_recursive/config1", true, "test/dummy_configs"))
-          .rejects.toThrow();
-      }, 500);
-      it("Allows non-recusive multi inheritance", async () => {
-        let expected = deepMerge(await Promise.all([
-          _getConfigRel("default"),
-          _getConfigRel("base2"),
-          _getConfigRel("multi_inherit"),
-          _getConfigRel("something"),
-          _getConfigRel("multi_inherit_2")
-        ]));
-        let result = await fn("multi_inherit_2", true, "test/dummy_configs");
-        expect(expected).toStrictEqual(result);
-      })
-    });
-    describe("LoaderContext.loadConfigFile", () => {
-      it("Doens't use inheritance if inheritance is false", async () => {
-        let lc = makeLoader();
-        lc.handleConfigInheritance = jest.fn(cnf => cnf);
-        let result = await lc.loadConfigFile("something", false);
-        let expected = parseJsonConfig(
-          await readFile("./test/dummy_configs/something.json"));
-        expect(result).toStrictEqual(expected);
-        expect(lc.handleConfigInheritance).not.toHaveBeenCalled();
-      });
-    });
-    describe("root loadConfigFile", () => {
-      it("Doens't use inheritance if inheritance is false", async () => {
-        let result = await loadConfigFile("something", false, "test/dummy_configs");
-        let expected = parseJsonConfig(
-          await readFile("./test/dummy_configs/something.json"));
-        expect(result).toStrictEqual(expected);
-      });
-      it("Calls LoaderContext.loadConfigFile", async () => {
-        let proto = LoaderContext.prototype;
-        let orig = proto.loadConfigFile;
-        let ref = {};
-        let thisValue = null;
-        function impl() {
-          thisValue = this;
-          return ref;
-        }
-        try {
-          let mockFn = proto.loadConfigFile = jest.fn(impl);
-          expect(await loadConfigFile("xyz", true, "root")).toBe(ref);
-          expect(mockFn).toHaveBeenCalledTimes(1);
-          expect(mockFn).toHaveBeenCalledWith("xyz", true);
-          expect(thisValue).toStrictEqual(_withProto({configsRoot: "root"}, proto));
-        } finally {
-          proto.loadConfigFile = orig;
-        }
-      })
-    });
+    runTestsFor_loadConfig();
   });
 });
 
@@ -608,5 +504,126 @@ function test_getBases() {
     let lc = makeLoader();
     let result = lc.getConfigBases({$extends});
     expect(result).toStrictEqual(expected);
+  });
+}
+
+
+function runTestsFor_loadConfig() {
+  describe.each([
+    {name: "LoaderContext.loadConfigFile", fn(p, i, configsRoot) {
+      return new LoaderContext(configsRoot).loadConfigFile(p, i);
+    }},
+    {name: "root loadConfigFile", fn: loadConfigFile}
+  ])("$name", ({fn}) => {
+    test_loadConfig_common(fn);
+  });
+  describe("LoaderContext.loadConfigFile", () => {
+    test_loadConfig_class();
+  });
+  describe("root loadConfigFile", () => {
+    test_loadConfig_root();
+  });
+}
+
+function test_loadConfig_common(fn) {
+  it("Processes config path berfore usage", async () => {
+    let result = await fn("default", false, "test/dummy_configs");
+    let expected = parseJsonConfig(
+      await readFile("./test/dummy_configs/default.json"));
+    expect(result).toStrictEqual(expected);
+  });
+  it("Defaults to inheritance=true", async () => {
+    let result = await fn("something", void 0, "test/dummy_configs");
+    expect(result).toStrictEqual(await fn("something", true, "test/dummy_configs"));
+  });
+  it("Defaults to configsRoot='configs'", async () => {
+    let result = await fn("_for_test", false);
+    expect(result).toStrictEqual(await _getConfig("./configs/_for_test.json"));
+  });
+  it("Uses single inheritance from default", async () => {
+    let expected = deepMerge(await Promise.all([
+      _getConfigRel("default"),
+      _getConfigRel("something")
+    ]));
+    let result = await fn("something", true, "test/dummy_configs");
+    expect(expected).toStrictEqual(result);
+  });
+  it("Handles single inheritance", async () => {
+    let expected = deepMerge(await Promise.all([
+      _getConfigRel("default"),
+      _getConfigRel("something"),
+      _getConfigRel("nested_dir/inner")
+    ]));
+    let result = await fn("nested_dir/inner.json", true, "test/dummy_configs");
+    expect(expected).toStrictEqual(result);
+  });
+  it("Handles multiple inheritance", async () => {
+    let expected = deepMerge(await Promise.all([
+      _getConfigRel("default"),
+      _getConfigRel("something"),
+      _getConfigRel("base2"),
+      _getConfigRel("multi_inherit")
+    ]));
+    let result = await fn("multi_inherit", true, "test/dummy_configs");
+    expect(expected).toStrictEqual(result);
+  });
+  it("Throws error for directly recursive inheritance", async () => {
+    await expect(fn("recursive_direct", true, "test/dummy_configs"))
+      .rejects.toThrow();
+  }, 500);
+  it("Throws error for indirecly recursive configs", async () => {
+    await expect(fn("indirect_recursive/config1", true, "test/dummy_configs"))
+      .rejects.toThrow();
+  }, 500);
+  it("Allows non-recusive multi inheritance", async () => {
+    let expected = deepMerge(await Promise.all([
+      _getConfigRel("default"),
+      _getConfigRel("base2"),
+      _getConfigRel("multi_inherit"),
+      _getConfigRel("something"),
+      _getConfigRel("multi_inherit_2")
+    ]));
+    let result = await fn("multi_inherit_2", true, "test/dummy_configs");
+    expect(expected).toStrictEqual(result);
+  })
+}
+
+function test_loadConfig_class() {
+  it("Doens't use inheritance if inheritance is false", async () => {
+    let lc = makeLoader();
+    lc.handleConfigInheritance = jest.fn(cnf => cnf);
+    let result = await lc.loadConfigFile("something", false);
+    let expected = parseJsonConfig(
+      await readFile("./test/dummy_configs/something.json"));
+    expect(result).toStrictEqual(expected);
+    expect(lc.handleConfigInheritance).not.toHaveBeenCalled();
+  });
+}
+
+function test_loadConfig_root() {
+  it("Doens't use inheritance if inheritance is false", async () => {
+    let result = await loadConfigFile("something", false, "test/dummy_configs");
+    let expected = parseJsonConfig(
+      await readFile("./test/dummy_configs/something.json"));
+    expect(result).toStrictEqual(expected);
+  });
+  it("Calls LoaderContext.loadConfigFile", async () => {
+    let proto = LoaderContext.prototype;
+    let orig = proto.loadConfigFile;
+    let ref = {};
+    let thisValue = null;
+    function impl() {
+      thisValue = this;
+      return ref;
+    }
+    try {
+      let mockFn = proto.loadConfigFile = jest.fn(impl);
+      expect(await loadConfigFile("xyz", true, "root")).toBe(ref);
+      expect(mockFn).toHaveBeenCalledTimes(1);
+      expect(mockFn).toHaveBeenCalledWith("xyz", true);
+      expect(thisValue).toStrictEqual(_withProto({configsRoot: "root"}, proto));
+    } finally {
+      proto.loadConfigFile = orig;
+    }
   });
 }
