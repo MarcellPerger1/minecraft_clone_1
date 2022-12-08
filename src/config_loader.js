@@ -17,13 +17,20 @@ export class LoaderContext {
    * Load .json Config file
    * @param {string} name
    * @param {boolean} inheritance - Use inheritance?
+   * @param {Set<string>} loaderStack - Set of configs being loaded in the inheritance
    * @returns {Promise<CNF_MOD.ConfigT>} the loaded config
   */
-  async loadConfigFile(name, inheritance = true) {
+  async loadConfigFile(name, inheritance = true, loaderStack=null) {
+    loaderStack = new Set(loaderStack);
     let path = this.getConfigFilename(name);
+    if(loaderStack.has(path)) {
+      throw new Error("Recursive configs are not allowed (yet?)");
+    } else {
+      loaderStack.add(path);
+    }
     let data = parseJsonConfig(await fetchTextFile(path));
     if (inheritance) {
-      data = await this.handleConfigInheritance(data);
+      data = await this.handleConfigInheritance(data, loaderStack);
     }
     return data;
   }
@@ -33,11 +40,11 @@ export class LoaderContext {
    * @param {{$extends: (string|string[])}} config - the original config
    * @returns {Promise<CNF_MOD.ConfigT>} the new config
   */
-  async handleConfigInheritance(config) {
+  async handleConfigInheritance(config, loaderStack) {
     let bases = this.getConfigBases(config);
     bases.reverse();
     let parents = await Promise.all(
-      bases.map(base => this.loadConfigByName(base))
+      bases.map(base => this.loadConfigByName(base, loaderStack))
     );
     return deepMerge([...parents, config]);
   }
@@ -58,24 +65,24 @@ export class LoaderContext {
     return bases;
   }
 
-  async loadConfigByName(/**@type{string}*/name) {
+  async loadConfigByName(/**@type{string}*/name, loaderStack) {
     switch (name) {
       case "default":
-        return this.loadConfigDefaults();
+        return this.loadConfigDefaults(loaderStack);
       default:
-        return this.loadConfigByFilename(name);
+        return this.loadConfigByFilename(name, loaderStack);
     }
   }
 
-  async loadConfigDefaults() {
+  async loadConfigDefaults(loaderStack) {
     return this.loadConfigFile(
       `./${this.configsRoot}/default.json`,
       // IMPORTANT: this is so that no infinite recursion getting defaults for default
-      false);
+      false, loaderStack);
   }
 
-  async loadConfigByFilename(path) {
-    return this.loadConfigFile(this.getConfigFilename(path));
+  async loadConfigByFilename(path, loaderStack) {
+    return this.loadConfigFile(this.getConfigFilename(path), void 0, loaderStack);
   }
 
   getConfigFilename(/** @type {string} */path) {
