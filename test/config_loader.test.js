@@ -109,6 +109,10 @@ describe("config_loader.js", () => {
         await expect(fn("recursive_direct", true, "test/dummy_configs"))
           .rejects.toThrow();
       }, 500);
+      it("Throws error for indirecly recursive configs", async () => {
+        await expect(fn("indirect_recursive/config1", true, "test/dummy_configs"))
+          .rejects.toThrow();
+      });
     });
     describe("LoaderContext.loadConfigFile", () => {
       it("Doens't use inheritance if inheritance is false", async () => {

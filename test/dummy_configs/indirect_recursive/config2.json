@@ -1,0 +1,3 @@
+{
+  "$extends": ["//comment", "indirect_recursive/config3", "something"]
+}
