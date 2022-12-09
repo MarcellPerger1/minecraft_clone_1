@@ -1,5 +1,5 @@
 import { assignNullSafe, deepMerge } from './utils.js';
-import { loadConfigFile } from "./config_loader.js";
+import { LoaderContext } from "./config_loader.js";
 
 
 export class BaseConfig {
@@ -106,6 +106,6 @@ export class Config extends BaseConfig { }
  * @returns {Promise<ConfigT>} The `Config` to use
  */
 export async function getConfig(...extra) {
-  let config = await loadConfigFile("./configs/config.json");
+  let config = await new LoaderContext().loadConfigFile("./configs/config.json");
   return deepMerge([config, ...extra]);
 }

@@ -1,0 +1,9 @@
+{
+  "$class": "Config",
+  "some_value": [23, "str"], 
+  "obj": {
+    "E": null, 
+    "r": {},
+    "v": 1
+  }
+}

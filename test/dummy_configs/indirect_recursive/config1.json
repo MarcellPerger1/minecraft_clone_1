@@ -1,0 +1,4 @@
+{
+  "$extends": "indirect_reursive/config2.json",
+  "a": "a"
+}

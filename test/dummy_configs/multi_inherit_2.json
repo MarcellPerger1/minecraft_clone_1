@@ -1,0 +1,6 @@
+{
+  "$extends": ["something", "multi_inherit", "base2.json"], 
+  "obj": {
+    "a": [1, 2, 3]
+  }
+}

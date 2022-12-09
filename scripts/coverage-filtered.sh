@@ -1,0 +1,1 @@
+chmod +x ./scripts/test.sh && ./scripts/test.sh -c ./jest-coverage-filtered.config.js $@

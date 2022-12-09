@@ -1,0 +1,7 @@
+{
+  "$extends": ["base2", "something"],
+  "obj": {
+    "qwerty": "us"
+  },
+  "w": -1
+}

@@ -1,0 +1,6 @@
+{
+  "bgColor": [1, 0.1, 0.5, 7],
+  "shader": {
+    "vs": "a/string/path"
+  }
+}

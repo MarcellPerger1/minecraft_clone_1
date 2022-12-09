@@ -6,7 +6,7 @@ export function loadTextFromTag(id){
 
 export async function fetchResponse(path) {
   if(path.startsWith('/')) {
-    console.warn("Using absolute paths that will not work when used with github pages")
+    console.warn("Using absolute paths that will not work when used with github pages or nodejs")
   }
   // todo use XMLHttpRequest for progress event (only needed when bigger files)
   const response = await fetch(path);

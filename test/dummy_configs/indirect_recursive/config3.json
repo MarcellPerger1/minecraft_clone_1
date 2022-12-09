@@ -1,0 +1,3 @@
+{
+  "$extends": ["multi_inherit.json", "indirect_recursive/config1"]
+}

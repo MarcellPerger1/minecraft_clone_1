@@ -10,10 +10,14 @@
   "devDependencies": {
     "eslint": "^8.11.0",
     "eslint-plugin-jest": "^26.5.3",
-    "jest": "^28.1.1"
+    "jest": "^28.1.1",
+    "node-fetch": "^3.3.0"
   },
   "scripts": {
-    "test": "chmod +x ./scripts/test.sh && ./scripts/test.sh"
+    "test": "chmod +x ./scripts/test.sh && ./scripts/test.sh",
+    "coverage": "chmod +x ./scripts/coverage.sh && ./scripts/coverage.sh",
+    "coverage:filtered": "chmod +x ./scripts/coverage-filtered.sh && ./scripts/coverage-filtered.sh",
+    "lint": "chmod +x ./scripts/linter.sh && ./scripts/linter.sh"
   },
   "keywords": [
     "webgl",
