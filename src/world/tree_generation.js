@@ -153,3 +153,57 @@ export class AvoidTreePlacer extends BaseTreePlacer {
     return positions;
   }
 }
+
+/**
+ * @typedef {{start: number, end: number, cumSize: number}} Section
+*/
+// ^ end is exclusive
+
+export class AvoidTreePlacerFast extends BaseTreePlacer {
+  constructor(game) {
+    super(game);
+  }
+
+  makeTrees() {
+    /*
+     - Find tree position,
+     - Split into contiguous sections,
+     - Find which section new number is in: 
+       - using calculated cumulative size of sections 
+       - then binary search for index of section
+       - then easy to find in that section (using start and end indces of the section)
+    */
+    let positions = [];
+    /** @type {Section[]} */
+    let sections = [];
+    for(let ti=0; ti<this.gcnf.nTrees; ti++) {
+      let selected_i_cum = this.rng.randint(0, sections.at(-1).cumSize);  // O(1)
+      function threeWayCmp(/**@type{number}*/item, /**@type{Section}*/v, i) {
+        if(item >= v.cumSize) {
+          return 1; // item > v
+        }
+        let prevCumSize = (sections[i-1] ?? {cumSize: 0}).cumSize;
+        if(item >= prevCumSize) {
+          return 0; // item > prev -> item in v
+        }
+        return -1; // item < v
+      }
+      var lo = 0;
+      var hi = list.length;
+      while (lo <= hi) {
+        let mid = Math.floor((lo + hi) / 2);
+        let cmpRes = threeWayCmp(item, list[mid]);
+        if (cmpRes === 0) {
+          return mid;
+        }
+        if (cmpRes < 0) {
+          hi = mid - 1;
+        } else {
+          // cmpRes > 0
+          lo = mid + 1
+        }
+      }
+      return -1;
+    }
+  }
+}
