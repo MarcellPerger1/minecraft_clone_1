@@ -11,7 +11,8 @@ export async function fetchResponse(path) {
   // todo use XMLHttpRequest for progress event (only needed when bigger files)
   const response = await fetch(path);
   if (!response.ok) {
-    throw new Error(`cant load resource at ${path}`);
+    throw new Error(`Cant load resource at ${path}`
+                    +` (status code ${response.status}): ${response.statusText}`);
   }
   return response;
 }
