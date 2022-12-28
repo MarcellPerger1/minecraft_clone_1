@@ -1,5 +1,5 @@
 import { alea } from "../alea/alea.js";
-import { rangeFrom, rangeList } from "../utils.js";
+import { binarySearch, binarySearchOr, rangeFrom, rangeList } from "../utils/array_utils.js";
 import { BaseGenerator } from "./base_generator.js";
 
 
@@ -162,22 +162,59 @@ export class AvoidTreePlacer extends BaseTreePlacer {
 export class AvoidTreePlacerFast extends BaseTreePlacer {
   constructor(game) {
     super(game);
+    this.treeStripsR = this.gcnf.treeRadius[1]
+    this.nStrips = this.treeStripsR * 2 + 1;
+    this.stripR = this.gcnf.treeRadius[0];
+    this.stripSize = this.stripR * 2 + 1;
   }
 
   makeTrees() {
     /*
-     - Find tree position,
-     - Split into contiguous sections,
-     - Find which section new number is in: 
-       - using calculated cumulative size of sections 
-       - then binary search for index of section
-       - then easy to find in that section (using start and end indces of the section)
+    1 Split into contiguous sections (one contiguous section at start)
+    2 Find cumulative index of tree,
+    3 Find real index of tree
+      .1 Find which section cumulative index is in:
+        using calculated cumulative size of sections 
+        and binary search for index of containing section
+      .2 then find in that section (using start and end indices of the section)
+    4 Add new position to tree positions
+    5 Recalculate sections. For each strip of tree:
+      .1 Get real index at start and end
+      .2 Get sections of each index
+      .3 If section not found:
+        .1 If for start, take next section
+        .2 If for end, take previous section
+      .4 If the start section if after the end section (calculate using cumulative size) :
+        .1 Continue onto next strip of tree
+      .5 If the start and end sections are the same:
+        ...
+      .5 For each section between the start and end section:
+        .1 If the section is the start section:
+        .2 If the section is the end section:
+        
     */
     let positions = [];
+    // Step 1: O(1)
+    let nColumns = this.wSize[0] * this.wSize[2];
     /** @type {Section[]} */
-    let sections = [];
+    let sections = [{start: 0, end: nColumns, cumSize: nColumns}];
+    function cmpRealIdx(/**@type{number}*/item, /**@type{Section}*/v) {
+      if(item < v.start) {
+        return -1;
+      }
+      if(item >= v.end) {
+        return 1;
+      }
+      return 0;
+    }
+    function getSectionIdxAtRealIdx(realIdx, useInterval=false){
+      // O(log2(sections.length))
+      return (useInterval ? binarySearchOr : binarySearch)(sections, realIdx, cmpRealIdx);
+    }
     for(let ti=0; ti<this.gcnf.nTrees; ti++) {
-      let selected_i_cum = this.rng.randint(0, sections.at(-1).cumSize);  // O(1)
+      // Step 2: O(1)
+      let selected_i_cum = this.rng.randint(0, sections.at(-1).cumSize);
+      // Step 3.1: O(log2(sections.length)) = O(log2(tree_size_z * trees))
       function threeWayCmp(/**@type{number}*/item, /**@type{Section}*/v, i) {
         if(item >= v.cumSize) {
           return 1; // item > v
@@ -188,22 +225,30 @@ export class AvoidTreePlacerFast extends BaseTreePlacer {
         }
         return -1; // item < v
       }
-      var lo = 0;
-      var hi = list.length;
-      while (lo <= hi) {
-        let mid = Math.floor((lo + hi) / 2);
-        let cmpRes = threeWayCmp(item, list[mid]);
-        if (cmpRes === 0) {
-          return mid;
-        }
-        if (cmpRes < 0) {
-          hi = mid - 1;
-        } else {
-          // cmpRes > 0
-          lo = mid + 1
-        }
+      let sectionIdx = binarySearch(sections, selected_i_cum, threeWayCmp);
+      // Step 3.2: O(1)
+      let section = sections[sectionIdx];
+      let distEnd = section.cumSize - selected_i_cum;
+      let realIdx = section.end - distEnd;
+      let realCoord = this.idxToCoord(realIdx);
+      // Step 4: O(1)
+      positions.push(realCoord);
+      // Step 5: O(tree_size_x * ...)
+      for(let xo = -this.treeStripsR; xo <= this.treeStripsR; xo++) {
+        // Step 5.1: O(1)
+        let startCoord = [realCoord[0] + xo, realCoord[1] - this.stripR];
+        let endCoord = [realCoord[0] + xo, realCoord[1] + this.stripR];
+        // Step 5.2: O(log2(sections.length)) = O(log2(tree_size_z * trees))
+        let startSecRes = binarySearchOr(sections, this.coordToIdx(startCoord), cmpRealIdx);
+        let endSecRes = binarySearchOr(sections, this.coordToIdx(endCoord), cmpRealIdx);
+        // Step 5.3.1: O(1)
+        let startSecIdx = startSecRes.found ? startSecRes.idx : startSecRes.idx[1];
+        // Step 5.3.2: O(1)
+        let endSecIdx = endSecRes.found ? endSecRes.idx : endSecRes.idx[0];
+        
       }
-      return -1;
     }
   }
 }
+
+

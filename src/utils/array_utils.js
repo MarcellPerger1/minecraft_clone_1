@@ -159,13 +159,18 @@ export function rangeFrom(start, stop = null) {
   return Array(stop - start).fill(0).map((_, i) => start + i);
 }
 
+/**
+ * @typedef {{found: true, idx: number} | {found: false, idx: [number, number]}} SearchRes
+ * @typedef {(item: S, v: T, i: number) => (0|1|-1)} SearchCmpFn
+ */
+
 
 /**
  * Binary search
  * @template T, S
  * @param {Array<T>} list
  * @param {S} item
- * @param {(item: S, v: T) => (0|1|-1)} threeWayCmp -1=>i<v,0=>i==v,+1=>i>v
+ * @param {SearchCmpFn} threeWayCmp `-1` => `item<v`, `0` => `item==v`, `+1` => `item>v`
  * @returns {number} index if found; else -1
  */
 export function binarySearch(list, item, threeWayCmp) {
@@ -174,7 +179,7 @@ export function binarySearch(list, item, threeWayCmp) {
   var hi = list.length;
   while (lo <= hi) {
     let mid = Math.floor((lo + hi) / 2);
-    let cmpRes = threeWayCmp(item, list[mid]);
+    let cmpRes = threeWayCmp(item, list[mid], mid);
     if (cmpRes === 0) {
       return mid;
     }
@@ -186,4 +191,37 @@ export function binarySearch(list, item, threeWayCmp) {
     }
   }
   return -1;
+}
+
+
+/**
+ * Binary search returning interval if not found
+ * @template T, S
+ * @param {Array<T>} list
+ * @param {S} item
+ * @param {SearchCmpFn} threeWayCmp `-1` => `item<v`, `0` => `item==v`, `+1` => `item>v`
+ * @returns {SearchRes} index if found; else -1
+ */
+export function binarySearchOr(list, item, threeWayCmp) {
+  threeWayCmp ??= numCmp;
+  var lo = 0;
+  var hi = list.length;
+  while (lo <= hi) {
+    let mid = Math.floor((lo + hi) / 2);
+    let cmpRes = threeWayCmp(item, list[mid], mid);
+    if (cmpRes === 0) {
+      return {found: true, idx: mid};
+    }
+    if(lo === hi) {
+      // if this is the only possiblility and it didn't work, can return early
+      return {found: false, idx: cmpRes < 0 ? [mid-1, mid] : [mid, mid+1]};
+    }
+    if (cmpRes < 0) {
+      hi = mid - 1;
+    } else {
+      // cmpRes > 0
+      lo = mid + 1
+    }
+  }
+  throw new Error("This should be unreachable! Something has certainly gone wrong...")
 }
