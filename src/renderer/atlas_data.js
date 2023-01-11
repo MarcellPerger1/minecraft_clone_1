@@ -1,4 +1,4 @@
-import { fetchJsonFile } from "./utils/file_load.js";
+import { fetchJsonFile } from "../utils/file_load.js";
 import { loadTexture } from '../utils/gl_utils.js';
 
 import { GameComponent } from '../game_component.js';
