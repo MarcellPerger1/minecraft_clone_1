@@ -1,5 +1,5 @@
 import { GameComponent } from "../game_component.js";
-import { rangeList } from "../utils.js";
+import { rangeList } from "../utils/array_utils.js";
 
 import { World } from "./world.js";
 import { Blocks } from "./block_type.js";

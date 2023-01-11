@@ -1,4 +1,4 @@
-import { rangeList } from "../utils.js";
+import { rangeList } from "../utils/array_utils.js";
 
 
 export class SeedFork {

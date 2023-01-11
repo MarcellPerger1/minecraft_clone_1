@@ -1,4 +1,5 @@
-import { assert, divmod } from '../utils.js';
+import { assert } from '../utils/assert.js';
+import { divmod } from "../utils/math.js";
 import { GameComponent } from '../game_component.js';
 
 import { Blocks } from './block_type.js';
