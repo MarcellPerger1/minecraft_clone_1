@@ -101,7 +101,7 @@ async function handleFile(/**@type {WalkDirObj}*/f) {
 
 function formatFailure(f) {
   let s = `${resolve(f.path)}\n`
-    + `Error:   ${f.line}:${f.col}  error  `
+    + `\x1b[31mError:\x1b[39m   ${f.line}:${f.col}  error  `
     + `Shouldn't import from 'utils/index.js' no-import-all-utils`;
   return s;
 }
