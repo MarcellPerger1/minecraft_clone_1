@@ -1,5 +1,5 @@
 import * as fs from "node:fs";
-import { join, normalize } from "node:path";
+import { join, resolve } from "node:path";
 
 const FILE_EXT_RE = /\.([mc]?)(js|ts)(x?)/;
 
@@ -65,7 +65,7 @@ function chainAsyncIterables(...iters) {
 
 function pathEq(a, b) {
   // not sure if this aloways works but good enough
-  return normalize(a) === normalize(b);
+  return resolve(a) === resolve(b);
 }
 
 function shouldSkip(/**@type {WalkDirObj}*/o) {
@@ -100,7 +100,7 @@ async function handleFile(/**@type {WalkDirObj}*/f) {
 }
 
 function formatFailure(f) {
-  let s = `${normalize(f.path)}\n`
+  let s = `${resolve(f.path)}\n`
     + `Error:   ${f.line}:${f.col}  error  `
     + `Shouldn't import from 'utils/index.js' no-import-all-utils`;
   return s;

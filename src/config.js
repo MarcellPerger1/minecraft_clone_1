@@ -1,4 +1,4 @@
-import { assignNullSafe } from './utils/array_utils.js'; 
+import { assignNullSafe } from './utils/array_utils.js';
 import { deepMerge } from './utils/deep_merge.js';
 
 import { LoaderContext } from "./config_loader.js";
