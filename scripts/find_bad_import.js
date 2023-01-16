@@ -91,7 +91,8 @@ async function handleFile(/**@type {WalkDirObj}*/f) {
     if(index < 0) {
       continue;
     }
-    if(/noqa:\s*no-import-all-utils/i.test(line)) {
+    let noqa = /noqa:\s*no-import-all-utils/i.test(line) || /noqa([^:]|$)/.test(line);
+    if(noqa) {
       continue;
     }
     failures.push({path: f.path, line: i+1, col: index});
