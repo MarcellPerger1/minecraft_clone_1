@@ -2,7 +2,6 @@ import {jest, expect, it, describe} from '@jest/globals';
 import {readFile} from 'fs/promises';
 
 import './helpers/fetch_local_polyfill.js';
-import "./helpers/dummy_dom.js"
 import { isComment, LoaderContext, parseJsonConfig, loadConfigFile } from "../src/config_loader.js";
 import { deepMerge } from '../src/utils/deep_merge.js';
 import { PlayerConfig } from "../src/config.js";
