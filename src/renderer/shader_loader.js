@@ -1,9 +1,9 @@
-import {
-  expectValue,
-  loadShader, programFromShaders,
-  fetchTextFile
-} from '../utils.js';
-import {GameComponent} from '../game_component.js';
+import { expectValue } from '../utils/general.js';
+import { fetchTextFile } from '../utils/file_load.js';
+import { loadShader, programFromShaders } from '../utils/gl_utils.js';
+
+import { GameComponent } from '../game_component.js';
+
 
 export class ShaderLoader extends GameComponent {
   constructor(game){
@@ -35,4 +35,3 @@ export class ShaderLoader extends GameComponent {
     return (this[result_attr_name] = result);
   }
 }
-

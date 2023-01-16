@@ -1,5 +1,7 @@
+import { assert } from "../utils/assert.js";
+import { fromNested } from "../utils/array_utils.js";
 import { GameComponent } from "../game_component.js";
-import { assert, fromNested } from "../utils.js";
+
 import { Blocks } from "./block_type.js";
 import { Chunk } from "./chunk.js";
 

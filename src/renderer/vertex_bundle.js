@@ -1,6 +1,5 @@
-import { glTypeSize } from '../utils.js';
+import { glTypeSize } from '../utils/gl_utils.js';
 import { GameComponent } from '../game_component.js';
-
 
 
 // simply a container utility class for each 'section' of vertex data

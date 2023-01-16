@@ -1,4 +1,4 @@
-import {charIsDigit} from './utils.js';
+import { charIsDigit } from './utils/math.js';
 
 export class KeyInput {
   constructor(){

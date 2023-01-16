@@ -1,4 +1,7 @@
-import {isString, classOf, assert, fromKeys, setDefaults, assignNullSafe} from '../utils.js';
+import { isString, classOf } from "../utils/type_check.js";
+import { assert } from "../utils/assert.js";
+import { fromKeys } from "../utils/general.js";
+import { setDefaults, assignNullSafe } from '../utils/array_utils.js';
 
 /**
  * Type of the argument to `new BlockType()`
