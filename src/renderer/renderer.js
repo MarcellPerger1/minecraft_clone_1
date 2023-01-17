@@ -1,5 +1,5 @@
 import {
-  exportAs, 
+  exportAs,
   // math
   toRad,
   // webgl
@@ -9,13 +9,13 @@ import {
   rangeList,
   numCmp
 } from '../utils.js';
-import {GameComponent} from '../game_component.js';
+import { GameComponent } from '../game_component.js';
 
-import {Buffers} from './buffers.js';
-import {AtlasLoader} from './atlas_data.js';
-import {ShaderLoader} from './shader_loader.js';
-import {CubeDataAdder} from './face_culling.js';
-import {ElementBundler} from './vertex_bundle.js';
+import { Buffers } from './buffers.js';
+import { AtlasLoader } from './atlas_data.js';
+import { ShaderLoader } from './shader_loader.js';
+import { CubeDataAdder } from './face_culling.js';
+import { ElementBundler } from './vertex_bundle.js';
 
 
 // NOTE: 
@@ -42,14 +42,14 @@ export class Renderer extends GameComponent {
   /**
    * @type {WebGLRenderingContext}
    */
-  get gl(){
+  get gl() {
     return this._gl;
   }
-  set gl(v){
+  set gl(v) {
     this._gl = v;
   }
 
-  initLoaders(){
+  initLoaders() {
     this.loader = new LoaderMerge({
       shader: new ShaderLoader(this.game),
       atlas: new AtlasLoader(this.game),
@@ -57,7 +57,7 @@ export class Renderer extends GameComponent {
   }
 
   // Returns Promise that fulfilles when all resources loaded and ready for a render
-  loadResources(){
+  loadResources() {
     this.initLoaders();
     this.initDoneProm = this.loader.loadResources().then(_result => {
       this.onResourcesLoaded();
@@ -65,7 +65,7 @@ export class Renderer extends GameComponent {
     return this.initDoneProm;
   }
 
-  onResourcesLoaded(){
+  onResourcesLoaded() {
     this.initProgramInfo(this.loader.shader.program);
     this.initAtlasInfo(this.loader.atlas);
     this.vertexData = {
@@ -78,31 +78,31 @@ export class Renderer extends GameComponent {
     this.configArrayBuffers();
   }
 
-  initAtlasInfo(atlas){
+  initAtlasInfo(atlas) {
     this.atlas = atlas
     this.atlasTex = this.texture = this.atlas.texture;
     this.atlasData = this.atlas.data;
   }
-  
-  get camRot(){
+
+  get camRot() {
     return this.player.rotation;
   }
-  get camPos(){
+  get camPos() {
     return this.player.position;
   }
-  
+
   // WebGL stuff
   // initialisation
-  initGL(){
+  initGL() {
     this.gl = getGL();
-    if(this.gl==null){
+    if (this.gl == null) {
       throw new Error("Failed to initiialise gl");
     }
     this.clearCanvas();
     this.checkGlFault();
   }
-  
-  initGLConfig(){
+
+  initGLConfig() {
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.depthFunc(this.gl.LEQUAL);
     this.gl.enable(this.gl.SCISSOR_TEST);
@@ -115,27 +115,27 @@ export class Renderer extends GameComponent {
    * Set size of webGL stuff
    * @param {[number, number]} size
   */
-  setGLSize(size, offset=null){
-    offset = (offset ?? [0,0]).slice(0, 2);
+  setGLSize(size, offset = null) {
+    offset = (offset ?? [0, 0]).slice(0, 2);
     this.gl.viewport(...offset, ...size);
     this.gl.scissor(...offset, ...size);
   }
 
   // gl errors
-  checkGlFault(){
-    if(!this.cnf.checkError){
+  checkGlFault() {
+    if (!this.cnf.checkError) {
       return
     }
     this.last_error = this.gl.getError();
-    if(this.last_error !== this.gl.NO_ERROR){
+    if (this.last_error !== this.gl.NO_ERROR) {
       this.onGlFault();
     }
   }
 
-  onGlFault(){
+  onGlFault() {
     console.error("WebGL error: ", glErrnoToMsg(this.last_error))
   }
-  
+
   // other
   clearCanvas() {
     this.gl.clearColor(...this.cnf.bgColor);
@@ -143,13 +143,14 @@ export class Renderer extends GameComponent {
     // actully does the clearing:
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
   }
-  
+
   // DRAW SCENE
-  renderFrame(remakeMesh){
+  renderFrame(remakeMesh) {
     this.remakeMesh = remakeMesh;
     this.initFrame();
     this.vertexData.main.reset();
-    if(this.remakeMesh){
+    // this.vertexData.opaque.reset();
+    if (this.remakeMesh) {
       // only update mesh if re-render
       this.makeWorldMesh();
     }
@@ -160,34 +161,44 @@ export class Renderer extends GameComponent {
     this.checkGlFault();
   }
 
-  initFrame(){
+  initFrame() {
     this.resetRender();
     this.setUniforms();
   }
 
-  drawAll(){
-    this.bufferDataFromBundler();
+  drawAll() {
+    this.bufferDataFromBundler(this.vertexData.opaque);
+    // see https://webglfundamentals.org/webgl/lessons/webgl-text-texture.html
+    // -> transperncy has issues
     this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
-    this.vertexData.main.drawElements();
+    this.gl.disable(this.gl.BLEND);
+    this.gl.depthMask(true);
+    this.vertexData.opaque.drawElements();
+    this.bufferDataFromBundler(this.vertexData.transparent);
+    this.gl.enable(this.gl.BLEND);
+    this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+    this.gl.depthMask(false);
+    this.vertexData.transparent.drawElements();
+    // this.vertexData.main.drawElements();
   }
 
-  resetRender(){
+  resetRender() {
     this.clearCanvas();
   }
 
   // CUBE DATA HANDLING
-  makeWorldMesh(){
+  makeWorldMesh() {
     this.vertexData.opaque.reset();
     this.vertexData.transparent.reset();
-    for(const [pos, block] of this.world){
+    for (const [pos, block] of this.world) {
       this.addBlock(pos, block);
     }
   }
 
   sortTransparentFaces() {
     let numsPerFace = {
-      indices: /* 2 triangles */6, 
-      positions: /* 4 Vec3 */12, 
+      indices: /* 2 triangles */6,
+      positions: /* 4 Vec3 */12,
       texCoords: /* 4 Vec2 */8
     };
     let data = this.vertexData.transparent;
@@ -195,102 +206,102 @@ export class Renderer extends GameComponent {
     // the decision to choose `positions` here is aribtrary
     let nFaces = data.positions.length / numsPerFace.positions;
     const getDistance = (i) => {
-      let si = numsPerFace.positions*i;
-      let cx = (posD[si] + posD[si+3] + posD[si+6] + posD[si+9]) / 4;
-      let cy = (posD[si+1] + posD[si+4] + posD[si+7] + posD[si+10]) / 4;
-      let cz = (posD[si+2] + posD[si+5] + posD[si+8] + posD[si+11]) / 4;
+      let si = numsPerFace.positions * i;
+      let cx = (posD[si] + posD[si + 3] + posD[si + 6] + posD[si + 9]) / 4;
+      let cy = (posD[si + 1] + posD[si + 4] + posD[si + 7] + posD[si + 10]) / 4;
+      let cz = (posD[si + 2] + posD[si + 5] + posD[si + 8] + posD[si + 11]) / 4;
       let dx = cx - this.camPos[0];
       let dy = cy - this.camPos[1];
       let dz = cz - this.camPos[2];
-      let sqDist = dx*dx+dy*dy+dz*dz;
+      let sqDist = dx * dx + dy * dy + dz * dz;
       return sqDist;
     }
     let faceIndices = rangeList(nFaces);
     faceIndices.sort((a, b) => {
       let v = getDistance(a) - getDistance(b);
       return v;
-    }).reverse().reverse(); // -> descending
-    for(let name of Object.keys(numsPerFace)) {
+    }).reverse(); // -> descending
+    for (let name of Object.keys(numsPerFace)) {
       let old_list = data[name];
       let new_list = Array(old_list.length);
       let stride = numsPerFace[name];
       faceIndices.forEach((old_i, new_i) => {
-        for(let offset=0;offset<stride;offset++){
-          new_list[new_i*stride+offset] = old_list[old_i*stride+offset];
+        for (let offset = 0; offset < stride; offset++) {
+          new_list[new_i * stride + offset] = old_list[old_i * stride + offset];
         }
       })
       data[name] = new_list;
     }
   }
 
-  addBlock(pos, block){
-    if(block.visible){
+  addBlock(pos, block) {
+    if (block.visible) {
       this.addBlockTextures(pos, block.textures);
     }
   }
 
-  addBlockTextures(pos, tData){
+  addBlockTextures(pos, tData) {
     new CubeDataAdder(this.game, pos, tData).addData();
   }
 
-  addData(data, texture, transparent=false){
+  addData(data, texture, transparent = false) {
     return this.vertexData[transparent ? 'transparent' : 'opaque']
       .addData(data, texture);
   }
 
   // ARRAY BUFFERS
-  configArrayBuffers(){
+  configArrayBuffers() {
     this.buffers.config('position', 'vertexPosition', 3, this.gl.FLOAT);
     this.buffers.config('textureCoord', 'textureCoord', 2, this.gl.FLOAT);
   }
 
   // UNIFORMS (todo separate uniform handler class)
-  setUniforms(){
+  setUniforms() {
     this.initProjectionMatrix();
     this.initModelViewMatrix();
     this.initTextureSampler();
   }
 
-  initTextureSampler(){
+  initTextureSampler() {
     // Tell WebGL we want to affect texture unit 0
     this.gl.activeTexture(this.gl.TEXTURE0);
     // Tell the shader we bound the texture to texture unit 0
     this.gl.uniform1i(this.programInfo.uniformLocations.uSampler, 0);
   }
-  
+
   /**
    * Set a uniform to matrix `mat`
    * @param {String} name - The name of the uniform
    * @param {(Array<Number> | Float32Array)} mat - The matrix
    */
-  setUniformMat4(name, mat){
+  setUniformMat4(name, mat) {
     this.gl.uniformMatrix4fv(
       this.programInfo.uniformLocations[name], false, mat
     )
   }
-  
-  initProjectionMatrix(){
+
+  initProjectionMatrix() {
     this.setUniformMat4('projectionMatrix', this.getProjectionMatrix());
   }
-  getProjectionMatrix(){
+  getProjectionMatrix() {
     const fieldOfView = toRad(45);
     const aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
     const zNear = 0.1;
     const zFar = 100.0;
     const projectionMatrix = mat4.create();
-  
+
     mat4.perspective(projectionMatrix,  // dest
-                     fieldOfView,
-                     aspect,
-                     zNear,
-                     zFar);
+      fieldOfView,
+      aspect,
+      zNear,
+      zFar);
     return projectionMatrix;
   }
 
-  initModelViewMatrix(){
+  initModelViewMatrix() {
     this.setUniformMat4('modelViewMatrix', this.getModelViewMatrix());
   }
-  getModelViewMatrix(){
+  getModelViewMatrix() {
     var m1 = mat4.create();
     const amount = vec3.scale([], this.camPos, -1);
     // NOTEE: IMPORTANT!: does stuff in reverse order!!!
@@ -306,17 +317,17 @@ export class Renderer extends GameComponent {
     const programInfo = {
       program: shaderProgram,
       attribLocations: {
-        vertexPosition: 
+        vertexPosition:
           this.gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
-        textureCoord: 
+        textureCoord:
           this.gl.getAttribLocation(shaderProgram, 'aTextureCoord'),
       },
       uniformLocations: {
-        projectionMatrix: 
+        projectionMatrix:
           this.gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
-        modelViewMatrix: 
+        modelViewMatrix:
           this.gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
-        uSampler: 
+        uSampler:
           this.gl.getUniformLocation(shaderProgram, 'uSampler'),
       },
     };
@@ -325,19 +336,19 @@ export class Renderer extends GameComponent {
   }
 
   // BUFFERS
-  makeBuffers(){
+  makeBuffers() {
     this.buffers.make('position');
     this.buffers.make('textureCoord');
     this.buffers.make('indices');
   }
 
-  bufferDataFromBundler(){
+  bufferDataFromBundler(b) {
     this.buffers.setData(
-      'position', new Float32Array(this.vertexData.main.positions));
+      'position', new Float32Array(b.positions));
     this.buffers.setData(
-      'textureCoord', new Float32Array(this.vertexData.main.texCoords));
+      'textureCoord', new Float32Array(b.texCoords));
     this.buffers.setData(
-      'indices', new Uint16Array(this.vertexData.main.indices), 
+      'indices', new Uint16Array(b.indices),
       this.gl.ELEMENT_ARRAY_BUFFER);
   }
 }
