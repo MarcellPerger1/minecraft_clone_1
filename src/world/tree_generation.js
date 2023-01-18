@@ -194,10 +194,19 @@ export class AvoidTreePlacerFast extends BaseTreePlacer {
         .2.2 If it has width 0, discard it
         .2.3 Else, insert it into the list
         .3 Remove old section from list
-      .5 For each section between the start and end section:
+      .6 For each section between the start and end section:
         .1 If the section is the start section:
+          .1 Find the sub-section before the tree
+          .2 If it has width 0, discard it
+          .3 Else, insert it into the list
+          .4 Remove original
         .2 If the section is the end section:
-        
+          .1 Find the sub-section after the tree
+          .2 If it has width 0, discard it
+          .3 Else, insert it into the list
+          .4 Remove original
+        .3 Else (if it is fully contained): 
+          .1 Remove it
     */
     let positions = [];
     // Step 1: O(1)
