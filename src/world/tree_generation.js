@@ -187,7 +187,13 @@ export class AvoidTreePlacerFast extends BaseTreePlacer {
       .4 If the start section if after the end section (calculate using cumulative size) :
         .1 Continue onto next strip of tree
       .5 If the start and end sections are the same:
-        ...
+        .1.1 Find the sub-section before the tree
+        .1.2 If it has width 0, discard it
+        .1.3 Else, insert it into the list
+        .2.1 Find the sub-section after the tree
+        .2.2 If it has width 0, discard it
+        .2.3 Else, insert it into the list
+        .3 Remove old section from list
       .5 For each section between the start and end section:
         .1 If the section is the start section:
         .2 If the section is the end section:
@@ -206,6 +212,9 @@ export class AvoidTreePlacerFast extends BaseTreePlacer {
         return 1;
       }
       return 0;
+    }
+    function getSecSize(/**@type {Section}*/sec) {
+      return sec.end - sec.start;
     }
     function getSectionIdxAtRealIdx(realIdx, useInterval=false){
       // O(log2(sections.length))
@@ -245,7 +254,40 @@ export class AvoidTreePlacerFast extends BaseTreePlacer {
         let startSecIdx = startSecRes.found ? startSecRes.idx : startSecRes.idx[1];
         // Step 5.3.2: O(1)
         let endSecIdx = endSecRes.found ? endSecRes.idx : endSecRes.idx[0];
-        
+        // Step 5.4.1: O(1)
+        if(endSecIdx < startSecIdx) {
+            continue;
+        }
+        if(endSecIdx === startSecIdx) {
+          let secIdx = endSecIdx;  // since they are equal
+          let sec = sections[secIdx];
+          let extraSecs = [];
+          // Step 5.5.1: O(1)
+          {
+            // Step 5.5.1.1
+            let end = this.coordToIdx(startCoord)
+            let subsecPrev = {
+              start: sec.start, end, 
+              cumSize: sec.cumSize - /*difference in size*/(sec.end - end)};
+            // Step 5.5.1.2
+            if(getSecSize(subsecPrev) > 0) {
+              extraSecs.push(subsecPrev);
+            }
+          }
+          // Step 5.5.2: O(1)
+          {
+            // Step 5.5.2.1
+            let start = this.coordToIdx(endCoord) + 1;
+            let subsecNext = {
+              start, end: sec.end, 
+              cumSize: sec.cumSize - /*difference in size*/(sec.start - start)};
+            // Step 5.5.2.2
+            if(getSecSize(subsecNext) > 0) {
+              extraSecs.push(subsecNext);
+            }
+          }
+          sections.splice(secIdx, 1, ...extraSecs);
+        }
       }
     }
   }
