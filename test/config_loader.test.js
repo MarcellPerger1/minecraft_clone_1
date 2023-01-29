@@ -94,11 +94,23 @@ describe("config_loader.js", () => {
     it("Stringifies builtin symbol in root object", () => {
       let s = Symbol.unscopables;
       let o = {[s]: 123.4, other: [{}, "s"]};
-      expect(cnfStringifyToObj(o, 2)).toStrictEqual(rawStringifyToObj({
+      expect(cnfStringifyToObj(o)).toStrictEqual(rawStringifyToObj({
         "@@unscopables": 123.4,
         other: [{}, "s"]
       }));
-    })
+    });
+    it("Stringifies all symbols", () => {
+      let o = [0, {[Symbol.toStringTag]: "builtin", v: {[Symbol.for("symbol_k")]: []}}];
+      expect(cnfStringifyToObj(o)).toStrictEqual(rawStringifyToObj([0, {
+        "@@toStringTag": "builtin", v: {"@@symbol_k": []}
+      }]));
+    });
+    it("Ignores symbols in values", () => {
+      let o = {n: 8, smb: Symbol.toStringTag};
+      expect(cnfStringifyToObj(o)).toStrictEqual(rawStringifyToObj({
+        n: 8
+      }));
+    });
   });
 });
 
