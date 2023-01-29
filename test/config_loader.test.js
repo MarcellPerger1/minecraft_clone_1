@@ -39,6 +39,14 @@ function _withProto(obj, proto, {allNames=true, symbols=true}={}) {
   return res;
 }
 
+function rawStringifyToObj(o, space=2) {
+  return JSON.parse(JSON.stringify(o, void 0, space));
+}
+
+function cnfStringifyToObj(o, space=2) {
+  return JSON.parse(stringifyJsonConfig(o, space));
+}
+
 
 describe("config_loader.js", () => {
   describe("isComment (unit test)", () => { test_isComment() });
@@ -74,6 +82,22 @@ describe("config_loader.js", () => {
     it("Has default spaces at 0", () => {
       let o = {arr: [23, "a str", "escapes: \n\\\\\t", {}], n: -22, n1: 0, x: [[], {}]};
       expect(stringifyJsonConfig(o)).toStrictEqual(JSON.stringify(o, void 0, 0));
+    });
+    it("Stringifies symbols in root object (from Symbol.for)", () => {
+      let s = Symbol.for("__forTest");
+      let o = {[s]: 123.4, other: [{}, "s"]};
+      expect(cnfStringifyToObj(o, 2)).toStrictEqual(rawStringifyToObj({
+        "@@__forTest": 123.4,
+        other: [{}, "s"]
+      }));
+    });
+    it("Stringifies builtin symbol in root object", () => {
+      let s = Symbol.unscopables;
+      let o = {[s]: 123.4, other: [{}, "s"]};
+      expect(cnfStringifyToObj(o, 2)).toStrictEqual(rawStringifyToObj({
+        "@@unscopables": 123.4,
+        other: [{}, "s"]
+      }));
     })
   });
 });
