@@ -2,7 +2,10 @@ import {jest, expect, it, describe} from '@jest/globals';
 import {readFile} from 'fs/promises';
 
 import './helpers/fetch_local_polyfill.js';
-import { isComment, LoaderContext, parseJsonConfig, loadConfigFile } from "../src/config_loader.js";
+import { 
+  isComment, LoaderContext, parseJsonConfig, 
+  loadConfigFile, stringifyJsonConfig
+} from "../src/config_loader.js";
 import { deepMerge } from '../src/utils/deep_merge.js';
 import { PlayerConfig } from "../src/config.js";
 
@@ -58,6 +61,16 @@ describe("config_loader.js", () => {
     describe("LoaderContext.loadConfigByName", () => {test_loadConfigByName()});
     describe("LoaderContext.getConfigBases", () => {test_getBases()});
     runTestsFor_loadConfig();
+  });
+  describe("stringifyJsonConfig", () => {
+    it("Stringifies normal objects (no spaces)", () => {
+      let o = {arr: [23, "a str", "escapes: \n\\\\\t", {}], n: -22, n1: 0, x: [[], {}]};
+      expect(stringifyJsonConfig(o)).toStrictEqual(JSON.stringify(o));
+    });
+    it("Stringifies normal objects (space = 2)", () => {
+      let o = {arr: [23, "a str", "escapes: \n\\\\\t", {}], n: -22, n1: 0, x: [[], {}]};
+      expect(stringifyJsonConfig(o, 2)).toStrictEqual(JSON.stringify(o, void 0, 2));
+    });
   });
 });
 
