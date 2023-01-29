@@ -110,7 +110,7 @@ function configJsonReplacer(_key, value) {
     return value;
   } 
   // only do own symbols
-  let symbols = Object.getOwnPropertySymbols(o);
+  let symbols = Object.getOwnPropertySymbols(value);
   if(symbols.length) {
     value = {...value};  // shallow-copy to not change original object
     for(let s of symbols) {
