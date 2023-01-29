@@ -115,6 +115,9 @@ function configJsonReplacer(_key, value) {
     value = {...value};  // shallow-copy to not change original object
     for(let s of symbols) {
       let desc = s.description;
+      if(desc.startsWith('Symbol.')) {
+        desc = removePrefix(desc, "Symbol.");
+      }
       let new_key = '@@' + desc;
       value[new_key] = value[s];
       delete value[s];
