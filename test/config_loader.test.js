@@ -111,6 +111,23 @@ describe("config_loader.js", () => {
         n: 8
       }));
     });
+    describe.each([
+      "$comment",
+      "//",
+      "$#",
+      "#",
+      "/*"
+    ])("Handling of '%s' comments", (prefix) => {
+      it("Throws error if in key", () => {
+        expect(() => {
+          stringifyJsonConfig({[prefix + "extra-text"]: 77.7});
+        }).toThrow("comment");
+      });
+      it("Allows it in value", () => {
+        expect(cnfStringifyToObj([0, prefix + "extra-text", {}]))
+          .toStrictEqual([0, prefix + "extra-text", {}]);
+      })
+    });
   });
 });
 
