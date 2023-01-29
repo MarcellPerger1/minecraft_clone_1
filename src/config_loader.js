@@ -108,7 +108,14 @@ function configJsonReplacer(_key, value) {
   }
   if(!isObject(value)) {
     return value;
-  } 
+  }
+  for(let k of Object.keys(value)) {
+    if(isComment(k)) {
+      throw new Error(
+        "Config to be strinfiy-ed contains comment keys "
+        + "that would be ignored when being loaded");
+    }
+  }
   // only do own symbols
   let symbols = Object.getOwnPropertySymbols(value);
   if(symbols.length) {
