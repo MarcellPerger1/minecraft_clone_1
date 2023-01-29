@@ -65,12 +65,16 @@ describe("config_loader.js", () => {
   describe("stringifyJsonConfig", () => {
     it("Stringifies normal objects (no spaces)", () => {
       let o = {arr: [23, "a str", "escapes: \n\\\\\t", {}], n: -22, n1: 0, x: [[], {}]};
-      expect(stringifyJsonConfig(o)).toStrictEqual(JSON.stringify(o));
+      expect(stringifyJsonConfig(o, 0)).toStrictEqual(JSON.stringify(o, 0));
     });
     it("Stringifies normal objects (space = 2)", () => {
       let o = {arr: [23, "a str", "escapes: \n\\\\\t", {}], n: -22, n1: 0, x: [[], {}]};
       expect(stringifyJsonConfig(o, 2)).toStrictEqual(JSON.stringify(o, void 0, 2));
     });
+    it("Has default spaces at 0", () => {
+      let o = {arr: [23, "a str", "escapes: \n\\\\\t", {}], n: -22, n1: 0, x: [[], {}]};
+      expect(stringifyJsonConfig(o)).toStrictEqual(JSON.stringify(o, void 0, 0));
+    })
   });
 });
 
