@@ -106,7 +106,21 @@ function configJsonReplacer(_key, value) {
   if (value == -Infinity) {
     return "-Infinity";
   }
-  if (isObject(value) && !isPureObject(value)) {
+  if(!isObject(value)) {
+    return value;
+  } 
+  // only do own symbols
+  let symbols = Object.getOwnPropertySymbols(o);
+  if(symbols.length) {
+    value = {...value};  // shallow-copy to not change original object
+    for(let s of symbols) {
+      let desc = s.description;
+      let new_key = '@@' + desc;
+      value[new_key] = value[s];
+      delete value[s];
+    }
+  }
+  if (!isPureObject(value)) {
     return { $class: value.constructor.name, ...value };
   }
   return value;
