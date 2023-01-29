@@ -189,7 +189,7 @@ export function parseJsonConfig(/**@type{string}*/text) {
   return JSON.parse(text, configJsonReviver);
 }
 
-export function stringifyJsonConfig(obj, space = 2) {
+export function stringifyJsonConfig(obj, space = 0) {
   return JSON.stringify(obj, configJsonReplacer, space);
 }
 
