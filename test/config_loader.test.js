@@ -71,63 +71,7 @@ describe("config_loader.js", () => {
     runTestsFor_loadConfig();
   });
   describe("stringifyJsonConfig", () => {
-    it("Stringifies normal objects (no spaces)", () => {
-      let o = {arr: [23, "a str", "escapes: \n\\\\\t", {}], n: -22, n1: 0, x: [[], {}]};
-      expect(stringifyJsonConfig(o, 0)).toStrictEqual(JSON.stringify(o, 0));
-    });
-    it("Stringifies normal objects (space = 2)", () => {
-      let o = {arr: [23, "a str", "escapes: \n\\\\\t", {}], n: -22, n1: 0, x: [[], {}]};
-      expect(stringifyJsonConfig(o, 2)).toStrictEqual(JSON.stringify(o, void 0, 2));
-    });
-    it("Has default spaces at 0", () => {
-      let o = {arr: [23, "a str", "escapes: \n\\\\\t", {}], n: -22, n1: 0, x: [[], {}]};
-      expect(stringifyJsonConfig(o)).toStrictEqual(JSON.stringify(o, void 0, 0));
-    });
-    it("Stringifies symbols in root object (from Symbol.for)", () => {
-      let s = Symbol.for("__forTest");
-      let o = {[s]: 123.4, other: [{}, "s"]};
-      expect(cnfStringifyToObj(o, 2)).toStrictEqual(rawStringifyToObj({
-        "@@__forTest": 123.4,
-        other: [{}, "s"]
-      }));
-    });
-    it("Stringifies builtin symbol in root object", () => {
-      let s = Symbol.unscopables;
-      let o = {[s]: 123.4, other: [{}, "s"]};
-      expect(cnfStringifyToObj(o)).toStrictEqual(rawStringifyToObj({
-        "@@unscopables": 123.4,
-        other: [{}, "s"]
-      }));
-    });
-    it("Stringifies all symbols", () => {
-      let o = [0, {[Symbol.toStringTag]: "builtin", v: {[Symbol.for("symbol_k")]: []}}];
-      expect(cnfStringifyToObj(o)).toStrictEqual(rawStringifyToObj([0, {
-        "@@toStringTag": "builtin", v: {"@@symbol_k": []}
-      }]));
-    });
-    it("Ignores symbols in values", () => {
-      let o = {n: 8, smb: Symbol.toStringTag};
-      expect(cnfStringifyToObj(o)).toStrictEqual(rawStringifyToObj({
-        n: 8
-      }));
-    });
-    describe.each([
-      "$comment",
-      "//",
-      "$#",
-      "#",
-      "/*"
-    ])("Handling of '%s' comments", (prefix) => {
-      it("Throws error if in key", () => {
-        expect(() => {
-          stringifyJsonConfig({[prefix + "extra-text"]: 77.7});
-        }).toThrow("comment");
-      });
-      it("Allows it in value", () => {
-        expect(cnfStringifyToObj([0, prefix + "extra-text", {}]))
-          .toStrictEqual([0, prefix + "extra-text", {}]);
-      })
-    });
+    test_stringify();
   });
 });
 
@@ -695,4 +639,65 @@ function test_loadConfig_root() {
       proto.loadConfigFile = orig;
     }
   });
+}
+
+
+function test_stringify() {
+  it("Stringifies normal objects (no spaces)", () => {
+      let o = {arr: [23, "a str", "escapes: \n\\\\\t", {}], n: -22, n1: 0, x: [[], {}]};
+      expect(stringifyJsonConfig(o, 0)).toStrictEqual(JSON.stringify(o, 0));
+    });
+    it("Stringifies normal objects (space = 2)", () => {
+      let o = {arr: [23, "a str", "escapes: \n\\\\\t", {}], n: -22, n1: 0, x: [[], {}]};
+      expect(stringifyJsonConfig(o, 2)).toStrictEqual(JSON.stringify(o, void 0, 2));
+    });
+    it("Has default spaces at 0", () => {
+      let o = {arr: [23, "a str", "escapes: \n\\\\\t", {}], n: -22, n1: 0, x: [[], {}]};
+      expect(stringifyJsonConfig(o)).toStrictEqual(JSON.stringify(o, void 0, 0));
+    });
+    it("Stringifies symbols in root object (from Symbol.for)", () => {
+      let s = Symbol.for("__forTest");
+      let o = {[s]: 123.4, other: [{}, "s"]};
+      expect(cnfStringifyToObj(o, 2)).toStrictEqual(rawStringifyToObj({
+        "@@__forTest": 123.4,
+        other: [{}, "s"]
+      }));
+    });
+    it("Stringifies builtin symbol in root object", () => {
+      let s = Symbol.unscopables;
+      let o = {[s]: 123.4, other: [{}, "s"]};
+      expect(cnfStringifyToObj(o)).toStrictEqual(rawStringifyToObj({
+        "@@unscopables": 123.4,
+        other: [{}, "s"]
+      }));
+    });
+    it("Stringifies all symbols", () => {
+      let o = [0, {[Symbol.toStringTag]: "builtin", v: {[Symbol.for("symbol_k")]: []}}];
+      expect(cnfStringifyToObj(o)).toStrictEqual(rawStringifyToObj([0, {
+        "@@toStringTag": "builtin", v: {"@@symbol_k": []}
+      }]));
+    });
+    it("Ignores symbols in values", () => {
+      let o = {n: 8, smb: Symbol.toStringTag};
+      expect(cnfStringifyToObj(o)).toStrictEqual(rawStringifyToObj({
+        n: 8
+      }));
+    });
+    describe.each([
+      "$comment",
+      "//",
+      "$#",
+      "#",
+      "/*"
+    ])("Handling of '%s' comments", (prefix) => {
+      it("Throws error if in key", () => {
+        expect(() => {
+          stringifyJsonConfig({[prefix + "extra-text"]: 77.7});
+        }).toThrow("comment");
+      });
+      it("Allows it in value", () => {
+        expect(cnfStringifyToObj([0, prefix + "extra-text", {}]))
+          .toStrictEqual([0, prefix + "extra-text", {}]);
+      })
+    });
 }
