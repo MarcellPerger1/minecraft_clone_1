@@ -106,7 +106,31 @@ function configJsonReplacer(_key, value) {
   if (value == -Infinity) {
     return "-Infinity";
   }
-  if (isObject(value) && !isPureObject(value)) {
+  if(!isObject(value)) {
+    return value;
+  }
+  for(let k of Object.keys(value)) {
+    if(isComment(k)) {
+      throw new Error(
+        "Config to be strinfiy-ed contains comment keys "
+        + "that would be ignored when being loaded");
+    }
+  }
+  // only do own symbols
+  let symbols = Object.getOwnPropertySymbols(value);
+  if(symbols.length) {
+    value = {...value};  // shallow-copy to not change original object
+    for(let s of symbols) {
+      let desc = s.description;
+      if(desc.startsWith('Symbol.')) {
+        desc = removePrefix(desc, "Symbol.");
+      }
+      let new_key = '@@' + desc;
+      value[new_key] = value[s];
+      delete value[s];
+    }
+  }
+  if (!isPureObject(value)) {
     return { $class: value.constructor.name, ...value };
   }
   return value;
@@ -175,7 +199,7 @@ export function parseJsonConfig(/**@type{string}*/text) {
   return JSON.parse(text, configJsonReviver);
 }
 
-export function stringifyJsonConfig(obj, space = 2) {
+export function stringifyJsonConfig(obj, space = 0) {
   return JSON.stringify(obj, configJsonReplacer, space);
 }
 
