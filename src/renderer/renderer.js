@@ -150,7 +150,7 @@ export class Renderer extends GameComponent {
     this.initFrame();
     this.vertexData.main.reset();
     // this.vertexData.opaque.reset();
-    if (this.remakeMesh) {
+    if (this.remakeMesh || true) {
       // only update mesh if re-render
       this.makeWorldMesh();
     }
