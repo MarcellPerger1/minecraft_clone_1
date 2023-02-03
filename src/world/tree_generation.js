@@ -178,13 +178,13 @@ export class AvoidTreePlacerFast extends BaseTreePlacer {
         and binary search for index of containing section
       .2 then find in that section (using start and end indices of the section)
     4 Add new position to tree positions
-    5 Recalculate sections. For each strip of tree:
+    5 For each strip of tree:
       .1 Get real index at start and end
       .2 Get sections of each index
       .3 If section not found:
         .1 If for start, take next section
         .2 If for end, take previous section
-      .4 If the start section if after the end section (calculate using cumulative size) :
+      .4 If the start section if after the end section:
         .1 Continue onto next strip of tree
       .5 If the start and end sections are the same:
         .1.1 Find the sub-section before the tree
@@ -193,7 +193,7 @@ export class AvoidTreePlacerFast extends BaseTreePlacer {
         .2.1 Find the sub-section after the tree
         .2.2 If it has width 0, discard it
         .2.3 Else, insert it into the list
-        .3 Remove old section from list
+        .3 Remove old section from list and continue onto next strip
       .6 For each section between the start and end section:
         .1 If the section is the start section:
           .1 Find the sub-section before the tree
@@ -207,6 +207,8 @@ export class AvoidTreePlacerFast extends BaseTreePlacer {
           .4 Remove original
         .3 Else (if it is fully contained): 
           .1 Remove it
+    6 Recalcuate cumSize:
+      .1 ...
     */
     let positions = [];
     // Step 1: O(1)
@@ -229,6 +231,7 @@ export class AvoidTreePlacerFast extends BaseTreePlacer {
       // O(log2(sections.length))
       return (useInterval ? binarySearchOr : binarySearch)(sections, realIdx, cmpRealIdx);
     }
+    // O(trees * ...)
     for(let ti=0; ti<this.gcnf.nTrees; ti++) {
       // Step 2: O(1)
       let selected_i_cum = this.rng.randint(0, sections.at(-1).cumSize);
@@ -274,10 +277,15 @@ export class AvoidTreePlacerFast extends BaseTreePlacer {
           // Step 5.5.1: O(1)
           {
             // Step 5.5.1.1
-            let end = this.coordToIdx(startCoord)
+            let end = this.coordToIdx(...startCoord);
             let subsecPrev = {
               start: sec.start, end, 
-              cumSize: sec.cumSize - /*difference in size*/(sec.end - end)};
+              // cumSize shouldn't be used anyway before next tree iteration
+              // when it must be recalculated so safe to leave as null.
+              // Also, would be *very* inconvenient to 
+              // have to correcly calculate it here so leave it as null
+              cumSize: null};
+            // sec.cumSize - /*difference in size*/(sec.end - end)
             // Step 5.5.1.2
             if(getSecSize(subsecPrev) > 0) {
               extraSecs.push(subsecPrev);
@@ -286,18 +294,43 @@ export class AvoidTreePlacerFast extends BaseTreePlacer {
           // Step 5.5.2: O(1)
           {
             // Step 5.5.2.1
-            let start = this.coordToIdx(endCoord) + 1;
+            let start = this.coordToIdx(...endCoord) + 1;
             let subsecNext = {
               start, end: sec.end, 
-              cumSize: sec.cumSize - /*difference in size*/(sec.start - start)};
+              // see comment above
+              cumSize: null};
+            // sec.cumSize - /*difference in size*/(sec.start - start)
             // Step 5.5.2.2
             if(getSecSize(subsecNext) > 0) {
               extraSecs.push(subsecNext);
             }
           }
+          // Step 5.5.3, 5.5.1.3, 5.5.2.3: O(sections.length)
           sections.splice(secIdx, 1, ...extraSecs);
+          continue;
         }
+        let delCnt = 0;
+        let addExtra = [];
+        // roughly O(tree_size_z * tree_density * ...) but negligible with small trees
+        // = O(tree_size_x * tree_density * 1)
+        for(let currSecIdx=startSecIdx; currSecIdx<=endSecIdx; currSecIdx++) {
+          // Step 6.1.1 - .2: O(1)
+          if(currSecIdx === startSecIdx) {
+            let secPrev = {start: sec.start, end: this.coordToIdx(...startCoord)};
+            if (getSecSize(secPrev) > 0) addExtra.push(secPrev);
+          // Step 6.2.1 - .2: O(1)
+          } else if(currSecIdx == endSecIdx) {
+            let secNext = {start: this.coordToIdx(...endCoord) + 1, end: sec.end};
+            if (getSecSize(secNext) > 0) addExtra.push(secNext);
+          }
+          // Step 6.3: else (if contained), don't add any extra
+          delCnt++;
+        }
+        // Rest of step 6: O(sections.length)
+        sections.splice(secIdx, delCnt, ...addExtra);
       }
+      // Step 6
+      // ...
     }
   }
 }
