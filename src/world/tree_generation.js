@@ -154,6 +154,81 @@ export class AvoidTreePlacer extends BaseTreePlacer {
   }
 }
 
+
+const DEBUG = false;
+
+
+// O(trees**2 * tree_size) algorithm
+export class AvoidTreePlacerBetter extends BaseTreePlacer {
+  constructor(game) {
+    super(game);
+  }
+
+  makeTrees() {
+    function getRealIdx(cumIdx) {
+      var lastBlocked = -1;
+      // work out cumulative idx before first blocked:
+      // cumulative = real here as no blocked yet
+      var lastCum = blocked[0] - 1;
+      if(cumIdx <= lastCum) {
+        return cumIdx;
+      }
+      for(let blockedIdx of blocked) {
+        let availableSize = blockedIdx - lastBlocked - 1
+        let thisCum = lastCum + availableSize;
+        if(cumIdx <= thisCum) {
+          return lastBlocked + (cumIdx - lastCum);
+        }
+        lastCum = thisCum;
+        lastBlocked = blockedIdx;
+      }
+      // must be after all blocked
+      return lastBlocked + (cumIdx - lastCum);
+    }
+    const insertIntoBlocked = (realIdx) => {
+      if(this.idxToCoord(realIdx).some(v=> v < 0)){
+        return;
+      }
+      let res = binarySearchOr(blocked, realIdx);
+      if(res.found) {
+        return;  // already blocked
+      }
+      var [_lo, hi] = res.idx;
+      blocked.splice(hi, 0, realIdx);
+    }
+    let trees = [];
+    let blocked = [];
+    for(let ti=0; ti<this.gcnf.nTrees; ti++) {
+      if(ti === 0) {
+        let idx = this.rng.randint(0, this.n);
+        trees.push(idx);
+        blocked.push(idx);
+        continue;
+      }
+      let blockedCnt = blocked.length;
+      let availableCnt = this.n - blockedCnt;
+      if(availableCnt < 0) {
+        console.warn("Not enough places for trees.");
+        break;
+      }
+      let cumIdx = this.rng.randint(0, availableCnt);
+      let realIdx = getRealIdx(cumIdx);
+      let realCoord = this.idxToCoord(realIdx);
+      if(DEBUG && blocked.includes(realIdx)) {
+        throw new Error("Generated tree inside tree!");
+      }
+      for(let off of this.excludeOffsets) {
+        let idx = this.coordToIdx(realCoord[0] + off[0], realCoord[1] + off[1]);
+        insertIntoBlocked(idx);
+      }
+      
+      trees.push(realIdx);
+    }
+    trees = trees.map(this.idxToCoord, this);
+    return trees;
+  }
+}
+
 /**
  * @typedef {{start: number, end: number, cumSize: number}} Section
 */

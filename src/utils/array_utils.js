@@ -205,22 +205,22 @@ export function binarySearch(list, item, threeWayCmp) {
 export function binarySearchOr(list, item, threeWayCmp) {
   threeWayCmp ??= numCmp;
   var lo = 0;
-  var hi = list.length;
+  var hi = list.length-1;
   while (lo <= hi) {
     let mid = Math.floor((lo + hi) / 2);
     let cmpRes = threeWayCmp(item, list[mid], mid);
     if (cmpRes === 0) {
       return {found: true, idx: mid};
     }
-    if(lo === hi) {
-      // if this is the only possiblility and it didn't work, can return early
-      return {found: false, idx: cmpRes < 0 ? [mid-1, mid] : [mid, mid+1]};
-    }
     if (cmpRes < 0) {
       hi = mid - 1;
     } else {
       // cmpRes > 0
       lo = mid + 1
+    }
+    if(lo > hi) {
+      // if not found, return here to be able to inspect `mid` and `cmpRes`
+      return {found: false, idx: cmpRes < 0 ? [mid-1, mid] : [mid, mid+1]};
     }
   }
   throw new Error("This should be unreachable! Something has certainly gone wrong...")
