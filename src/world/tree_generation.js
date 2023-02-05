@@ -80,7 +80,8 @@ export class IgnoreTreePlacer extends BaseTreePlacer {
   }
 
   makeTrees() {
-    return rangeList(this.n).map(_ => this.idxToCoord(this.rng.randint(0, this.n)));
+    return rangeList(this.gcnf.nTrees)
+      .map(_ => this.idxToCoord(this.rng.randint(0, this.n)));
   }
 }
 
