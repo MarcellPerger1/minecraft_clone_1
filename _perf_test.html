@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tree generation perf test</title>
+  <link href="./_perf_test.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js" 
+    integrity="sha512-WFN04846sdKMIP5LKNphMaWzU7YpMyCU245etK3g/2ARYbPK9Ub18eG+ljU96qKRCWh+quCY7yefSmlkQw1ANQ==" 
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/benchmark/2.1.4/benchmark.min.js" 
+    integrity="sha512-xQc9DgKsysVXOYCdYCygJIizr64rtYYmNcOv4iKCBJw/xvuiaeG7FIwrkXuCgJg4U7oTqqNpknbC6eyc0NSREg==" 
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script type="module" src="_perf_test.js"></script>
+  <div id="dest-root">
+    <div id="prog-div">
+      <div>Progress:</div>
+      <progress id="pbar" max="1"></progress>
+    </div>
+    <div><table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Mean time taken</th>
+          <th>Ops / second</th>
+          <th>Uncertainty</th>
+          <th>Rank</th>
+          <th>% Slower</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+td, th {
+    padding: 5px;
+    border: 1px solid darkslategray;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+.rjust {
+  text-align: right;
+}
+
+#dest-root {
+  width: fit-content;
+}
+
+#prog-div {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+}
+
+#pbar {
+  width: calc(100% - 8px);
+  margin: 4px;
+}
+
+.mono-font {
+  font-family: monospace;
+}
+
+pre {
+  margin: 0px;
+}
+
+.perf-red {
+  background: #ff000040;
+}
+
+.perf-green {
+  background: #0bed0b40;
+}
+
+.perf-amber {
+  background-color: #ffb50040;
+}
