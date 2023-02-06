@@ -10,9 +10,10 @@ export class TreePlacer extends BaseGenerator {
 
   getGenerator() {
     switch (this.gcnf.treeCollideAction) {
-      case "avoid":
+      case "avoid-old":
         return new AvoidTreePlacer(this);
       case "avoid-fast":
+      case "avoid":
         return new AvoidTreePlacerFast(this);
       case "place":
         return new IgnoreTreePlacer(this);
