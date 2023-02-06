@@ -1,5 +1,5 @@
 import { alea } from "../alea/alea.js";
-import { binarySearch, binarySearchOr, rangeFrom, rangeList } from "../utils/array_utils.js";
+import { binarySearchOr, rangeFrom, rangeList } from "../utils/array_utils.js";
 import { BaseGenerator } from "./base_generator.js";
 
 
