@@ -1,4 +1,4 @@
-import * as gen from'./src/world/tree_generation.js';
+import * as gen from '../../src/world/tree_generation.js';
 
 var suite = Benchmark.Suite("tree placers");
 
@@ -39,7 +39,7 @@ function setPre(e) {
 }
 
 
-const destDiv = document.getElementById("dest");
+const progDiv = document.getElementById("prog-div");
 const pbar = document.getElementById("pbar")
 const tbody = document.getElementById('table-body');
 let nDone = 0;
@@ -79,7 +79,7 @@ suite.map((b, i) => {
 });
 suite.on('complete', () => {
   clearInterval(updatePbarInterval);
-  pbar.remove();
+  progDiv.remove();
   console.log("Done");
   console.log(suite);
   let ordered = suite.map((v, i) => [v, i])
