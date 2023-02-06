@@ -2,8 +2,10 @@ import {jest, expect, it, describe} from '@jest/globals';
 import {readFile} from 'fs/promises';
 
 import './helpers/fetch_local_polyfill.js';
-import "./helpers/dummy_dom.js"
-import { isComment, LoaderContext, parseJsonConfig, loadConfigFile } from "../src/config_loader.js";
+import { 
+  isComment, LoaderContext, parseJsonConfig, 
+  loadConfigFile, stringifyJsonConfig
+} from "../src/config_loader.js";
 import { deepMerge } from '../src/utils/deep_merge.js';
 import { PlayerConfig } from "../src/config.js";
 
@@ -37,6 +39,14 @@ function _withProto(obj, proto, {allNames=true, symbols=true}={}) {
   return res;
 }
 
+function rawStringifyToObj(o, space=2) {
+  return JSON.parse(JSON.stringify(o, void 0, space));
+}
+
+function cnfStringifyToObj(o, space=2) {
+  return JSON.parse(stringifyJsonConfig(o, space));
+}
+
 
 describe("config_loader.js", () => {
   describe("isComment (unit test)", () => { test_isComment() });
@@ -59,6 +69,9 @@ describe("config_loader.js", () => {
     describe("LoaderContext.loadConfigByName", () => {test_loadConfigByName()});
     describe("LoaderContext.getConfigBases", () => {test_getBases()});
     runTestsFor_loadConfig();
+  });
+  describe("stringifyJsonConfig", () => {
+    test_stringify();
   });
 });
 
@@ -625,5 +638,82 @@ function test_loadConfig_root() {
     } finally {
       proto.loadConfigFile = orig;
     }
+  });
+}
+
+
+function test_stringify() {
+  it("Stringifies normal objects (no spaces)", () => {
+    let o = {arr: [23, "a str", "escapes: \n\\\\\t", {}], n: -22, n1: 0, x: [[], {}]};
+    expect(stringifyJsonConfig(o, 0)).toStrictEqual(JSON.stringify(o, 0));
+  });
+  it("Stringifies normal objects (space = 2)", () => {
+    let o = {arr: [23, "a str", "escapes: \n\\\\\t", {}], n: -22, n1: 0, x: [[], {}]};
+    expect(stringifyJsonConfig(o, 2)).toStrictEqual(JSON.stringify(o, void 0, 2));
+  });
+  it("Has default spaces at 0", () => {
+    let o = {arr: [23, "a str", "escapes: \n\\\\\t", {}], n: -22, n1: 0, x: [[], {}]};
+    expect(stringifyJsonConfig(o)).toStrictEqual(JSON.stringify(o, void 0, 0));
+  });
+  it("Stringifies symbols in root object (from Symbol.for)", () => {
+    let s = Symbol.for("__forTest");
+    let o = {[s]: 123.4, other: [{}, "s"]};
+    expect(cnfStringifyToObj(o, 2)).toStrictEqual(rawStringifyToObj({
+      "@@__forTest": 123.4,
+      other: [{}, "s"]
+    }));
+  });
+  it("Stringifies builtin symbol in root object", () => {
+    let s = Symbol.unscopables;
+    let o = {[s]: 123.4, other: [{}, "s"]};
+    expect(cnfStringifyToObj(o)).toStrictEqual(rawStringifyToObj({
+      "@@unscopables": 123.4,
+      other: [{}, "s"]
+    }));
+  });
+  it("Stringifies all symbols", () => {
+    let o = [0, {[Symbol.toStringTag]: "builtin", v: {[Symbol.for("symbol_k")]: []}}];
+    expect(cnfStringifyToObj(o)).toStrictEqual(rawStringifyToObj([0, {
+      "@@toStringTag": "builtin", v: {"@@symbol_k": []}
+    }]));
+  });
+  it("Ignores symbols in values", () => {
+    let o = {n: 8, smb: Symbol.toStringTag};
+    expect(cnfStringifyToObj(o)).toStrictEqual(rawStringifyToObj({
+      n: 8
+    }));
+  });
+  it("Handles +Infinity", () => {
+    let o = [6.5, "e", {v: Infinity}];
+    expect(cnfStringifyToObj(o)).toStrictEqual([6.5, "e", {v: "Infinity"}]);
+  });
+  it("Handles -Infinity", () => {
+    let o = {x: 7, y: -Infinity, z: []};
+    expect(cnfStringifyToObj(o)).toStrictEqual({x: 7, y: "-Infinity", z: []});
+  });
+  it("Handles classes", () => {
+    class MyClass {}
+    let inner = new MyClass();
+    Object.assign(inner, {x: -8.7, y: {u: [2, 0], x: ""}});
+    let o = [inner, "string", null, 8];
+    expect(cnfStringifyToObj(o)).toStrictEqual([
+      {x: -8.7, y: {u: [2, 0], x: ""}, $class: "MyClass"}, "string", null, 8]);
+  });
+  describe.each([
+    "$comment",
+    "//",
+    "$#",
+    "#",
+    "/*"
+  ])("Handling of '%s' comments", (prefix) => {
+    it("Throws error if in key", () => {
+      expect(() => {
+        stringifyJsonConfig({[prefix + "extra-text"]: 77.7});
+      }).toThrow("comment");
+    });
+    it("Allows it in value", () => {
+      expect(cnfStringifyToObj([0, prefix + "extra-text", {}]))
+        .toStrictEqual([0, prefix + "extra-text", {}]);
+    })
   });
 }

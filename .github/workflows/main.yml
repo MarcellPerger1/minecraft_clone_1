@@ -53,6 +53,8 @@ jobs:
       # see https://www.npmjs.com/package/eslint#installation-and-usage
       - name: Run eslint
         run: ./node_modules/.bin/eslint --max-warnings 0 ./
+      - name: Run custom linters
+        run: node ./scripts/find_bad_import.js
   
   
   build:

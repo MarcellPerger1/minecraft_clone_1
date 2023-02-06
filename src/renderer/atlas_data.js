@@ -1,5 +1,8 @@
-import {GameComponent} from '../game_component.js';
-import {fetchJsonFile, loadTexture} from '../utils.js';
+import { fetchJsonFile } from "../utils/file_load.js";
+import { loadTexture } from '../utils/gl_utils.js';
+
+import { GameComponent } from '../game_component.js';
+
 
 export class AtlasEntry {
   constructor(aData, name, i){

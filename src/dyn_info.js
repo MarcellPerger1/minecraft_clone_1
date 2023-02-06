@@ -1,5 +1,5 @@
 import { GameComponent } from "./game_component.js";
-import { roundNearest } from "./utils.js";
+import { roundNearest } from "./utils/math.js";
 
 
 export class DynInfo extends GameComponent {

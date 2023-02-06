@@ -1,6 +1,6 @@
 import {GameComponent} from './game_component.js';
 import {KeyEvent} from './keyinput.js';
-import {clamp, toRad} from './utils.js';
+import {clamp, toRad} from './utils/math.js';
 
 
 export class Player extends GameComponent {

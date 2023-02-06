@@ -1,3 +1,4 @@
 {
-  "include": ["src/**/*.js", "src"]
+  "include": ["src/**/*.js", "src"],
+  "lib": "esnext"
 }

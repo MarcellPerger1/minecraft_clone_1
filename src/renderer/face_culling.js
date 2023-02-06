@@ -1,5 +1,5 @@
+import {unreachable} from '../utils/assert.js';
 import {GameComponent} from '../game_component.js';
-import {unreachable} from '../utils.js';
 import {CubeVertexData} from './cube_data.js';
 
 /**

@@ -1,4 +1,5 @@
-import { sortCoords, isObject } from '../utils.js';
+import { isObject } from "../utils/type_check.js";
+import { sortCoords } from '../utils/array_utils.js';
 import { GameComponent } from '../game_component.js';
 
 
