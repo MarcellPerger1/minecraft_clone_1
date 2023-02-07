@@ -61,21 +61,23 @@ export function runSuite(suite) {
   let rows = [];
   
   suite.map((b, i) => {
+    let tr = makeElem('tr');
+    tr.append(makeElem('td', [b.name], ['mono-font']));
+    rows.push(tr);
+    tbody.append(tr);
+    
     b.on('complete', () => {
       nDone++;
       startedAt = Date.now()/1000;
       console.log(`Benchmark ${i+1} done.`);
-      let tr = makeElem('tr');
-      rows.push(tr);
-      let n = makeElem('td', [b.name], ['mono-font']);
+      
       let p = makeElem(
         'td', [(b.stats.mean*1000).toFixed(3) + ' ms'], ['rjust', 'mono-font']);
       let o = makeElem(
         'td', [(1 / b.stats.mean).toFixed(3) + ' ops/sec'], ['rjust', 'mono-font']);
       let u = makeElem(
         'td', ['+/-  ' + (b.stats.rme).toFixed(2) + '%'], ['rjust', 'mono-font']);
-      tr.append(n, p, o, u);
-      tbody.append(tr);
+      tr.append(p, o, u);
     });
   });
   suite.on('complete', () => {
