@@ -38,6 +38,13 @@ function setPre(e) {
   return e;
 }
 
+function makeElem(tagname, children=[], classList=[]) {
+  let e = document.createElement(tagname);
+  e.append(...children);
+  e.classList.add(...classList);
+  return e;
+}
+
 
 const progDiv = document.getElementById("prog-div");
 const pbar = document.getElementById("pbar")
@@ -56,23 +63,15 @@ suite.map((b, i) => {
     nDone++;
     startedAt = Date.now()/1000;
     console.log(`Benchmark ${i+1} done.`);
-    let tr = document.createElement('tr');
+    let tr = makeElem('tr');
     rows.push(tr);
-    let n = document.createElement('td');
-    n.append(b.name);
-    setPre(n);
-    let p = document.createElement('td');
-    p.append((b.stats.mean*1000).toFixed(3) + ' ms');
-    p.classList.add('rjust');
-    setPre(p);
-    let o = document.createElement('td');
-    o.append((1/b.stats.mean).toFixed(3) + ' ops/sec');
-    o.classList.add('rjust');
-    setPre(o);
-    let u = document.createElement('td');
-    u.append('+/-  ' + (b.stats.rme).toFixed(2) + '%');
-    u.classList.add('rjust');
-    setPre(u);
+    let n = makeElem('td', [b.name], ['mono-font']);
+    let p = makeElem(
+      'td', [(b.stats.mean*1000).toFixed(3) + ' ms'], ['rjust', 'mono-font']);
+    let o = makeElem(
+      'td', [(1 / b.stats.mean).toFixed(3) + ' ops/sec'], ['rjust', 'mono-font']);
+    let u = makeElem(
+      'td', ['+/-  ' + (b.stats.rme).toFixed(2) + '%'], ['rjust', 'mono-font']);
     tr.append(n, p, o, u);
     tbody.append(tr);
   });
@@ -84,33 +83,25 @@ suite.on('complete', () => {
   console.log(suite);
   let ordered = suite.map((v, i) => [v, i])
     .sort((a, b) => 1/b[0].stats.mean - 1/a[0].stats.mean);
-  let best = ordered[0];
-  let e = document.createElement("td");
-  e.append("Fastest");
-  setPre(e);
-  rows[best[1]].classList.add("perf-green");
-  let s = document.createElement("td");
-  s.append("Fastest");
-  setPre(s);
-  rows[best[1]].append(e, s);
-  for(let i=1;i<rows.length;i++) {
-    let v = ordered[i];
-    let e = document.createElement("td");
-    e.append((i+1) + (["st", "nd", "rd"][i+1] ?? "th"));
-    setPre(e);
-    if(i==rows.length-1) {
-      rows[v[1]].classList.add("perf-red");
-    } else {
-      rows[v[1]].classList.add("perf-amber");
-    }
-    let s = document.createElement("td");
-    let fracOfBest = (1/v[0].stats.mean)/(1/best[0].stats.mean)
-    s.append((100*(1-fracOfBest)).toFixed(2) + "% slower");
-    s.classList.add('rjust');
-    setPre(s);
-    rows[v[1]].append(e, s);
+  let [bestBench, bestRowIdx] = ordered[0];
+  let bestOpsPerSec = 1/bestBench.stats.mean;
+  let bestRow = rows[bestRowIdx];
+  let nth = makeElem("td", ["Fastest"], ["mono-font"]);
+  let slowerBy = makeElem("td", ["Fastest"], ["mono-font"]);
+  bestRow.classList.add("perf-green");
+  bestRow.append(nth, slowerBy);
+  for(let i=1;i<ordered.length;i++) {
+    let [bench, rowIdx] = ordered[i];
+    let row = rows[rowIdx];
+    row.classList.add((i == rows.length-1) ? "perf-red": "perf-amber");
+    let nthText = (i+1) + (["st", "nd", "rd"][i+1] ?? "th");
+    let nth = makeElem("td", [nthText], ["mono-font"]);
+    let opsPerSec = 1/bench.stats.mean;
+    let fracOfBest = opsPerSec/bestOpsPerSec;
+    let slowerBy = makeElem(
+      "td", [(100*(1-fracOfBest)).toFixed(2) + "% slower"], ['rjust', 'mono-font']);
+    row.append(nth, slowerBy);
   }
 });
 
 globalThis.st = suite;
-
