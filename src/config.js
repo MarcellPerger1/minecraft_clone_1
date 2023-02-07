@@ -40,7 +40,7 @@ export class BaseConfig {
  * @property {number} nTrees
  * @property {Vec3} chunkSize
  * @property {Vec2} treeRadius
- * @property {(string|'avoid'|'skip'|'place')} treeCollideAction
+ * @property {(string|'avoid'|'avoid-fast'|'avoid-old'|'skip'|'place')} treeCollideAction
  * @property {NoiseConfigT} baseTerrain
  * @property {NoiseConfigT} stoneOffset
 */
