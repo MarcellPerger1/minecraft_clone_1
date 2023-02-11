@@ -107,6 +107,28 @@ export class SkipTreePlacer extends BaseTreePlacer {
   }
 }
 
+export class SkipTreePlacerFast extends BaseTreePlacer {
+  makeTrees() {
+    let trees = [];
+    let blocked = new Set();
+    for(let ti=0; ti<this.gcnf.nTrees; ti++) {
+      let idx = this.rng.randint(0, this.n);
+      if(blocked.has(idx)) {
+        continue;
+      }
+      let c = this.idxToCoord(idx);
+      for(const [xo, yo] of this.excludeOffsets) {
+        const i = this.coordToIdx(c[0] + xo, c[1] + yo);
+        if(i >= 0 && i < this.n) { 
+          blocked.add(i); 
+        }
+      }
+      trees.push(c);
+    }
+    return trees;
+  }
+}
+
 
 export class AvoidTreePlacer extends BaseTreePlacer {
   constructor(game) {
