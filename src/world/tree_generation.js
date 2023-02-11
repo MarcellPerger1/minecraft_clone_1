@@ -88,22 +88,24 @@ export class IgnoreTreePlacer extends BaseTreePlacer {
 
 
 export class SkipTreePlacer extends BaseTreePlacer {
-  constructor(game) {
-    super(game);
-  }
-
   makeTrees() {
-    let columns = new Uint8Array(this.n);
-    return rangeList(this.n).map(_ => {
+    let trees = [];
+    let blocked = new Set();
+    for(let ti=0; ti<this.gcnf.nTrees; ti++) {
       let idx = this.rng.randint(0, this.n);
-      let c = this.idxToCoord(idx);
-      if(!columns[idx]) {
-        for(const [xo, yo] of this.excludeOffsets) {
-          columns[this.coordToIdx(c[0] + xo, c[1] + yo)] = 1;
-        }
-        return c;
+      if(blocked.has(idx)) {
+        continue;
       }
-    }).filter(c => c != null);
+      let c = this.idxToCoord(idx);
+      for(const [xo, yo] of this.excludeOffsets) {
+        const i = this.coordToIdx(c[0] + xo, c[1] + yo);
+        if(i >= 0 && i < this.n) { 
+          blocked.add(i); 
+        }
+      }
+      trees.push(c);
+    }
+    return trees;
   }
 }
 
