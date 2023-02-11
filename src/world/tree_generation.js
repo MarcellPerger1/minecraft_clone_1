@@ -88,26 +88,6 @@ export class IgnoreTreePlacer extends BaseTreePlacer {
 
 
 export class SkipTreePlacer extends BaseTreePlacer {
-  constructor(game) {
-    super(game);
-  }
-
-  makeTrees() {
-    let columns = new Uint8Array(this.n);
-    return rangeList(this.n).map(_ => {
-      let idx = this.rng.randint(0, this.n);
-      let c = this.idxToCoord(idx);
-      if(!columns[idx]) {
-        for(const [xo, yo] of this.excludeOffsets) {
-          columns[this.coordToIdx(c[0] + xo, c[1] + yo)] = 1;
-        }
-        return c;
-      }
-    }).filter(c => c != null);
-  }
-}
-
-export class SkipTreePlacerFast extends BaseTreePlacer {
   makeTrees() {
     let trees = [];
     let blocked = new Set();
