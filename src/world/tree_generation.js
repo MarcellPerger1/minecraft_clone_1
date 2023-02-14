@@ -10,11 +10,8 @@ export class TreePlacer extends BaseGenerator {
 
   getGenerator() {
     switch (this.gcnf.treeCollideAction) {
-      case "avoid-old":
-        return new AvoidTreePlacer(this);
-      case "avoid-fast":
       case "avoid":
-        return new AvoidTreePlacerFast(this);
+        return new AvoidTreePlacer(this);
       case "place":
         return new IgnoreTreePlacer(this);
       case "skip":
@@ -110,66 +107,10 @@ export class SkipTreePlacer extends BaseTreePlacer {
 }
 
 
-export class AvoidTreePlacer extends BaseTreePlacer {
-  constructor(game) {
-    super(game);
-  }
-
-  makeTrees() {
-    // TODO this is very bad complexity,
-    // should redo (see issue #95: option 3 best)
-    // This is O(trees * x * z * tree_size)
-    // and basically a lazier version of option 2
-    // but its better than nothing and
-    // when I can be bothered, I will redo this with option 3
-    // as it is by far the most complicated
-    let positions = [];
-    /** @type {Array<[boolean, number, number]>}*/
-    var colData = rangeList(this.n)
-      .map(i => [/*free*/true, /*real*/i, /*cumulative*/i]);
-    var numLeft = this.n;
-    for (let ti = 0; ti < this.gcnf.nTrees; ti++) {
-      if (numLeft <= 0) {
-        console.warn("Not enough places for trees.");
-        return positions;
-      }
-      let cumIdx = this.rng.randint(0, numLeft);
-      let realIdx = colData.findIndex(v => v[0] && v[2] === cumIdx);
-      let column = colData[realIdx];
-      if (!column[0]) throw new Error("Assertion failed");
-      positions.push(this.idxToCoord(realIdx));
-      /** @type {number[]} */
-      var removed = [];
-      for (let [xo, zo] of this.excludeOffsets) {
-        let idx = this.coordToIdx(xo, zo) + realIdx;
-        // out of chunk; ignore for now
-        if (idx < 0 || idx >= this.n) { continue; }
-        let thisCol = colData[idx];
-        // already out
-        if (!thisCol[0]) { continue; }
-        thisCol[0] = false;
-        removed.push(idx);
-        numLeft--;
-      }
-      colData.forEach((v, i) => {
-        let sub = removed.filter(rmIdx => i > rmIdx).length;
-        v[2] -= sub;
-      });
-    }
-    return positions;
-  }
-}
-
-
 const DEBUG = false;
 
-
 // O(trees**2 * tree_size) algorithm
-export class AvoidTreePlacerFast extends BaseTreePlacer {
-  constructor(game) {
-    super(game);
-  }
-
+export class AvoidTreePlacer extends BaseTreePlacer {
   makeTrees() {
     function getRealIdx(cumIdx) {
       var lastBlocked = -1;
@@ -191,8 +132,9 @@ export class AvoidTreePlacerFast extends BaseTreePlacer {
       // must be after all blocked
       return lastBlocked + (cumIdx - lastCum);
     }
-    const insertIntoBlocked = (realIdx) => {
-      if(this.idxToCoord(realIdx).some(v=> v < 0)){
+    const insertCoordIntoBlocked = (c) => {
+      const realIdx = this.coordToIdx(...c);
+      if(c[0] < 0 || c[1] < 0 || c[0] >= this.wSize[0] || c[1] >= this.wSize[2]){
         return;
       }
       let res = binarySearchOr(blocked, realIdx);
@@ -224,8 +166,8 @@ export class AvoidTreePlacerFast extends BaseTreePlacer {
         throw new Error("Generated tree inside tree!");
       }
       for(let off of this.excludeOffsets) {
-        let idx = this.coordToIdx(realCoord[0] + off[0], realCoord[1] + off[1]);
-        insertIntoBlocked(idx);
+        let c = [realCoord[0] + off[0], realCoord[1] + off[1]];
+        insertCoordIntoBlocked(c);
       }
       
       trees.push(realIdx);
