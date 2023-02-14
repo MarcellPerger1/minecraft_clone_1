@@ -12,7 +12,7 @@ export class TreePlacer extends BaseGenerator {
     switch (this.gcnf.treeCollideAction) {
       case "avoid-fast":
       case "avoid":
-        return new AvoidTreePlacerFast(this);
+        return new AvoidTreePlacer(this);
       case "place":
         return new IgnoreTreePlacer(this);
       case "skip":
@@ -111,7 +111,7 @@ export class SkipTreePlacer extends BaseTreePlacer {
 const DEBUG = false;
 
 // O(trees**2 * tree_size) algorithm
-export class AvoidTreePlacerFast extends BaseTreePlacer {
+export class AvoidTreePlacer extends BaseTreePlacer {
   makeTrees() {
     function getRealIdx(cumIdx) {
       var lastBlocked = -1;

@@ -33,7 +33,6 @@ export function run(conf=DEFAULT_CONFIG) {
   addCls(gen.IgnoreTreePlacer);
   addCls(gen.SkipTreePlacer);
   addCls(gen.AvoidTreePlacer);
-  addCls(gen.AvoidTreePlacerFast);
 
   globalThis.perfSuite = suite;
   runSuite(suite);
