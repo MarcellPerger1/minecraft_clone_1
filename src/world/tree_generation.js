@@ -112,10 +112,6 @@ const DEBUG = false;
 
 // O(trees**2 * tree_size) algorithm
 export class AvoidTreePlacerFast extends BaseTreePlacer {
-  constructor(game) {
-    super(game);
-  }
-
   makeTrees() {
     function getRealIdx(cumIdx) {
       var lastBlocked = -1;
@@ -137,8 +133,9 @@ export class AvoidTreePlacerFast extends BaseTreePlacer {
       // must be after all blocked
       return lastBlocked + (cumIdx - lastCum);
     }
-    const insertIntoBlocked = (realIdx) => {
-      if(this.idxToCoord(realIdx).some(v=> v < 0)){
+    const insertCoordIntoBlocked = (c) => {
+      const realIdx = this.coordToIdx(...c);
+      if(c[0] < 0 || c[1] < 0 || c[0] >= this.wSize[0] || c[1] >= this.wSize[2]){
         return;
       }
       let res = binarySearchOr(blocked, realIdx);
@@ -170,8 +167,8 @@ export class AvoidTreePlacerFast extends BaseTreePlacer {
         throw new Error("Generated tree inside tree!");
       }
       for(let off of this.excludeOffsets) {
-        let idx = this.coordToIdx(realCoord[0] + off[0], realCoord[1] + off[1]);
-        insertIntoBlocked(idx);
+        let c = [realCoord[0] + off[0], realCoord[1] + off[1]];
+        insertCoordIntoBlocked(c);
       }
       
       trees.push(realIdx);
