@@ -20,6 +20,7 @@ export class Game {
     this.onInit = null;
     this.startTicks = false;
     this.progress = window.progress;
+    this.lastFrameTook = 0;
     this.frameNo = -1;
     this.tickNo  = -1;
   }
@@ -137,7 +138,10 @@ export class Game {
       this.then = this.now;
     }
     this.deltaT = this.now - this.then;
+    this.frameStartAt = performance.now();
     this.onframe();
+    this.frameEndAt = performance.now();
+    this.lastFrameTook = this.frameEndAt - this.frameStartAt;
     this.then = this.now;
     return this.registerOnFrame();
   }
