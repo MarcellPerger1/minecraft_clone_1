@@ -1,6 +1,6 @@
 {
   "name": "stuffwebgl4",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A minecraft clone in browser using webgl",
   "main": "index.html",
   "dependencies": {
