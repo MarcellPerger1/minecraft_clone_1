@@ -6,6 +6,7 @@ export class DynInfo extends GameComponent {
   update() {
     this.updatePosInfo();
     this.updateFacingInfo();
+    this.updateFps();
   }
 
   updatePosInfo() {
@@ -19,6 +20,13 @@ export class DynInfo extends GameComponent {
   updateFacingInfo() {
     let rotSnapped = roundNearest(this.player.rotation.h, 90) % 360;
     this.setText(document.getElementById("facing-info"), DIR_TO_FACING[rotSnapped]);
+  }
+
+  updateFps() {
+    const fps = 1/this.game.deltaT;
+    this.setText(document.getElementById("fps-info"), fps.toFixed(2));
+    this.setText(document.getElementById("frame-time-info"),
+                 this.game.lastFrameTook.toFixed(2) + 'ms');
   }
 
   setText(elem, text) {
