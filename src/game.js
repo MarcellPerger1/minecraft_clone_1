@@ -5,6 +5,7 @@ import { Player } from './player.js';
 import { WorldGenerator } from './world.js';
 import { LoadingEndMgr } from './loading_end.js';
 import { DynInfo } from './dyn_info.js';
+import { currentVersionLoader } from './current_version_loader.js'
 
 
 /**
@@ -94,7 +95,7 @@ export class Game {
     /**
      * @type {Array<{loadResources: () => void}>}
      */
-    this.resourceLoaders = [this.r];
+    this.resourceLoaders = [this.r, currentVersionLoader];
   }
 
   joinResourceLoaders() {
