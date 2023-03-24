@@ -55,6 +55,12 @@ jobs:
         run: ./node_modules/.bin/eslint --max-warnings 0 ./
       - name: Run custom linters
         run: node ./scripts/find_bad_import.js
+      - name: Run formatter
+        run: chmod +x ./scripts/formatter.sh
+      - name: Commit formatted code
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with: 
+          commit_message: Format code
   
   
   build:
