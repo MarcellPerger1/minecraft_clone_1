@@ -1,11 +1,10 @@
-import {readFile} from 'node:fs/promises';
-import {Response} from 'node-fetch';
-
+import {readFile} from "node:fs/promises";
+import {Response} from "node-fetch";
 
 export default async function fetch(path) {
   let data = null;
   let status = 200;
-  let statusText = '';
+  let statusText = "";
   try {
     data = await readFile(path);
   } catch (error) {
@@ -16,8 +15,6 @@ export default async function fetch(path) {
   return response;
 }
 
-
-if(!globalThis.fetch) {
+if (!globalThis.fetch) {
   globalThis.fetch = fetch;
 }
-

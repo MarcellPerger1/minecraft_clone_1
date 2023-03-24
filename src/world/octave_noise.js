@@ -1,12 +1,10 @@
 import SimplexNoise from "../libs/simplex-noise/dist/esm/simplex-noise.js";
 
-import { SeedFork } from "./seed.js";
-
+import {SeedFork} from "./seed.js";
 
 /**
  * @typedef {[number, number, number]} Vec3
  */
-
 
 export class OctaveNoise {
   /**
@@ -26,7 +24,7 @@ export class OctaveNoise {
     this.cnf = config;
     this.nMedianDefault = nMedianDefault;
     this.seeds = SeedFork.getSeeds(this.seed, this.name, this.cnf.layers);
-    this.noises = this.seeds.map(s => new SimplexNoise(s));
+    this.noises = this.seeds.map((s) => new SimplexNoise(s));
   }
 
   noise2D(x, z) {

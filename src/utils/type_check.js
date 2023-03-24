@@ -3,11 +3,11 @@ export function classOf(v) {
 }
 
 export function isString(v) {
-  return typeof v === 'string' || v instanceof String;
+  return typeof v === "string" || v instanceof String;
 }
 
 export function isPureObject(x) {
-  return x.constructor.name === 'Object'
+  return x.constructor.name === "Object";
 }
 
 export function isObject(x) {
@@ -16,11 +16,11 @@ export function isObject(x) {
 
 export function isAnyObject(x) {
   let t = typeof x;
-  return x != null && (t == 'object' || t == 'function');
+  return x != null && (t == "object" || t == "function");
 }
 
 export function isNumber(x) {
-  return typeof x == 'number' || x instanceof Number;
+  return typeof x == "number" || x instanceof Number;
 }
 
 export function isArray(x) {
@@ -28,8 +28,10 @@ export function isArray(x) {
 }
 
 export function isTypedArray(x) {
-  return x instanceof TypedArray
-    || (ArrayBuffer.isView(x) && !(x instanceof DataView));
+  return (
+    x instanceof TypedArray ||
+    (ArrayBuffer.isView(x) && !(x instanceof DataView))
+  );
 }
 
 export const TypedArray = Object.getPrototypeOf(Uint8Array);
@@ -43,14 +45,14 @@ export function isPrimitive(x) {
 }
 
 export function isFunction(x) {
-  return typeof x === 'function';
+  return typeof x === "function";
 }
 
-export function getTypeTag(x){
+export function getTypeTag(x) {
   return Object.prototype.toString.call(x);
 }
 
-export function toStringTag(x){
+export function toStringTag(x) {
   var tag = getTypeTag(x);
-  return tag.substring('[object '.length, tag.length-']'.length);
+  return tag.substring("[object ".length, tag.length - "]".length);
 }

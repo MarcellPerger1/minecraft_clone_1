@@ -3,13 +3,13 @@ export var ASSERT_SETTINGS = {
   error: true,
 };
 
-export function assert(condition, msg=null){
-  if(!condition){
+export function assert(condition, msg = null) {
+  if (!condition) {
     msg ??= "Assertion failed";
-    if(ASSERT_SETTINGS.log){
+    if (ASSERT_SETTINGS.log) {
       console.log(msg);
     }
-    if(ASSERT_SETTINGS.error){
+    if (ASSERT_SETTINGS.error) {
       throw new Error(msg);
     }
   }
@@ -17,6 +17,9 @@ export function assert(condition, msg=null){
 
 export var assume = assert;
 
-export function unreachable(msg=null){
-  assert(0, msg ?? "Unreachable code reached! Program should never reach here.");
+export function unreachable(msg = null) {
+  assert(
+    0,
+    msg ?? "Unreachable code reached! Program should never reach here."
+  );
 }

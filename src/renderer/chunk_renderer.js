@@ -1,16 +1,15 @@
-import { GameComponent } from "../game_component.js";
-import { CubeDataAdder } from "./face_culling.js";
-import { ElementBundler } from "./vertex_bundle.js";
-
+import {GameComponent} from "../game_component.js";
+import {CubeDataAdder} from "./face_culling.js";
+import {ElementBundler} from "./vertex_bundle.js";
 
 /**
  * @typedef {import("../world/chunk.js").Chunk} Chunk
-*/
+ */
 
 export class ChunkRenderer extends GameComponent {
   /**
    * @param {Chunk} chunk - The chunk for which this is the renderer
-  */
+   */
   constructor(chunk) {
     super(chunk);
     this.chunk = chunk;
@@ -22,35 +21,34 @@ export class ChunkRenderer extends GameComponent {
   }
 
   resetMesh() {
-    Object.values(this.mesh).forEach(b => b.reset());
+    Object.values(this.mesh).forEach((b) => b.reset());
   }
 
-  updateMesh(recalculate=false){
-    if(this.remakeMesh || recalculate) {
+  updateMesh(recalculate = false) {
+    if (this.remakeMesh || recalculate) {
       this.makeMesh();
       this.remakeMesh = false;
     }
   }
 
-  makeMesh(){
+  makeMesh() {
     this.resetMesh();
-    for(const [pos, block] of this.chunk){
+    for (const [pos, block] of this.chunk) {
       this.addBlock(pos, block);
     }
   }
-  
-  addData(data, transparent=false){
-    return this.mesh[transparent ? 'transparent' : 'main']
-      .addData(data);
+
+  addData(data, transparent = false) {
+    return this.mesh[transparent ? "transparent" : "main"].addData(data);
   }
 
-  addBlock(pos, block){
-    if(block.visible){
+  addBlock(pos, block) {
+    if (block.visible) {
       this.addBlockTextures(pos, block.textures);
     }
   }
 
-  addBlockTextures(pos, tData){
+  addBlockTextures(pos, tData) {
     new CubeDataAdder(this.game, pos, tData, this).addData();
   }
 }
