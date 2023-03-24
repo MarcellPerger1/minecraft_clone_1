@@ -1,0 +1,1 @@
+npx prettier --write ./{src,perf,test,scripts}/**/*.{js,mjs,cjs}

@@ -11,7 +11,8 @@
     "eslint": "^8.11.0",
     "eslint-plugin-jest": "^26.5.3",
     "jest": "^28.1.1",
-    "node-fetch": "^3.3.0"
+    "node-fetch": "^3.3.0",
+    "prettier": "^2.8.7"
   },
   "scripts": {
     "test": "chmod +x ./scripts/test.sh && ./scripts/test.sh",
