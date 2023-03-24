@@ -1,4 +1,4 @@
-import {runSuite} from "../perf_test.js";
+import { runSuite } from "../perf_test.js";
 
 import * as gen from "../../src/world/tree_generation.js";
 

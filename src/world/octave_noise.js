@@ -1,6 +1,6 @@
 import SimplexNoise from "../libs/simplex-noise/dist/esm/simplex-noise.js";
 
-import {SeedFork} from "./seed.js";
+import { SeedFork } from "./seed.js";
 
 /**
  * @typedef {[number, number, number]} Vec3

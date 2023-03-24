@@ -1,6 +1,6 @@
-import {alea} from "../alea/alea.js";
-import {binarySearchOr, rangeFrom, rangeList} from "../utils/array_utils.js";
-import {BaseGenerator} from "./base_generator.js";
+import { alea } from "../alea/alea.js";
+import { binarySearchOr, rangeFrom, rangeList } from "../utils/array_utils.js";
+import { BaseGenerator } from "./base_generator.js";
 
 export class TreePlacer extends BaseGenerator {
   constructor(game) {
@@ -26,7 +26,7 @@ export class TreePlacer extends BaseGenerator {
 }
 
 export class BaseTreePlacer extends BaseGenerator {
-  constructor(game, {seed = true, treeBounds = true} = {}) {
+  constructor(game, { seed = true, treeBounds = true } = {}) {
     super(game);
     this.n = this.wSize[0] * this.wSize[2];
     if (seed) {
@@ -72,7 +72,7 @@ export class BaseTreePlacer extends BaseGenerator {
 
 export class IgnoreTreePlacer extends BaseTreePlacer {
   constructor(game) {
-    super(game, {treeBounds: false});
+    super(game, { treeBounds: false });
   }
 
   makeTrees() {

@@ -1,8 +1,8 @@
 progress.addPercent(10);
 
-import {isNumber} from "../utils/type_check.js";
-import {nameOrValue, expectValue} from "../utils/general.js";
-import {GameComponent} from "../game_component.js";
+import { isNumber } from "../utils/type_check.js";
+import { nameOrValue, expectValue } from "../utils/general.js";
+import { GameComponent } from "../game_component.js";
 
 export class Buffers extends GameComponent {
   constructor(game) {

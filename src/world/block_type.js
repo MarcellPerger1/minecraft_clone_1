@@ -1,7 +1,7 @@
-import {isString, classOf} from "../utils/type_check.js";
-import {assert} from "../utils/assert.js";
-import {fromKeys} from "../utils/general.js";
-import {setDefaults, assignNullSafe} from "../utils/array_utils.js";
+import { isString, classOf } from "../utils/type_check.js";
+import { assert } from "../utils/assert.js";
+import { fromKeys } from "../utils/general.js";
+import { setDefaults, assignNullSafe } from "../utils/array_utils.js";
 
 /**
  * Type of the argument to `new BlockType()`
@@ -28,7 +28,7 @@ export class BlockType {
     let cls = classOf(this);
     assert(config);
     if (isString(config)) {
-      config = {name: config};
+      config = { name: config };
     }
     /** @type {ConfigObj} */
     this.config = config;
@@ -91,7 +91,7 @@ export class BlockType {
 export var Blocks = {};
 
 BlockType.addTypes(
-  {name: "air", transparent: true, visible: false},
+  { name: "air", transparent: true, visible: false },
   {
     name: "grass",
     textures: {
@@ -100,8 +100,8 @@ BlockType.addTypes(
       bottom: "grass_bottom",
     },
   },
-  {name: "stone", texture: "stone"},
-  {name: "dirt", texture: "grass_bottom"},
+  { name: "stone", texture: "stone" },
+  { name: "dirt", texture: "grass_bottom" },
   {
     name: "oak_log",
     textures: {
@@ -110,5 +110,5 @@ BlockType.addTypes(
       side: "oak_log_side",
     },
   },
-  {name: "oak_leaves", texture: "oak_leaves_basic.opaque", transparent: false}
+  { name: "oak_leaves", texture: "oak_leaves_basic.opaque", transparent: false }
 );

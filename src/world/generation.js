@@ -1,10 +1,10 @@
-import {GameComponent} from "../game_component.js";
-import {rangeList} from "../utils/array_utils.js";
+import { GameComponent } from "../game_component.js";
+import { rangeList } from "../utils/array_utils.js";
 
-import {World} from "./world.js";
-import {Blocks} from "./block_type.js";
-import {OctaveNoise} from "./octave_noise.js";
-import {TreePlacer} from "./tree_generation.js";
+import { World } from "./world.js";
+import { Blocks } from "./block_type.js";
+import { OctaveNoise } from "./octave_noise.js";
+import { TreePlacer } from "./tree_generation.js";
 
 export class WorldGenerator extends GameComponent {
   constructor(game) {

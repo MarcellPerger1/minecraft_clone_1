@@ -1,4 +1,4 @@
-import {isPowerOf2} from "./math.js";
+import { isPowerOf2 } from "./math.js";
 
 export function getGL(canv_id = "glCanvas") {
   const canvas = document.getElementById(canv_id);

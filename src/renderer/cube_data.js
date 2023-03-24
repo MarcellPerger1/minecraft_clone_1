@@ -1,6 +1,6 @@
-import {isObject} from "../utils/type_check.js";
-import {sortCoords} from "../utils/array_utils.js";
-import {GameComponent} from "../game_component.js";
+import { isObject } from "../utils/type_check.js";
+import { sortCoords } from "../utils/array_utils.js";
+import { GameComponent } from "../game_component.js";
 
 const FAR_DIST_SQ = 130;
 

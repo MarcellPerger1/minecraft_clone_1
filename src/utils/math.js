@@ -1,4 +1,4 @@
-import {assert} from "./assert.js";
+import { assert } from "./assert.js";
 
 export function sum(array, initval = 0) {
   return array.reduce((a, b) => a + b, initval);

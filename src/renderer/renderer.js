@@ -1,13 +1,13 @@
-import {toRad} from "../utils/math.js";
-import {getGL, glErrnoToMsg} from "../utils/gl_utils.js";
-import {LoaderMerge} from "../utils/loader.js";
-import {GameComponent} from "../game_component.js";
+import { toRad } from "../utils/math.js";
+import { getGL, glErrnoToMsg } from "../utils/gl_utils.js";
+import { LoaderMerge } from "../utils/loader.js";
+import { GameComponent } from "../game_component.js";
 
-import {Buffers} from "./buffers.js";
-import {AtlasLoader} from "./atlas_data.js";
-import {ShaderLoader} from "./shader_loader.js";
-import {CubeDataAdder} from "./face_culling.js";
-import {ElementBundler} from "./vertex_bundle.js";
+import { Buffers } from "./buffers.js";
+import { AtlasLoader } from "./atlas_data.js";
+import { ShaderLoader } from "./shader_loader.js";
+import { CubeDataAdder } from "./face_culling.js";
+import { ElementBundler } from "./vertex_bundle.js";
 
 /**
  * @typedef {import('../world/chunk.js').Chunk} Chunk

@@ -1,5 +1,5 @@
-import {numCmp} from "./math.js";
-import {isAnyArray} from "./type_check.js";
+import { numCmp } from "./math.js";
+import { isAnyArray } from "./type_check.js";
 
 // may modify list inplace, but doesnt have to
 export function iextend(a, b) {
@@ -216,7 +216,7 @@ export function binarySearchOr(list, item, threeWayCmp) {
     let mid = Math.floor((lo + hi) / 2);
     let cmpRes = threeWayCmp(item, list[mid], mid);
     if (cmpRes === 0) {
-      return {found: true, idx: mid};
+      return { found: true, idx: mid };
     }
     if (cmpRes < 0) {
       hi = mid - 1;

@@ -1,5 +1,5 @@
-import {readFile} from "node:fs/promises";
-import {Response} from "node-fetch";
+import { readFile } from "node:fs/promises";
+import { Response } from "node-fetch";
 
 export default async function fetch(path) {
   let data = null;
@@ -11,7 +11,7 @@ export default async function fetch(path) {
     status = 404;
     statusText = error.toString();
   }
-  let response = new Response(data, {status, statusText});
+  let response = new Response(data, { status, statusText });
   return response;
 }
 

@@ -1,9 +1,9 @@
-import {assert} from "../utils/assert.js";
-import {fromNested} from "../utils/array_utils.js";
-import {GameComponent} from "../game_component.js";
+import { assert } from "../utils/assert.js";
+import { fromNested } from "../utils/array_utils.js";
+import { GameComponent } from "../game_component.js";
 
-import {Blocks} from "./block_type.js";
-import {Chunk} from "./chunk.js";
+import { Blocks } from "./block_type.js";
+import { Chunk } from "./chunk.js";
 
 export class World extends GameComponent {
   constructor(game) {

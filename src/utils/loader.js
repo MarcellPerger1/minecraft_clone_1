@@ -1,4 +1,4 @@
-import {isArray, isObject} from "./type_check.js";
+import { isArray, isObject } from "./type_check.js";
 
 export class LoaderMerge {
   constructor(...args) {

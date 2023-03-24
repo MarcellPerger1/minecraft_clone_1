@@ -1,6 +1,6 @@
-import {GameComponent} from "../game_component.js";
-import {CubeDataAdder} from "./face_culling.js";
-import {ElementBundler} from "./vertex_bundle.js";
+import { GameComponent } from "../game_component.js";
+import { CubeDataAdder } from "./face_culling.js";
+import { ElementBundler } from "./vertex_bundle.js";
 
 /**
  * @typedef {import("../world/chunk.js").Chunk} Chunk

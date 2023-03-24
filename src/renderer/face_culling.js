@@ -1,6 +1,6 @@
-import {unreachable} from "../utils/assert.js";
-import {GameComponent} from "../game_component.js";
-import {CubeVertexData} from "./cube_data.js";
+import { unreachable } from "../utils/assert.js";
+import { GameComponent } from "../game_component.js";
+import { CubeVertexData } from "./cube_data.js";
 
 /**
  * @typedef {import('./game.js').Game} Game

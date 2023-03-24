@@ -2,9 +2,9 @@
 // but adapted to make it more readable
 // and to support merging, not just cloning
 
-import {assert} from "./assert.js";
-import {findTypeProto, getOwnProperties} from "./object_utils.js";
-import {isAnyObject, isArray, toStringTag} from "./type_check.js";
+import { assert } from "./assert.js";
+import { findTypeProto, getOwnProperties } from "./object_utils.js";
+import { isAnyObject, isArray, toStringTag } from "./type_check.js";
 
 // EXPORTS
 Symbol.dontMerge = Symbol.for("dontMerge");
@@ -151,7 +151,7 @@ function _setstate(res, objs, cnf, memo) {
 }
 _setstate.object = function setstate_object(res, objs, cnf, memo) {
   if (_dontMergeObjs(objs)) {
-    objs = [{[Symbol.dontMerge]: true}, objs.at(-1)];
+    objs = [{ [Symbol.dontMerge]: true }, objs.at(-1)];
   }
   // for now, copy all own properties
   // TODO: option in cnf
