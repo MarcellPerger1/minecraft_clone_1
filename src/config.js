@@ -1,15 +1,13 @@
-import { assignNullSafe } from './utils/array_utils.js';
-import { deepMerge } from './utils/deep_merge.js';
+import { assignNullSafe } from "./utils/array_utils.js";
+import { deepMerge } from "./utils/deep_merge.js";
 
 import { LoaderContext } from "./config_loader.js";
-
 
 export class BaseConfig {
   constructor(...configs) {
     assignNullSafe(this, deepMerge([...configs]));
   }
 }
-
 
 /**
  * @typedef {string} path
@@ -18,8 +16,7 @@ export class BaseConfig {
  * @typedef {[number, number]} Vec2
  * @typedef {(number|string)} SeedType
  * @typedef {{h: number, v: number}} Rot3
-*/
-
+ */
 
 /**
  * Config for octave noise
@@ -29,7 +26,6 @@ export class BaseConfig {
  * @property {number} layers
  * @property {(number|'auto')} nMedian
  */
-
 
 /**
  * World Generation Configs
@@ -43,9 +39,8 @@ export class BaseConfig {
  * @property {(string|'avoid'|'skip'|'place')} treeCollideAction
  * @property {NoiseConfigT} baseTerrain
  * @property {NoiseConfigT} stoneOffset
-*/
-export class GenerationConfig extends BaseConfig { }
-
+ */
+export class GenerationConfig extends BaseConfig {}
 
 /**
  * Controls Configs
@@ -54,8 +49,7 @@ export class GenerationConfig extends BaseConfig { }
  * @property {[number, number]} vRotRange
  * @property {Vec2} maxMouseMove
  */
-export class ControlsConfig extends BaseConfig { }
-
+export class ControlsConfig extends BaseConfig {}
 
 /**
  * Player Configs
@@ -63,27 +57,24 @@ export class ControlsConfig extends BaseConfig { }
  * @property {Vec3} startPos
  * @property {Rot3} startRot
  * @property {number} speed
-*/
-export class PlayerConfig extends BaseConfig { }
-
+ */
+export class PlayerConfig extends BaseConfig {}
 
 /**
  * Shader Configs
  * @typedef {Object} ShaderConfigT
  * @property {path} vsPath
  * @property {path} fsPath
-*/
-export class ShaderConfig extends BaseConfig { }
-
+ */
+export class ShaderConfig extends BaseConfig {}
 
 /**
  * Atlas Configs
  * @typedef {Object} AtlasConfigT
  * @property {path} imgPath
  * @property {path} indexPath
-*/
-export class AtlasConfig extends BaseConfig { }
-
+ */
+export class AtlasConfig extends BaseConfig {}
 
 /**
  * Root Config object
@@ -96,11 +87,8 @@ export class AtlasConfig extends BaseConfig { }
  * @property {PlayerConfigT} player
  * @property {ShaderConfigT} shader
  * @property {AtlasConfigT} atlas
-*/
-export class Config extends BaseConfig { }
-
-
-
+ */
+export class Config extends BaseConfig {}
 
 /**
  * Get `Config` to use
@@ -108,6 +96,8 @@ export class Config extends BaseConfig { }
  * @returns {Promise<ConfigT>} The `Config` to use
  */
 export async function getConfig(...extra) {
-  let config = await new LoaderContext().loadConfigFile("./configs/config.json");
+  let config = await new LoaderContext().loadConfigFile(
+    "./configs/config.json"
+  );
   return deepMerge([config, ...extra]);
 }

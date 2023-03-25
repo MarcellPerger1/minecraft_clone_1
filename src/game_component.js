@@ -9,8 +9,8 @@ export class GameComponent {
   /**
    * @param {(Game | GameComponent)} game
    */
-  constructor(game){
-    if(game instanceof GameComponent) {
+  constructor(game) {
+    if (game instanceof GameComponent) {
       game = game.game;
     }
     /**
@@ -20,35 +20,35 @@ export class GameComponent {
     this.game = game;
   }
 
-  get cnf(){
+  get cnf() {
     return this.game.cnf;
   }
 
-  get ki(){
+  get ki() {
     return this.game.ki;
   }
 
-  get r(){
+  get r() {
     return this.game.r;
   }
 
-  get canvas(){
+  get canvas() {
     return this.game.canvas;
   }
 
-  get deltaT(){
+  get deltaT() {
     return this.game.deltaT;
   }
 
-  get player(){
+  get player() {
     return this.game.player;
   }
 
-  get world(){
+  get world() {
     return this.game.world;
   }
 
-  get gl(){
+  get gl() {
     return this.r.gl;
   }
 }

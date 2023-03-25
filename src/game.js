@@ -1,20 +1,19 @@
-import { Renderer } from './renderer/renderer.js';
-import { getConfig } from './config.js';
-import { KeyInput } from './keyinput.js';
-import { Player } from './player.js';
-import { WorldGenerator } from './world.js';
-import { LoadingEndMgr } from './loading_end.js';
-import { DynInfo } from './dyn_info.js';
-import { currentVersionLoader } from './current_version_loader.js'
-
+import { Renderer } from "./renderer/renderer.js";
+import { getConfig } from "./config.js";
+import { KeyInput } from "./keyinput.js";
+import { Player } from "./player.js";
+import { WorldGenerator } from "./world.js";
+import { LoadingEndMgr } from "./loading_end.js";
+import { DynInfo } from "./dyn_info.js";
+import { currentVersionLoader } from "./current_version_loader.js";
 
 /**
  * @typedef {import('./config.js').ConfigT} ConfigT
-*/
+ */
 
 /**
  * The global Game object
-*/
+ */
 export class Game {
   constructor(cnf) {
     this.cnf_arg = cnf;
@@ -23,7 +22,7 @@ export class Game {
     this.progress = window.progress;
     this.lastFrameTook = 0;
     this.frameNo = -1;
-    this.tickNo  = -1;
+    this.tickNo = -1;
   }
 
   async init() {
@@ -35,7 +34,7 @@ export class Game {
     this.cnf = await getConfig(this.cnf_arg);
     progress.addPercent(25);
     /** @type {HTMLCanvasElement} */
-    this.canvas = document.getElementById('glCanvas');
+    this.canvas = document.getElementById("glCanvas");
     /** @type {CSSStyleSheet} */
     this.styleSheet = document.getElementById("main-stylesheet").sheet;
     this.setCanvasSize();
@@ -55,14 +54,17 @@ export class Game {
    */
   getStyleBySelectorAll(target, exact = true) {
     target = target.trim();
-    let fullMatch = Array.from(this.styleSheet.cssRules)
-      .filter(rule => {
-        if(!(rule instanceof CSSStyleRule)) { return false; }
-        let selector = rule.selectorText;
-        if(!selector) { return false; }
-        selector = selector.trim();
-        return exact ? selector === target : selector.includes(target);
-      });
+    let fullMatch = Array.from(this.styleSheet.cssRules).filter((rule) => {
+      if (!(rule instanceof CSSStyleRule)) {
+        return false;
+      }
+      let selector = rule.selectorText;
+      if (!selector) {
+        return false;
+      }
+      selector = selector.trim();
+      return exact ? selector === target : selector.includes(target);
+    });
     return fullMatch;
   }
 
@@ -72,18 +74,22 @@ export class Game {
    * @param {boolean} [exact=true] - if false, only require containment, not equality
    * @returns {CSSStyleRule}
    */
-  getStyleBySelector(target, exact=true) {
+  getStyleBySelector(target, exact = true) {
     return this.getStyleBySelectorAll(target, exact)[0];
   }
 
   setCanvasSize() {
     this.canvas.width = this.cnf.canvasSize[0];
     this.canvas.height = this.cnf.canvasSize[1];
-    this.cssVars = this.getStyleBySelector(':root').style;
+    this.cssVars = this.getStyleBySelector(":root").style;
     this.cssVars.setProperty(
-      "--canvas-width", this.cnf.canvasSize[0].toString() + 'px');
+      "--canvas-width",
+      this.cnf.canvasSize[0].toString() + "px"
+    );
     this.cssVars.setProperty(
-      "--canvas-height", this.cnf.canvasSize[1].toString() + 'px');
+      "--canvas-height",
+      this.cnf.canvasSize[1].toString() + "px"
+    );
   }
 
   async loadResources() {
@@ -99,9 +105,11 @@ export class Game {
   }
 
   joinResourceLoaders() {
-    this.loadProms = this.resourceLoaders.map(o => {
+    this.loadProms = this.resourceLoaders.map((o) => {
       let f = o?.loadResources;
-      if (f == null) { return; }
+      if (f == null) {
+        return;
+      }
       return o.loadResources();
     });
     this.onReady = Promise.all(this.loadProms);
@@ -116,13 +124,13 @@ export class Game {
     this.endLoading();
   }
 
-  endLoading(){
+  endLoading() {
     progress.setPercent(100);
     this.ls = new LoadingEndMgr(this);
     this.ls.endLoading();
     this.ls.start.then(() => {
       this.startTicks = true;
-    })
+    });
   }
 
   main() {
@@ -135,7 +143,7 @@ export class Game {
     }
     this.frameNo++;
     this.now = now * 0.001;
-    if(this.then==null) {
+    if (this.then == null) {
       this.then = this.now;
     }
     this.deltaT = this.now - this.then;
@@ -152,7 +160,7 @@ export class Game {
   }
 
   onframe() {
-    if(this.startTicks){
+    if (this.startTicks) {
       this.tickCallback();
     }
     this.render();
@@ -174,13 +182,15 @@ export class Game {
   }
 
   pointerlock_change() {
-    console.log('pointerlock change to ', document.pointerLockElement);
+    console.log("pointerlock change to ", document.pointerLockElement);
   }
 
   addPointerEvents() {
     document.addEventListener(
-      'pointerlockchange', this.pointerlock_change.bind(this));
-    this.canvas.addEventListener('click', _e => {
+      "pointerlockchange",
+      this.pointerlock_change.bind(this)
+    );
+    this.canvas.addEventListener("click", (_e) => {
       if (!this.pointerLocked) {
         this.canvas.requestPointerLock();
       }
