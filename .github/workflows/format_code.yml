@@ -19,3 +19,8 @@ jobs:
         run: npm ci
       - name: Format code
         run: npm run format
+      - name: Commit formatted files
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "style: Format code"
+          
