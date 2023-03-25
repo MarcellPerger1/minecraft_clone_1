@@ -56,7 +56,7 @@ jobs:
       - name: Run custom linters
         run: node ./scripts/find_bad_import.js
       - name: Check that code is formatted
-        run: chmod +x ./scripts/format_check.sh && ./scripts/format_check.sh
+        run: npm run format_check
   
   
   build:
@@ -86,5 +86,3 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Build texture atlas
-      
-
