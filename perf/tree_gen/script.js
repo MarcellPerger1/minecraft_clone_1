@@ -1,35 +1,33 @@
-import {runSuite} from "../perf_test.js";
+import { runSuite } from "../perf_test.js";
 
-import * as gen from '../../src/world/tree_generation.js';
-
+import * as gen from "../../src/world/tree_generation.js";
 
 const DEFAULT_CONFIG = {
-  wSize: [50, 12, 50], 
-  nTrees: 170, 
+  wSize: [50, 12, 50],
+  nTrees: 170,
   treeRadius: [1, 1],
 };
 
-
-export function run(conf=DEFAULT_CONFIG) {
+export function run(conf = DEFAULT_CONFIG) {
   var suite = Benchmark.Suite("Tree placers");
-  
+
   function getPlacerFn(cls) {
     return () => {
       new cls({
         cnf: {
           generation: {
             ...conf,
-            seed: Math.random()
-          }
-        }
-      }).makeTrees()
-    }
+            seed: Math.random(),
+          },
+        },
+      }).makeTrees();
+    };
   }
-  
+
   function addCls(cls) {
     suite.add(cls.name, getPlacerFn(cls));
   }
-  
+
   addCls(gen.IgnoreTreePlacer);
   addCls(gen.SkipTreePlacer);
   addCls(gen.AvoidTreePlacer);

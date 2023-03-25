@@ -1,5 +1,5 @@
 import { GameComponent } from "../game_component.js";
-import { SeedFork } from "./seed.js"
+import { SeedFork } from "./seed.js";
 
 export class BaseGenerator extends GameComponent {
   constructor(game) {
@@ -18,7 +18,7 @@ export class BaseGenerator extends GameComponent {
     return this.gcnf.seed;
   }
 
-  getSeed(name, i=null) {
+  getSeed(name, i = null) {
     return SeedFork.getSeed(this.globSeed, name, i ?? 0);
   }
 

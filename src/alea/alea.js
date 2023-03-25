@@ -28,9 +28,9 @@ export function alea(seed) {
   let c = 1;
 
   const mash = masher();
-  s0 = mash(' ');
-  s1 = mash(' ');
-  s2 = mash(' ');
+  s0 = mash(" ");
+  s1 = mash(" ");
+  s2 = mash(" ");
 
   s0 -= mash(seed);
   if (s0 < 0) {
@@ -45,18 +45,18 @@ export function alea(seed) {
     s2 += 1;
   }
   /** @type {(Random)} */
-  let ret = function() {
+  let ret = function () {
     const t = 2091639 * s0 + c * 2.3283064365386963e-10; // 2^-32
     s0 = s1;
     s1 = s2;
-    return s2 = t - (c = t | 0);
+    return (s2 = t - (c = t | 0));
   };
   Object.assign(ret, {
     random() {
       return ret();
     },
     randbits_32() {
-      return (ret() * 0x100000000/* 2^32 */) | 0; // cast to int
+      return (ret() * 0x100000000) /* 2^32 */ | 0; // cast to int
     },
     randbelow(n) {
       return ret() * n;
@@ -70,14 +70,14 @@ export function alea(seed) {
       // return random int x where lo <= x < hi
       let v = Math.floor(ret.randrange(lo, hi));
       return v < hi ? v : hi - 1;
-    }
+    },
   });
   return ret;
 }
 
 function masher() {
   let n = 0xefc8249d;
-  return function(data) {
+  return function (data) {
     data = data.toString();
     for (let i = 0; i < data.length; i++) {
       n += data.charCodeAt(i);

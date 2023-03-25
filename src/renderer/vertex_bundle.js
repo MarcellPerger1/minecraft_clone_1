@@ -1,10 +1,9 @@
-import { glTypeSize } from '../utils/gl_utils.js';
-import { GameComponent } from '../game_component.js';
-
+import { glTypeSize } from "../utils/gl_utils.js";
+import { GameComponent } from "../game_component.js";
 
 // simply a container utility class for each 'section' of vertex data
 // eg a 'section' could be a cube
-// NOTE: this is simply an example of the structure of the data, 
+// NOTE: this is simply an example of the structure of the data,
 // using this class is not mandatory
 // but it may be helpful to automatically calculate `maxindex`
 // TODO make a JSDoc typedef and remove this class?
@@ -17,7 +16,6 @@ export class VertexBundle {
     this.maxindex = maxindex ?? Math.max(...this.indices, -1);
   }
 }
-
 
 export class ElementBundler extends GameComponent {
   constructor(game, type = null) {
@@ -48,13 +46,17 @@ export class ElementBundler extends GameComponent {
     this.positions.push(...bundle.positions);
     this.texCoords.push(...bundle.texCoords);
     let startFrom = this.maxindex + 1;
-    this.indices.push(...bundle.indices.map(v => v + startFrom));
+    this.indices.push(...bundle.indices.map((v) => v + startFrom));
     this.maxindex += nElems;
     return this;
   }
 
   drawElements() {
     this.gl.drawElements(
-      this.gl.TRIANGLES, this.indices.length, this.elemType, 0);
+      this.gl.TRIANGLES,
+      this.indices.length,
+      this.elemType,
+      0
+    );
   }
 }

@@ -1,27 +1,31 @@
 // Load text from <script> element id
-export function loadTextFromTag(id){
+export function loadTextFromTag(id) {
   const vse = document.getElementById(id);
   return vse.innerText;
 }
 
 export async function fetchResponse(path) {
-  if(path.startsWith('/')) {
-    console.warn("Using absolute paths that will not work when used with github pages or nodejs")
+  if (path.startsWith("/")) {
+    console.warn(
+      "Using absolute paths that will not work when used with github pages or nodejs"
+    );
   }
   // todo use XMLHttpRequest for progress event (only needed when bigger files)
   const response = await fetch(path);
   if (!response.ok) {
-    throw new Error(`Cant load resource at ${path}`
-                    +` (status code ${response.status}): ${response.statusText}`);
+    throw new Error(
+      `Cant load resource at ${path}` +
+        ` (status code ${response.status}): ${response.statusText}`
+    );
   }
   return response;
 }
 
-export async function fetchTextFile(path){
+export async function fetchTextFile(path) {
   return (await fetchResponse(path)).text();
 }
 
-export async function fetchJsonFile(path){
+export async function fetchJsonFile(path) {
   return (await fetchResponse(path)).json();
 }
 
@@ -30,7 +34,6 @@ export async function fetchJsonFile(path){
  * @param {string} url - Original URL
  * @returns {string} URL with caching disabled
  */
-export function disableCaching(url){
-  return url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
+export function disableCaching(url) {
+  return url + (url.includes("?") ? "&" : "?") + "t=" + Date.now();
 }
-

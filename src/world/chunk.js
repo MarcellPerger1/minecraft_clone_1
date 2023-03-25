@@ -1,15 +1,14 @@
-import { assert } from '../utils/assert.js';
+import { assert } from "../utils/assert.js";
 import { divmod } from "../utils/math.js";
-import { GameComponent } from '../game_component.js';
+import { GameComponent } from "../game_component.js";
 
-import { Blocks } from './block_type.js';
-import { ChunkRenderer } from '../renderer/chunk_renderer.js';
-
+import { Blocks } from "./block_type.js";
+import { ChunkRenderer } from "../renderer/chunk_renderer.js";
 
 /**
  * @typedef {import('../game.js').Game} Game
  * @typedef {[number, number, number]} Vec3
-*/
+ */
 
 export class Chunk extends GameComponent {
   /**
@@ -37,7 +36,9 @@ export class Chunk extends GameComponent {
   }
 
   getBlockOr(at, d = Blocks.air) {
-    if (!this.inRange(at)) { return d; }
+    if (!this.inRange(at)) {
+      return d;
+    }
     return this.getBlockUnsafe(at);
   }
 
@@ -61,7 +62,9 @@ export class Chunk extends GameComponent {
   }
 
   setBlockOr(at, block) {
-    if (!this.inRange(at)) { return false; }
+    if (!this.inRange(at)) {
+      return false;
+    }
     this.setBlockUnsafe(at, block);
     return true;
   }
@@ -97,15 +100,14 @@ export class Chunk extends GameComponent {
     return v;
   }
   indexFromIndexVec(v) {
-    let i = v[0]
-      + v[1] * this.size[0]
-      + v[2] * this.size[0] * this.size[1];
+    let i = v[0] + v[1] * this.size[0] + v[2] * this.size[0] * this.size[1];
     return i;
   }
 
   inRange(pos) {
-    return [0, 1, 2].every((i) => 
-      (this.low[i] <= pos[i] && pos[i] < this.high[i]));
+    return [0, 1, 2].every(
+      (i) => this.low[i] <= pos[i] && pos[i] < this.high[i]
+    );
   }
 
   wantInRange(pos, msg = "Position out of range") {
@@ -116,7 +118,7 @@ export class Chunk extends GameComponent {
     for (let i = 0; i < this.blocks.length; i++) {
       const posVec = this.getPos(i);
       const block = this.blocks[i];
-      yield [posVec, block,];
+      yield [posVec, block];
     }
   }
 }

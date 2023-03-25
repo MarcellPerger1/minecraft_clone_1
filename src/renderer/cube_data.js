@@ -1,7 +1,6 @@
 import { isObject } from "../utils/type_check.js";
-import { sortCoords } from '../utils/array_utils.js';
-import { GameComponent } from '../game_component.js';
-
+import { sortCoords } from "../utils/array_utils.js";
+import { GameComponent } from "../game_component.js";
 
 const FAR_DIST_SQ = 130;
 
@@ -14,7 +13,7 @@ export class CubeVertexData extends GameComponent {
       p1 = null;
     }
     if (p1 == null) {
-      this.p0 = p0
+      this.p0 = p0;
       this.p1 = vec3.add([], p0, [1, 1, 1]);
     } else {
       [this.p0, this.p1] = sortCoords(p0, p1);
@@ -35,19 +34,10 @@ export class CubeVertexData extends GameComponent {
     const t0 = this.isFar ? td.x0f : td.x0;
     const t1 = this.isFar ? td.x1f : td.x1;
     const sides = {
-      positions: [
-        x0, y0, z0,
-        x0, y0, z1,
-        x0, y1, z1,
-        x0, y1, z0,
-      ], texCoords: [
-        t0, 1,
-        t1, 1,
-        t1, 0,
-        t0, 0,
-      ], indices: [
-        0, 1, 2, 0, 2, 3,
-      ], maxindex: 3
+      positions: [x0, y0, z0, x0, y0, z1, x0, y1, z1, x0, y1, z0],
+      texCoords: [t0, 1, t1, 1, t1, 0, t0, 0],
+      indices: [0, 1, 2, 0, 2, 3],
+      maxindex: 3,
     };
     return sides;
   }
@@ -60,19 +50,10 @@ export class CubeVertexData extends GameComponent {
     const t0 = this.isFar ? td.x0f : td.x0;
     const t1 = this.isFar ? td.x1f : td.x1;
     const sides = {
-      positions: [
-        x1, y0, z0,
-        x1, y1, z0,
-        x1, y1, z1,
-        x1, y0, z1,
-      ], texCoords: [
-        t1, 1,
-        t1, 0,
-        t0, 0,
-        t0, 1,
-      ], indices: [
-        0, 1, 2, 0, 2, 3,
-      ], maxindex: 3
+      positions: [x1, y0, z0, x1, y1, z0, x1, y1, z1, x1, y0, z1],
+      texCoords: [t1, 1, t1, 0, t0, 0, t0, 1],
+      indices: [0, 1, 2, 0, 2, 3],
+      maxindex: 3,
     };
     return sides;
   }
@@ -85,19 +66,10 @@ export class CubeVertexData extends GameComponent {
     const t0 = this.isFar ? td.x0f : td.x0;
     const t1 = this.isFar ? td.x1f : td.x1;
     const sides = {
-      positions: [
-        x0, y0, z0,
-        x0, y1, z0,
-        x1, y1, z0,
-        x1, y0, z0,
-      ], texCoords: [
-        t1, 1,
-        t1, 0,
-        t0, 0,
-        t0, 1,
-      ], indices: [
-        0, 1, 2, 0, 2, 3,
-      ], maxindex: 3
+      positions: [x0, y0, z0, x0, y1, z0, x1, y1, z0, x1, y0, z0],
+      texCoords: [t1, 1, t1, 0, t0, 0, t0, 1],
+      indices: [0, 1, 2, 0, 2, 3],
+      maxindex: 3,
     };
     return sides;
   }
@@ -110,19 +82,10 @@ export class CubeVertexData extends GameComponent {
     const t0 = this.isFar ? td.x0f : td.x0;
     const t1 = this.isFar ? td.x1f : td.x1;
     const sides = {
-      positions: [
-        x0, y0, z1,
-        x1, y0, z1,
-        x1, y1, z1,
-        x0, y1, z1,
-      ], texCoords: [
-        t0, 1,
-        t1, 1,
-        t1, 0,
-        t0, 0,
-      ], indices: [
-        0, 1, 2, 0, 2, 3,
-      ], maxindex: 3
+      positions: [x0, y0, z1, x1, y0, z1, x1, y1, z1, x0, y1, z1],
+      texCoords: [t0, 1, t1, 1, t1, 0, t0, 0],
+      indices: [0, 1, 2, 0, 2, 3],
+      maxindex: 3,
     };
     return sides;
   }
@@ -135,19 +98,10 @@ export class CubeVertexData extends GameComponent {
     const t0 = this.isFar ? td.x0f : td.x0;
     const t1 = this.isFar ? td.x1f : td.x1;
     const ret = {
-      positions: [
-        x0, y1, z0,
-        x0, y1, z1,
-        x1, y1, z1,
-        x1, y1, z0,
-      ], texCoords: [
-        t0, 0,
-        t1, 0,
-        t1, 1,
-        t0, 1,
-      ], indices: [
-        0, 1, 2, 0, 2, 3,
-      ], maxindex: 3
+      positions: [x0, y1, z0, x0, y1, z1, x1, y1, z1, x1, y1, z0],
+      texCoords: [t0, 0, t1, 0, t1, 1, t0, 1],
+      indices: [0, 1, 2, 0, 2, 3],
+      maxindex: 3,
     };
     return ret;
   }
@@ -160,19 +114,10 @@ export class CubeVertexData extends GameComponent {
     const t0 = this.isFar ? td.x0f : td.x0;
     const t1 = this.isFar ? td.x1f : td.x1;
     const ret = {
-      positions: [
-        x0, y0, z0,
-        x1, y0, z0,
-        x1, y0, z1,
-        x0, y0, z1,
-      ], texCoords: [
-        t0, 1,
-        t1, 1,
-        t1, 0,
-        t0, 0,
-      ], indices: [
-        0, 1, 2, 0, 2, 3,
-      ], maxindex: 3
+      positions: [x0, y0, z0, x1, y0, z0, x1, y0, z1, x0, y0, z1],
+      texCoords: [t0, 1, t1, 1, t1, 0, t0, 0],
+      indices: [0, 1, 2, 0, 2, 3],
+      maxindex: 3,
     };
     return ret;
   }
@@ -191,55 +136,98 @@ export class CubeVertexData extends GameComponent {
     const sides = {
       positions: [
         // Front face
-        x0, y0, z1,
-        x1, y0, z1,
-        x1, y1, z1,
-        x0, y1, z1,
+        x0,
+        y0,
+        z1,
+        x1,
+        y0,
+        z1,
+        x1,
+        y1,
+        z1,
+        x0,
+        y1,
+        z1,
 
         // Back face
-        x0, y0, z0,
-        x0, y1, z0,
-        x1, y1, z0,
-        x1, y0, z0,
+        x0,
+        y0,
+        z0,
+        x0,
+        y1,
+        z0,
+        x1,
+        y1,
+        z0,
+        x1,
+        y0,
+        z0,
 
         // Right face
-        x1, y0, z0,
-        x1, y1, z0,
-        x1, y1, z1,
-        x1, y0, z1,
+        x1,
+        y0,
+        z0,
+        x1,
+        y1,
+        z0,
+        x1,
+        y1,
+        z1,
+        x1,
+        y0,
+        z1,
 
         // Left face
-        x0, y0, z0,
-        x0, y0, z1,
-        x0, y1, z1,
-        x0, y1, z0,
-      ], texCoords: [
+        x0,
+        y0,
+        z0,
+        x0,
+        y0,
+        z1,
+        x0,
+        y1,
+        z1,
+        x0,
+        y1,
+        z0,
+      ],
+      texCoords: [
         // Front
-        0.0, 1.0,
-        1.0, 1.0,
-        1.0, 0.0,
-        0.0, 0.0,
+        0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0,
         // Back
-        1.0, 1.0,
-        1.0, 0.0,
-        0.0, 0.0,
-        0.0, 1.0,
+        1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
         // Right
-        1.0, 1.0,
-        1.0, 0.0,
-        0.0, 0.0,
-        0.0, 1.0,
+        1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
         // Left
-        0.0, 1.0,
-        1.0, 1.0,
-        1.0, 0.0,
-        0.0, 0.0,
-      ], indices: [
-        0, 1, 2, 0, 2, 3,    // front
-        4, 5, 6, 4, 6, 7,    // back
-        8, 9, 10, 8, 10, 11,   // right
-        12, 13, 14, 12, 14, 15,   // left
-      ], maxindex: 15
+        0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0,
+      ],
+      indices: [
+        0,
+        1,
+        2,
+        0,
+        2,
+        3, // front
+        4,
+        5,
+        6,
+        4,
+        6,
+        7, // back
+        8,
+        9,
+        10,
+        8,
+        10,
+        11, // right
+        12,
+        13,
+        14,
+        12,
+        14,
+        15, // left
+      ],
+      maxindex: 15,
     };
     return sides;
   }
@@ -249,40 +237,88 @@ export class CubeVertexData extends GameComponent {
     const [x1, y1, z1] = this.p1;
     const positions = [
       // Front face
-      x0, y0, z1,
-      x1, y0, z1,
-      x1, y1, z1,
-      x0, y1, z1,
+      x0,
+      y0,
+      z1,
+      x1,
+      y0,
+      z1,
+      x1,
+      y1,
+      z1,
+      x0,
+      y1,
+      z1,
 
       // Back face
-      x0, y0, z0,
-      x0, y1, z0,
-      x1, y1, z0,
-      x1, y0, z0,
+      x0,
+      y0,
+      z0,
+      x0,
+      y1,
+      z0,
+      x1,
+      y1,
+      z0,
+      x1,
+      y0,
+      z0,
 
       // Top face
-      x0, y1, z0,
-      x0, y1, z1,
-      x1, y1, z1,
-      x1, y1, z0,
+      x0,
+      y1,
+      z0,
+      x0,
+      y1,
+      z1,
+      x1,
+      y1,
+      z1,
+      x1,
+      y1,
+      z0,
 
       // Bottom face
-      x0, y0, z0,
-      x1, y0, z0,
-      x1, y0, z1,
-      x0, y0, z1,
+      x0,
+      y0,
+      z0,
+      x1,
+      y0,
+      z0,
+      x1,
+      y0,
+      z1,
+      x0,
+      y0,
+      z1,
 
       // Right face
-      x1, y0, z0,
-      x1, y1, z0,
-      x1, y1, z1,
-      x1, y0, z1,
+      x1,
+      y0,
+      z0,
+      x1,
+      y1,
+      z0,
+      x1,
+      y1,
+      z1,
+      x1,
+      y0,
+      z1,
 
       // Left face
-      x0, y0, z0,
-      x0, y0, z1,
-      x0, y1, z1,
-      x0, y1, z0,
+      x0,
+      y0,
+      z0,
+      x0,
+      y0,
+      z1,
+      x0,
+      y1,
+      z1,
+      x0,
+      y1,
+      z0,
     ];
     return positions;
   }

@@ -6,32 +6,37 @@
  * @param {boolean} opts.start - trim from start?
  * @param {boolean} opts.end - trim from end?
  */
-export function trim(str, chars, opts=null) {
-  var start = 0, end = str.length;
+export function trim(str, chars, opts = null) {
+  var start = 0,
+    end = str.length;
 
-  if(opts?.start){
-    while(start < end && chars.includes(str[start]))
-      ++start;
+  if (opts?.start) {
+    while (start < end && chars.includes(str[start])) ++start;
   }
 
-  if(opts?.end){
-    while(end > start && chars.includes(str[end - 1]))
-      --end;
+  if (opts?.end) {
+    while (end > start && chars.includes(str[end - 1])) --end;
   }
 
-  return (start > 0 || end < str.length) ? str.substring(start, end) : str;
+  return start > 0 || end < str.length ? str.substring(start, end) : str;
 }
 
-export function removePrefix(/**@type{string}*/str, /**@type{string}*/prefix){
-  if(str.startsWith(prefix)){
-    str = str.substring(prefix.length)
+export function removePrefix(
+  /**@type{string}*/ str,
+  /**@type{string}*/ prefix
+) {
+  if (str.startsWith(prefix)) {
+    str = str.substring(prefix.length);
   }
   return str;
 }
 
-export function removeSuffix(/**@type{string}*/str, /**@type{string}*/suffix){
-  if(str.endsWith(suffix)){
-    str = str.substring(0,str.length-suffix.length)
+export function removeSuffix(
+  /**@type{string}*/ str,
+  /**@type{string}*/ suffix
+) {
+  if (str.endsWith(suffix)) {
+    str = str.substring(0, str.length - suffix.length);
   }
   return str;
 }

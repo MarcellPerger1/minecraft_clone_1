@@ -55,6 +55,15 @@ jobs:
         run: ./node_modules/.bin/eslint --max-warnings 0 ./
       - name: Run custom linters
         run: node ./scripts/find_bad_import.js
+      - name: Check that code is formatted
+        id: check_format
+        run: npm run format_check
+      - name: Report files that would be changed
+        if: always() && steps.check_format.outcome == 'failure'
+        run: |
+          npm run format
+          echo Error: formatter would change these files:
+          git diff HEAD --color
   
   
   build:
@@ -84,5 +93,3 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Build texture atlas
-      
-

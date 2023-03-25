@@ -6,15 +6,22 @@ import { Blocks } from "./block_type.js";
 import { OctaveNoise } from "./octave_noise.js";
 import { TreePlacer } from "./tree_generation.js";
 
-
 export class WorldGenerator extends GameComponent {
   constructor(game) {
     super(game);
     this.init();
     this.baseTerrain = new OctaveNoise(
-      this.gcnf.seed, "base-terrain", this.gcnf.baseTerrain, n => -n.minRawValue());
+      this.gcnf.seed,
+      "base-terrain",
+      this.gcnf.baseTerrain,
+      (n) => -n.minRawValue()
+    );
     this.stoneOffset = new OctaveNoise(
-      this.gcnf.seed, "stone-offset", this.gcnf.stoneOffset, -3);
+      this.gcnf.seed,
+      "stone-offset",
+      this.gcnf.stoneOffset,
+      -3
+    );
     this.treeGetter = new TreePlacer(this);
   }
 
@@ -28,8 +35,9 @@ export class WorldGenerator extends GameComponent {
 
   init() {
     this.w = new World(this);
-    this.landHeights = rangeList(this.wSize[0])
-      .map(_ => new Array(this.wSize[2]));
+    this.landHeights = rangeList(this.wSize[0]).map(
+      (_) => new Array(this.wSize[2])
+    );
   }
 
   /**
@@ -37,8 +45,8 @@ export class WorldGenerator extends GameComponent {
    * @returns {World}
    */
   generate() {
-    return this.gcnf.isTestWorld ?
-      this.generateTestWorld()
+    return this.gcnf.isTestWorld
+      ? this.generateTestWorld()
       : this.generateTerrain();
   }
 
@@ -56,9 +64,9 @@ export class WorldGenerator extends GameComponent {
   generateTrees() {
     let positions = this.treeGetter.makeTrees();
     progress.addPercent(3);
-    for(let [tx, tz] of positions) {
+    for (let [tx, tz] of positions) {
       this.placeTree(tx, tz);
-      progress.addPercent(2/positions.length);
+      progress.addPercent(2 / positions.length);
     }
   }
 
@@ -66,23 +74,23 @@ export class WorldGenerator extends GameComponent {
     const setRelOr = (pos, block) => {
       let p = vec3.add([], [x, terrainY, z], pos);
       return this.w.setBlockOr(p, block);
-    }
+    };
     const getRelOr = (pos) => {
       let p = vec3.add([], [x, terrainY, z], pos);
       return this.w.getBlockOr(p, Blocks.air);
-    }
+    };
     let terrainY = this.landHeights[x][z];
-    for(let yo=3;yo<=5;yo++){
-      let r = yo==5 ? 1 : 2;
-      for(let xo=-r;xo<=r;xo++) {
-        for(let zo=-r;zo<=r;zo++) {
-          if(getRelOr([xo, yo, zo]) == Blocks.air){
+    for (let yo = 3; yo <= 5; yo++) {
+      let r = yo == 5 ? 1 : 2;
+      for (let xo = -r; xo <= r; xo++) {
+        for (let zo = -r; zo <= r; zo++) {
+          if (getRelOr([xo, yo, zo]) == Blocks.air) {
             setRelOr([xo, yo, zo], Blocks.oak_leaves);
           }
         }
       }
     }
-    for(let offset=1;offset<=4;offset++){
+    for (let offset = 1; offset <= 4; offset++) {
       setRelOr([0, offset, 0], Blocks.oak_log);
     }
   }
@@ -90,14 +98,19 @@ export class WorldGenerator extends GameComponent {
   generateBlock(x, z) {
     let y = this.getHeightAt(x, z);
     if (y < 0 || y >= this.wSize[1]) {
-      console.warn("Noise value outside of world. Consider tweaking nMedian or nScale");
+      console.warn(
+        "Noise value outside of world. Consider tweaking nMedian or nScale"
+      );
     }
     this.landHeights[x][z] = y;
     let stoneOffset = this.stoneOffset.noise2D(x, z);
     let stoneBelow = y + stoneOffset;
     this.w.setBlockOr([x, y, z], Blocks.grass);
-    while (y-->0) {
-      this.w.setBlockOr([x, y, z], y <= stoneBelow ? Blocks.stone : Blocks.dirt);
+    while (y-- > 0) {
+      this.w.setBlockOr(
+        [x, y, z],
+        y <= stoneBelow ? Blocks.stone : Blocks.dirt
+      );
     }
   }
 
@@ -120,6 +133,14 @@ export class WorldGenerator extends GameComponent {
 
 function _mash(v, bits) {
   var rpt = 1 << bits;
-  var r = (12345678.91011 * v + 12345.6789 * v * v - 123.456789 - 1234.56789 * v * v * v + Math.cos(12.345 * v - 1.23 * v * v + 3.14) - Math.pow((v + 3.1415) * Math.cos((v + 1.23) * (v - 2.718)), 7) * 27.18 + Math.sin((v + 1.23) * (v - 3.14159) * v - 1234)) % rpt
-  return Math.floor(r > 0 ? r : r + rpt)
+  var r =
+    (12345678.91011 * v +
+      12345.6789 * v * v -
+      123.456789 -
+      1234.56789 * v * v * v +
+      Math.cos(12.345 * v - 1.23 * v * v + 3.14) -
+      Math.pow((v + 3.1415) * Math.cos((v + 1.23) * (v - 2.718)), 7) * 27.18 +
+      Math.sin((v + 1.23) * (v - 3.14159) * v - 1234)) %
+    rpt;
+  return Math.floor(r > 0 ? r : r + rpt);
 }

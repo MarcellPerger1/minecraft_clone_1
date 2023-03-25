@@ -1,3 +1,1 @@
-export class DataMerger {
-  
-}
+export class DataMerger {}

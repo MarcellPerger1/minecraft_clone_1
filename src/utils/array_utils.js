@@ -1,5 +1,5 @@
-import { numCmp } from './math.js';
-import { isAnyArray } from './type_check.js';
+import { numCmp } from "./math.js";
+import { isAnyArray } from "./type_check.js";
 
 // may modify list inplace, but doesnt have to
 export function iextend(a, b) {
@@ -30,15 +30,15 @@ export function iextend(a, b) {
  */
 export function extendNullSafe(a, ...args) {
   for (const other of args)
-    if (other != null)
-      a.push(...other.filter(v => v != null));
+    if (other != null) a.push(...other.filter((v) => v != null));
   return a;
 }
 
-
 export function assignNullSafe(a, ...args) {
   for (const other of args) {
-    if (other == null) { continue; }
+    if (other == null) {
+      continue;
+    }
     for (const [k, v] of Object.entries(other)) {
       a[k] = v ?? a[k];
     }
@@ -48,7 +48,9 @@ export function assignNullSafe(a, ...args) {
 
 export function setDefaults(a, ...args) {
   for (const other of args) {
-    if (other == null) { continue; }
+    if (other == null) {
+      continue;
+    }
     for (const [k, v] of Object.entries(other)) {
       a[k] ??= v;
     }
@@ -84,9 +86,10 @@ export function sortCoords(p0, p1) {
  * @returns {T[]}
  */
 export function forRange(n, func, thisArg = null) {
-  return Array(n).fill(0).map((_v, i) => func.call(thisArg, i));
+  return Array(n)
+    .fill(0)
+    .map((_v, i) => func.call(thisArg, i));
 }
-
 
 /**
  * @template T
@@ -106,12 +109,13 @@ export function fromNested(shape, func, thisArg = null) {
   /** @type {(i: number) => V | Array<V | Array>} */
   let inner = (i) => {
     path.push(i);
-    let value = path.length == shape.length
-      ? func.call(thisArg, path.slice())
-      : forRange(shape[path.length], inner);
+    let value =
+      path.length == shape.length
+        ? func.call(thisArg, path.slice())
+        : forRange(shape[path.length], inner);
     path.pop();
     return value;
-  }
+  };
   return forRange(shape[0], inner);
 }
 
@@ -122,7 +126,7 @@ export function fromNested(shape, func, thisArg = null) {
  * @param {(v: T, i: number[], arr: RecursiveArray<T>, a: T[]) => void} func
  * @praram {Object} thisArg
  * @param {number[]} [path_prefix]
-*/
+ */
 export function nestedFor(arr, func, thisArg = null, path_prefix = []) {
   var path = path_prefix.slice();
   arr.forEach((v, i, a) => {
@@ -130,9 +134,9 @@ export function nestedFor(arr, func, thisArg = null, path_prefix = []) {
     if (isAnyArray(v)) {
       nestedFor(v, func, thisArg, p);
     } else {
-      func.call(thisArg, v, p, arr, a);  // throw eveything at the function
+      func.call(thisArg, v, p, arr, a); // throw eveything at the function
     }
-  })
+  });
 }
 
 /**
@@ -141,7 +145,9 @@ export function nestedFor(arr, func, thisArg = null, path_prefix = []) {
  * @returns {Array<number>}
  */
 export function rangeList(n) {
-  return Array(n).fill(0).map((_, i) => i);
+  return Array(n)
+    .fill(0)
+    .map((_, i) => i);
 }
 
 /**
@@ -156,14 +162,15 @@ export function rangeFrom(start, stop = null) {
     stop = start;
     start = 0;
   }
-  return Array(stop - start).fill(0).map((_, i) => start + i);
+  return Array(stop - start)
+    .fill(0)
+    .map((_, i) => start + i);
 }
 
 /**
  * @typedef {{found: true, idx: number} | {found: false, idx: [number, number]}} SearchRes
  * @typedef {(item: S, v: T, i: number) => (0|1|-1)} SearchCmpFn
  */
-
 
 /**
  * Binary search
@@ -187,12 +194,11 @@ export function binarySearch(list, item, threeWayCmp) {
       hi = mid - 1;
     } else {
       // cmpRes > 0
-      lo = mid + 1
+      lo = mid + 1;
     }
   }
   return -1;
 }
-
 
 /**
  * Binary search returning interval if not found
@@ -205,23 +211,28 @@ export function binarySearch(list, item, threeWayCmp) {
 export function binarySearchOr(list, item, threeWayCmp) {
   threeWayCmp ??= numCmp;
   var lo = 0;
-  var hi = list.length-1;
+  var hi = list.length - 1;
   while (lo <= hi) {
     let mid = Math.floor((lo + hi) / 2);
     let cmpRes = threeWayCmp(item, list[mid], mid);
     if (cmpRes === 0) {
-      return {found: true, idx: mid};
+      return { found: true, idx: mid };
     }
     if (cmpRes < 0) {
       hi = mid - 1;
     } else {
       // cmpRes > 0
-      lo = mid + 1
+      lo = mid + 1;
     }
-    if(lo > hi) {
+    if (lo > hi) {
       // if not found, return here to be able to inspect `mid` and `cmpRes`
-      return {found: false, idx: cmpRes < 0 ? [mid-1, mid] : [mid, mid+1]};
+      return {
+        found: false,
+        idx: cmpRes < 0 ? [mid - 1, mid] : [mid, mid + 1],
+      };
     }
   }
-  throw new Error("This should be unreachable! Something has certainly gone wrong...")
+  throw new Error(
+    "This should be unreachable! Something has certainly gone wrong..."
+  );
 }

@@ -1,26 +1,23 @@
 import { toRad } from "../utils/math.js";
 import { getGL, glErrnoToMsg } from "../utils/gl_utils.js";
-import { LoaderMerge } from '../utils/loader.js';
-import { GameComponent } from '../game_component.js';
+import { LoaderMerge } from "../utils/loader.js";
+import { GameComponent } from "../game_component.js";
 
-import {Buffers} from './buffers.js';
-import {AtlasLoader} from './atlas_data.js';
-import {ShaderLoader} from './shader_loader.js';
-import {CubeDataAdder} from './face_culling.js';
-import {ElementBundler} from './vertex_bundle.js';
-
+import { Buffers } from "./buffers.js";
+import { AtlasLoader } from "./atlas_data.js";
+import { ShaderLoader } from "./shader_loader.js";
+import { CubeDataAdder } from "./face_culling.js";
+import { ElementBundler } from "./vertex_bundle.js";
 
 /**
  * @typedef {import('../world/chunk.js').Chunk} Chunk
  * @typedef {import('./chunk_renderer.js').ChunkRenderer} ChunkRenderer
-*/
+ */
 
-
-// NOTE: 
+// NOTE:
 // West  = +x
-// Up    = +y 
+// Up    = +y
 // North = +z
-
 
 // thing i could eventually read:
 // https://www.toptal.com/game/video-game-physics-part-i-an-introduction-to-rigid-body-dynamics
@@ -29,7 +26,9 @@ import {ElementBundler} from './vertex_bundle.js';
 export class Renderer extends GameComponent {
   constructor(game, do_init = true) {
     super(game);
-    if (do_init) { this.init(); }
+    if (do_init) {
+      this.init();
+    }
   }
 
   init() {
@@ -40,14 +39,14 @@ export class Renderer extends GameComponent {
   /**
    * @type {WebGLRenderingContext}
    */
-  get gl(){
+  get gl() {
     return this._gl;
   }
-  set gl(v){
+  set gl(v) {
     this._gl = v;
   }
 
-  initLoaders(){
+  initLoaders() {
     this.loader = new LoaderMerge({
       shader: new ShaderLoader(this.game),
       atlas: new AtlasLoader(this.game),
@@ -55,15 +54,15 @@ export class Renderer extends GameComponent {
   }
 
   // Returns Promise that fulfilles when all resources loaded and ready for a render
-  loadResources(){
+  loadResources() {
     this.initLoaders();
-    this.initDoneProm = this.loader.loadResources().then(_result => {
+    this.initDoneProm = this.loader.loadResources().then((_result) => {
       this.onResourcesLoaded();
     });
     return this.initDoneProm;
   }
 
-  onResourcesLoaded(){
+  onResourcesLoaded() {
     this.initProgramInfo(this.loader.shader.program);
     this.initAtlasInfo(this.loader.atlas);
     this.vertexData = {
@@ -75,31 +74,31 @@ export class Renderer extends GameComponent {
     this.configArrayBuffers();
   }
 
-  initAtlasInfo(atlas){
-    this.atlas = atlas
+  initAtlasInfo(atlas) {
+    this.atlas = atlas;
     this.atlasTex = this.texture = this.atlas.texture;
     this.atlasData = this.atlas.data;
   }
-  
-  get camRot(){
+
+  get camRot() {
     return this.player.rotation;
   }
-  get camPos(){
+  get camPos() {
     return this.player.position;
   }
-  
+
   // WebGL stuff
   // initialisation
-  initGL(){
+  initGL() {
     this.gl = getGL();
-    if(this.gl==null){
+    if (this.gl == null) {
       throw new Error("Failed to initiialise gl");
     }
     this.clearCanvas();
     this.checkGlFault();
   }
-  
-  initGLConfig(){
+
+  initGLConfig() {
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.depthFunc(this.gl.LEQUAL);
     this.gl.enable(this.gl.SCISSOR_TEST);
@@ -111,28 +110,28 @@ export class Renderer extends GameComponent {
   /**
    * Set size of webGL stuff
    * @param {[number, number]} size
-  */
-  setGLSize(size, offset=null){
-    offset = (offset ?? [0,0]).slice(0, 2);
+   */
+  setGLSize(size, offset = null) {
+    offset = (offset ?? [0, 0]).slice(0, 2);
     this.gl.viewport(...offset, ...size);
     this.gl.scissor(...offset, ...size);
   }
 
   // gl errors
-  checkGlFault(){
-    if(!this.cnf.checkError){
-      return
+  checkGlFault() {
+    if (!this.cnf.checkError) {
+      return;
     }
     this.last_error = this.gl.getError();
-    if(this.last_error !== this.gl.NO_ERROR){
+    if (this.last_error !== this.gl.NO_ERROR) {
       this.onGlFault();
     }
   }
 
-  onGlFault(){
-    console.error("WebGL error: ", glErrnoToMsg(this.last_error))
+  onGlFault() {
+    console.error("WebGL error: ", glErrnoToMsg(this.last_error));
   }
-  
+
   // other
   clearCanvas() {
     this.gl.clearColor(...this.cnf.bgColor);
@@ -140,9 +139,9 @@ export class Renderer extends GameComponent {
     // actully does the clearing:
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
   }
-  
+
   // DRAW SCENE
-  renderFrame(){
+  renderFrame() {
     this.initFrame();
     // only update mesh if re-render
     this.makeWorldMesh();
@@ -150,30 +149,30 @@ export class Renderer extends GameComponent {
     this.checkGlFault();
   }
 
-  initFrame(){
+  initFrame() {
     this.resetRender();
     this.setUniforms();
   }
 
-  drawAll(){
+  drawAll() {
     this.bufferDataFromBundler();
     this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
     this.vertexData.main.drawElements();
   }
 
-  resetRender(){
+  resetRender() {
     this.clearCanvas();
   }
 
   // CUBE DATA HANDLING
-  makeWorldMesh(){
+  makeWorldMesh() {
     this.vertexData.main.reset();
     this.vertexData.transparent.reset();
     let i = 0;
-    for(const c of this.world.iterChunks()){
+    for (const c of this.world.iterChunks()) {
       /** @type {ChunkRenderer} */
       let cr = c.chunkRenderer;
-      if(this.game.frameNo % 120 == i) {
+      if (this.game.frameNo % 120 == i) {
         cr.remakeMesh = true;
       }
       cr.updateMesh();
@@ -184,74 +183,77 @@ export class Renderer extends GameComponent {
     this.vertexData.main.addData(this.vertexData.transparent);
   }
 
-  addBlock(pos, block){
-    if(block.visible){
+  addBlock(pos, block) {
+    if (block.visible) {
       this.addBlockTextures(pos, block.textures);
     }
   }
 
-  addBlockTextures(pos, tData){
+  addBlockTextures(pos, tData) {
     new CubeDataAdder(this.game, pos, tData).addData();
   }
 
-  addData(data, transparent=false){
-    return this.vertexData[transparent ? 'transparent' : 'main']
-      .addData(data);
+  addData(data, transparent = false) {
+    return this.vertexData[transparent ? "transparent" : "main"].addData(data);
   }
 
   // ARRAY BUFFERS
-  configArrayBuffers(){
-    this.buffers.config('position', 'vertexPosition', 3, this.gl.FLOAT);
-    this.buffers.config('textureCoord', 'textureCoord', 2, this.gl.FLOAT);
+  configArrayBuffers() {
+    this.buffers.config("position", "vertexPosition", 3, this.gl.FLOAT);
+    this.buffers.config("textureCoord", "textureCoord", 2, this.gl.FLOAT);
   }
 
   // UNIFORMS (todo separate uniform handler class)
-  setUniforms(){
+  setUniforms() {
     this.initProjectionMatrix();
     this.initModelViewMatrix();
     this.initTextureSampler();
   }
 
-  initTextureSampler(){
+  initTextureSampler() {
     // Tell WebGL we want to affect texture unit 0
     this.gl.activeTexture(this.gl.TEXTURE0);
     // Tell the shader we bound the texture to texture unit 0
     this.gl.uniform1i(this.programInfo.uniformLocations.uSampler, 0);
   }
-  
+
   /**
    * Set a uniform to matrix `mat`
    * @param {String} name - The name of the uniform
    * @param {(Array<Number> | Float32Array)} mat - The matrix
    */
-  setUniformMat4(name, mat){
+  setUniformMat4(name, mat) {
     this.gl.uniformMatrix4fv(
-      this.programInfo.uniformLocations[name], false, mat
-    )
+      this.programInfo.uniformLocations[name],
+      false,
+      mat
+    );
   }
-  
-  initProjectionMatrix(){
-    this.setUniformMat4('projectionMatrix', this.getProjectionMatrix());
+
+  initProjectionMatrix() {
+    this.setUniformMat4("projectionMatrix", this.getProjectionMatrix());
   }
-  getProjectionMatrix(){
+  getProjectionMatrix() {
     const fieldOfView = toRad(45);
     const aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
     const zNear = 0.1;
     const zFar = 100.0;
     const projectionMatrix = mat4.create();
-  
-    mat4.perspective(projectionMatrix,  // dest
-                     fieldOfView,
-                     aspect,
-                     zNear,
-                     zFar);
+
+    mat4.perspective(
+      projectionMatrix, // dest
+      fieldOfView,
+      aspect,
+      zNear,
+      zFar
+    );
     return projectionMatrix;
   }
 
-  initModelViewMatrix(){
-    this.setUniformMat4('modelViewMatrix', this.getModelViewMatrix());
+  initModelViewMatrix() {
+    this.setUniformMat4("modelViewMatrix", this.getModelViewMatrix());
   }
-  getModelViewMatrix(){
+  getModelViewMatrix() {
     var m1 = mat4.create();
     const amount = vec3.scale([], this.camPos, -1);
     // NOTEE: IMPORTANT!: does stuff in reverse order!!!
@@ -267,18 +269,22 @@ export class Renderer extends GameComponent {
     const programInfo = {
       program: shaderProgram,
       attribLocations: {
-        vertexPosition: 
-          this.gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
-        textureCoord: 
-          this.gl.getAttribLocation(shaderProgram, 'aTextureCoord'),
+        vertexPosition: this.gl.getAttribLocation(
+          shaderProgram,
+          "aVertexPosition"
+        ),
+        textureCoord: this.gl.getAttribLocation(shaderProgram, "aTextureCoord"),
       },
       uniformLocations: {
-        projectionMatrix: 
-          this.gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
-        modelViewMatrix: 
-          this.gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
-        uSampler: 
-          this.gl.getUniformLocation(shaderProgram, 'uSampler'),
+        projectionMatrix: this.gl.getUniformLocation(
+          shaderProgram,
+          "uProjectionMatrix"
+        ),
+        modelViewMatrix: this.gl.getUniformLocation(
+          shaderProgram,
+          "uModelViewMatrix"
+        ),
+        uSampler: this.gl.getUniformLocation(shaderProgram, "uSampler"),
       },
     };
     this.programInfo = programInfo;
@@ -286,19 +292,25 @@ export class Renderer extends GameComponent {
   }
 
   // BUFFERS
-  makeBuffers(){
-    this.buffers.make('position');
-    this.buffers.make('textureCoord');
-    this.buffers.make('indices');
+  makeBuffers() {
+    this.buffers.make("position");
+    this.buffers.make("textureCoord");
+    this.buffers.make("indices");
   }
 
-  bufferDataFromBundler(){
+  bufferDataFromBundler() {
     this.buffers.setData(
-      'position', new Float32Array(this.vertexData.main.positions));
+      "position",
+      new Float32Array(this.vertexData.main.positions)
+    );
     this.buffers.setData(
-      'textureCoord', new Float32Array(this.vertexData.main.texCoords));
+      "textureCoord",
+      new Float32Array(this.vertexData.main.texCoords)
+    );
     this.buffers.setData(
-      'indices', new Uint16Array(this.vertexData.main.indices), 
-      this.gl.ELEMENT_ARRAY_BUFFER);
+      "indices",
+      new Uint16Array(this.vertexData.main.indices),
+      this.gl.ELEMENT_ARRAY_BUFFER
+    );
   }
 }
