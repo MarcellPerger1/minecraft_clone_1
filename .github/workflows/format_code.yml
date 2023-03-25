@@ -18,4 +18,4 @@ jobs:
       - name: Install npm pacakges
         run: npm ci
       - name: Format code
-        run: chmod +x ./scripts/format.sh && ./scripts/format.sh
+        run: npm run format
