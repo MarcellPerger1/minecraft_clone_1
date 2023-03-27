@@ -69,7 +69,7 @@ export class Renderer extends GameComponent {
       main: new ElementBundler(this.game),
       transparent: new ElementBundler(this.game),
     };
-    this.bufs = {};
+    this.buffers = {};
     this.makeBuffers();
     this.configArrayBuffers();
   }
@@ -199,8 +199,8 @@ export class Renderer extends GameComponent {
 
   // ARRAY BUFFERS
   configArrayBuffers() {
-    this.bufs.position.configArray("vertexPosition", 3, this.gl.FLOAT);
-    this.bufs.textureCoord.configArray("textureCoord", 2, this.gl.FLOAT);
+    this.buffers.position.configArray("vertexPosition", 3, this.gl.FLOAT);
+    this.buffers.textureCoord.configArray("textureCoord", 2, this.gl.FLOAT);
   }
 
   // UNIFORMS (todo separate uniform handler class)
@@ -293,19 +293,19 @@ export class Renderer extends GameComponent {
 
   // BUFFERS
   makeBuffers() {
-    this.bufs.position = new Buffer(this.gl, this.programInfo);
-    this.bufs.textureCoord = new Buffer(this.gl, this.programInfo);
-    this.bufs.indices = new Buffer(this.gl, this.programInfo);
+    this.buffers.position = new Buffer(this.gl, this.programInfo);
+    this.buffers.textureCoord = new Buffer(this.gl, this.programInfo);
+    this.buffers.indices = new Buffer(this.gl, this.programInfo);
   }
 
   bufferDataFromBundler() {
-    this.bufs.position.setData(
+    this.buffers.position.setData(
       new Float32Array(this.vertexData.main.positions)
     );
-    this.bufs.textureCoord.setData(
+    this.buffers.textureCoord.setData(
       new Float32Array(this.vertexData.main.texCoords)
     );
-    this.bufs.indices.setData(
+    this.buffers.indices.setData(
       new Uint16Array(this.vertexData.main.indices),
       this.gl.ELEMENT_ARRAY_BUFFER
     );
