@@ -3,7 +3,7 @@ import { getGL, glErrnoToMsg } from "../utils/gl_utils.js";
 import { LoaderMerge } from "../utils/loader.js";
 import { GameComponent } from "../game_component.js";
 
-import { Buffers } from "./buffers.js";
+import { Buffers, Buffer } from "./buffers.js";
 import { AtlasLoader } from "./atlas_data.js";
 import { ShaderLoader } from "./shader_loader.js";
 import { CubeDataAdder } from "./face_culling.js";
@@ -69,7 +69,7 @@ export class Renderer extends GameComponent {
       main: new ElementBundler(this.game),
       transparent: new ElementBundler(this.game),
     };
-    this.buffers = new Buffers(this.game);
+    this.bufs = {};
     this.makeBuffers();
     this.configArrayBuffers();
   }
@@ -199,8 +199,8 @@ export class Renderer extends GameComponent {
 
   // ARRAY BUFFERS
   configArrayBuffers() {
-    this.buffers.config("position", "vertexPosition", 3, this.gl.FLOAT);
-    this.buffers.config("textureCoord", "textureCoord", 2, this.gl.FLOAT);
+    this.bufs.position.configArray("vertexPosition", 3, this.gl.FLOAT);
+    this.bufs.textureCoord.configArray("textureCoord", 2, this.gl.FLOAT);
   }
 
   // UNIFORMS (todo separate uniform handler class)
@@ -293,22 +293,19 @@ export class Renderer extends GameComponent {
 
   // BUFFERS
   makeBuffers() {
-    this.buffers.make("position");
-    this.buffers.make("textureCoord");
-    this.buffers.make("indices");
+    this.bufs.position = new Buffer(this.gl, this.programInfo);
+    this.bufs.textureCoord = new Buffer(this.gl, this.programInfo);
+    this.bufs.indices = new Buffer(this.gl, this.programInfo);
   }
 
   bufferDataFromBundler() {
-    this.buffers.setData(
-      "position",
+    this.bufs.position.setData(
       new Float32Array(this.vertexData.main.positions)
     );
-    this.buffers.setData(
-      "textureCoord",
+    this.bufs.textureCoord.setData(
       new Float32Array(this.vertexData.main.texCoords)
     );
-    this.buffers.setData(
-      "indices",
+    this.bufs.indices.setData(
       new Uint16Array(this.vertexData.main.indices),
       this.gl.ELEMENT_ARRAY_BUFFER
     );
