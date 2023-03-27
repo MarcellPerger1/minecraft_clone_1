@@ -3,7 +3,7 @@ import { getGL, glErrnoToMsg } from "../utils/gl_utils.js";
 import { LoaderMerge } from "../utils/loader.js";
 import { GameComponent } from "../game_component.js";
 
-import { Buffers, Buffer } from "./buffers.js";
+import { Buffer } from "./buffers.js";
 import { AtlasLoader } from "./atlas_data.js";
 import { ShaderLoader } from "./shader_loader.js";
 import { CubeDataAdder } from "./face_culling.js";
