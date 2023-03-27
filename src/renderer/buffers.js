@@ -5,17 +5,17 @@ import { nameOrValue, expectValue } from "../utils/general.js";
 import { GameComponent } from "../game_component.js";
 
 export class Buffer {
-  constructor(/**@type {WebGLRenderingContext}*/gl, programInfo, id=null) {
+  constructor(/**@type {WebGLRenderingContext}*/ gl, programInfo, id = null) {
     /** @type {WebGLRenderingContext} */
     this.gl = gl;
-    if(id == null) {
+    if (id == null) {
       id = this.gl.createBuffer();
     }
     this.id = id;
     this.programInfo = programInfo;
   }
 
-  /** 
+  /**
    * Tell WebGL about this array buffer and its properties
    * @param {string} attrName - Name of corresponding attribute
    * @param {number} numComponents - Amount of values per vertex
@@ -27,10 +27,10 @@ export class Buffer {
   configArray(
     attrName,
     numComponents,
-    content_type=null,
-    normalize=false, 
-    stride=0, 
-    offset=0
+    content_type = null,
+    normalize = false,
+    stride = 0,
+    offset = 0
   ) {
     let attr = this.programInfo.attribLocations[attrName];
     content_type ??= this.gl.FLOAT;
