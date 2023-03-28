@@ -53,6 +53,7 @@
         "before": true,
         "after": false
       }
-    }]
+    }],
+    "indent": ["warn", 2]
   }
 }
