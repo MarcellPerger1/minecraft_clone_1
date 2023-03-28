@@ -40,6 +40,19 @@
       "before": false, "after": true
     }],
     "comma-style": ["warn", "last"],
-    "computed-property-spacing": ["warn", "never"]
+    "computed-property-spacing": ["warn", "never"],
+    "dot-location": ["warn", "property"],
+    "eol-last": ["warn", "always"],
+    "func-call-spacing": ["warn", "never"],
+    "function-call-argument-newline": ["warn", "always"],
+    "function-paren-newline": ["warn", "multiline"],
+    "generator-star-spacing": ["warn", {
+      "after": true,
+      "before": false,
+      "method": {
+        "before": true,
+        "after": false
+      }
+    }]
   }
 }
