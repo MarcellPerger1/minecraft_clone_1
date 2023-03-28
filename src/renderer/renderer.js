@@ -222,11 +222,7 @@ export class Renderer extends GameComponent {
    * @param {(Array<Number> | Float32Array)} mat - The matrix
    */
   setUniformMat4(name, mat) {
-    this.gl.uniformMatrix4fv(
-      this.programInfo.uniforms[name],
-      false,
-      mat
-    );
+    this.gl.uniformMatrix4fv(this.programInfo.uniforms[name], false, mat);
   }
 
   initProjectionMatrix() {
@@ -295,7 +291,7 @@ export class Renderer extends GameComponent {
     this.buffers = {
       position: new Buffer(this.gl, this.programInfo),
       textureCoord: new Buffer(this.gl, this.programInfo),
-      indices: new Buffer(this.gl, this.programInfo)
+      indices: new Buffer(this.gl, this.programInfo),
     };
   }
 
