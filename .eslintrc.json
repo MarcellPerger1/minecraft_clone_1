@@ -17,7 +17,7 @@
     "progress": "writable"
   },
   "rules": {
-    "no-unused-vars": ["warn", {
+    "no-unused-vars": ["error", {
       "varsIgnorePattern": "^_",
       "argsIgnorePattern": "^_"
     }],
