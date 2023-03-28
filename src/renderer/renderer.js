@@ -69,8 +69,7 @@ export class Renderer extends GameComponent {
       main: new ElementBundler(this.game),
       transparent: new ElementBundler(this.game),
     };
-    this.makeBuffers();
-    this.configArrayBuffers();
+    this.initBuffers();
   }
 
   initAtlasInfo(atlas) {
@@ -195,13 +194,7 @@ export class Renderer extends GameComponent {
   addData(data, transparent = false) {
     return this.vertexData[transparent ? "transparent" : "main"].addData(data);
   }
-
-  // ARRAY BUFFERS
-  configArrayBuffers() {
-    this.buffers.position.configArray("vertexPosition", 3, this.gl.FLOAT);
-    this.buffers.textureCoord.configArray("textureCoord", 2, this.gl.FLOAT);
-  }
-
+  
   // UNIFORMS (todo separate uniform handler class)
   setUniforms() {
     this.initProjectionMatrix();
@@ -287,12 +280,18 @@ export class Renderer extends GameComponent {
   }
 
   // BUFFERS
-  makeBuffers() {
+  initBuffers() {
     this.buffers = {
       position: new Buffer(this.gl, this.programInfo),
       textureCoord: new Buffer(this.gl, this.programInfo),
       indices: new Buffer(this.gl, this.programInfo),
     };
+    this.configArrayBuffers();
+  }
+
+  configArrayBuffers() {
+    this.buffers.position.configArray("vertexPosition", 3, this.gl.FLOAT);
+    this.buffers.textureCoord.configArray("textureCoord", 2, this.gl.FLOAT);
   }
 
   bufferDataFromBundler() {
