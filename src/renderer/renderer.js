@@ -69,7 +69,6 @@ export class Renderer extends GameComponent {
       main: new ElementBundler(this.game),
       transparent: new ElementBundler(this.game),
     };
-    this.buffers = {};
     this.makeBuffers();
     this.configArrayBuffers();
   }
@@ -214,7 +213,7 @@ export class Renderer extends GameComponent {
     // Tell WebGL we want to affect texture unit 0
     this.gl.activeTexture(this.gl.TEXTURE0);
     // Tell the shader we bound the texture to texture unit 0
-    this.gl.uniform1i(this.programInfo.uniformLocations.uSampler, 0);
+    this.gl.uniform1i(this.programInfo.uniforms.uSampler, 0);
   }
 
   /**
@@ -224,7 +223,7 @@ export class Renderer extends GameComponent {
    */
   setUniformMat4(name, mat) {
     this.gl.uniformMatrix4fv(
-      this.programInfo.uniformLocations[name],
+      this.programInfo.uniforms[name],
       false,
       mat
     );
@@ -268,14 +267,14 @@ export class Renderer extends GameComponent {
   initProgramInfo(shaderProgram) {
     const programInfo = {
       program: shaderProgram,
-      attribLocations: {
+      attrs: {
         vertexPosition: this.gl.getAttribLocation(
           shaderProgram,
           "aVertexPosition"
         ),
         textureCoord: this.gl.getAttribLocation(shaderProgram, "aTextureCoord"),
       },
-      uniformLocations: {
+      uniforms: {
         projectionMatrix: this.gl.getUniformLocation(
           shaderProgram,
           "uProjectionMatrix"
@@ -293,9 +292,11 @@ export class Renderer extends GameComponent {
 
   // BUFFERS
   makeBuffers() {
-    this.buffers.position = new Buffer(this.gl, this.programInfo);
-    this.buffers.textureCoord = new Buffer(this.gl, this.programInfo);
-    this.buffers.indices = new Buffer(this.gl, this.programInfo);
+    this.buffers = {
+      position: new Buffer(this.gl, this.programInfo),
+      textureCoord: new Buffer(this.gl, this.programInfo),
+      indices: new Buffer(this.gl, this.programInfo)
+    };
   }
 
   bufferDataFromBundler() {

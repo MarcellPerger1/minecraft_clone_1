@@ -28,7 +28,7 @@ export class Buffer {
     stride = 0,
     offset = 0
   ) {
-    let attr = this.programInfo.attribLocations[attrName];
+    let attr = this.programInfo.attrs[attrName];
     content_type ??= this.gl.FLOAT;
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.id);
     this.gl.vertexAttribPointer(
