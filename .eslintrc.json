@@ -32,6 +32,14 @@
     "arrow-parens": ["warn", "always"],
     "arrow-spacing": ["warn", {
       "before": true, "after": true
-    }]
+    }],
+    "block-spacing": ["warn", "always"],
+    "brace-style": ["warn", "1tbs"],
+    "always-multiline": ["warn", "always-multiline"],
+    "comma-spacing": ["warn", {
+      "before": false, "after": true
+    }],
+    "comma-style": ["warn", "last"],
+    "computed-property-spacing": ["warn", "never"]
   }
 }
