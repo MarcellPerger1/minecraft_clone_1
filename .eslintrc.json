@@ -20,6 +20,18 @@
     "no-unused-vars": ["warn", {
       "varsIgnorePattern": "^_",
       "argsIgnorePattern": "^_"
+    }],
+    "array-bracket-newline": ["warn", {
+      "multiline": true,
+      "minItems": null
+    }],
+    "array-bracket-spacing": ["warn", "never"],
+    "array-element-newline": ["warn", {
+      "multiline": true
+    }],
+    "arrow-parens": ["warn", "always"],
+    "arrow-spacing": ["warn", {
+      "before": true, "after": true
     }]
   }
 }
