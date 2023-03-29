@@ -258,35 +258,35 @@ export class Renderer extends GameComponent {
   initProgramInfo(shaderProgram) {
     const programInfo = {
       program: shaderProgram,
-      attrs: {
-        vertexPosition: this.gl.getAttribLocation(
-          shaderProgram,
-          "aVertexPosition"
-        ),
-        textureCoord: this.gl.getAttribLocation(shaderProgram, "aTextureCoord"),
-      },
-      uniforms: {
-        ...this.getUniformsObj(shaderProgram),
-      },
+      attrs: this.getAttrsObj(shaderProgram),
+      uniforms: this.getUniformsObj(shaderProgram),
     };
     this.programInfo = programInfo;
     this.gl.useProgram(this.programInfo.program);
   }
 
-  getUniformsObj(glProgram) {
-    return Object.fromEntries(this.getUniformNames(glProgram).map(name => {
-      let loc = this.gl.getUniformLocation(glProgram, name);
-      return [name, loc];
-    }))
+  getAttrsObj(glProgram) {
+    return Object.fromEntries(this.getAttrInfo(glProgram).map(info => {
+      let loc = this.gl.getAttribLocation(glProgram, info.name);
+      return [info.name, loc];
+    }));
   }
 
-  getUniformNames(glProgram) {
-    return this.getUniformInfo(glProgram).map(i => i.name);
+  getUniformsObj(glProgram) {
+    return Object.fromEntries(this.getUniformInfo(glProgram).map(info => {
+      let loc = this.gl.getUniformLocation(glProgram, info.name);
+      return [info.name, loc];
+    }));
   }
 
   getUniformInfo(glProgram) {
     let n = this.gl.getProgramParameter(glProgram, this.gl.ACTIVE_UNIFORMS);
     return rangeList(n).map(i => this.gl.getActiveUniform(glProgram, i));
+  }
+
+  getAttrInfo(glProgram) {
+    let n = this.gl.getProgramParameter(glProgram, this.gl.ACTIVE_ATTRIBUTES);
+    return rangeList(n).map(i => this.gl.getActiveAttrib(glProgram, i));
   }
 
   // BUFFERS
@@ -300,8 +300,8 @@ export class Renderer extends GameComponent {
   }
 
   configArrayBuffers() {
-    this.buffers.position.configArray("vertexPosition", 3, this.gl.FLOAT);
-    this.buffers.textureCoord.configArray("textureCoord", 2, this.gl.FLOAT);
+    this.buffers.position.configArray("aVertexPosition", 3, this.gl.FLOAT);
+    this.buffers.textureCoord.configArray("aTextureCoord", 2, this.gl.FLOAT);
   }
 
   bufferDataFromBundler() {
