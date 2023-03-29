@@ -1,5 +1,4 @@
 import { toRad } from "../utils/math.js";
-import { removePrefix } from "../utils/str_utils.js";
 import { getGL, glErrnoToMsg } from "../utils/gl_utils.js";
 import { LoaderMerge } from "../utils/loader.js";
 import { GameComponent } from "../game_component.js";
