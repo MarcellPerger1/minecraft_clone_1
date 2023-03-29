@@ -1,4 +1,5 @@
 import { toRad } from "../utils/math.js";
+import { removePrefix } from "../utils/str_utils.js";
 import { getGL, glErrnoToMsg } from "../utils/gl_utils.js";
 import { LoaderMerge } from "../utils/loader.js";
 import { GameComponent } from "../game_component.js";
@@ -8,6 +9,7 @@ import { AtlasLoader } from "./atlas_data.js";
 import { ShaderLoader } from "./shader_loader.js";
 import { CubeDataAdder } from "./face_culling.js";
 import { ElementBundler } from "./vertex_bundle.js";
+import { rangeList } from "../utils/array_utils.js";
 
 /**
  * @typedef {import('../world/chunk.js').Chunk} Chunk
@@ -264,19 +266,41 @@ export class Renderer extends GameComponent {
         textureCoord: this.gl.getAttribLocation(shaderProgram, "aTextureCoord"),
       },
       uniforms: {
-        projectionMatrix: this.gl.getUniformLocation(
-          shaderProgram,
-          "uProjectionMatrix"
-        ),
-        modelViewMatrix: this.gl.getUniformLocation(
-          shaderProgram,
-          "uModelViewMatrix"
-        ),
+        ...this.getUniformsObj(shaderProgram),
         uSampler: this.gl.getUniformLocation(shaderProgram, "uSampler"),
       },
     };
     this.programInfo = programInfo;
     this.gl.useProgram(this.programInfo.program);
+  }
+
+  getUniformsObj(glProgram) {
+    return Object.fromEntries(this.getUniformNames(glProgram).map(uName => {
+      let attrName = this.glNameToAttr(uName, 'u');
+      let loc = this.gl.getUniformLocation(glProgram, uName);
+      return [attrName, loc];
+    }))
+  }
+
+  getUniformNames(glProgram) {
+    return this.getUniformInfo(glProgram).map(i => i.name);
+  }
+
+  getUniformInfo(glProgram) {
+    let n = this.gl.getProgramParameter(glProgram, this.gl.ACTIVE_UNIFORMS);
+    return rangeList(n).map(i => this.gl.getActiveUniform(glProgram, i));
+  }
+
+  glNameToAttr(name, prefix) {
+    if(!name.startsWith(prefix)) {
+      return name;
+    }
+    if(name.length <= prefix.length) {
+      return name;
+    }
+    let res = removePrefix(name, prefix);
+    res = res[0].toLowerCase() + res.slice(1);
+    return res;
   }
 
   // BUFFERS
