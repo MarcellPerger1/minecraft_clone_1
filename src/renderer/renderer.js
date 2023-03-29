@@ -221,7 +221,7 @@ export class Renderer extends GameComponent {
   }
 
   initProjectionMatrix() {
-    this.setUniformMat4("projectionMatrix", this.getProjectionMatrix());
+    this.setUniformMat4("uProjectionMatrix", this.getProjectionMatrix());
   }
   getProjectionMatrix() {
     const fieldOfView = toRad(45);
@@ -241,7 +241,7 @@ export class Renderer extends GameComponent {
   }
 
   initModelViewMatrix() {
-    this.setUniformMat4("modelViewMatrix", this.getModelViewMatrix());
+    this.setUniformMat4("uModelViewMatrix", this.getModelViewMatrix());
   }
   getModelViewMatrix() {
     var m1 = mat4.create();
@@ -267,7 +267,6 @@ export class Renderer extends GameComponent {
       },
       uniforms: {
         ...this.getUniformsObj(shaderProgram),
-        uSampler: this.gl.getUniformLocation(shaderProgram, "uSampler"),
       },
     };
     this.programInfo = programInfo;
@@ -275,10 +274,9 @@ export class Renderer extends GameComponent {
   }
 
   getUniformsObj(glProgram) {
-    return Object.fromEntries(this.getUniformNames(glProgram).map(uName => {
-      let attrName = this.glNameToAttr(uName, 'u');
-      let loc = this.gl.getUniformLocation(glProgram, uName);
-      return [attrName, loc];
+    return Object.fromEntries(this.getUniformNames(glProgram).map(name => {
+      let loc = this.gl.getUniformLocation(glProgram, name);
+      return [name, loc];
     }))
   }
 
@@ -289,18 +287,6 @@ export class Renderer extends GameComponent {
   getUniformInfo(glProgram) {
     let n = this.gl.getProgramParameter(glProgram, this.gl.ACTIVE_UNIFORMS);
     return rangeList(n).map(i => this.gl.getActiveUniform(glProgram, i));
-  }
-
-  glNameToAttr(name, prefix) {
-    if(!name.startsWith(prefix)) {
-      return name;
-    }
-    if(name.length <= prefix.length) {
-      return name;
-    }
-    let res = removePrefix(name, prefix);
-    res = res[0].toLowerCase() + res.slice(1);
-    return res;
   }
 
   // BUFFERS
