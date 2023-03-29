@@ -4,11 +4,11 @@ import { LoaderMerge } from "../utils/loader.js";
 import { GameComponent } from "../game_component.js";
 
 import { Buffer } from "./buffers.js";
+import { ShaderProgram } from "./shader_program.js";
 import { AtlasLoader } from "./atlas_data.js";
 import { ShaderLoader } from "./shader_loader.js";
 import { CubeDataAdder } from "./face_culling.js";
 import { ElementBundler } from "./vertex_bundle.js";
-import { rangeList } from "../utils/array_utils.js";
 
 /**
  * @typedef {import('../world/chunk.js').Chunk} Chunk
@@ -255,37 +255,8 @@ export class Renderer extends GameComponent {
 
   // SHADER PROGRAM
   initProgramInfo(shaderProgram) {
-    const programInfo = {
-      program: shaderProgram,
-      attrs: this.getAttrsObj(shaderProgram),
-      uniforms: this.getUniformsObj(shaderProgram),
-    };
-    this.programInfo = programInfo;
+    this.programInfo = new ShaderProgram(this.gl, shaderProgram);
     this.gl.useProgram(this.programInfo.program);
-  }
-
-  getAttrsObj(glProgram) {
-    return Object.fromEntries(this.getAttrInfo(glProgram).map(info => {
-      let loc = this.gl.getAttribLocation(glProgram, info.name);
-      return [info.name, loc];
-    }));
-  }
-
-  getUniformsObj(glProgram) {
-    return Object.fromEntries(this.getUniformInfo(glProgram).map(info => {
-      let loc = this.gl.getUniformLocation(glProgram, info.name);
-      return [info.name, loc];
-    }));
-  }
-
-  getUniformInfo(glProgram) {
-    let n = this.gl.getProgramParameter(glProgram, this.gl.ACTIVE_UNIFORMS);
-    return rangeList(n).map(i => this.gl.getActiveUniform(glProgram, i));
-  }
-
-  getAttrInfo(glProgram) {
-    let n = this.gl.getProgramParameter(glProgram, this.gl.ACTIVE_ATTRIBUTES);
-    return rangeList(n).map(i => this.gl.getActiveAttrib(glProgram, i));
   }
 
   // BUFFERS
