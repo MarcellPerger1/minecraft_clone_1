@@ -66,19 +66,13 @@ export class Renderer extends GameComponent {
 
   onResourcesLoaded() {
     this.initProgramInfo(this.loader.shader.program);
-    this.initAtlasInfo(this.loader.atlas);
+    this.atlas = this.loader.atlas;
     this.vertexData = {
       main: new ElementBundler(this.game),
       transparent: new ElementBundler(this.game),
     };
     this.initBuffers();
     this.initCamera();
-  }
-
-  initAtlasInfo(atlas) {
-    this.atlas = atlas;
-    this.atlasTex = this.texture = this.atlas.texture;
-    this.atlasData = this.atlas.data;
   }
 
   initCamera() {
