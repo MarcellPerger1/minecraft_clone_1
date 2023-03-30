@@ -99,7 +99,7 @@ export class Player extends GameComponent {
       [],
       scaled,
       [0, 0, 0],
-      toRad(-this.r.camRot.h + 90)
+      toRad(-this.rotation.h + 90)
     );
     vec3.add(this.position, this.position, absMove);
   }

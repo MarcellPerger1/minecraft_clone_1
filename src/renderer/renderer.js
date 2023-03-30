@@ -81,13 +81,6 @@ export class Renderer extends GameComponent {
     this.atlasData = this.atlas.data;
   }
 
-  get camRot() {
-    return this.player.rotation;
-  }
-  get camPos() {
-    return this.player.position;
-  }
-
   initCamera() {
     this.camera = new Camera(this.gl, this.uniforms);
   }
