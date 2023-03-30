@@ -1,4 +1,3 @@
-import { toRad } from "../utils/math.js";
 import { getGL, glErrnoToMsg } from "../utils/gl_utils.js";
 import { LoaderMerge } from "../utils/loader.js";
 import { GameComponent } from "../game_component.js";
@@ -6,6 +5,7 @@ import { GameComponent } from "../game_component.js";
 import { Buffer } from "./buffers.js";
 import { Uniform } from "./uniforms.js";
 import { ShaderProgram } from "./shader_program.js";
+import { Camera } from "./gl_camera.js";
 import { AtlasLoader } from "./atlas_data.js";
 import { ShaderLoader } from "./shader_loader.js";
 import { CubeDataAdder } from "./face_culling.js";
@@ -72,6 +72,7 @@ export class Renderer extends GameComponent {
       transparent: new ElementBundler(this.game),
     };
     this.initBuffers();
+    this.initCamera();
   }
 
   initAtlasInfo(atlas) {
@@ -85,6 +86,14 @@ export class Renderer extends GameComponent {
   }
   get camPos() {
     return this.player.position;
+  }
+
+  initCamera() {
+    this.camera = new Camera(this.gl, this.uniforms);
+  }
+
+  updateCamera() {
+    this.camera.updateFromPlayer(this.player);
   }
 
   // WebGL stuff
@@ -151,6 +160,7 @@ export class Renderer extends GameComponent {
 
   initFrame() {
     this.resetRender();
+    this.updateCamera();
     this.setUniforms();
   }
 
@@ -199,8 +209,8 @@ export class Renderer extends GameComponent {
   
   // UNIFORMS (todo separate uniform handler class)
   setUniforms() {
-    this.initProjectionMatrix();
-    this.initModelViewMatrix();
+    this.camera.initProjectionMatrix();
+    this.camera.initModelViewMatrix();
     this.initTextureSampler();
   }
 
@@ -209,49 +219,6 @@ export class Renderer extends GameComponent {
     this.gl.activeTexture(this.gl.TEXTURE0);
     // Tell the shader we bound the texture to texture unit 0
     this.uniforms.uSampler.set_1i(0);
-  }
-
-  /**
-   * Set a uniform to matrix `mat`
-   * @param {String} name - The name of the uniform
-   * @param {(Array<Number> | Float32Array)} mat - The matrix
-   */
-  setUniformMat4(name, mat) {
-    this.uniforms[name].set_mat4(mat);
-  }
-
-  initProjectionMatrix() {
-    this.uniforms.uProjectionMatrix.set_mat4(this.getProjectionMatrix());
-  }
-  getProjectionMatrix() {
-    const fieldOfView = toRad(45);
-    const aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
-    const zNear = 0.1;
-    const zFar = 100.0;
-    const projectionMatrix = mat4.create();
-
-    mat4.perspective(
-      projectionMatrix, // dest
-      fieldOfView,
-      aspect,
-      zNear,
-      zFar
-    );
-    return projectionMatrix;
-  }
-
-  initModelViewMatrix() {
-    this.uniforms.uModelViewMatrix.set_mat4(this.getModelViewMatrix());
-  }
-  getModelViewMatrix() {
-    var m1 = mat4.create();
-    const amount = vec3.scale([], this.camPos, -1);
-    // NOTEE: IMPORTANT!: does stuff in reverse order!!!
-    // eg.: here, matrix will transalate, then rotateY, then rotateX
-    mat4.rotateX(m1, m1, toRad(this.camRot.v));
-    mat4.rotateY(m1, m1, toRad(this.camRot.h + 90));
-    mat4.translate(m1, m1, amount);
-    return m1;
   }
 
   initUniforms() {
