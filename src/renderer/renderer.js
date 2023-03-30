@@ -4,6 +4,7 @@ import { LoaderMerge } from "../utils/loader.js";
 import { GameComponent } from "../game_component.js";
 
 import { Buffer } from "./buffers.js";
+import { Uniform } from "./uniforms.js";
 import { ShaderProgram } from "./shader_program.js";
 import { AtlasLoader } from "./atlas_data.js";
 import { ShaderLoader } from "./shader_loader.js";
@@ -207,7 +208,7 @@ export class Renderer extends GameComponent {
     // Tell WebGL we want to affect texture unit 0
     this.gl.activeTexture(this.gl.TEXTURE0);
     // Tell the shader we bound the texture to texture unit 0
-    this.gl.uniform1i(this.programInfo.uniforms.uSampler, 0);
+    this.uniforms.uSampler.set_1i(0);
   }
 
   /**
@@ -216,11 +217,11 @@ export class Renderer extends GameComponent {
    * @param {(Array<Number> | Float32Array)} mat - The matrix
    */
   setUniformMat4(name, mat) {
-    this.gl.uniformMatrix4fv(this.programInfo.uniforms[name], false, mat);
+    this.uniforms[name].set_mat4(mat);
   }
 
   initProjectionMatrix() {
-    this.setUniformMat4("uProjectionMatrix", this.getProjectionMatrix());
+    this.uniforms.uProjectionMatrix.set_mat4(this.getProjectionMatrix());
   }
   getProjectionMatrix() {
     const fieldOfView = toRad(45);
@@ -240,7 +241,7 @@ export class Renderer extends GameComponent {
   }
 
   initModelViewMatrix() {
-    this.setUniformMat4("uModelViewMatrix", this.getModelViewMatrix());
+    this.uniforms.uModelViewMatrix.set_mat4(this.getModelViewMatrix());
   }
   getModelViewMatrix() {
     var m1 = mat4.create();
@@ -253,9 +254,19 @@ export class Renderer extends GameComponent {
     return m1;
   }
 
+  initUniforms() {
+    this.uniforms = Object.fromEntries(
+      Object.entries(this.programInfo.uniforms)
+        .map(([name, id]) => {
+          return [name, new Uniform(this.gl, this.programInfo.program, id)];
+        })
+    );
+  }
+
   // SHADER PROGRAM
   initProgramInfo(shaderProgram) {
     this.programInfo = new ShaderProgram(this.gl, shaderProgram);
+    this.initUniforms();
     this.gl.useProgram(this.programInfo.program);
   }
 
