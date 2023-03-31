@@ -136,12 +136,14 @@ export function loadTexture(gl, url, cnf = null) {
       INITIAL_TEX_DATA
     );
     setTexParams(gl, w, h);
+    gl.bindTexture(gl.TEXTURE_2D, null);
 
     const image = new Image();
     image.onload = function () {
       gl.bindTexture(gl.TEXTURE_2D, texture);
       gl.texImage2D(gl.TEXTURE_2D, level, internFmt, srcFmt, srcType, image);
       setTexParams(gl, image.width, image.height);
+      gl.bindTexture(gl.TEXTURE_2D, null);
       resolve(texture);
     };
     image.onerror = function (event) {

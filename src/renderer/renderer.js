@@ -199,6 +199,7 @@ export class Renderer extends GameComponent {
   }
 
   initTextureSampler() {
+    this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
     // Tell WebGL we want to affect texture unit 0
     this.gl.activeTexture(this.gl.TEXTURE0);
     // Tell the shader we bound the texture to texture unit 0
