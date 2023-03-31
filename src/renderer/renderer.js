@@ -138,7 +138,6 @@ export class Renderer extends GameComponent {
   // DRAW SCENE
   renderFrame() {
     this.initFrame();
-    // only update mesh if re-render
     this.makeWorldMesh();
     this.drawAll();
     this.checkGlFault();
@@ -152,7 +151,6 @@ export class Renderer extends GameComponent {
 
   drawAll() {
     this.bufferDataFromBundler();
-    this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
     this.vertexData.main.drawElements();
   }
 
