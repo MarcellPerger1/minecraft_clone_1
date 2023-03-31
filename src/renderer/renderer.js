@@ -3,7 +3,7 @@ import { LoaderMerge } from "../utils/loader.js";
 import { GameComponent } from "../game_component.js";
 
 import { Buffer } from "./buffers.js";
-import { Uniform } from "./uniforms.js";
+import { makeUniformsObj } from "./uniforms.js";
 import { ShaderProgram } from "./shader_program.js";
 import { Camera } from "./gl_camera.js";
 import { AtlasLoader } from "./atlas_data.js";
@@ -206,12 +206,7 @@ export class Renderer extends GameComponent {
   }
 
   initUniforms() {
-    this.uniforms = Object.fromEntries(
-      Object.entries(this.programInfo.uniforms)
-        .map(([name, id]) => {
-          return [name, new Uniform(this.gl, this.programInfo.program, id)];
-        })
-    );
+    this.uniforms = makeUniformsObj(this.gl, this.programInfo);
   }
 
   // SHADER PROGRAM

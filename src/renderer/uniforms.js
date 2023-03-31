@@ -1,3 +1,7 @@
+/** 
+ * @typedef {import('./shader_program.js').ShaderProgram} ShaderProgram
+ */
+
 export class Uniform {
   constructor(gl, glProgram, id) {
     this.gl = gl;
@@ -17,4 +21,19 @@ export class Uniform {
   set_1i(value) {
     this.gl.uniform1i(this.id, value);
   }
+
+  
+}
+
+/** 
+ * Create object of `Uniform`s
+ * @pram {WebGLRenderingContext} gl
+ * @param {ShaderProgram} programInfo
+ * @returns {{[k: string]: Uniform}}
+ */
+export function makeUniformsObj(gl, programInfo) {
+  return Object.fromEntries(
+    Object.entries(programInfo.uniforms)
+      .map(([name, id]) => [name, new Uniform(gl, programInfo.program, id)])
+  );
 }
