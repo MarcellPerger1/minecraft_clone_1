@@ -17,9 +17,7 @@ import { ElementBundler } from "./vertex_bundle.js";
  */
 
 // NOTE:
-// West  = +x
 // Up    = +y
-// North = +z
 
 // thing i could eventually read:
 // https://www.toptal.com/game/video-game-physics-part-i-an-introduction-to-rigid-body-dynamics
@@ -67,6 +65,7 @@ export class Renderer extends GameComponent {
   onResourcesLoaded() {
     this.initProgramInfo(this.loader.shader.program);
     this.atlas = this.loader.atlas;
+    this.texture = this.atlas.texture;
     this.vertexData = {
       main: new ElementBundler(this.game),
       transparent: new ElementBundler(this.game),
