@@ -241,6 +241,7 @@ export class Renderer extends GameComponent {
   }
 }
 
+
 /** Renderer that only handles drawing the polygons, no colors */
 export class MeshRenderer extends GameComponent {
   constructor(game, gl, glProgram) {
@@ -263,6 +264,11 @@ export class MeshRenderer extends GameComponent {
 
   resetRender() {
     this.clearCanvas();
+  }
+
+  drawAll() {
+    this.bufferDataFromBundler();
+    this.vertexData.main.drawBufferedElements();
   }
 
   setUniforms() {
