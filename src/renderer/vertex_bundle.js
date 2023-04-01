@@ -51,7 +51,7 @@ export class ElementBundler extends GameComponent {
     return this;
   }
 
-  drawElements() {
+  drawBufferedElements() {
     this.gl.drawElements(
       this.gl.TRIANGLES,
       this.indices.length,

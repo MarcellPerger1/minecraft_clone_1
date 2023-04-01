@@ -151,7 +151,7 @@ export class Renderer extends GameComponent {
 
   drawAll() {
     this.bufferDataFromBundler();
-    this.vertexData.main.drawElements();
+    this.vertexData.main.drawBufferedElements();
   }
 
   resetRender() {
