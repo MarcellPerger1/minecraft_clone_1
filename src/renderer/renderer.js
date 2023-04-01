@@ -46,7 +46,7 @@ export class Renderer extends GameComponent {
     this._gl = v;
   }
 
-  initLoaders() {
+  initLoaders() {//@shared
     this.loader = new LoaderMerge({
       shader: new ShaderLoader(this.game),
       atlas: new AtlasLoader(this.game),
@@ -54,7 +54,7 @@ export class Renderer extends GameComponent {
   }
 
   // Returns Promise that fulfilles when all resources loaded and ready for a render
-  loadResources() {
+  loadResources() {//@shared
     this.initLoaders();
     this.initDoneProm = this.loader.loadResources().then((_result) => {
       this.onResourcesLoaded();
@@ -62,7 +62,7 @@ export class Renderer extends GameComponent {
     return this.initDoneProm;
   }
 
-  onResourcesLoaded() {
+  onResourcesLoaded() {//@semi-both
     this.initProgramInfo(this.loader.shader.program);
     this.atlas = this.loader.atlas;
     this.texture = this.atlas.texture;
@@ -74,17 +74,17 @@ export class Renderer extends GameComponent {
     this.initCamera();
   }
 
-  initCamera() {
+  initCamera() {//@both
     this.camera = new Camera(this.gl, this.uniforms);
   }
 
-  updateCamera() {
+  updateCamera() {//@both
     this.camera.updateFromPlayer(this.player);
   }
 
   // WebGL stuff
   // initialisation
-  initGL() {
+  initGL() {//@shared
     this.gl = getGL();
     if (this.gl == null) {
       throw new Error("Failed to initiialise gl");
@@ -93,7 +93,7 @@ export class Renderer extends GameComponent {
     this.checkGlFault();
   }
 
-  initGLConfig() {
+  initGLConfig() {//@diff
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.depthFunc(this.gl.LEQUAL);
     this.gl.enable(this.gl.SCISSOR_TEST);
@@ -106,14 +106,14 @@ export class Renderer extends GameComponent {
    * Set size of webGL stuff
    * @param {[number, number]} size
    */
-  setGLSize(size, offset = null) {
+  setGLSize(size, offset = null) {//@both?
     offset = (offset ?? [0, 0]).slice(0, 2);
     this.gl.viewport(...offset, ...size);
     this.gl.scissor(...offset, ...size);
   }
 
   // gl errors
-  checkGlFault() {
+  checkGlFault() {//@both
     if (!this.cnf.checkError) {
       return;
     }
@@ -123,12 +123,12 @@ export class Renderer extends GameComponent {
     }
   }
 
-  onGlFault() {
+  onGlFault() {//@both
     console.error("WebGL error: ", glErrnoToMsg(this.last_error));
   }
 
   // other
-  clearCanvas() {
+  clearCanvas() {//@both
     this.gl.clearColor(...this.cnf.bgColor);
     this.gl.clearDepth(1.0);
     // actully does the clearing:
@@ -136,30 +136,30 @@ export class Renderer extends GameComponent {
   }
 
   // DRAW SCENE
-  renderFrame() {
+  renderFrame() {//@both
     this.initFrame();
     this.makeWorldMesh();
     this.drawAll();
     this.checkGlFault();
   }
 
-  initFrame() {
+  initFrame() {//@both
     this.resetRender();
     this.updateCamera();
     this.setUniforms();
   }
 
-  drawAll() {
+  drawAll() {//@both
     this.bufferDataFromBundler();
     this.vertexData.main.drawBufferedElements();
   }
 
-  resetRender() {
+  resetRender() {//@both
     this.clearCanvas();
   }
 
   // CUBE DATA HANDLING
-  makeWorldMesh() {
+  makeWorldMesh() {//@semi-both(transparency)
     this.vertexData.main.reset();
     this.vertexData.transparent.reset();
     let i = 0;
@@ -170,35 +170,34 @@ export class Renderer extends GameComponent {
         cr.remakeMesh = true;
       }
       cr.updateMesh();
-      this.vertexData.main.addData(cr.mesh.main);
-      this.vertexData.transparent.addData(cr.mesh.transparent);
+      mergeMeshObj(this.vertexData, cr.mesh);
       i++;
     }
     this.vertexData.main.addData(this.vertexData.transparent);
   }
 
-  addBlock(pos, block) {
+  addBlock(pos, block) {//@both;dep(semi-both)
     if (block.visible) {
       this.addBlockTextures(pos, block.textures);
     }
   }
 
-  addBlockTextures(pos, tData) {
+  addBlockTextures(pos, tData) {//@semi-both: no need tex coords for picking
     new CubeDataAdder(this.game, pos, tData).addData();
   }
 
-  addData(data, transparent = false) {
+  addData(data, transparent = false) {//@semi-both: no transparent for picking shader
     return this.vertexData[transparent ? "transparent" : "main"].addData(data);
   }
   
   // UNIFORMS (todo separate uniform handler class)
-  setUniforms() {
+  setUniforms() {//@semi-both
     this.camera.initProjectionMatrix();
     this.camera.initModelViewMatrix();
     this.initTextureSampler();
   }
 
-  initTextureSampler() {
+  initTextureSampler() {//@display-only
     this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
     // Tell WebGL we want to affect texture unit 0
     this.gl.activeTexture(this.gl.TEXTURE0);
@@ -206,19 +205,19 @@ export class Renderer extends GameComponent {
     this.uniforms.uSampler.set_1i(0);
   }
 
-  initUniforms() {
+  initUniforms() {//@both
     this.uniforms = makeUniformsObj(this.gl, this.programInfo);
   }
 
   // SHADER PROGRAM
-  initProgramInfo(shaderProgram) {
+  initProgramInfo(shaderProgram) {//@both
     this.programInfo = new ShaderProgram(this.gl, shaderProgram);
     this.initUniforms();
     this.gl.useProgram(this.programInfo.program);
   }
 
   // BUFFERS
-  initBuffers() {
+  initBuffers() {//@semi-both
     this.buffers = {
       position: new Buffer(this.gl, this.programInfo),
       textureCoord: new Buffer(this.gl, this.programInfo),
@@ -227,12 +226,12 @@ export class Renderer extends GameComponent {
     this.configArrayBuffers();
   }
 
-  configArrayBuffers() {
+  configArrayBuffers() {//@semi-both
     this.buffers.position.configArray("aVertexPosition", 3, this.gl.FLOAT);
     this.buffers.textureCoord.configArray("aTextureCoord", 2, this.gl.FLOAT);
   }
 
-  bufferDataFromBundler() {
+  bufferDataFromBundler() {//@semi-both
     this.buffers.position.setData(
       new Float32Array(this.vertexData.main.positions)
     );
@@ -243,5 +242,33 @@ export class Renderer extends GameComponent {
       new Uint16Array(this.vertexData.main.indices),
       this.gl.ELEMENT_ARRAY_BUFFER
     );
+  }
+}
+
+/** Renderer that only handles drawing the polygons, no colors */
+export class MeshRenderer extends GameComponent {
+  constructor(game, gl, glProgram) {
+    super(game);
+    this.gl = gl;
+    this.program = glProgram;
+  }
+
+  initProgramInfo() {
+    this.programInfo = new ShaderProgram(this.gl, this.program);
+    this.uniforms = makeUniformsObj(this.gl, this.programInfo);
+  }
+
+}
+
+/** 
+ * @typedef {{positions: number[], texCoords: number[], indices: number[], maxindex?: number[]}} BundleT
+ */
+
+/** 
+ * @param {{[k: string]: BundleT}} dest
+ */
+function mergeMeshObj(dest, src) {
+  for(const [name, data] of Object.entries(src)) {
+    dest[name].addData(data);
   }
 }
