@@ -166,10 +166,7 @@ export class Renderer extends GameComponent {
     for (const c of this.world.iterChunks()) {
       /** @type {ChunkRenderer} */
       let cr = c.chunkRenderer;
-      if (this.game.frameNo % 120 == i) {
-        cr.remakeMesh = true;
-      }
-      cr.updateMesh();
+      cr.updateMesh(this.game.frameNo % 120 == i);
       mergeMeshObj(this.vertexData, cr.mesh);
       i++;
     }
@@ -258,6 +255,12 @@ export class MeshRenderer extends GameComponent {
     this.uniforms = makeUniformsObj(this.gl, this.programInfo);
   }
 
+  clearCanvas() {
+    this.clearColor ??= [0, 0, 0, 0];
+    this.gl.clearColor(...this.clearColor);
+    this.gl.clearDepth(1.0);
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+  }
 }
 
 /** 
