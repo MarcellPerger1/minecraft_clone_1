@@ -237,6 +237,7 @@ export class MeshRenderer extends GameComponent {
     this.program = glProgram;
   }
 
+  // initialisation stuffs
   init() {
     this.initProgramInfo();
     this.initVertexData();
@@ -256,11 +257,6 @@ export class MeshRenderer extends GameComponent {
 
   initCamera() {
     this.camera = new Camera(this.gl, this.uniforms);
-  }
-
-  drawAll() {
-    this.bufferDataFromBundler();
-    this.vertexData.main.drawBufferedElements();
   }
 
   makeStateCurrent() {
@@ -284,11 +280,18 @@ export class MeshRenderer extends GameComponent {
     this.gl.scissor(...offset, ...size);
   }
 
+  clearCanvas() {
+    this.clearColor ??= [0, 0, 0, 0];
+    this.gl.clearColor(...this.clearColor);
+    this.gl.clearDepth(1.0);
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+  }
+
+  // rendering
   renderFrame() {
     this.initFrame();
     this.makeWorldMesh();
     this.drawAll();
-    this.checkGlFault();
   }
 
   initFrame() {
@@ -296,13 +299,6 @@ export class MeshRenderer extends GameComponent {
     this.resetRender();
     this.updateCamera();
     this.setUniforms();
-  }
-
-  clearCanvas() {
-    this.clearColor ??= [0, 0, 0, 0];
-    this.gl.clearColor(...this.clearColor);
-    this.gl.clearDepth(1.0);
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
   }
 
   resetRender() {
@@ -318,6 +314,12 @@ export class MeshRenderer extends GameComponent {
     this.camera.initModelViewMatrix();
   }
 
+  drawAll() {
+    this.bufferDataFromBundler();
+    this.vertexData.main.drawBufferedElements();
+  }
+
+  // buffers
   initBuffers() {
     this._makeBuffersObj();
     this.buffers.position = this.newBuffer().configArray("aVertexPostion", 3, gl.FLOAT);
