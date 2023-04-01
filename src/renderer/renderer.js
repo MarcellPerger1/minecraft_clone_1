@@ -260,6 +260,16 @@ export class MeshRenderer extends GameComponent {
     this.gl.clearDepth(1.0);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
   }
+
+  bufferDataFromBundler() {
+    this.buffers.position.setData(
+      new Float32Array(this.vertexData.main.positions)
+    );
+    this.buffers.indices.setData(
+      new Uint16Array(this.vertexData.main.indices),
+      this.gl.ELEMENT_ARRAY_BUFFER
+    );
+  }
 }
 
 /** 
