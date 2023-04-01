@@ -230,6 +230,7 @@ export class Renderer extends GameComponent {
 
 /** Renderer that only handles drawing the polygons, no colors */
 export class MeshRenderer extends GameComponent {
+  // TODO the order of the methods here is very confusing, reorder them!
   constructor(game, gl, glProgram) {
     super(game);
     this.gl = gl;
@@ -281,6 +282,13 @@ export class MeshRenderer extends GameComponent {
     offset = (offset ?? [0, 0]).slice(0, 2);
     this.gl.viewport(...offset, ...size);
     this.gl.scissor(...offset, ...size);
+  }
+
+  renderFrame() {
+    this.initFrame();
+    this.makeWorldMesh();
+    this.drawAll();
+    this.checkGlFault();
   }
 
   initFrame() {
