@@ -22,6 +22,7 @@ export class ElementBundler extends GameComponent {
     super(game);
     this.elemType = type ?? WebGLRenderingContext.UNSIGNED_SHORT;
     this.elemSize = glTypeSize(this.elemType);
+    this.maxIndicesLimit = (1<<(this.elemSize * 8)) - 1;
     this.reset();
   }
 
@@ -52,6 +53,13 @@ export class ElementBundler extends GameComponent {
   }
 
   drawBufferedElements() {
+    if(this.indices.length > this.maxIndicesLimit || 1) {
+      throw new TypeError(`Vertex indices don't fit into the index type.`+
+                    ` Got ${this.indices.length} indices, max is ${this.maxIndicesLimit}`+
+                    ` for index size of ${this.elemSize} bytes. Increase the size`+
+                    ` of the type used for the element array buffer or`+
+                    ` reduce the amount of vertexes to be rendered.`);
+    }
     this.gl.drawElements(
       this.gl.TRIANGLES,
       this.indices.length,
