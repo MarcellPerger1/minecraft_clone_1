@@ -261,6 +261,10 @@ export class MeshRenderer extends GameComponent {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
   }
 
+  resetRender() {
+    this.clearCanvas();
+  }
+
   setUniforms() {
     this.camera.initProjectionMatrix();
     this.camera.initModelViewMatrix();
