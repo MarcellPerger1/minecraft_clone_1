@@ -276,7 +276,29 @@ export class MeshRenderer extends GameComponent {
     this.vertexData.main.drawBufferedElements();
   }
 
+  makeStateCurrent() {
+    this.gl.useProgram(this.program);
+    this.configGL();
+  }
+
+  configGL() {
+    this.gl.enable(this.gl.DEPTH_TEST);
+    this.gl.depthFunc(this.gl.LEQUAL);
+    this.gl.enable(this.gl.SCISSOR_TEST);
+  }
+
+  /**
+   * Set size of webGL stuff
+   * @param {[number, number]} size
+   */
+  setGLSize(size, offset = null) {
+    offset = (offset ?? [0, 0]).slice(0, 2);
+    this.gl.viewport(...offset, ...size);
+    this.gl.scissor(...offset, ...size);
+  }
+
   initFrame() {
+    this.makeStateCurrent();
     this.resetRender();
     this.updateCamera();
     this.setUniforms();
