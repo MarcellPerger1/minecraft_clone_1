@@ -21,13 +21,11 @@ export class Uniform {
   set_1i(value) {
     this.gl.uniform1i(this.id, value);
   }
-
-  
 }
 
 /** 
- * Create object of `Uniform`s
- * @pram {WebGLRenderingContext} gl
+ * Create object of `Uniform`s from `ShaderProgram`
+ * @param {WebGLRenderingContext} gl
  * @param {ShaderProgram} programInfo
  * @returns {{[k: string]: Uniform}}
  */
