@@ -40,6 +40,8 @@ export class Buffer {
       offset
     );
     this.gl.enableVertexAttribArray(attr);
+    // allow method chaining eg. `b = new Buffer(...).configArray(...)`
+    return this;
   }
 
   setData(data, buf_type = null, usage = null) {
