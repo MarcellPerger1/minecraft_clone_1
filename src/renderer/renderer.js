@@ -255,6 +255,21 @@ export class MeshRenderer extends GameComponent {
     this.uniforms = makeUniformsObj(this.gl, this.programInfo);
   }
 
+  initCamera() {
+    this.camera = new Camera(this.gl, this.uniforms);
+  }
+
+  drawAll() {
+    this.bufferDataFromBundler();
+    this.vertexData.main.drawBufferedElements();
+  }
+
+  initFrame() {
+    this.resetRender();
+    this.updateCamera();
+    this.setUniforms();
+  }
+
   clearCanvas() {
     this.clearColor ??= [0, 0, 0, 0];
     this.gl.clearColor(...this.clearColor);
@@ -266,9 +281,8 @@ export class MeshRenderer extends GameComponent {
     this.clearCanvas();
   }
 
-  drawAll() {
-    this.bufferDataFromBundler();
-    this.vertexData.main.drawBufferedElements();
+  updateCamera() {
+    this.camera.updateFromPlayer(this.player);
   }
 
   setUniforms() {
