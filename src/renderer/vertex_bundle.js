@@ -53,7 +53,7 @@ export class ElementBundler extends GameComponent {
   }
 
   drawBufferedElements() {
-    if(this.indices.length > this.maxIndicesLimit || 1) {
+    if(this.indices.length > this.maxIndicesLimit) {
       throw new TypeError(`Vertex indices don't fit into the index type.`+
                     ` Got ${this.indices.length} indices, max is ${this.maxIndicesLimit}`+
                     ` for index size of ${this.elemSize} bytes. Increase the size`+
