@@ -171,20 +171,6 @@ export class Renderer extends GameComponent {
     }
     this.vertexData.main.addData(this.vertexData.transparent);
   }
-
-  addBlock(pos, block) {//@both;dep(semi-both)
-    if (block.visible) {
-      this.addBlockTextures(pos, block.textures);
-    }
-  }
-
-  addBlockTextures(pos, tData) {//@semi-both: no need tex coords for picking
-    new CubeDataAdder(this.game, pos, tData).addData();
-  }
-
-  addData(data, transparent = false) {//@semi-both: no transparent for picking shader
-    return this.vertexData[transparent ? "transparent" : "main"].addData(data);
-  }
   
   // UNIFORMS (todo separate uniform handler class)
   setUniforms() {//@semi-both
