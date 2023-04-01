@@ -230,7 +230,6 @@ export class Renderer extends GameComponent {
 
 /** Renderer that only handles drawing the polygons, no colors */
 export class MeshRenderer extends GameComponent {
-  // TODO the order of the methods here is very confusing, reorder them!
   constructor(game, gl, glProgram) {
     super(game);
     this.gl = gl;
@@ -312,6 +311,16 @@ export class MeshRenderer extends GameComponent {
   setUniforms() {
     this.camera.initProjectionMatrix();
     this.camera.initModelViewMatrix();
+  }
+
+  makeWorldMesh(world) {
+    resetMeshObj(this.vertexData);
+    for (const c of world.iterChunks()) {
+      /** @type {ChunkRenderer} */
+      let cr = c.chunkRenderer;
+      cr.updateMesh(true);
+      mergeMeshObj(this.vertexData, cr.mesh);
+    }
   }
 
   drawAll() {
