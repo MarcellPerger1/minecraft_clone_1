@@ -261,6 +261,11 @@ export class MeshRenderer extends GameComponent {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
   }
 
+  setUniforms() {
+    this.camera.initProjectionMatrix();
+    this.camera.initModelViewMatrix();
+  }
+
   initBuffers() {
     this._makeBuffersObj();
     this.buffers.position = this.newBuffer().configArray("aVertexPostion", 3, gl.FLOAT);
