@@ -160,8 +160,7 @@ export class Renderer extends GameComponent {
 
   // CUBE DATA HANDLING
   makeWorldMesh() {//@semi-both(transparency)
-    this.vertexData.main.reset();
-    this.vertexData.transparent.reset();
+    resetMeshObj(this.vertexData);
     let i = 0;
     for (const c of this.world.iterChunks()) {
       /** @type {ChunkRenderer} */
@@ -274,5 +273,14 @@ export class MeshRenderer extends GameComponent {
 function mergeMeshObj(dest, src) {
   for(const [name, data] of Object.entries(src)) {
     dest[name].addData(data);
+  }
+}
+
+/** 
+ * @param {Object<string, ElementBundler>} mesh
+ */
+function resetMeshObj(mesh) {
+  for(const bundle of Object.values(mesh)) {
+    bundle.reset();
   }
 }
