@@ -250,9 +250,21 @@ export class MeshRenderer extends GameComponent {
     this.program = glProgram;
   }
 
+  init() {
+    this.initProgramInfo();
+    this.initVertexData();
+    this.initCamera();
+  }
+
   initProgramInfo() {
     this.programInfo = new ShaderProgram(this.gl, this.program);
     this.uniforms = makeUniformsObj(this.gl, this.programInfo);
+  }
+
+  initVertexData() {
+    this.vertexData = {
+      main: new ElementBundler(this.game),
+    };
   }
 
   initCamera() {
