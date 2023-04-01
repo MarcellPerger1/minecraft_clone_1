@@ -268,7 +268,8 @@ export class MeshRenderer extends GameComponent {
  */
 
 /** 
- * @param {{[k: string]: BundleT}} dest
+ * @param {{[k: string]: ElementBundler}} dest
+ * @param {{[k: string]: BundleT}} src
  */
 function mergeMeshObj(dest, src) {
   for(const [name, data] of Object.entries(src)) {
