@@ -205,7 +205,7 @@ export class Renderer extends GameComponent {
   initBuffers() {//@semi-both
     this.buffers = {
       position: new Buffer(this.gl, this.programInfo),
-      textureCoord: new Buffer(this.gl, this.programInfo),
+      // textureCoord: new Buffer(this.gl, this.programInfo),
       indices: new Buffer(this.gl, this.programInfo),
     };
     this.configArrayBuffers();
@@ -213,16 +213,16 @@ export class Renderer extends GameComponent {
 
   configArrayBuffers() {//@semi-both
     this.buffers.position.configArray("aVertexPosition", 3, this.gl.FLOAT);
-    this.buffers.textureCoord.configArray("aTextureCoord", 2, this.gl.FLOAT);
+    // this.buffers.textureCoord.configArray("aTextureCoord", 2, this.gl.FLOAT);
   }
 
   bufferDataFromBundler() {//@semi-both
     this.buffers.position.setData(
       new Float32Array(this.vertexData.main.positions)
     );
-    this.buffers.textureCoord.setData(
-      new Float32Array(this.vertexData.main.texCoords)
-    );
+    // this.buffers.textureCoord.setData(
+    //   new Float32Array(this.vertexData.main.texCoords)
+    // );
     this.buffers.indices.setData(
       new Uint16Array(this.vertexData.main.indices),
       this.gl.ELEMENT_ARRAY_BUFFER

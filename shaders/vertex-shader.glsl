@@ -1,12 +1,12 @@
 attribute vec4 aVertexPosition;
-attribute vec2 aTextureCoord;
+// attribute vec2 aTextureCoord;
 //attribute vec4 aVertexColor;
 
 uniform mat4 uModelViewMatrix;
 uniform mat4 uProjectionMatrix;
 
 // these are then passed to the fragment shader (interpolated between vertices)
-varying highp vec2 vTextureCoord;
+// varying highp vec2 vTextureCoord;
 //varying lowp vec4 vColor;
 
 
@@ -18,6 +18,6 @@ void main(void) {
   // as `aTextureCoord` being removed results in 
   // it mystreriously breaking. WHY ??? 
   // Why is webgl (or perhaps my own code) so WEIRD ???
-  vTextureCoord = aTextureCoord - aTextureCoord;
+  // vTextureCoord = aTextureCoord - aTextureCoord;
   // vTextureCoord = vec2(0., 0.);
 }
