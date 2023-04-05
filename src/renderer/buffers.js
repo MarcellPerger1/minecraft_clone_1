@@ -29,6 +29,9 @@ export class Buffer {
     offset = 0
   ) {
     let attr = this.programInfo.attrs[attrName];
+    if(attr == null) {
+      throw new ReferenceError("There is not attribute with the name " + attrName);
+    }
     content_type ??= this.gl.FLOAT;
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.id);
     this.gl.vertexAttribPointer(
