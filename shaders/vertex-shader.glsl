@@ -12,6 +12,12 @@ varying highp vec2 vTextureCoord;
 
 void main(void) {
   gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
-  //vColor = aVertexColor;
-  vTextureCoord = aTextureCoord;
+  // Yes, I know this line is weird but we need to tell the glsl compiler
+  // to stop messing with our code by removing 'unused' 
+  // (but for some weird reason still needed) attributes
+  // as `aTextureCoord` being removed results in 
+  // it mystreriously breaking. WHY ??? 
+  // Why is webgl (or perhaps my own code) so WEIRD ???
+  vTextureCoord = aTextureCoord - aTextureCoord;
+  // vTextureCoord = vec2(0., 0.);
 }

@@ -63,6 +63,8 @@ export class Renderer extends GameComponent {
   }
 
   onResourcesLoaded() {//@semi-both
+    //this._mr = new MeshRenderer(this, this.gl, this.loader.shader.program);
+    ///*return*/ this._mr.init();
     this.initProgramInfo(this.loader.shader.program);
     this.atlas = this.loader.atlas;
     this.texture = this.atlas.texture;
@@ -97,8 +99,8 @@ export class Renderer extends GameComponent {
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.depthFunc(this.gl.LEQUAL);
     this.gl.enable(this.gl.SCISSOR_TEST);
-    this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
-    this.gl.enable(this.gl.BLEND);
+    //this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+    //this.gl.enable(this.gl.BLEND);
     this.checkGlFault();
   }
 
@@ -137,6 +139,7 @@ export class Renderer extends GameComponent {
 
   // DRAW SCENE
   renderFrame() {//@both
+    // return this._mr.renderFrame();
     this.initFrame();
     this.makeWorldMesh();
     this.drawAll();
@@ -184,7 +187,7 @@ export class Renderer extends GameComponent {
     // Tell WebGL we want to affect texture unit 0
     this.gl.activeTexture(this.gl.TEXTURE0);
     // Tell the shader we bound the texture to texture unit 0
-    this.uniforms.uSampler.set_1i(0);
+    //this.uniforms.uSampler.set_1i(0);
   }
 
   initUniforms() {//@both
@@ -230,6 +233,8 @@ export class Renderer extends GameComponent {
 
 /** Renderer that only handles drawing the polygons, no colors */
 export class MeshRenderer extends GameComponent {
+  gl;
+  
   constructor(game, gl, glProgram) {
     super(game);
     this.gl = gl;
@@ -240,6 +245,7 @@ export class MeshRenderer extends GameComponent {
   init() {
     this.initProgramInfo();
     this.initVertexData();
+    this.initBuffers();
     this.initCamera();
   }
 
@@ -280,7 +286,7 @@ export class MeshRenderer extends GameComponent {
   }
 
   clearCanvas() {
-    this.clearColor ??= [0, 0, 0, 0];
+    this.clearColor ??= [255, 0, 0, 255];
     this.gl.clearColor(...this.clearColor);
     this.gl.clearDepth(1.0);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
@@ -311,11 +317,12 @@ export class MeshRenderer extends GameComponent {
   setUniforms() {
     this.camera.initProjectionMatrix();
     this.camera.initModelViewMatrix();
+    //this.uniforms.uSampler.set_1i(0);
   }
 
-  makeWorldMesh(world) {
+  makeWorldMesh() {
     resetMeshObj(this.vertexData);
-    for (const c of world.iterChunks()) {
+    for (const c of this.world.iterChunks()) {
       /** @type {ChunkRenderer} */
       let cr = c.chunkRenderer;
       cr.updateMesh(true);
@@ -331,7 +338,7 @@ export class MeshRenderer extends GameComponent {
   // buffers
   initBuffers() {
     this._makeBuffersObj();
-    this.buffers.position = this.newBuffer().configArray("aVertexPostion", 3, gl.FLOAT);
+    this.buffers.position = this.newBuffer().configArray("aVertexPostion", 3, this.gl.FLOAT);
     this.buffers.indices = this.newBuffer();
   }
 
@@ -364,7 +371,7 @@ export class MeshRenderer extends GameComponent {
  */
 function mergeMeshObj(dest, src) {
   for(const [name, data] of Object.entries(src)) {
-    dest[name].addData(data);
+    if (dest[name]) dest[name].addData(data);
   }
 }
 

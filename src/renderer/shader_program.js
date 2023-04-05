@@ -16,6 +16,9 @@ export class ShaderProgram {
   getAttrsObj() {
     return Object.fromEntries(this.getAttrInfo().map(info => {
       let loc = this.gl.getAttribLocation(this.program, info.name);
+      if(loc == null || loc < 0) {
+        throw new ReferenceError("Can't find attribute with name " + info.name);
+      }
       return [info.name, loc];
     }));
   }
@@ -23,6 +26,9 @@ export class ShaderProgram {
   getUniformsObj() {
     return Object.fromEntries(this.getUniformInfo().map(info => {
       let loc = this.gl.getUniformLocation(this.program, info.name);
+      if(loc == null || loc < 0) {
+        throw new ReferenceError("Can't find uniform with name " + info.name);
+      }
       return [info.name, loc];
     }));
   }
