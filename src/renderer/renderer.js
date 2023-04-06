@@ -63,8 +63,8 @@ export class Renderer extends GameComponent {
   }
 
   onResourcesLoaded() {//@semi-both
-    //this._mr = new MeshRenderer(this, this.gl, this.loader.shader.program);
-    ///*return*/ this._mr.init();
+    this._mr = new MeshRenderer(this, this.gl, this.loader.shader.program);
+    /*return*/ this._mr.init();
     this.initProgramInfo(this.loader.shader.program);
     this.atlas = this.loader.atlas;
     this.texture = this.atlas.texture;
@@ -72,7 +72,9 @@ export class Renderer extends GameComponent {
       main: new ElementBundler(this.game),
       transparent: new ElementBundler(this.game),
     };
-    this.initBuffers();
+    // !!!! BIG NOTE TO SELF: uncommenting this line brakes EVERYTHING
+    // as initializing buffers tiwce break WebGL. WHY??????
+    // this.initBuffers();
     this.initCamera();
   }
 
@@ -140,20 +142,28 @@ export class Renderer extends GameComponent {
   // DRAW SCENE
   renderFrame() {//@both
     // return this._mr.renderFrame();
-    this.initFrame();
-    this.makeWorldMesh();
+    // this.gl.useProgram(this.programInfo.program);
+    // this._mr.makeStateCurrent();
+    this._mr.initFrame();
+    this._mr.makeWorldMesh();
+    this.vertexData = this._mr.vertexData;
     this.drawAll();
+    // this._mr.drawAll();
     this.checkGlFault();
   }
 
   initFrame() {//@both
-    this.resetRender();
-    this.updateCamera();
-    this.setUniforms();
+    // this.resetRender();
+    this._mr.resetRender();
+    // this.updateCamera();
+    this._mr.updateCamera();
+    this.camera = this._mr.camera;
+    this._mr.setUniforms();
+    // this.setUniforms();
   }
 
   drawAll() {//@both
-    this.bufferDataFromBundler();
+    this._mr.bufferDataFromBundler();
     this.vertexData.main.drawBufferedElements();
   }
 
@@ -179,7 +189,7 @@ export class Renderer extends GameComponent {
   setUniforms() {//@semi-both
     this.camera.initProjectionMatrix();
     this.camera.initModelViewMatrix();
-    this.initTextureSampler();
+    // this.initTextureSampler();
   }
 
   initTextureSampler() {//@display-only
@@ -198,7 +208,7 @@ export class Renderer extends GameComponent {
   initProgramInfo(shaderProgram) {//@both
     this.programInfo = new ShaderProgram(this.gl, shaderProgram);
     this.initUniforms();
-    this.gl.useProgram(this.programInfo.program);
+    // this.gl.useProgram(this.programInfo.program);
   }
 
   // BUFFERS
@@ -330,6 +340,7 @@ export class MeshRenderer extends GameComponent {
     }
   }
 
+  // !!!!!!! this is the culprit, this function doesn't work!!!
   drawAll() {
     this.bufferDataFromBundler();
     this.vertexData.main.drawBufferedElements();
@@ -338,7 +349,7 @@ export class MeshRenderer extends GameComponent {
   // buffers
   initBuffers() {
     this._makeBuffersObj();
-    this.buffers.position = this.newBuffer().configArray("aVertexPostion", 3, this.gl.FLOAT);
+    this.buffers.position = this.newBuffer().configArray("aVertexPosition", 3, this.gl.FLOAT);
     this.buffers.indices = this.newBuffer();
   }
 
@@ -350,7 +361,10 @@ export class MeshRenderer extends GameComponent {
     return new Buffer(this.gl, this.programInfo);
   }
 
+  // this doesn't work!!!!! why??
   bufferDataFromBundler() {
+
+    // return this.r.bufferDataFromBundler();
     this.buffers.position.setData(
       new Float32Array(this.vertexData.main.positions)
     );
