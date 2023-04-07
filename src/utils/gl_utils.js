@@ -1,14 +1,19 @@
 import { isPowerOf2 } from "./math.js";
 
-export function getGL(canv_id = "glCanvas") {
-  const canvas = document.getElementById(canv_id);
-  const gl = canvas.getContext("webgl");
-  if (gl == null) {
-    let msg =
-      "Unable to initialize WebGL. Your browser or machine may not support it.";
-    throw new Error(msg);
+export function getGLContext(canvas) {
+  let gl = canvas.getContext("webgl");
+  if(gl) return gl;
+  gl = canvas.getContext("experimental-webgl");
+  if(gl) {
+    console.warn("Using experimental-webgl, things might break.");
+    return gl;
   }
-  return gl;
+  throw new Error("Unable to initialize WebGL." + 
+                  "Your browser or machine may not support it.");
+}
+
+export function getGL(canv_id = "glCanvas") {
+  return getGLContext(document.getElementById(canv_id));
 }
 
 /**
