@@ -64,17 +64,16 @@ export class Renderer extends GameComponent {
 
   onResourcesLoaded() {//@semi-both
     this._mr = new MeshRenderer(this, this.gl, this.loader.shader.program);
-    /*return*/ this._mr.init();
+    this._mr.init();
     this.initProgramInfo(this.loader.shader.program);
     this.atlas = this.loader.atlas;
     this.texture = this.atlas.texture;
+    return;
     this.vertexData = {
       main: new ElementBundler(this.game),
       transparent: new ElementBundler(this.game),
     };
-    // !!!! BIG NOTE TO SELF: uncommenting this line brakes EVERYTHING
-    // as initializing buffers tiwce break WebGL. WHY??????
-    // this.initBuffers();
+    this.initBuffers();
     this.initCamera();
   }
 
@@ -141,25 +140,17 @@ export class Renderer extends GameComponent {
 
   // DRAW SCENE
   renderFrame() {//@both
-    // return this._mr.renderFrame();
-    // this.gl.useProgram(this.programInfo.program);
-    // this._mr.makeStateCurrent();
-    this._mr.initFrame();
-    this._mr.makeWorldMesh();
-    this.vertexData = this._mr.vertexData;
+    return this._mr.renderFrame();
+    this.initFrame();
+    this.makeWorldMesh();
     this.drawAll();
-    // this._mr.drawAll();
     this.checkGlFault();
   }
 
   initFrame() {//@both
-    // this.resetRender();
-    this._mr.resetRender();
-    // this.updateCamera();
-    this._mr.updateCamera();
-    this.camera = this._mr.camera;
-    this._mr.setUniforms();
-    // this.setUniforms();
+    this.resetRender();
+    this.updateCamera();
+    this.setUniforms();
   }
 
   drawAll() {//@both
@@ -189,7 +180,7 @@ export class Renderer extends GameComponent {
   setUniforms() {//@semi-both
     this.camera.initProjectionMatrix();
     this.camera.initModelViewMatrix();
-    // this.initTextureSampler();
+    this.initTextureSampler();
   }
 
   initTextureSampler() {//@display-only
@@ -197,7 +188,7 @@ export class Renderer extends GameComponent {
     // Tell WebGL we want to affect texture unit 0
     this.gl.activeTexture(this.gl.TEXTURE0);
     // Tell the shader we bound the texture to texture unit 0
-    //this.uniforms.uSampler.set_1i(0);
+    this.uniforms.uSampler.set_1i(0);
   }
 
   initUniforms() {//@both
@@ -208,14 +199,14 @@ export class Renderer extends GameComponent {
   initProgramInfo(shaderProgram) {//@both
     this.programInfo = new ShaderProgram(this.gl, shaderProgram);
     this.initUniforms();
-    // this.gl.useProgram(this.programInfo.program);
+    this.gl.useProgram(this.programInfo.program);
   }
 
   // BUFFERS
   initBuffers() {//@semi-both
     this.buffers = {
       position: new Buffer(this.gl, this.programInfo),
-      // textureCoord: new Buffer(this.gl, this.programInfo),
+      textureCoord: new Buffer(this.gl, this.programInfo),
       indices: new Buffer(this.gl, this.programInfo),
     };
     this.configArrayBuffers();
@@ -223,16 +214,16 @@ export class Renderer extends GameComponent {
 
   configArrayBuffers() {//@semi-both
     this.buffers.position.configArray("aVertexPosition", 3, this.gl.FLOAT);
-    // this.buffers.textureCoord.configArray("aTextureCoord", 2, this.gl.FLOAT);
+    this.buffers.textureCoord.configArray("aTextureCoord", 2, this.gl.FLOAT);
   }
 
   bufferDataFromBundler() {//@semi-both
     this.buffers.position.setData(
       new Float32Array(this.vertexData.main.positions)
     );
-    // this.buffers.textureCoord.setData(
-    //   new Float32Array(this.vertexData.main.texCoords)
-    // );
+    this.buffers.textureCoord.setData(
+      new Float32Array(this.vertexData.main.texCoords)
+    );
     this.buffers.indices.setData(
       new Uint16Array(this.vertexData.main.indices),
       this.gl.ELEMENT_ARRAY_BUFFER
@@ -327,7 +318,6 @@ export class MeshRenderer extends GameComponent {
   setUniforms() {
     this.camera.initProjectionMatrix();
     this.camera.initModelViewMatrix();
-    //this.uniforms.uSampler.set_1i(0);
   }
 
   makeWorldMesh() {
