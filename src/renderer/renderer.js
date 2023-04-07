@@ -1,4 +1,4 @@
-import { getGL, glErrnoToMsg } from "../utils/gl_utils.js";
+import { getGLContext, glErrnoToMsg } from "../utils/gl_utils.js";
 import { LoaderMerge } from "../utils/loader.js";
 import { GameComponent } from "../game_component.js";
 
@@ -8,7 +8,6 @@ import { ShaderProgram } from "./shader_program.js";
 import { Camera } from "./gl_camera.js";
 import { AtlasLoader } from "./atlas_data.js";
 import { ShaderLoader } from "./shader_loader.js";
-import { CubeDataAdder } from "./face_culling.js";
 import { ElementBundler } from "./vertex_bundle.js";
 
 /**
@@ -88,10 +87,7 @@ export class Renderer extends GameComponent {
   // WebGL stuff
   // initialisation
   initGL() {//@shared
-    this.gl = getGL();
-    if (this.gl == null) {
-      throw new Error("Failed to initiialise gl");
-    }
+    this.gl = getGLContext(this.canvas);
     this.clearCanvas();
     this.checkGlFault();
   }

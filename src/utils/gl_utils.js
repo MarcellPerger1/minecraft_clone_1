@@ -12,10 +12,6 @@ export function getGLContext(canvas) {
                   "Your browser or machine may not support it.");
 }
 
-export function getGL(canv_id = "glCanvas") {
-  return getGLContext(document.getElementById(canv_id));
-}
-
 /**
  * Get a string representation of error from `errno`
  * @param {number} errno
