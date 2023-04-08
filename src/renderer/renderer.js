@@ -396,6 +396,18 @@ export class DisplayRenderer extends MeshRenderer {
       new Float32Array(this.vertexData.main.texCoords)
     );
   }
+
+  makeWorldMesh() {
+    resetMeshObj(this.vertexData);
+    let i = 0;
+    for (const c of this.world.iterChunks()) {
+      /** @type {ChunkRenderer} */
+      let cr = c.chunkRenderer;
+      cr.updateMesh(this.game.frameNo % 120 == i);
+      mergeMeshObj(this.vertexData, cr.mesh);
+      i++;
+    }
+  }
 }
 
 /** 
