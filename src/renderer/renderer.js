@@ -358,6 +358,46 @@ export class MeshRenderer extends GameComponent {
   }
 }
 
+export class DisplayRenderer extends MeshRenderer {
+  constructor(game, gl, glProgram) {
+    super(game, gl, glProgram);
+    this.clearColor = this.cnf.bgColor;
+  }
+
+  configGL() {
+    this.gl.enable(this.gl.DEPTH_TEST);
+    this.gl.depthFunc(this.gl.LEQUAL);
+    this.gl.enable(this.gl.SCISSOR_TEST);
+    this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+    this.gl.enable(this.gl.BLEND);
+  }
+
+  setUniforms() {
+    super.setUniforms();
+    this.initTextureSampler();
+  }
+
+  initTextureSampler() {
+    this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
+    // Tell WebGL we want to affect texture unit 0
+    this.gl.activeTexture(this.gl.TEXTURE0);
+    // Tell the shader we bound the texture to texture unit 0
+    this.uniforms.uSampler.set_1i(0);
+  }
+
+  initBuffers() {
+    super.initBuffers();
+    this.buffers.textureCoord = this.newBuffer().configArray("aTextureCoord", 2, this.gl.FLOAT);
+  }
+
+  bufferDataFromBundler() {
+    super.bufferDataFromBundler();
+    this.buffers.textureCoord.setData(
+      new Float32Array(this.vertexData.main.texCoords)
+    );
+  }
+}
+
 /** 
  * @typedef {{positions: number[], texCoords: number[], indices: number[], maxindex?: number[]}} BundleT
  */
