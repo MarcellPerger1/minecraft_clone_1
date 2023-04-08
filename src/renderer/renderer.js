@@ -62,12 +62,12 @@ export class Renderer extends GameComponent {
   }
 
   onResourcesLoaded() {//@semi-both
-    // this._mr = new MeshRenderer(this, this.gl, this.loader.shader.program);
-    // this._mr.init();
+    this._mr = new DisplayRenderer(this, this.gl, this.loader.shader.program, this.loader.atlas);
+    this._mr.init();
     this.initProgramInfo(this.loader.shader.program);
     this.atlas = this.loader.atlas;
     this.texture = this.atlas.texture;
-    // return;
+    return;
     this.vertexData = {
       main: new ElementBundler(this.game),
       transparent: new ElementBundler(this.game),
@@ -96,8 +96,8 @@ export class Renderer extends GameComponent {
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.depthFunc(this.gl.LEQUAL);
     this.gl.enable(this.gl.SCISSOR_TEST);
-    //this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
-    //this.gl.enable(this.gl.BLEND);
+    this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+    this.gl.enable(this.gl.BLEND);
     this.checkGlFault();
   }
 
@@ -136,7 +136,7 @@ export class Renderer extends GameComponent {
 
   // DRAW SCENE
   renderFrame() {//@both
-    // return this._mr.renderFrame();
+    return this._mr.renderFrame();
     this.initFrame();
     this.makeWorldMesh();
     this.drawAll();
@@ -359,9 +359,11 @@ export class MeshRenderer extends GameComponent {
 }
 
 export class DisplayRenderer extends MeshRenderer {
-  constructor(game, gl, glProgram) {
+  constructor(game, gl, glProgram, atlas) {
     super(game, gl, glProgram);
     this.clearColor = this.cnf.bgColor;
+    this.atlas = atlas;
+    this.texture = this.atlas.texture;
   }
 
   configGL() {
