@@ -339,6 +339,7 @@ export class MeshRenderer extends GameComponent {
   }
 
   _makeBuffersObj() {
+    /** @type {{position: ElementBundler, vertexData: ElementBundler, [k: string]: ElementBundler}} */
     this.buffers = {};
   }
 
