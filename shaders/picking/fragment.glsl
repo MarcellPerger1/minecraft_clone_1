@@ -1,5 +1,5 @@
-attribute vec4 aId;
+varying vec4 vId;
 
 void main() {
-  gl_FragColor = aId;
+  gl_FragColor = vId;
 }
