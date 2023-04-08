@@ -32,7 +32,6 @@ export class Renderer extends GameComponent {
 
   init() {
     this.initGL();
-    this.initGLConfig();
   }
 
   /**
@@ -64,166 +63,18 @@ export class Renderer extends GameComponent {
   onResourcesLoaded() {//@semi-both
     this._mr = new DisplayRenderer(this, this.gl, this.loader.shader.program, this.loader.atlas);
     this._mr.init();
-    this.initProgramInfo(this.loader.shader.program);
     this.atlas = this.loader.atlas;
     this.texture = this.atlas.texture;
-    return;
-    this.vertexData = {
-      main: new ElementBundler(this.game),
-      transparent: new ElementBundler(this.game),
-    };
-    this.initBuffers();
-    this.initCamera();
-  }
-
-  initCamera() {//@both
-    this.camera = new Camera(this.gl, this.uniforms);
-  }
-
-  updateCamera() {//@both
-    this.camera.updateFromPlayer(this.player);
   }
 
   // WebGL stuff
   // initialisation
   initGL() {//@shared
     this.gl = getGLContext(this.canvas);
-    this.clearCanvas();
-    this.checkGlFault();
   }
 
-  initGLConfig() {//@diff
-    this.gl.enable(this.gl.DEPTH_TEST);
-    this.gl.depthFunc(this.gl.LEQUAL);
-    this.gl.enable(this.gl.SCISSOR_TEST);
-    this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
-    this.gl.enable(this.gl.BLEND);
-    this.checkGlFault();
-  }
-
-  /**
-   * Set size of webGL stuff
-   * @param {[number, number]} size
-   */
-  setGLSize(size, offset = null) {//@both?
-    offset = (offset ?? [0, 0]).slice(0, 2);
-    this.gl.viewport(...offset, ...size);
-    this.gl.scissor(...offset, ...size);
-  }
-
-  // gl errors
-  checkGlFault() {//@both
-    if (!this.cnf.checkError) {
-      return;
-    }
-    this.last_error = this.gl.getError();
-    if (this.last_error !== this.gl.NO_ERROR) {
-      this.onGlFault();
-    }
-  }
-
-  onGlFault() {//@both
-    console.error("WebGL error: ", glErrnoToMsg(this.last_error));
-  }
-
-  // other
-  clearCanvas() {//@both
-    this.gl.clearColor(...this.cnf.bgColor);
-    this.gl.clearDepth(1.0);
-    // actully does the clearing:
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-  }
-
-  // DRAW SCENE
-  renderFrame() {//@both
-    return this._mr.renderFrame();
-    this.initFrame();
-    this.makeWorldMesh();
-    this.drawAll();
-    this.checkGlFault();
-  }
-
-  initFrame() {//@both
-    this.resetRender();
-    this.updateCamera();
-    this.setUniforms();
-  }
-
-  drawAll() {//@both
-    this.bufferDataFromBundler();
-    this.vertexData.main.drawBufferedElements();
-  }
-
-  resetRender() {//@both
-    this.clearCanvas();
-  }
-
-  // CUBE DATA HANDLING
-  makeWorldMesh() {//@semi-both(transparency)
-    resetMeshObj(this.vertexData);
-    let i = 0;
-    for (const c of this.world.iterChunks()) {
-      /** @type {ChunkRenderer} */
-      let cr = c.chunkRenderer;
-      cr.updateMesh(this.game.frameNo % 120 == i);
-      mergeMeshObj(this.vertexData, cr.mesh);
-      i++;
-    }
-    this.vertexData.main.addData(this.vertexData.transparent);
-  }
-  
-  // UNIFORMS (todo separate uniform handler class)
-  setUniforms() {//@semi-both
-    this.camera.initProjectionMatrix();
-    this.camera.initModelViewMatrix();
-    this.initTextureSampler();
-  }
-
-  initTextureSampler() {//@display-only
-    this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
-    // Tell WebGL we want to affect texture unit 0
-    this.gl.activeTexture(this.gl.TEXTURE0);
-    // Tell the shader we bound the texture to texture unit 0
-    this.uniforms.uSampler.set_1i(0);
-  }
-
-  initUniforms() {//@both
-    this.uniforms = makeUniformsObj(this.gl, this.programInfo);
-  }
-
-  // SHADER PROGRAM
-  initProgramInfo(shaderProgram) {//@both
-    this.programInfo = new ShaderProgram(this.gl, shaderProgram);
-    this.initUniforms();
-    this.gl.useProgram(this.programInfo.program);
-  }
-
-  // BUFFERS
-  initBuffers() {//@semi-both
-    this.buffers = {
-      position: new Buffer(this.gl, this.programInfo),
-      textureCoord: new Buffer(this.gl, this.programInfo),
-      indices: new Buffer(this.gl, this.programInfo),
-    };
-    this.configArrayBuffers();
-  }
-
-  configArrayBuffers() {//@semi-both
-    this.buffers.position.configArray("aVertexPosition", 3, this.gl.FLOAT);
-    this.buffers.textureCoord.configArray("aTextureCoord", 2, this.gl.FLOAT);
-  }
-
-  bufferDataFromBundler() {//@semi-both
-    this.buffers.position.setData(
-      new Float32Array(this.vertexData.main.positions)
-    );
-    this.buffers.textureCoord.setData(
-      new Float32Array(this.vertexData.main.texCoords)
-    );
-    this.buffers.indices.setData(
-      new Uint16Array(this.vertexData.main.indices),
-      this.gl.ELEMENT_ARRAY_BUFFER
-    );
+  renderFrame() {
+    this._mr.renderFrame();
   }
 }
 
