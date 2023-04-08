@@ -62,12 +62,12 @@ export class Renderer extends GameComponent {
   }
 
   onResourcesLoaded() {//@semi-both
-    this._mr = new MeshRenderer(this, this.gl, this.loader.shader.program);
-    this._mr.init();
+    // this._mr = new MeshRenderer(this, this.gl, this.loader.shader.program);
+    // this._mr.init();
     this.initProgramInfo(this.loader.shader.program);
     this.atlas = this.loader.atlas;
     this.texture = this.atlas.texture;
-    return;
+    // return;
     this.vertexData = {
       main: new ElementBundler(this.game),
       transparent: new ElementBundler(this.game),
@@ -136,7 +136,7 @@ export class Renderer extends GameComponent {
 
   // DRAW SCENE
   renderFrame() {//@both
-    return this._mr.renderFrame();
+    // return this._mr.renderFrame();
     this.initFrame();
     this.makeWorldMesh();
     this.drawAll();
@@ -150,7 +150,7 @@ export class Renderer extends GameComponent {
   }
 
   drawAll() {//@both
-    this._mr.bufferDataFromBundler();
+    this.bufferDataFromBundler();
     this.vertexData.main.drawBufferedElements();
   }
 
@@ -326,7 +326,6 @@ export class MeshRenderer extends GameComponent {
     }
   }
 
-  // !!!!!!! this is the culprit, this function doesn't work!!!
   drawAll() {
     this.bufferDataFromBundler();
     this.vertexData.main.drawBufferedElements();
@@ -347,10 +346,7 @@ export class MeshRenderer extends GameComponent {
     return new Buffer(this.gl, this.programInfo);
   }
 
-  // this doesn't work!!!!! why??
   bufferDataFromBundler() {
-
-    // return this.r.bufferDataFromBundler();
     this.buffers.position.setData(
       new Float32Array(this.vertexData.main.positions)
     );
