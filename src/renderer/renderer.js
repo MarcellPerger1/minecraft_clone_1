@@ -1,4 +1,4 @@
-import { getGLContext, glErrnoToMsg } from "../utils/gl_utils.js";
+import { getGLContext } from "../utils/gl_utils.js";
 import { LoaderMerge } from "../utils/loader.js";
 import { GameComponent } from "../game_component.js";
 
