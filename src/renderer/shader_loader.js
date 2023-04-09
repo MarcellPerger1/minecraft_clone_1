@@ -1,8 +1,9 @@
-import { expectValue } from "../utils/general.js";
 import { fetchTextFile } from "../utils/file_load.js";
 import { loadShader, programFromShaders } from "../utils/gl_utils.js";
+import { assert } from "../utils/assert.js";
 
 import { GameComponent } from "../game_component.js";
+
 
 export class ShaderLoader extends GameComponent {
   constructor(game) {
@@ -23,13 +24,14 @@ export class ShaderLoader extends GameComponent {
 
   getLoaders() {
     return Promise.all([
-      this.loadResource(this.vsPath, "vs", this.gl.VERTEX_SHADER),
-      this.loadResource(this.fsPath, "fs", this.gl.FRAGMENT_SHADER),
+      this.loadShader(this.vsPath, "vs", this.gl.VERTEX_SHADER),
+      this.loadShader(this.fsPath, "fs", this.gl.FRAGMENT_SHADER),
     ]);
   }
 
-  async loadResource(path, result_attr_name, sType) {
-    const text = await fetchTextFile(expectValue(path, "Path"));
+  async loadShader(path, result_attr_name, sType) {
+    assert(path != null, "path should not be null");
+    const text = await fetchTextFile(path);
     const result = loadShader(this.gl, sType, text);
     return (this[result_attr_name] = result);
   }
