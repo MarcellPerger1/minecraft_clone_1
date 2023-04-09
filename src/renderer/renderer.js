@@ -60,8 +60,9 @@ export class RenderMgr extends GameComponent {
   }
 
   onResourcesLoaded() {//@semi-both
-    this._mr = new DisplayRenderer(this, this.gl, this.loader.shader.program, this.loader.atlas);
-    this._mr.init();
+    this.renderer = new DisplayRenderer(
+      this, this.gl, this.loader.shader.program, this.loader.atlas);
+    this.renderer.init();
     this.atlas = this.loader.atlas;
     this.texture = this.atlas.texture;
   }
@@ -73,7 +74,7 @@ export class RenderMgr extends GameComponent {
   }
 
   renderFrame() {
-    this._mr.renderFrame();
+    this.renderer.renderFrame();
   }
 }
 
