@@ -53,10 +53,6 @@ export class CubeDataAdder extends GameComponent {
     }
   }
 
-  addDataToRenderer(data, texture) {
-    this.renderTarget.addData(data, texture);
-  }
-
   shouldRenderSide(offset) {
     let pos = vec3.add([], this.pos, offset);
     if (!this.world.inRange(pos)) {
