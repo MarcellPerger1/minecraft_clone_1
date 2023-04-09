@@ -22,7 +22,7 @@ import { ElementBundler } from "./vertex_bundle.js";
 // https://www.toptal.com/game/video-game-physics-part-i-an-introduction-to-rigid-body-dynamics
 
 // TODO: switch to typescript??
-export class Renderer extends GameComponent {
+export class RenderMgr extends GameComponent {
   constructor(game, do_init = true) {
     super(game);
     if (do_init) {
