@@ -23,6 +23,9 @@ import { ElementBundler } from "./vertex_bundle.js";
 
 // TODO: switch to typescript??
 export class RenderMgr extends GameComponent {
+  /** @type {WebGLRenderingContext} */
+  gl;
+  
   constructor(game, do_init = true) {
     super(game);
     if (do_init) {
@@ -32,16 +35,6 @@ export class RenderMgr extends GameComponent {
 
   init() {
     this.initGL();
-  }
-
-  /**
-   * @type {WebGLRenderingContext}
-   */
-  get gl() {
-    return this._gl;
-  }
-  set gl(v) {
-    this._gl = v;
   }
 
   initLoaders() {//@shared
