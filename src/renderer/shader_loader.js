@@ -36,3 +36,27 @@ export class ShaderLoader extends GameComponent {
     return (this[result_attr_name] = result);
   }
 }
+
+
+export class ShaderProgramLoader {
+  construct(gl, {vs, fs}) {
+    this.gl = gl;
+    this.vsPath = vs;
+    this.fsPath = fs;
+  }
+
+  async loadResources() {
+    [this.vs, this.fs] = await Promise.all([
+      this.loadShader(this.vsPath, this.gl.VERTEX_SHADER),
+      this.loadShader(this.fsPath, this.gl.FRAGMENT_SHADER),
+    ]);
+    this.program = programFromShaders(this.gl, this.vs, this.fs);
+    return this.program;
+  }
+
+  async loadShader(path, sType) {
+    assert(path != null, "path should not be null");
+    const text = await fetchTextFile(path);
+    return loadShader(this.gl, sType, text);
+  } 
+}
