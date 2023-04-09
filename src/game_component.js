@@ -29,7 +29,7 @@ export class GameComponent {
   }
 
   get r() {
-    return this.game.r;
+    return this.game.renderMgr;
   }
 
   get canvas() {
