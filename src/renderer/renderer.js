@@ -52,12 +52,11 @@ export class RenderMgr extends GameComponent {
   }
 
   // Returns Promise that fulfilles when all resources loaded and ready for a render
-  loadResources() {//@shared
+  async loadResources() {//@shared
     this.initLoaders();
-    this.initDoneProm = this.loader.loadResources().then((_result) => {
-      this.onResourcesLoaded();
-    });
-    return this.initDoneProm;
+    let result = await this.loader.loadResources();
+    this.onResourcesLoaded();
+    return result;
   }
 
   onResourcesLoaded() {//@semi-both
