@@ -13,6 +13,9 @@ export class Camera {
     this.position = player.position;
   }
 
+  initMatrix() {
+    this.uniforms.uMatrix.set_mat4(this.getMatrix());
+  }
   getMatrix() {
     return mat4.mul(
       mat4.create(), this.getProjectionMatrix(), this.getModelViewMatrix());

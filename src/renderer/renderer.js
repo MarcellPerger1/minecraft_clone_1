@@ -153,8 +153,7 @@ export class MeshRenderer extends GameComponent {
   }
 
   setUniforms() {
-    this.camera.initProjectionMatrix();
-    this.camera.initModelViewMatrix();
+    this.camera.initMatrix();
   }
 
   makeWorldMesh() {
