@@ -56,8 +56,7 @@ export class RenderMgr extends GameComponent {
     this.renderer = new DisplayRenderer(
       this, this.gl, this.loader.shader.program, this.loader.atlas);
     this.renderer.init();
-    this.atlas = this.loader.atlas;
-    this.texture = this.atlas.texture;
+    ({ atlas: this.atlas, texture: this.texture } = this.loader);
   }
 
   // WebGL stuff
