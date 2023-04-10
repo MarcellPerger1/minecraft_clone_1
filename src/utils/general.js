@@ -1,16 +1,5 @@
-import { isString, isFunction } from "./type_check.js";
+import { isFunction } from "./type_check.js";
 import { assert } from "./assert.js";
-
-export function expectValue(v, name = null) {
-  name = name ?? v?.name;
-  if (name == null) {
-    console.warn("Name not specified!");
-  }
-  if (v == null) {
-    throw new ReferenceError(`${name} must not be null!`);
-  }
-  return v;
-}
 
 /**
  * Return an object with all of `keys` set to `value`
