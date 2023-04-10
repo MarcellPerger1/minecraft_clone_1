@@ -39,10 +39,10 @@ export class ShaderLoader extends GameComponent {
 
 
 export class ShaderProgramLoader {
-  construct(gl, {vs, fs}) {
+  constructor(gl, {vsPath, fsPath}) {
     this.gl = gl;
-    this.vsPath = vs;
-    this.fsPath = fs;
+    this.vsPath = vsPath;
+    this.fsPath = fsPath;
   }
 
   async loadResources() {

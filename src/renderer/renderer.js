@@ -7,7 +7,7 @@ import { makeUniformsObj } from "./uniforms.js";
 import { ShaderProgram } from "./shader_program.js";
 import { Camera } from "./gl_camera.js";
 import { AtlasLoader } from "./atlas_data.js";
-import { ShaderLoader } from "./shader_loader.js";
+import { ShaderProgramLoader } from "./shader_loader.js";
 import { ElementBundler } from "./vertex_bundle.js";
 
 /**
@@ -39,7 +39,7 @@ export class RenderMgr extends GameComponent {
 
   initLoaders() {//@shared
     this.loader = new LoaderMerge({
-      shader: new ShaderLoader(this.game),
+      shader: new ShaderProgramLoader(this.gl, this.cnf.shader),
       atlas: new AtlasLoader(this.game),
     });
   }
