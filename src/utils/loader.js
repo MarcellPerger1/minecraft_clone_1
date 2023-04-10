@@ -19,12 +19,15 @@ export class LoaderMerge {
   }
 
   loadResources() {
-    return Promise.all(
-      (this.isFromObject
-        ? Object.values(this.components)
-        : this.components
-      ).map((c) => c.loadResources())
-    );
+    if(this.isFromObject) {
+      this.promises = Object.fromEntries(
+        Object.entries(this.components).map(([k, v]) => [k, v.loadResources()])
+      );
+      return Promise.all(Object.values(this.promises));
+    } else {
+      this.promises = this.components.map((v) => v.loadResources());
+      return Promise.all(this.promises);
+    }
   }
 }
 
