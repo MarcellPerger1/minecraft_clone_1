@@ -4,9 +4,9 @@ import { assert } from "./assert.js";
 /**
  * Return an object with all of `keys` set to `value`
  * @template KT, VT
- * @param {Array<KT>} keys
+ * @param {KT[]} keys
  * @param {VT} value
- * @returns {(Object.<KT, VT> | Map.<KT, VT>)}
+ * @returns {{[k: KT]: VT}}
  */
 export function fromKeys(keys, value) {
   return Object.fromEntries(keys.map((k) => [k, value]));
