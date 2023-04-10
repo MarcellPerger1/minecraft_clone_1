@@ -37,7 +37,7 @@ export class RenderMgr extends GameComponent {
     this.gl = getGLContext(this.canvas);
   }
 
-  initLoaders() {//@shared
+  initLoaders() {
     this.loader = new LoaderMerge({
       shader: new ShaderProgramLoader(this.gl, this.cnf.shader),
       atlas: new AtlasLoader(this.game),
@@ -49,14 +49,14 @@ export class RenderMgr extends GameComponent {
   }
 
   // Returns Promise that fulfilles when all resources loaded and ready for a render
-  async loadResources() {//@shared
+  async loadResources() {
     this.initLoaders();
     let result = await this.loader.loadResources();
     this.onResourcesLoaded();
     return result;
   }
 
-  onResourcesLoaded() {//@semi-both
+  onResourcesLoaded() {
     this.renderer = new DisplayRenderer(
       this, this.gl, this.loader.shader.program, this.loader.atlas);
     this.renderer.init();
