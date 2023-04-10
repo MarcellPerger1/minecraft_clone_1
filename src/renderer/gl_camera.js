@@ -20,10 +20,7 @@ export class Camera {
     return mat4.mul(
       mat4.create(), this.getProjectionMatrix(), this.getModelViewMatrix());
   }
-  
-  initProjectionMatrix() {
-    this.uniforms.uProjectionMatrix.set_mat4(this.getProjectionMatrix());
-  }
+
   getProjectionMatrix() {
     const fieldOfView = toRad(45);
     const aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
@@ -41,9 +38,6 @@ export class Camera {
     return projectionMatrix;
   }
 
-  initModelViewMatrix() {
-    this.uniforms.uModelViewMatrix.set_mat4(this.getModelViewMatrix());
-  }
   getModelViewMatrix() {
     var m1 = mat4.create();
     const amount = vec3.scale([], this.position, -1);
