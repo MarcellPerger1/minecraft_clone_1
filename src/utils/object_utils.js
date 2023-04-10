@@ -1,4 +1,16 @@
 /**
+ * Return an object with all of `keys` set to `value`
+ * @template KT, VT
+ * @param {KT[]} keys
+ * @param {VT} value
+ * @returns {{[k: KT]: VT}}
+ */
+export function fromKeys(keys, value) {
+  return Object.fromEntries(keys.map((k) => [k, value]));
+}
+
+
+/**
  * Return prototype for ctor or proto
  * @param {*} p - Prototype or constructor
  * @returns {*}  The prototype
