@@ -29,12 +29,12 @@ export class RenderMgr extends GameComponent {
   constructor(game, do_init = true) {
     super(game);
     if (do_init) {
-      this.init();
+      this.initGL();
     }
   }
 
-  init() {
-    this.initGL();
+  initGL() {
+    this.gl = getGLContext(this.canvas);
   }
 
   initLoaders() {//@shared
@@ -61,12 +61,6 @@ export class RenderMgr extends GameComponent {
       this, this.gl, this.loader.shader.program, this.loader.atlas);
     this.renderer.init();
     ({ atlas: this.atlas, texture: this.texture } = this.loader);
-  }
-
-  // WebGL stuff
-  // initialisation
-  initGL() {//@shared
-    this.gl = getGLContext(this.canvas);
   }
 
   renderFrame() {
