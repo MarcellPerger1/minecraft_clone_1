@@ -9,6 +9,7 @@ import { Camera } from "./gl_camera.js";
 import { AtlasLoader } from "./atlas_data.js";
 import { ShaderProgramLoader } from "./shader_loader.js";
 import { ElementBundler } from "./vertex_bundle.js";
+import { assert } from "../utils/assert.js";
 
 /**
  * @typedef {import('../world/chunk.js').Chunk} Chunk
@@ -249,6 +250,28 @@ export class DisplayRenderer extends MeshRenderer {
       mergeMeshObj(this.vertexData, cr.mesh);
       i++;
     }
+  }
+}
+
+export class PickingIdRenderer {
+  constructor(game, gl, glProgram) {
+    super(game, gl, glProgram);
+    this.clearColor = [0, 0, 0, 0];
+  }
+
+  idToColor(/** @type {number} */id) {
+    return this.constructor.idToColor(id);
+  }
+
+  static idToColor(/** @type {number} */id) {
+    assert(id < 2**32, "id must fit into a 32-bit integer " +
+           "to be able to be used as a color");
+    assert(id >= 0, "id must not be negative");
+    let b0 = id & 0xFF;
+    let b1 = (id >> 8) & 0xFF;
+    let b2 = (id >> 16) & 0xFF;
+    let b3 = (id >> 24) & 0xFF;
+    return [b0, b1, b2, b3];
   }
 }
 
