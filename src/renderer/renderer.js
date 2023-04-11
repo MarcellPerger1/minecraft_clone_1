@@ -208,9 +208,7 @@ export class DisplayRenderer extends MeshRenderer {
   }
 
   configGL() {
-    this.gl.enable(this.gl.DEPTH_TEST);
-    this.gl.depthFunc(this.gl.LEQUAL);
-    this.gl.enable(this.gl.SCISSOR_TEST);
+    super.configGL();
     this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
     this.gl.enable(this.gl.BLEND);
   }
