@@ -251,7 +251,11 @@ export class DisplayRenderer extends MeshRenderer {
   }
 }
 
+
 export class PickingIdRenderer extends MeshRenderer {
+  // Each color represents a 32-bit unsigned integer id
+  // With the RBGA channels being 4 bytes
+  // stored in little endian order
   constructor(game, gl, glProgram) {
     super(game, gl, glProgram);
     this.clearColor = [0, 0, 0, 0];
@@ -277,8 +281,30 @@ export class PickingIdRenderer extends MeshRenderer {
     return [b0, b1, b2, b3];
   }
 
-  colorToId() {
-    
+  static colorToId(/** @type {[number, number, number, number]} */color) {
+    assert(
+      Array.isArray(color) && color.length == 4,
+      "color must be an array of length 4"
+    );
+    assert(
+      color.every(Number.isInteger(v)),
+      "each color channel must be an integer"
+    );
+    assert(
+      color.every((v) => v >= 0 && v < 256),
+      "each color channel must be between 0 and 255"
+    );
+    // need to be careful with highest byte:
+    // bitwise operations use SIGNED 32 integers in js
+    // but we need unsigned as you can't have negative id.
+    // so just don't use bitwise operations for highest byte.
+    // eg. 250<<24 results in `-1006...` instead of the expected `4194...`
+    let v3 = color[3] * 2**24;
+    return color[0] + (color[1] << 8) + (color[2] << 16) + v3;
+  }
+
+  colorToId(/** @type {[number, number, number, number]} */color) {
+    return this.constructor.colorToId(color);
   }
 }
 
