@@ -253,10 +253,15 @@ export class DisplayRenderer extends MeshRenderer {
   }
 }
 
-export class PickingIdRenderer {
+export class PickingIdRenderer extends MeshRenderer {
   constructor(game, gl, glProgram) {
     super(game, gl, glProgram);
     this.clearColor = [0, 0, 0, 0];
+  }
+
+  configGL() {
+    super.configGL();
+    this.gl.disable(this.gl.BLEND);
   }
 
   idToColor(/** @type {number} */id) {
@@ -272,6 +277,10 @@ export class PickingIdRenderer {
     let b2 = (id >> 16) & 0xFF;
     let b3 = (id >> 24) & 0xFF;
     return [b0, b1, b2, b3];
+  }
+
+  colorToId() {
+    
   }
 }
 
