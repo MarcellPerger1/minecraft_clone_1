@@ -1,23 +1,13 @@
 import { isObject } from "../utils/type_check.js";
-import { sortCoords } from "../utils/array_utils.js";
 import { GameComponent } from "../game_component.js";
 
 const FAR_DIST_SQ = 130;
 
 export class CubeVertexData extends GameComponent {
-  constructor(game, p0, p1, textures) {
+  constructor(game, p0, textures) {
     super(game);
-    // argument juggling
-    if (textures == null && isObject(p1)) {
-      textures = p1;
-      p1 = null;
-    }
-    if (p1 == null) {
-      this.p0 = p0;
-      this.p1 = vec3.add([], p0, [1, 1, 1]);
-    } else {
-      [this.p0, this.p1] = sortCoords(p0, p1);
-    }
+    this.p0 = p0;
+    this.p1 = vec3.add([], p0, [1, 1, 1]);
     /** @type {{side: string, top: string, bottom: string}} */
     this.textures = textures;
     this.isFar = vec3.sqrDist(this.player.position, this.p0) > FAR_DIST_SQ;
