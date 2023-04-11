@@ -266,6 +266,11 @@ export class PickingIdRenderer extends MeshRenderer {
     this.gl.disable(this.gl.BLEND);
   }
 
+  initBuffers() {
+    super.initBuffers();
+    this.buffers.aId = this.newBuffer().configArray("aId", 4, this.gl.FLOAT);
+  }
+
   idToColor(/** @type {number} */id) {
     return this.constructor.idToColor(id);
   }
