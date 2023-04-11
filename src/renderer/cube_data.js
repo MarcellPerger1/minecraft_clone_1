@@ -133,63 +133,32 @@ export class CubeVertexData extends GameComponent {
   sides() {
     const [x0, y0, z0] = this.p0;
     const [x1, y1, z1] = this.p1;
+    // prettier-ignore
     const sides = {
       positions: [
         // Front face
-        x0,
-        y0,
-        z1,
-        x1,
-        y0,
-        z1,
-        x1,
-        y1,
-        z1,
-        x0,
-        y1,
-        z1,
+        x0, y0, z1,
+        x1, y0, z1,
+        x1, y1, z1,
+        x0, y1, z1,
 
         // Back face
-        x0,
-        y0,
-        z0,
-        x0,
-        y1,
-        z0,
-        x1,
-        y1,
-        z0,
-        x1,
-        y0,
-        z0,
+        x0, y0, z0,
+        x0, y1, z0,
+        x1, y1, z0,
+        x1, y0, z0,
 
         // Right face
-        x1,
-        y0,
-        z0,
-        x1,
-        y1,
-        z0,
-        x1,
-        y1,
-        z1,
-        x1,
-        y0,
-        z1,
+        x1, y0, z0,
+        x1, y1, z0,
+        x1, y1, z1,
+        x1, y0, z1,
 
         // Left face
-        x0,
-        y0,
-        z0,
-        x0,
-        y0,
-        z1,
-        x0,
-        y1,
-        z1,
-        x0,
-        y1,
-        z0,
+        x0, y0, z0,
+        x0, y0, z1,
+        x0, y1, z1,
+        x0, y1, z0,
       ],
       texCoords: [
         // Front
@@ -202,30 +171,14 @@ export class CubeVertexData extends GameComponent {
         0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0,
       ],
       indices: [
-        0,
-        1,
-        2,
-        0,
-        2,
-        3, // front
-        4,
-        5,
-        6,
-        4,
-        6,
-        7, // back
-        8,
-        9,
-        10,
-        8,
-        10,
-        11, // right
-        12,
-        13,
-        14,
-        12,
-        14,
-        15, // left
+        // front 
+        0, 1, 2, 0, 2, 3,
+        // back
+        4, 5, 6, 4, 6, 7,
+        // right
+        8, 9, 10, 8, 10, 11,
+        // left
+        12, 13, 14, 12, 14, 15,
       ],
       maxindex: 15,
     };
