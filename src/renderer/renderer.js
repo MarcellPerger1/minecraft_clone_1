@@ -256,6 +256,9 @@ export class PickingIdRenderer extends MeshRenderer {
   // Each color represents a 32-bit unsigned integer id
   // With the RBGA channels being 4 bytes
   // stored in little endian order
+  // This should be enough for a long time as
+  // even a 512x512x256 world with 16 faces/block
+  // is only using 25% of the available ids
   constructor(game, gl, glProgram) {
     super(game, gl, glProgram);
     this.clearColor = [0, 0, 0, 0];
