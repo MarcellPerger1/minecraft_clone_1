@@ -292,7 +292,7 @@ export class PickingIdRenderer extends MeshRenderer {
       "color must be an array of length 4"
     );
     assert(
-      color.every(Number.isInteger(v)),
+      color.every(Number.isInteger),
       "each color channel must be an integer"
     );
     assert(
