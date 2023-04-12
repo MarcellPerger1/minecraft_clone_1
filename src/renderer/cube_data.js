@@ -97,7 +97,7 @@ export class CubeVertexData extends GameComponent {
     return sides;
   }
 
-  top() {
+  side_y1() {
     const [x0, _y0, z0] = this.p0;
     const [x1, y1, z1] = this.p1;
     const ret = {
@@ -114,7 +114,7 @@ export class CubeVertexData extends GameComponent {
     return ret;
   }
 
-  bottom() {
+  side_y0() {
     const [x0, y0, z0] = this.p0;
     const [x1, _y1, z1] = this.p1;
     const ret = {
@@ -129,13 +129,5 @@ export class CubeVertexData extends GameComponent {
       ret.texCoords = [t0, 1, t1, 1, t1, 0, t0, 0];
     }
     return ret;
-  }
-
-  side_y0() {
-    return this.bottom();
-  }
-
-  side_y1() {
-    return this.top();
   }
 }
