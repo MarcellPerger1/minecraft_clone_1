@@ -26,7 +26,6 @@ export class CubeVertexData extends GameComponent {
   side_x0() {
     const [x0, y0, z0] = this.p0;
     const [_x1, y1, z1] = this.p1;
-    
     const data = {
       positions: [x0, y0, z0, x0, y0, z1, x0, y1, z1, x0, y1, z0],
       indices: [0, 1, 2, 0, 2, 3],
@@ -44,10 +43,6 @@ export class CubeVertexData extends GameComponent {
   side_x1() {
     const [_x0, y0, z0] = this.p0;
     const [x1, y1, z1] = this.p1;
-    const td = this.r.atlas.data[this.textures.side];
-
-    const t0 = this.isFar ? td.x0f : td.x0;
-    const t1 = this.isFar ? td.x1f : td.x1;
     const data = {
       positions: [x1, y0, z0, x1, y1, z0, x1, y1, z1, x1, y0, z1],
       indices: [0, 1, 2, 0, 2, 3],
@@ -65,10 +60,6 @@ export class CubeVertexData extends GameComponent {
   side_z0() {
     const [x0, y0, z0] = this.p0;
     const [x1, y1, _z1] = this.p1;
-    const td = this.r.atlas.data[this.textures.side];
-
-    const t0 = this.isFar ? td.x0f : td.x0;
-    const t1 = this.isFar ? td.x1f : td.x1;
     const data = {
       positions: [x0, y0, z0, x0, y1, z0, x1, y1, z0, x1, y0, z0],
       indices: [0, 1, 2, 0, 2, 3],
@@ -86,10 +77,6 @@ export class CubeVertexData extends GameComponent {
   side_z1() {
     const [x0, y0, _z0] = this.p0;
     const [x1, y1, z1] = this.p1;
-    const td = this.r.atlas.data[this.textures.side];
-
-    const t0 = this.isFar ? td.x0f : td.x0;
-    const t1 = this.isFar ? td.x1f : td.x1;
     const data = {
       positions: [x0, y0, z1, x1, y0, z1, x1, y1, z1, x0, y1, z1],
       indices: [0, 1, 2, 0, 2, 3],
