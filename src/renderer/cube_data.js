@@ -32,9 +32,7 @@ export class CubeVertexData extends GameComponent {
       maxindex: 3,
     };
     if(this.doTextures) {
-      const td = this.r.atlas.data[this.textures.side];
-      const t0 = this.isFar ? td.x0f : td.x0;
-      const t1 = this.isFar ? td.x1f : td.x1;
+      const [t0, t1] = this.getTexRangeX(this.textures.side);
       data.texCoords = [t0, 1, t1, 1, t1, 0, t0, 0];
     }
     return data;
@@ -49,9 +47,7 @@ export class CubeVertexData extends GameComponent {
       maxindex: 3,
     };
     if(this.doTextures) {
-      const td = this.r.atlas.data[this.textures.side];
-      const t0 = this.isFar ? td.x0f : td.x0;
-      const t1 = this.isFar ? td.x1f : td.x1;
+      const [t0, t1] = this.getTexRangeX(this.textures.side);
       data.texCoords = [t1, 1, t1, 0, t0, 0, t0, 1];
     }
     return data;
@@ -66,9 +62,7 @@ export class CubeVertexData extends GameComponent {
       maxindex: 3,
     };
     if(this.doTextures) {
-      const td = this.r.atlas.data[this.textures.side];
-      const t0 = this.isFar ? td.x0f : td.x0;
-      const t1 = this.isFar ? td.x1f : td.x1;
+      const [t0, t1] = this.getTexRangeX(this.textures.side);
       data.texCoords = [t1, 1, t1, 0, t0, 0, t0, 1];
     }
     return data;
@@ -83,9 +77,7 @@ export class CubeVertexData extends GameComponent {
       maxindex: 3,
     };
     if(this.doTextures) {
-      const td = this.r.atlas.data[this.textures.side];
-      const t0 = this.isFar ? td.x0f : td.x0;
-      const t1 = this.isFar ? td.x1f : td.x1;
+      const [t0, t1] = this.getTexRangeX(this.textures.side);
       data.texCoords = [t0, 1, t1, 1, t1, 0, t0, 0];
     }
     return data;
@@ -100,9 +92,7 @@ export class CubeVertexData extends GameComponent {
       maxindex: 3,
     };
     if(this.doTextures) {
-      const td = this.r.atlas.data[this.textures.top];
-      const t0 = this.isFar ? td.x0f : td.x0;
-      const t1 = this.isFar ? td.x1f : td.x1;
+      const [t0, t1] = this.getTexRangeX(this.textures.top);
       data.texCoords = [t0, 0, t1, 0, t1, 1, t0, 1];
     }
     return data;
@@ -117,9 +107,7 @@ export class CubeVertexData extends GameComponent {
       maxindex: 3,
     };
     if(this.doTextures) {
-      const td = this.r.atlas.data[this.textures.bottom];
-      const t0 = this.isFar ? td.x0f : td.x0;
-      const t1 = this.isFar ? td.x1f : td.x1;
+      const [t0, t1] = this.getTexRangeX(this.textures.bottom);
       data.texCoords = [t0, 1, t1, 1, t1, 0, t0, 0];
     }
     return data;
