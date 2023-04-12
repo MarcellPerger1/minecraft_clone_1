@@ -13,6 +13,13 @@ export class CubeVertexData extends GameComponent {
     this.isFar = vec3.sqrDist(this.player.position, this.p0) > FAR_DIST_SQ;
   }
 
+  getTexRangeX(texName) {
+    const texData = this.r.atlas.data[texName];
+    const t0 = this.isFar ? texData.x0f : texData.x0;
+    const t1 = this.isFar ? texData.x1f : texData.x1;
+    return [t0, t1];
+  }
+
   // NOTE: only texture x coords needed on a per-texture basis
   // as texture y coords always just 0 and 1 as texture is flat long
   // TODO could be tall thin to optimise png compression
