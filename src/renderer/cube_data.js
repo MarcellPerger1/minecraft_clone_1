@@ -20,7 +20,7 @@ export class CubeVertexData extends GameComponent {
     const [x0, y0, z0] = this.p0;
     const [_x1, y1, z1] = this.p1;
     
-    const sides = {
+    const data = {
       positions: [x0, y0, z0, x0, y0, z1, x0, y1, z1, x0, y1, z0],
       indices: [0, 1, 2, 0, 2, 3],
       maxindex: 3,
@@ -29,9 +29,9 @@ export class CubeVertexData extends GameComponent {
       const td = this.r.atlas.data[this.textures.side];
       const t0 = this.isFar ? td.x0f : td.x0;
       const t1 = this.isFar ? td.x1f : td.x1;
-      sides.texCoords = [t0, 1, t1, 1, t1, 0, t0, 0];
+      data.texCoords = [t0, 1, t1, 1, t1, 0, t0, 0];
     }
-    return sides;
+    return data;
   }
 
   side_x1() {
@@ -41,7 +41,7 @@ export class CubeVertexData extends GameComponent {
 
     const t0 = this.isFar ? td.x0f : td.x0;
     const t1 = this.isFar ? td.x1f : td.x1;
-    const sides = {
+    const data = {
       positions: [x1, y0, z0, x1, y1, z0, x1, y1, z1, x1, y0, z1],
       indices: [0, 1, 2, 0, 2, 3],
       maxindex: 3,
@@ -50,9 +50,9 @@ export class CubeVertexData extends GameComponent {
       const td = this.r.atlas.data[this.textures.side];
       const t0 = this.isFar ? td.x0f : td.x0;
       const t1 = this.isFar ? td.x1f : td.x1;
-      sides.texCoords = [t1, 1, t1, 0, t0, 0, t0, 1];
+      data.texCoords = [t1, 1, t1, 0, t0, 0, t0, 1];
     }
-    return sides;
+    return data;
   }
 
   side_z0() {
@@ -62,7 +62,7 @@ export class CubeVertexData extends GameComponent {
 
     const t0 = this.isFar ? td.x0f : td.x0;
     const t1 = this.isFar ? td.x1f : td.x1;
-    const sides = {
+    const data = {
       positions: [x0, y0, z0, x0, y1, z0, x1, y1, z0, x1, y0, z0],
       indices: [0, 1, 2, 0, 2, 3],
       maxindex: 3,
@@ -71,9 +71,9 @@ export class CubeVertexData extends GameComponent {
       const td = this.r.atlas.data[this.textures.side];
       const t0 = this.isFar ? td.x0f : td.x0;
       const t1 = this.isFar ? td.x1f : td.x1;
-      sides.texCoords = [t1, 1, t1, 0, t0, 0, t0, 1];
+      data.texCoords = [t1, 1, t1, 0, t0, 0, t0, 1];
     }
-    return sides;
+    return data;
   }
 
   side_z1() {
@@ -83,7 +83,7 @@ export class CubeVertexData extends GameComponent {
 
     const t0 = this.isFar ? td.x0f : td.x0;
     const t1 = this.isFar ? td.x1f : td.x1;
-    const sides = {
+    const data = {
       positions: [x0, y0, z1, x1, y0, z1, x1, y1, z1, x0, y1, z1],
       indices: [0, 1, 2, 0, 2, 3],
       maxindex: 3,
@@ -92,15 +92,15 @@ export class CubeVertexData extends GameComponent {
       const td = this.r.atlas.data[this.textures.side];
       const t0 = this.isFar ? td.x0f : td.x0;
       const t1 = this.isFar ? td.x1f : td.x1;
-      sides.texCoords = [t0, 1, t1, 1, t1, 0, t0, 0];
+      data.texCoords = [t0, 1, t1, 1, t1, 0, t0, 0];
     }
-    return sides;
+    return data;
   }
 
   side_y1() {
     const [x0, _y0, z0] = this.p0;
     const [x1, y1, z1] = this.p1;
-    const ret = {
+    const data = {
       positions: [x0, y1, z0, x0, y1, z1, x1, y1, z1, x1, y1, z0],
       indices: [0, 1, 2, 0, 2, 3],
       maxindex: 3,
@@ -109,15 +109,15 @@ export class CubeVertexData extends GameComponent {
       const td = this.r.atlas.data[this.textures.top];
       const t0 = this.isFar ? td.x0f : td.x0;
       const t1 = this.isFar ? td.x1f : td.x1;
-      ret.texCoords = [t0, 0, t1, 0, t1, 1, t0, 1];
+      data.texCoords = [t0, 0, t1, 0, t1, 1, t0, 1];
     }
-    return ret;
+    return data;
   }
 
   side_y0() {
     const [x0, y0, z0] = this.p0;
     const [x1, _y1, z1] = this.p1;
-    const ret = {
+    const data = {
       positions: [x0, y0, z0, x1, y0, z0, x1, y0, z1, x0, y0, z1],
       indices: [0, 1, 2, 0, 2, 3],
       maxindex: 3,
@@ -126,8 +126,8 @@ export class CubeVertexData extends GameComponent {
       const td = this.r.atlas.data[this.textures.bottom];
       const t0 = this.isFar ? td.x0f : td.x0;
       const t1 = this.isFar ? td.x1f : td.x1;
-      ret.texCoords = [t0, 1, t1, 1, t1, 0, t0, 0];
+      data.texCoords = [t0, 1, t1, 1, t1, 0, t0, 0];
     }
-    return ret;
+    return data;
   }
 }
