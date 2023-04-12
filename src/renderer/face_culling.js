@@ -28,6 +28,9 @@ export class CubeDataAdder extends GameComponent {
     if (!this.block.visible) {
       return;
     }
+    // Yes, using the loop is faster than unrolling it
+    // for benchmark see https://jsperf.app/ledilu
+    // Using unrolled version is 31% slower.
     for (const [offset, name] of _OFFSET_NAMES) {
       if (this.shouldRenderSide(offset)) {
         let data = this.cData[name]();
