@@ -10,6 +10,8 @@ export class CubeVertexData extends GameComponent {
     /** @type {{side: string, top: string, bottom: string}} */
     this.textures = options.textures;
     this.doTextures = Boolean(this.textures);
+    this.ids = options.ids;
+    this.doIds = Boolean(this.ids);
     this.isFar = vec3.sqrDist(this.player.position, this.p0) > FAR_DIST_SQ;
   }
 
@@ -18,6 +20,10 @@ export class CubeVertexData extends GameComponent {
     const t0 = this.isFar ? texData.x0f : texData.x0;
     const t1 = this.isFar ? texData.x1f : texData.x1;
     return [t0, t1];
+  }
+
+  getIdData(idColor) {
+    return [...idColor, ...idColor, ...idColor, ...idColor];
   }
 
   // NOTE: only texture x coords needed on a per-texture basis
@@ -35,6 +41,9 @@ export class CubeVertexData extends GameComponent {
       const [t0, t1] = this.getTexRangeX(this.textures.side);
       data.texCoords = [t0, 1, t1, 1, t1, 0, t0, 0];
     }
+    if(this.doIds) {
+      data.aId = this.getIdData(this.ids.x0);
+    }
     return data;
   }
 
@@ -49,6 +58,9 @@ export class CubeVertexData extends GameComponent {
     if(this.doTextures) {
       const [t0, t1] = this.getTexRangeX(this.textures.side);
       data.texCoords = [t1, 1, t1, 0, t0, 0, t0, 1];
+    }
+    if(this.doIds) {
+      data.aId = this.getIdData(this.ids.x1);
     }
     return data;
   }
@@ -65,6 +77,9 @@ export class CubeVertexData extends GameComponent {
       const [t0, t1] = this.getTexRangeX(this.textures.side);
       data.texCoords = [t1, 1, t1, 0, t0, 0, t0, 1];
     }
+    if(this.doIds) {
+      data.aId = this.getIdData(this.ids.z0);
+    }
     return data;
   }
 
@@ -79,6 +94,9 @@ export class CubeVertexData extends GameComponent {
     if(this.doTextures) {
       const [t0, t1] = this.getTexRangeX(this.textures.side);
       data.texCoords = [t0, 1, t1, 1, t1, 0, t0, 0];
+    }
+    if(this.doIds) {
+      data.aId = this.getIdData(this.ids.z1);
     }
     return data;
   }
@@ -95,6 +113,9 @@ export class CubeVertexData extends GameComponent {
       const [t0, t1] = this.getTexRangeX(this.textures.top);
       data.texCoords = [t0, 0, t1, 0, t1, 1, t0, 1];
     }
+    if(this.doIds) {
+      data.aId = this.getIdData(this.ids.y1);
+    }
     return data;
   }
 
@@ -109,6 +130,9 @@ export class CubeVertexData extends GameComponent {
     if(this.doTextures) {
       const [t0, t1] = this.getTexRangeX(this.textures.bottom);
       data.texCoords = [t0, 1, t1, 1, t1, 0, t0, 0];
+    }
+    if(this.doIds) {
+      data.aId = this.getIdData(this.ids.y0);
     }
     return data;
   }
