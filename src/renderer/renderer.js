@@ -261,7 +261,7 @@ export class PickingIdRenderer extends MeshRenderer {
   // is only using 25% of the available ids
   constructor(game, gl, glProgram) {
     super(game, gl, glProgram);
-    this.clearColor = [0, 0, 0, 0];
+    this.clearColor = this.idToColor(0);
   }
 
   configGL() {
@@ -272,6 +272,31 @@ export class PickingIdRenderer extends MeshRenderer {
   initBuffers() {
     super.initBuffers();
     this.buffers.aId = this.newBuffer().configArray("aId", 4, this.gl.FLOAT);
+  }
+
+  idFromBlockFace(pos, faceId) {
+    assert(
+      Number.isInteger(faceId) && faceId >= 0 && faceId < 6, 
+      "faceId must be an integer between 0 and 5 (inclusive)"
+    );
+    faceId &= 0xF;  // ensure that faceId only 4 bits long
+    assert(this.world.inRange(pos), "pos must be in the world");
+    // reserve 0 for nothing
+    const posIdx = this.world.getBlockIdx(pos) + 1;
+    assert(posIdx < 2**(32-4), "posIdx must fit into 32-4=28 bits");
+    // reserve 4 bits for faces
+    const id = faceId + (posIdx << 4);
+    assert(id > 0, "block face id must be positive (0 is for nothing)");
+    assert(id < 2**32, "id must fit in 4 bytes");
+    return id;
+  }
+
+  blockFaceFromId(id) {
+    assert(id >= 0 && id < 2**32, "id must be a 32-bit UNSIGNED int");
+    const faceId = id & 0xF;  // face = first 4 bits
+    const posIdx = id >> 4;  // block = other 28 bits
+    const pos = this.world.posFromIdx(posIdx);
+    return [pos, faceId];
   }
 
   idToColor(/** @type {number} */id) {
