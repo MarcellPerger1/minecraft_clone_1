@@ -1,5 +1,6 @@
 import { assert } from "../utils/assert.js";
 import { fromNested } from "../utils/array_utils.js";
+import { divmod } from "../utils/math.js";
 import { GameComponent } from "../game_component.js";
 
 import { Blocks } from "./block_type.js";
