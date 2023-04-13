@@ -252,6 +252,9 @@ export class DisplayRenderer extends MeshRenderer {
 }
 
 
+export const FACES = {x0: 0, x1: 1, y0: 2, y1: 3, z0: 4, z1: 5};
+
+
 export class PickingIdRenderer extends MeshRenderer {
   // Each color represents a 32-bit unsigned integer id
   // With the RBGA channels being 4 bytes
@@ -272,6 +275,16 @@ export class PickingIdRenderer extends MeshRenderer {
   initBuffers() {
     super.initBuffers();
     this.buffers.aId = this.newBuffer().configArray("aId", 4, this.gl.FLOAT);
+  }
+
+  getBlockIdColors(pos) {
+    return Object.fromEntries(Object.entries(FACES).map(
+      ([name, faceId]) => [name, this.blockFaceToColor(pos, faceId)]
+    ));
+  }
+
+  blockFaceToColor(pos, faceId) {
+    return this.idToColor(this.idFromBlockFace(pos, faceId));
   }
 
   idFromBlockFace(pos, faceId) {
