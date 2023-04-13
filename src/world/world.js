@@ -27,6 +27,23 @@ export class World extends GameComponent {
     });
   }
 
+  getBlockIdx(pos) {
+    this.wantInRange(pos);
+    const relPos = vec3.sub([], pos, this.low);
+    // x is least significant, z is most significant in id
+    return relPos[0]
+      + relPos[1] * this.size[0]
+      + relPos[2] * this.size[0] * this.size[1];
+  }
+
+  posFromIdx(idx) {
+    const xyz = idx;
+    const [z, xy] = divmod(xyz, this.size[0] * this.size[1]);
+    const [y, x] = divmod(xy, this.size[0]);
+    const relPos = [x, y, z];
+    return vec3.add([], relPos, this.low);
+  } 
+
   checkChunkSize(cSize) {
     if (cSize.some((i) => i === 0)) {
       throw new Error(
