@@ -48,7 +48,7 @@ export class ChunkRenderer extends GameComponent {
     }
   }
 
-  addBlockTextures(pos, tData) {
-    new CubeDataAdder(this.game, pos, tData, this).addData();
+  addBlockTextures(pos, textureData) {
+    new CubeDataAdder(this.game, pos, {textureData}, this).addData();
   }
 }

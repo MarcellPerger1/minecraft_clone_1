@@ -12,16 +12,16 @@ export class CubeDataAdder extends GameComponent {
    *
    * @param {GameComponent | Game} game
    * @param {Vec3} pos
-   * @param {{side: string, top: string, bottom: string}} textureData
-   * @param {Object} renderTarget - TODO type=?
+   * @param {{textureData: {side: string, top: string, bottom: string}}} options
+   * @param {{addData: (d: any, t: boolean) => void}} renderTarget
    */
-  constructor(game, pos, textureData, renderTarget) {
+  constructor(game, pos, options, renderTarget) {
     super(game);
     this.pos = pos;
-    this.textureData = textureData;
+    this.textureData = options.textureData;
     this.cData = new CubeVertexData(this.game, pos, {textures: this.textureData});
     this.block = this.world.getBlock(this.pos);
-    this.renderTarget = renderTarget ?? this.r;
+    this.renderTarget = renderTarget;
   }
 
   addData() {
