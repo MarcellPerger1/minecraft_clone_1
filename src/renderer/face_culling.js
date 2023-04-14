@@ -11,14 +11,13 @@ export class CubeDataAdder extends GameComponent {
    *
    * @param {GameComponent | Game} game
    * @param {Vec3} pos
-   * @param {{textureData: {side: string, top: string, bottom: string}}} options
+   * @param {{textures: {side: string, top: string, bottom: string}}} options
    * @param {{addData: (d: any, t: boolean) => void}} renderTarget
    */
   constructor(game, pos, options, renderTarget) {
     super(game);
     this.pos = pos;
-    this.textureData = options.textureData;
-    this.cData = new CubeVertexData(this.game, pos, {textures: this.textureData});
+    this.cData = new CubeVertexData(this.game, pos, {textures: options.textures});
     this.block = this.world.getBlock(this.pos);
     this.renderTarget = renderTarget;
   }

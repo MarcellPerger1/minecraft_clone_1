@@ -1,4 +1,6 @@
+import { assert } from "../utils/assert.js";
 import { GameComponent } from "../game_component.js";
+
 import { CubeDataAdder } from "./face_culling.js";
 import { ElementBundler } from "./vertex_bundle.js";
 
@@ -48,7 +50,7 @@ export class ChunkRenderer extends GameComponent {
     }
   }
 
-  addBlockTextures(pos, textureData) {
-    new CubeDataAdder(this.game, pos, {textureData}, this).addData();
+  addBlockTextures(pos, textures) {
+    new CubeDataAdder(this.game, pos, {textures}, this).addData();
   }
 }

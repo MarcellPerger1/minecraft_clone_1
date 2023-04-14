@@ -2,6 +2,10 @@ import { GameComponent } from "../game_component.js";
 
 const FAR_DIST_SQ = 130;
 
+/** 
+ * @typedef {{positions: number[], indices: number[], maxindex?: number, texCoords?: number[], aId?: number[]}} DataT
+ */
+
 export class CubeVertexData extends GameComponent {
   constructor(game, p0, options) {
     super(game);
@@ -15,7 +19,8 @@ export class CubeVertexData extends GameComponent {
     this.isFar = vec3.sqrDist(this.player.position, this.p0) > FAR_DIST_SQ;
   }
 
-  getTexRangeX(texName) {
+  /** @returns {[number, number]} */
+  getTexRangeX(/** @type {string} */texName) {
     const texData = this.r.atlas.data[texName];
     const t0 = this.isFar ? texData.x0f : texData.x0;
     const t1 = this.isFar ? texData.x1f : texData.x1;
@@ -32,6 +37,7 @@ export class CubeVertexData extends GameComponent {
   side_x0() {
     const [x0, y0, z0] = this.p0;
     const [_x1, y1, z1] = this.p1;
+    /** @type {DataT} */
     const data = {
       positions: [x0, y0, z0, x0, y0, z1, x0, y1, z1, x0, y1, z0],
       indices: [0, 1, 2, 0, 2, 3],
