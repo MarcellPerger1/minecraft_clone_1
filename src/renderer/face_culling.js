@@ -1,4 +1,3 @@
-import { unreachable } from "../utils/assert.js";
 import { GameComponent } from "../game_component.js";
 import { CubeVertexData } from "./cube_data.js";
 
@@ -36,23 +35,6 @@ export class CubeDataAdder extends GameComponent {
         let data = this.cData[name]();
         this.renderTarget.addData(data, this.block.transparent);
       }
-    }
-  }
-
-  getOffsetTexture(offset) {
-    return this.textureData[this.getOffsetTextureName(offset)];
-  }
-
-  getOffsetTextureName(offset) {
-    switch (offset[1]) {
-      case 0:
-        return "side";
-      case -1:
-        return "bottom";
-      case 1:
-        return "top";
-      default:
-        unreachable();
     }
   }
 
