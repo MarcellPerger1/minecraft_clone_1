@@ -15,7 +15,6 @@ export class ChunkRenderer extends GameComponent {
     this.chunk = chunk;
     this.mesh = {
       main: new ElementBundler(this),
-      transparent: new ElementBundler(this),
     };
     this.remakeMesh = false;
   }
@@ -39,7 +38,8 @@ export class ChunkRenderer extends GameComponent {
   }
 
   addData(data, transparent = false) {
-    return this.mesh[transparent ? "transparent" : "main"].addData(data);
+    assert(!transparent, "transparency has not been implemented");
+    return this.mesh.main.addData(data);
   }
 
   addBlock(pos, block) {
