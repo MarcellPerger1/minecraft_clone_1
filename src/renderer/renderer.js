@@ -59,8 +59,8 @@ export class RenderMgr extends GameComponent {
 
   onResourcesLoaded() {
     ({atlas: this.atlas, shader: this.shader} = this.loader);
-    this.renderer = new DisplayRenderer(this, this.gl, this.atlas);
-    this.renderer.init(this.shader.program);
+    this.renderer = new DisplayRenderer(this, this.gl);
+    this.renderer.init(this.shader.program, this.atlas);
   }
 
   renderFrame() {
@@ -199,9 +199,13 @@ export class MeshRenderer extends GameComponent {
 }
 
 export class DisplayRenderer extends MeshRenderer {
-  constructor(game, gl, atlas) {
+  constructor(game, gl) {
     super(game, gl);
     this.clearColor = this.cnf.bgColor;
+  }
+
+  init(glProgram, atlas) {
+    super.init(glProgram);
     this.atlas = atlas;
     this.texture = this.atlas.texture;
   }
