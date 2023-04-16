@@ -51,6 +51,11 @@ export class RenderMgr extends GameComponent {
 
   // Returns Promise that fulfilles when all resources loaded and ready for a render
   async loadResources() {
+    this.renderer = new DisplayRenderer(this, this.gl);
+    await this.renderer.loadResources();
+    this.atlas = this.renderer.atlas;
+    this.renderer.init(this.renderer.program, this.renderer.atlas);
+    return;
     this.initLoaders();
     let result = await this.loader.loadResources();
     this.onResourcesLoaded();
@@ -202,6 +207,19 @@ export class DisplayRenderer extends MeshRenderer {
   constructor(game, gl) {
     super(game, gl);
     this.clearColor = this.cnf.bgColor;
+  }
+
+  async loadResources() {
+    this.loader = new LoaderMerge({
+      shader: new ShaderProgramLoader(this.gl, this.cnf.shader),
+      atlas: new AtlasLoader(this.game),
+    }).startPromises();
+    this.loader.promises.shader.then(() => {
+      progress.addPercent(10);
+    })
+    await this.loader.loadResources();
+    ({atlas: this.atlas, shader: this.shader} = this.loader);
+    this.program = this.shader.program;
   }
 
   init(glProgram, atlas) {
