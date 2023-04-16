@@ -43,6 +43,7 @@ export class RenderMgr extends GameComponent {
   // Returns Promise that fulfilles when all resources loaded and ready for a render
   async loadResources() {
     this.renderer = new DisplayRenderer(this, this.gl);
+    this.pickingRenderer = new PickingIdRenderer(this, this.gl);
     await this.renderer.loadResources();
     this.renderer.init();
   }
