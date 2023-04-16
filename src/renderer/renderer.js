@@ -53,7 +53,6 @@ export class RenderMgr extends GameComponent {
   async loadResources() {
     this.renderer = new DisplayRenderer(this, this.gl);
     await this.renderer.loadResources();
-    this.atlas = this.renderer.atlas;
     this.renderer.init();
   }
 
@@ -208,11 +207,10 @@ export class DisplayRenderer extends MeshRenderer {
     })
     await this.loader.loadResources();
     ({atlas: this.atlas, shader: this.shader} = this.loader);
-    this.program = this.shader.program;
   }
 
   init() {
-    super.init(this.program);
+    super.init(this.shader.program);
     this.texture = this.atlas.texture;
   }
 
