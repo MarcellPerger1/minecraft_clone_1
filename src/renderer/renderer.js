@@ -59,9 +59,8 @@ export class RenderMgr extends GameComponent {
 
   onResourcesLoaded() {
     ({atlas: this.atlas, shader: this.shader} = this.loader);
-    this.renderer = new DisplayRenderer(
-      this, this.gl, this.shader.program, this.atlas);
-    this.renderer.init();
+    this.renderer = new DisplayRenderer(this, this.gl, this.atlas);
+    this.renderer.init(this.shader.program);
   }
 
   renderFrame() {
@@ -74,14 +73,14 @@ export class RenderMgr extends GameComponent {
 export class MeshRenderer extends GameComponent {
   gl;
   
-  constructor(game, gl, glProgram) {
+  constructor(game, gl) {
     super(game);
     this.gl = gl;
-    this.program = glProgram;
   }
 
   // initialisation stuffs
-  init() {
+  init(glProgram) {
+    this.program = glProgram;
     this.initProgramInfo();
     this.initVertexData();
     this.initBuffers();
@@ -200,8 +199,8 @@ export class MeshRenderer extends GameComponent {
 }
 
 export class DisplayRenderer extends MeshRenderer {
-  constructor(game, gl, glProgram, atlas) {
-    super(game, gl, glProgram);
+  constructor(game, gl, atlas) {
+    super(game, gl);
     this.clearColor = this.cnf.bgColor;
     this.atlas = atlas;
     this.texture = this.atlas.texture;
@@ -262,8 +261,8 @@ export class PickingIdRenderer extends MeshRenderer {
   // This should be enough for a long time as
   // even a 512x512x256 world with 16 faces/block
   // is only using 25% of the available ids
-  constructor(game, gl, glProgram) {
-    super(game, gl, glProgram);
+  constructor(game, gl) {
+    super(game, gl);
     this.clearColor = this.idToColor(0);
   }
 
