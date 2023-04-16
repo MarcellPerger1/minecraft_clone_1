@@ -55,17 +55,6 @@ export class RenderMgr extends GameComponent {
     await this.renderer.loadResources();
     this.atlas = this.renderer.atlas;
     this.renderer.init(this.renderer.program, this.renderer.atlas);
-    return;
-    this.initLoaders();
-    let result = await this.loader.loadResources();
-    this.onResourcesLoaded();
-    return result;
-  }
-
-  onResourcesLoaded() {
-    ({atlas: this.atlas, shader: this.shader} = this.loader);
-    this.renderer = new DisplayRenderer(this, this.gl);
-    this.renderer.init(this.shader.program, this.atlas);
   }
 
   renderFrame() {
