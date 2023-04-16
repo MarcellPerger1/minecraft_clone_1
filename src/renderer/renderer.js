@@ -17,7 +17,9 @@ import { assert } from "../utils/assert.js";
  */
 
 // NOTE:
+// North = +z
 // Up    = +y
+// East  = +z
 
 // thing i could eventually read:
 // https://www.toptal.com/game/video-game-physics-part-i-an-introduction-to-rigid-body-dynamics
@@ -186,7 +188,7 @@ export class DisplayRenderer extends MeshRenderer {
     this.clearColor = this.cnf.bgColor;
   }
 
-  async loadResources() {
+  initLoaders() {
     this.loader = new LoaderMerge({
       shader: new ShaderProgramLoader(this.gl, this.cnf.shader),
       atlas: new AtlasLoader(this.game),
@@ -194,6 +196,10 @@ export class DisplayRenderer extends MeshRenderer {
     this.loader.promises.shader.then(() => {
       progress.addPercent(10);
     })
+  }
+  
+  async loadResources() {
+    this.initLoaders();
     await this.loader.loadResources();
     ({atlas: this.atlas, shader: this.shader} = this.loader);
   }
