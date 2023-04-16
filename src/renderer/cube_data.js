@@ -21,7 +21,7 @@ export class CubeVertexData extends GameComponent {
 
   /** @returns {[number, number]} */
   getTexRangeX(/** @type {string} */texName) {
-    const texData = this.game.renderMgr.renderer.atlas.data[texName];
+    const texData = this.displayRenderer.atlas.data[texName];
     const t0 = this.isFar ? texData.x0f : texData.x0;
     const t1 = this.isFar ? texData.x1f : texData.x1;
     return [t0, t1];
