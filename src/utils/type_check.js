@@ -53,6 +53,5 @@ export function getTypeTag(x) {
 }
 
 export function toStringTag(x) {
-  var tag = getTypeTag(x);
-  return tag.substring("[object ".length, tag.length - "]".length);
+  return getTypeTag(x).slice("[object ".length, -1);
 }
