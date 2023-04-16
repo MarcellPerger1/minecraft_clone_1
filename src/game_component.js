@@ -44,6 +44,10 @@ export class GameComponent {
     return this.game.world;
   }
 
+  get renderMgr() {
+    return this.game.renderMgr;
+  }
+
   get displayRenderer() {
     return this.game.renderMgr.renderer;
   }
