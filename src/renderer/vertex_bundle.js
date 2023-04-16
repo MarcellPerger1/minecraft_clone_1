@@ -8,9 +8,10 @@ import { GameComponent } from "../game_component.js";
 // but it may be helpful to automatically calculate `maxindex`
 // TODO make a JSDoc typedef and remove this class?
 export class VertexBundle {
-  constructor(positions, texCoords, indices, maxindex = null) {
+  constructor(positions, texCoords, aId, indices, maxindex = null) {
     this.positions = positions ?? [];
     this.texCoords = texCoords ?? [];
+    this.aId = aId ?? [];
     this.indices = indices ?? [];
     // give -1 if no items instead of -Inf
     this.maxindex = maxindex ?? Math.max(...this.indices, -1);
@@ -22,13 +23,14 @@ export class ElementBundler extends GameComponent {
     super(game);
     this.elemType = type ?? WebGLRenderingContext.UNSIGNED_SHORT;
     this.elemSize = glTypeSize(this.elemType);
-    this.maxIndicesLimit = (1<<(this.elemSize * 8)) - 1;
+    this.maxIndicesLimit = 2**(this.elemSize * 8) - 1;
     this.reset();
   }
 
   reset() {
     this.positions = [];
     this.texCoords = [];
+    this.aId = [];
     this.indices = [];
     // you can try set this to other than -1 and enjoy the CHAOS
     this.maxindex = -1;
@@ -45,7 +47,8 @@ export class ElementBundler extends GameComponent {
     let nElems = bundle.maxindex + 1;
     // NOTE: could use iextend here but the lists should never get that large
     this.positions.push(...bundle.positions);
-    this.texCoords.push(...bundle.texCoords);
+    this.aId.push(...(bundle.aId ?? []));
+    this.texCoords.push(...(bundle.texCoords ?? []));
     let startFrom = this.maxindex + 1;
     this.indices.push(...bundle.indices.map((v) => v + startFrom));
     this.maxindex += nElems;
