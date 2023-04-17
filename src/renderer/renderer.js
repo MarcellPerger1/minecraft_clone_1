@@ -272,10 +272,15 @@ export class PickingIdRenderer extends MeshRenderer {
   }
 
   async loadResources() {
-    this.loader = new ShaderProgramLoader(this.gl, {
+    this.shader = new ShaderProgramLoader(this.gl, {
       vsPath: "./shaders/picking/vertex.glsl",
       fsPath: "./shaders/picking/fragment.glsl"
     });
+    await this.shader.loadResources();
+  }
+
+  init() {
+    super.init(this.shader.program);
   }
 
   configGL() {
