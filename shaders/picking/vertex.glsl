@@ -3,7 +3,7 @@ attribute vec4 aId;
 
 uniform mat4 uMatrix;
 
-varying vec4 vId;
+varying mediump vec4 vId;
 
 
 void main() {
