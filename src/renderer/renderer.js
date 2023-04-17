@@ -45,6 +45,7 @@ export class RenderMgr extends GameComponent {
     this.renderer = new DisplayRenderer(this, this.gl);
     this.pickingRenderer = new PickingIdRenderer(this, this.gl);
     await this.renderer.loadResources();
+    await this.pickingRenderer.loadResources();
     this.renderer.init();
   }
 
@@ -268,6 +269,13 @@ export class PickingIdRenderer extends MeshRenderer {
   constructor(game, gl) {
     super(game, gl);
     this.clearColor = this.idToColor(0);
+  }
+
+  async loadResources() {
+    this.loader = new ShaderProgramLoader(this.gl, {
+      vsPath: "./shaders/picking/vertex.glsl",
+      fsPath: "./shaders/picking/fragment.glsl"
+    });
   }
 
   configGL() {
