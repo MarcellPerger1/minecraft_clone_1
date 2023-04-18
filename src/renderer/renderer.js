@@ -46,7 +46,17 @@ export class RenderMgr extends GameComponent {
     this.pickingRenderer = new PickingIdRenderer(this, this.gl);
     await this.renderer.loadResources();
     await this.pickingRenderer.loadResources();
+    // Note: this only works if swapped because:
+    // There is a Vertex Attrib Object (VAO): the internal object 
+    //       that keeps track of the attributes.
+    //       This is a global object and not associate with a program
+    //       so when the picking renderer is initialized after the normal
+    //       renderer, the original attributes are overwritten
+    //       with attributes from the picking renderer so it doesn't work.
+    // How to fix: config the array buffers when doing `makeStateCurrent`.
     this.renderer.init();
+    this.pickingRenderer.init();
+    
   }
 
   renderFrame() {
@@ -67,6 +77,7 @@ export class MeshRenderer extends GameComponent {
   // initialisation stuffs
   init(glProgram) {
     this.program = glProgram;
+    this.makeStateCurrent();
     this.initProgramInfo();
     this.initVertexData();
     this.initBuffers();
@@ -184,7 +195,7 @@ export class MeshRenderer extends GameComponent {
   }
 }
 
-export class DisplayRenderer extends MeshRenderer {
+export class DisplayRenderer extends MeshRenderer {  
   constructor(game, gl) {
     super(game, gl);
     this.clearColor = this.cnf.bgColor;
@@ -290,6 +301,22 @@ export class PickingIdRenderer extends MeshRenderer {
 
   initBuffers() {
     super.initBuffers();
+    // // inlined from super {
+    // this._makeBuffersObj();
+    // // this next line breaks it:
+    // this.buffers.position = this.newBuffer().configArray("aVertexPosition", 3, this.gl.FLOAT);
+    // let attr = this.programInfo.attrs.aVertexPosition;
+    // this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.position.id);
+    // this.gl.vertexAttribPointer(
+    //   attr,
+    //   3,
+    //   this.gl.FLOAT,
+    //   false,
+    //   0,
+    //   0
+    // );
+    // this.buffers.indices = this.newBuffer();
+    // // } inlined from super end
     this.buffers.aId = this.newBuffer().configArray("aId", 4, this.gl.FLOAT);
   }
 
