@@ -52,6 +52,10 @@ export class GameComponent {
     return this.game.renderMgr.renderer;
   }
 
+  get pickingRenderer() {
+    return this.game.renderMgr.pickingRenderer;
+  }
+
   get gl() {
     return this.game.renderMgr.gl;
   }

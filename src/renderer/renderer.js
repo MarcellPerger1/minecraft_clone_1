@@ -28,6 +28,7 @@ import { assert } from "../utils/assert.js";
 export class RenderMgr extends GameComponent {
   /** @type {WebGLRenderingContext} */
   gl;
+  pickingRenderer;
   
   constructor(game, do_init = true) {
     super(game);
