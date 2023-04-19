@@ -46,14 +46,6 @@ export class RenderMgr extends GameComponent {
     this.pickingRenderer = new PickingIdRenderer(this, this.gl);
     await this.renderer.loadResources();
     await this.pickingRenderer.loadResources();
-    // Note: this only works if swapped because:
-    // There is a Vertex Attrib Object (VAO): the internal object 
-    //       that keeps track of the attributes.
-    //       This is a global object and not associate with a program
-    //       so when the picking renderer is initialized after the normal
-    //       renderer, the original attributes are overwritten
-    //       with attributes from the picking renderer so it doesn't work.
-    // How to fix: config the array buffers when doing `makeStateCurrent`.
     this.renderer.init();
     this.pickingRenderer.init();
     
@@ -101,6 +93,13 @@ export class MeshRenderer extends GameComponent {
   makeStateCurrent() {
     this.gl.useProgram(this.program);
     this.configGL();
+    // There is a Vertex Attrib Object (VAO): the internal object 
+    // that keeps track of the attributes.
+    // This is a global object and not associate with a program
+    // so when the picking renderer is initialized after the normal
+    // renderer, the original attributes are overwritten
+    // with attributes from the picking renderer so it doesn't work.
+    // That is why we need to config the array buffers.
     // I would prefer to just load a VAO (vertex attrib object)
     // here but that requires an extension in WebGL 1
     // or using WebGL 2. Instead, the VAO has to be updated with 
