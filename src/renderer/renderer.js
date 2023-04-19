@@ -104,6 +104,8 @@ export class MeshRenderer extends GameComponent {
     // here but that requires an extension in WebGL 1
     // or using WebGL 2. Instead, the VAO has to be updated with 
     // our values before each render.
+    // Useful link for visualising the WebGL state:
+    // https://webglfundamentals.org/webgl/lessons/resources/webgl-state-diagram.html?exampleId=use-2-programs#no-help
     this.configArrayBuffers();
   }
 
@@ -313,7 +315,12 @@ export class PickingIdRenderer extends MeshRenderer {
 
   initBuffers() {
     super.initBuffers();
-    this.buffers.aId = this.newBuffer().configArray("aId", 4, this.gl.FLOAT);
+    this.buffers.aId = this.newBuffer();
+  }
+
+  configArrayBuffers() {
+    super.configArrayBuffers();
+    this.buffers.aId.configArray("aId", 4, this.gl.FLOAT);
   }
 
   getBlockIdColors(pos) {
