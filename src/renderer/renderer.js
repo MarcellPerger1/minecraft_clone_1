@@ -77,7 +77,6 @@ export class MeshRenderer extends GameComponent {
   // initialisation stuffs
   init(glProgram) {
     this.program = glProgram;
-    this.makeStateCurrent();
     this.initProgramInfo();
     this.initVertexData();
     this.initBuffers();
@@ -102,6 +101,11 @@ export class MeshRenderer extends GameComponent {
   makeStateCurrent() {
     this.gl.useProgram(this.program);
     this.configGL();
+    // I would prefer to just load a VAO (vertex attrib object)
+    // here but that requires an extension in WebGL 1
+    // or using WebGL 2. Instead, the VAO has to be updated with 
+    // our values before each render.
+    this.configArrayBuffers();
   }
 
   configGL() {
@@ -169,9 +173,13 @@ export class MeshRenderer extends GameComponent {
   }
 
   // buffers
+  configArrayBuffers() {
+    this.buffers.position.configArray("aVertexPosition", 3, this.gl.FLOAT);
+  }
+  
   initBuffers() {
     this._makeBuffersObj();
-    this.buffers.position = this.newBuffer().configArray("aVertexPosition", 3, this.gl.FLOAT);
+    this.buffers.position = this.newBuffer();
     this.buffers.indices = this.newBuffer();
   }
 
@@ -243,7 +251,12 @@ export class DisplayRenderer extends MeshRenderer {
 
   initBuffers() {
     super.initBuffers();
-    this.buffers.textureCoord = this.newBuffer().configArray("aTextureCoord", 2, this.gl.FLOAT);
+    this.buffers.textureCoord = this.newBuffer();
+  }
+
+  configArrayBuffers() {
+    super.configArrayBuffers();
+    this.buffers.textureCoord.configArray("aTextureCoord", 2, this.gl.FLOAT);
   }
 
   bufferDataFromBundler() {
@@ -301,22 +314,6 @@ export class PickingIdRenderer extends MeshRenderer {
 
   initBuffers() {
     super.initBuffers();
-    // // inlined from super {
-    // this._makeBuffersObj();
-    // // this next line breaks it:
-    // this.buffers.position = this.newBuffer().configArray("aVertexPosition", 3, this.gl.FLOAT);
-    // let attr = this.programInfo.attrs.aVertexPosition;
-    // this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.position.id);
-    // this.gl.vertexAttribPointer(
-    //   attr,
-    //   3,
-    //   this.gl.FLOAT,
-    //   false,
-    //   0,
-    //   0
-    // );
-    // this.buffers.indices = this.newBuffer();
-    // // } inlined from super end
     this.buffers.aId = this.newBuffer().configArray("aId", 4, this.gl.FLOAT);
   }
 
