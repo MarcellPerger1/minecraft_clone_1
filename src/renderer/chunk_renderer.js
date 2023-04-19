@@ -51,6 +51,11 @@ export class ChunkRenderer extends GameComponent {
   }
 
   addBlockTextures(pos, textures) {
-    new CubeDataAdder(this.game, pos, {textures}, this).addData();
+    let ids = this.doPickingIds ? this.getPickingIds(pos) : void 0;
+    new CubeDataAdder(this.game, pos, {textures, ids}, this).addData();
+  }
+
+  getPickingIds(pos) {
+    return this.pickingRenderer.getBlockIdColors(pos);
   }
 }
