@@ -25,17 +25,17 @@ export class ChunkRenderer extends GameComponent {
     Object.values(this.mesh).forEach((b) => b.reset());
   }
 
-  updateMesh(recalculate = false) {
+  updateMesh(doIds, recalculate = false) {
     if (this.remakeMesh || recalculate) {
-      this.makeMesh();
+      this.makeMesh(doIds);
       this.remakeMesh = false;
     }
   }
 
-  makeMesh() {
+  makeMesh(doIds) {
     this.resetMesh();
     for (const [pos, block] of this.chunk) {
-      this.addBlock(pos, block);
+      this.addBlock(pos, block, doIds);
     }
   }
 
@@ -44,14 +44,14 @@ export class ChunkRenderer extends GameComponent {
     return this.mesh.main.addData(data);
   }
 
-  addBlock(pos, block) {
+  addBlock(pos, block, doIds) {
     if (block.visible) {
-      this.addBlockTextures(pos, block.textures);
+      this.addBlockTextures(pos, block.textures, doIds);
     }
   }
 
-  addBlockTextures(pos, textures) {
-    let ids = this.doPickingIds ? this.getPickingIds(pos) : void 0;
+  addBlockTextures(pos, textures, doIds) {
+    let ids = doIds ? this.getPickingIds(pos) : void 0;
     new CubeDataAdder(this.game, pos, {textures, ids}, this).addData();
   }
 

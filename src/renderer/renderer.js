@@ -164,7 +164,7 @@ export class MeshRenderer extends GameComponent {
     for (const c of this.world.iterChunks()) {
       /** @type {ChunkRenderer} */
       let cr = c.chunkRenderer;
-      cr.updateMesh(true);
+      cr.updateMesh(this.doIds, true);
       mergeMeshObj(this.vertexData, cr.mesh);
     }
   }
@@ -209,6 +209,7 @@ export class DisplayRenderer extends MeshRenderer {
   constructor(game, gl) {
     super(game, gl);
     this.clearColor = this.cnf.bgColor;
+    this.doIds = false;
   }
 
   initLoaders() {
@@ -274,7 +275,7 @@ export class DisplayRenderer extends MeshRenderer {
     for (const c of this.world.iterChunks()) {
       /** @type {ChunkRenderer} */
       let cr = c.chunkRenderer;
-      cr.updateMesh(this.game.frameNo % 120 == i);
+      cr.updateMesh(this.doIds, this.game.frameNo % 120 == i);
       mergeMeshObj(this.vertexData, cr.mesh);
       i++;
     }
@@ -295,6 +296,7 @@ export class PickingIdRenderer extends MeshRenderer {
   constructor(game, gl) {
     super(game, gl);
     this.clearColor = this.idToColor(0);
+    this.doIds = true;
   }
 
   async loadResources() {
