@@ -237,6 +237,7 @@ export class DisplayRenderer extends MeshRenderer {
     super.configGL();
     this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
     this.gl.enable(this.gl.BLEND);
+    this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
   }
 
   setUniforms() {
@@ -297,6 +298,7 @@ export class PickingIdRenderer extends MeshRenderer {
     super(game, gl);
     this.clearColor = this.idToColor(0);
     this.doIds = true;
+    this.fb = this.gl.createFramebuffer();
   }
 
   async loadResources() {
@@ -314,6 +316,7 @@ export class PickingIdRenderer extends MeshRenderer {
   configGL() {
     super.configGL();
     this.gl.disable(this.gl.BLEND);
+    this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.fb);
   }
 
   initBuffers() {
