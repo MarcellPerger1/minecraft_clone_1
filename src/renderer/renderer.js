@@ -330,15 +330,30 @@ export class PickingIdRenderer extends MeshRenderer {
     this.buffers.aId.configArray("aId", 4, this.gl.FLOAT);
   }
 
+  // these renderbuffer methods are such mess
+  // as webgl call are SO verbose!
+  // WHY do so many calls take 3 args that are just CONSTANTS
+  // or even values that have to be 0??!
   makeRenderbuffer() {
-    this.fb = this.gl.createFramebuffer();
+    // make attachments
     this.targetTexture = this.gl.createTexture();
     this.gl.bindTexture(this.gl.TEXTURE_2D, this.targetTexture);
     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
     this.depthBuffer = this.gl.createRenderbuffer();
+    this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, this.gl.depthBuffer);
     this.setRenderbufferSize();
+    // create framebuffer
+    this.fb = this.gl.createFramebuffer();
+    this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.fb);
+    // attach renderbuffers
+    this.gl.framebufferTexture2D(
+      this.gl.FRAMEBUFFER, this.gl.COLOR_ATTACHMENT0,
+      this.gl.TEXTURE_2D, this.targetTexture, 0);
+    this.gl.framebufferRenderbuffer(
+      this.gl.FRAMEBUFFER, this.gl.DEPTH_ATTACHMENT,
+      this.gl.RENDERBUFFER, this.depthBuffer);
   }
 
   setRenderbufferSize() {
