@@ -60,6 +60,7 @@ export class RenderMgr extends GameComponent {
 
 /** Renderer that only handles drawing the polygons, no colors */
 export class MeshRenderer extends GameComponent {
+  /** @type {WebGLRenderingContext} */
   gl;
   
   constructor(game, gl) {
@@ -298,7 +299,6 @@ export class PickingIdRenderer extends MeshRenderer {
     super(game, gl);
     this.clearColor = this.idToColor(0);
     this.doIds = true;
-    this.fb = this.gl.createFramebuffer();
   }
 
   async loadResources() {
@@ -311,6 +311,7 @@ export class PickingIdRenderer extends MeshRenderer {
 
   init() {
     super.init(this.shader.program);
+    this.makeRenderbuffer();
   }
 
   configGL() {
@@ -327,6 +328,37 @@ export class PickingIdRenderer extends MeshRenderer {
   configArrayBuffers() {
     super.configArrayBuffers();
     this.buffers.aId.configArray("aId", 4, this.gl.FLOAT);
+  }
+
+  makeRenderbuffer() {
+    this.fb = this.gl.createFramebuffer();
+    this.targetTexture = this.gl.createTexture();
+    this.gl.bindTexture(this.gl.TEXTURE_2D, targetTexture);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+    this.depthBuffer = this.gl.createRenderbuffer();
+    this.setRenderbufferSize();
+  }
+
+  setRenderbufferSize() {
+    this.gl.bindTexture(this.gl.TEXTURE_2D, this.targetTexture);
+    this.gl.texImage2D(
+      this.gl.TEXTURE_2D,
+      /* mipmap level */0,
+      /* internalFormat */this.gl.RGBA,
+      this.canvas.width,
+      this.canvas.height,
+      /* border (must be 0) */0,
+      /* format */this.gl.RGBA,
+      /* type */this.gl.UNSIGNED_BYTE,
+      /* data */null
+    );
+    this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, this.depthBuffer);
+    this.gl.renderbufferStorage(
+      this.gl.RENDERBUFFER, this.gl.DEPTH_COMPONENT16,
+      this.canvas.width, this.canvas.height
+    );
   }
 
   getBlockIdColors(pos) {
