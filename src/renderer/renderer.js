@@ -331,6 +331,13 @@ export class PickingIdRenderer extends MeshRenderer {
     this.buffers.aId.configArray("aId", 4, this.gl.FLOAT);
   }
 
+  bufferDataFromBundler() {
+    super.bufferDataFromBundler();
+    this.buffers.aId.setData(
+      new Uint8Array(this.vertexData.main.aId)
+    );
+  }
+
   // these renderbuffer methods are such mess
   // as webgl call are SO verbose!
   // WHY do so many calls take 3 args that are just CONSTANTS
