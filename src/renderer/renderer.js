@@ -1,3 +1,4 @@
+import { isAnyArray } from "../utils/type_check.js";
 import { getGLContext } from "../utils/gl_utils.js";
 import { LoaderMerge } from "../utils/loader.js";
 import { GameComponent } from "../game_component.js";
@@ -376,6 +377,12 @@ export class PickingIdRenderer extends MeshRenderer {
     );
   }
 
+  readPixelColor(x, y) {
+    let dest = Uint8Array(4);  // allocate 4 bytes for the color
+    this.gl.readPixels(x, y, 1, 1, this.gl.RGBA, this.gl.UNSIGNED_BYTE, dest);
+    return dest;
+  }
+
   getBlockIdColors(pos) {
     return Object.fromEntries(Object.entries(FACES).map(
       ([name, faceId]) => [name, this.blockFaceToColor(pos, faceId)]
@@ -428,7 +435,7 @@ export class PickingIdRenderer extends MeshRenderer {
 
   static colorToId(/** @type {[number, number, number, number]} */color) {
     assert(
-      Array.isArray(color) && color.length == 4,
+      isAnyArray(color) && color.length == 4,
       "color must be an array of length 4"
     );
     assert(
