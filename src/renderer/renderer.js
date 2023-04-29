@@ -377,6 +377,11 @@ export class PickingIdRenderer extends MeshRenderer {
     );
   }
 
+  blockFromCanvasCoord(x, y) {
+    this.renderFrame();
+    return this.readPixelBlockFace(0, 0);
+  }
+
   readCanvasCenter() {
     return this.readPixelBlockFace(this.canvas.width >> 1, this.canvas.height >> 1);
   }
@@ -386,7 +391,7 @@ export class PickingIdRenderer extends MeshRenderer {
   }
 
   readPixelColor(x, y) {
-    let dest = Uint8Array(4);  // allocate 4 bytes for the color
+    let dest = new Uint8Array(4);  // allocate 4 bytes for the color
     this.gl.readPixels(x, y, 1, 1, this.gl.RGBA, this.gl.UNSIGNED_BYTE, dest);
     return dest;
   }
