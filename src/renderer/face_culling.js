@@ -17,7 +17,7 @@ export class CubeDataAdder extends GameComponent {
   constructor(game, pos, options, renderTarget) {
     super(game);
     this.pos = pos;
-    this.cData = new CubeVertexData(this.game, pos, {textures: options.textures});
+    this.cData = new CubeVertexData(this.game, pos, options);
     this.block = this.world.getBlock(this.pos);
     this.renderTarget = renderTarget;
   }

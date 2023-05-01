@@ -289,6 +289,9 @@ export class DisplayRenderer extends MeshRenderer {
 export const FACES = {x0: 0, x1: 1, y0: 2, y1: 3, z0: 4, z1: 5};
 
 
+// This isn't working:
+// 1. The clearing works - changing the clear color results 
+//    in a change of id from 0. But the drawing doesn't work
 export class PickingIdRenderer extends MeshRenderer {
   // Each color represents a 32-bit unsigned integer id
   // With the RBGA channels being 4 bytes
@@ -298,7 +301,7 @@ export class PickingIdRenderer extends MeshRenderer {
   // is only using 25% of the available ids
   constructor(game, gl) {
     super(game, gl);
-    this.clearColor = this.idToColor(0);
+    this.clearColor = this.idToColor(700);
     this.doIds = true;
   }
 
@@ -334,7 +337,7 @@ export class PickingIdRenderer extends MeshRenderer {
   bufferDataFromBundler() {
     super.bufferDataFromBundler();
     this.buffers.aId.setData(
-      new Uint8Array(this.vertexData.main.aId)
+      new Float32Array(this.vertexData.main.aId)
     );
   }
 
@@ -437,7 +440,10 @@ export class PickingIdRenderer extends MeshRenderer {
   blockFaceFromId(id) {
     assert(id >= 0 && id < 2**32, "id must be a 32-bit UNSIGNED int");
     const faceId = id & 0xF;  // face = first 4 bits
-    const posIdx = id >> 4;  // block = other 28 bits
+    let posIdx = id >> 4;  // block = other 28 bits
+    // id 0 reserved for nothing
+    if(posIdx === 0) return null;
+    posIdx -= 1;
     const pos = this.world.posFromIdx(posIdx);
     return [pos, faceId];
   }
@@ -454,21 +460,13 @@ export class PickingIdRenderer extends MeshRenderer {
     let b1 = (id >> 8) & 0xFF;
     let b2 = (id >> 16) & 0xFF;
     let b3 = (id >> 24) & 0xFF;
-    return [b0, b1, b2, b3];
+    return [b0, b1, b2, b3].map(v=>v/0xFF);
   }
 
   static colorToId(/** @type {[number, number, number, number]} */color) {
     assert(
       isAnyArray(color) && color.length == 4,
       "color must be an array of length 4"
-    );
-    assert(
-      color.every(Number.isInteger),
-      "each color channel must be an integer"
-    );
-    assert(
-      color.every((v) => v >= 0 && v < 256),
-      "each color channel must be between 0 and 255"
     );
     // need to be careful with highest byte:
     // bitwise operations use SIGNED 32 integers in js
