@@ -303,9 +303,6 @@ export class DisplayRenderer extends MeshRenderer {
 export const FACES = {x0: 0, x1: 1, y0: 2, y1: 3, z0: 4, z1: 5};
 
 
-// This works now. FINALLY! YES YES YES!
-// However, the (0, 0) pixel refers to the BOTTOM left corner of the screen
-// aka maths coords, not grphics coords!
 export class PickingIdRenderer extends MeshRenderer {
   // Each color represents a 32-bit unsigned integer id
   // With the RBGA channels being 4 bytes
@@ -409,34 +406,54 @@ export class PickingIdRenderer extends MeshRenderer {
   /**
    * @param {number} x
    * @param {number} y
+   * @returns {BlockfaceInfoT}
    */
   readBlockAtCanvasCoord(x, y) {
     this.renderFrame();
-    return this.readPixelBlockFace(x, y);
+    return this._readRenderedPixelBlockface(x, y);
   }
 
+  /**
+   * @returns {BlockfaceInfoT}
+   */
   readCanvasCenter() {
-    return this.readPixelBlockFace(this.canvas.width >> 1, this.canvas.height >> 1);
+    return this.readBlockAtCanvasCoord(this.canvas.width >> 1, this.canvas.height >> 1);
   }
 
   /**
    * @param {number} x
    * @param {number} y
+   * @returns {BlockfaceInfoT}
    */
-  readPixelBlockFace(x, y) {
-    return this.idPacker.colorToBlockFace(this.readPixelColor(x, y));
+  _readRenderedPixelBlockface(x, y) {
+    return this.idPacker.colorToBlockFace(this._readRenderedPixelColor(x, y));
+  }
+
+  /**
+   * 
+   * @param {number} x 
+   * @param {number} y 
+   * @returns {Uint8Array}
+   */
+  _readRenderedPixelColor(x, y) {
+    return this._readPixelColor_invY(x, this.canvas.height - y);
   }
 
   /**
    * @param {number} x
    * @param {number} y
+   * @returns {Uint8Array}
    */
-  readPixelColor(x, y) {
+  _readPixelColor_invY(x, y) {
+    // the (0, 0) coord refers to BOTTOM left, not top left here (hence the name `_invY`)
     let dest = new Uint8Array(4);  // allocate 4 bytes for the color
     this.gl.readPixels(x, y, 1, 1, this.gl.RGBA, this.gl.UNSIGNED_BYTE, dest);
     return dest;
   }
 
+  /**
+   * @param {[number, number, number]} pos
+   */
   blockPosToFaceColors(pos) {
     return Object.fromEntries(Object.entries(FACES).map(
       ([name, faceId]) => [name, this.idPacker.blockFaceToColor(pos, faceId)]
@@ -444,11 +461,24 @@ export class PickingIdRenderer extends MeshRenderer {
   }
 }
 
+/**
+ * @typedef {[[number, number, number], number]} BlockfaceInfoT
+ */
+
 export class BlockfaceIdPacker extends GameComponent {
+  /**
+   * @param {[number, number, number]} pos
+   * @param {number} faceId
+   * @returns {[number, number, number, number]}
+   */
   blockFaceToColor(pos, faceId) {
     return this.idToColor(this.idFromBlockFace(pos, faceId));
   }
 
+  /**
+   * @param {Uint8Array | [number, number, number, number]} color
+   * @returns {BlockfaceInfoT}
+   */
   colorToBlockFace(color) {
     return this.blockFaceFromId(this.colorToId(color));
   }
@@ -476,6 +506,7 @@ export class BlockfaceIdPacker extends GameComponent {
 
   /**
    * @param {number} id
+   * @returns {BlockfaceInfoT}
    */
   blockFaceFromId(id) {
     assert(id >= 0 && id < 2**32, "id must be a 32-bit UNSIGNED int");
@@ -502,7 +533,7 @@ export class BlockfaceIdPacker extends GameComponent {
     return this.constructor.idToColor(id);
   }
 
-  static colorToId(/** @type {[number, number, number, number]} */color) {
+  static colorToId(/** @type {[number, number, number, number] | Uint8Array} */color) {
     assert(
       isAnyArray(color) && color.length == 4,
       "color must be an array of length 4"
@@ -515,7 +546,7 @@ export class BlockfaceIdPacker extends GameComponent {
     let v3 = color[3] * 2**24;
     return color[0] + (color[1] << 8) + (color[2] << 16) + v3;
   }
-  colorToId(/** @type {[number, number, number, number]} */color) {
+  colorToId(/** @type {[number, number, number, number] | Uint8Array} */color) {
     return this.constructor.colorToId(color);
   }
 }
