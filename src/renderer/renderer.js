@@ -302,8 +302,9 @@ export class PickingIdRenderer extends MeshRenderer {
   // is only using 25% of the available ids
   constructor(game, gl) {
     super(game, gl);
-    this.clearColor = this.idToColor(700);
     this.doIds = true;
+    this.idPacker = new BlockfaceIdPacker(this);
+    this.clearColor = this.idPacker.idToColor(0);
   }
 
   async loadResources() {
@@ -398,7 +399,7 @@ export class PickingIdRenderer extends MeshRenderer {
   }
 
   readPixelBlockFace(x, y) {
-    return this.colorToBlockFace(this.readPixelColor(x, y));
+    return this.idPacker.colorToBlockFace(this.readPixelColor(x, y));
   }
 
   readPixelColor(x, y) {
@@ -409,10 +410,12 @@ export class PickingIdRenderer extends MeshRenderer {
 
   getBlockIdColors(pos) {
     return Object.fromEntries(Object.entries(FACES).map(
-      ([name, faceId]) => [name, this.blockFaceToColor(pos, faceId)]
+      ([name, faceId]) => [name, this.idPacker.blockFaceToColor(pos, faceId)]
     ));
   }
+}
 
+export class BlockfaceIdPacker extends GameComponent {
   blockFaceToColor(pos, faceId) {
     return this.idToColor(this.idFromBlockFace(pos, faceId));
   }
@@ -449,10 +452,6 @@ export class PickingIdRenderer extends MeshRenderer {
     return [pos, faceId];
   }
 
-  idToColor(/** @type {number} */id) {
-    return this.constructor.idToColor(id);
-  }
-
   static idToColor(/** @type {number} */id) {
     assert(id < 2**32, "id must fit into a 32-bit integer " +
            "to be able to be used as a color");
@@ -462,6 +461,9 @@ export class PickingIdRenderer extends MeshRenderer {
     let b2 = (id >> 16) & 0xFF;
     let b3 = (id >> 24) & 0xFF;
     return [b0, b1, b2, b3].map(v=>v/0xFF);
+  }
+  idToColor(/** @type {number} */id) {
+    return this.constructor.idToColor(id);
   }
 
   static colorToId(/** @type {[number, number, number, number]} */color) {
@@ -477,7 +479,6 @@ export class PickingIdRenderer extends MeshRenderer {
     let v3 = color[3] * 2**24;
     return color[0] + (color[1] << 8) + (color[2] << 16) + v3;
   }
-
   colorToId(/** @type {[number, number, number, number]} */color) {
     return this.constructor.colorToId(color);
   }
