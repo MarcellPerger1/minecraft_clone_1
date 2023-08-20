@@ -290,11 +290,9 @@ export class DisplayRenderer extends MeshRenderer {
 export const FACES = {x0: 0, x1: 1, y0: 2, y1: 3, z0: 4, z1: 5};
 
 
-// This isn't working:
-// 1. The clearing works - changing the clear color results 
-//    in a change of id from 0. But the drawing doesn't work
-// It seems that setting the uMatrix is thing thing that fails
-// But why?
+// This works now. FINALLY! YES YES YES!
+// However, the (0, 0) pixel refers to the BOTTOM left corner of the screen
+// aka maths coords, not grphics coords!
 export class PickingIdRenderer extends MeshRenderer {
   // Each color represents a 32-bit unsigned integer id
   // With the RBGA channels being 4 bytes
