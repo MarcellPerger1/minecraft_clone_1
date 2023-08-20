@@ -1,3 +1,4 @@
+//@ts-check
 import { isAnyArray } from "../utils/type_check.js";
 import { getGLContext } from "../utils/gl_utils.js";
 import { LoaderMerge } from "../utils/loader.js";
@@ -122,6 +123,7 @@ export class MeshRenderer extends GameComponent {
   /**
    * Set size of webGL stuff
    * @param {[number, number]} size
+   * @param {[number, number]?} [offset=null]
    */
   setGLSize(size, offset = null) {
     offset = (offset ?? [0, 0]).slice(0, 2);
