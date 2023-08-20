@@ -3,6 +3,11 @@ export var ASSERT_SETTINGS = {
   error: true,
 };
 
+/**
+ * 
+ * @param {boolean} condition Condition to assert
+ * @param {string} [msg=null] Message
+ */
 export function assert(condition, msg = null) {
   if (!condition) {
     msg ??= "Assertion failed";
