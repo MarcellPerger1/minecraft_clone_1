@@ -14,6 +14,7 @@ import { ElementBundler } from "./vertex_bundle.js";
 import { assert } from "../utils/assert.js";
 
 /**
+ * @typedef {import('../game.js').Game} Game
  * @typedef {import('../world/chunk.js').Chunk} Chunk
  * @typedef {import('./chunk_renderer.js').ChunkRenderer} ChunkRenderer
  */
@@ -303,6 +304,10 @@ export class PickingIdRenderer extends MeshRenderer {
   // This should be enough for a long time as
   // even a 512x512x256 world with 16 faces/block
   // is only using 25% of the available ids
+  /**
+   * @param {Game | GameComponent} game
+   * @param {WebGLRenderingContext} gl
+   */
   constructor(game, gl) {
     super(game, gl);
     this.doIds = true;
