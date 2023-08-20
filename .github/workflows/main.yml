@@ -55,6 +55,24 @@ jobs:
         run: ./node_modules/.bin/eslint --max-warnings 0 ./
       - name: Run custom linters
         run: node ./scripts/find_bad_import.js
+
+  check_formatted:
+    runs-on: ubuntu-latest
+    if: >-
+      ${{ !((github.event_name == 'pull_request' 
+          && contains(github.event.pull_request.title, '[ci-skip]'))
+        || (github.event_name == 'push' 
+          && contains(github.event.head_commit.message, '[ci-skip]'))) }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: npm
+          cache-dependency-path: ./package-lock.json
+      - name: Install npm pacakges
+        run: npm ci
       - name: Check that code is formatted
         id: check_format
         run: npm run format_check
@@ -64,7 +82,6 @@ jobs:
           npm run format
           echo Error: formatter would change these files:
           git diff HEAD --color
-  
   
   build:
     runs-on: ubuntu-latest
