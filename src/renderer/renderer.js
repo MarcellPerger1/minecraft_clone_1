@@ -1,4 +1,3 @@
-//@ts-check
 import { isAnyArray } from "../utils/type_check.js";
 import { getGLContext } from "../utils/gl_utils.js";
 import { LoaderMerge } from "../utils/loader.js";
@@ -67,6 +66,12 @@ export class MeshRenderer extends GameComponent {
   gl;
   /** @type {[number, number, number, number]} */
   clearColor;
+  /** @type {AtlasLoader} */
+  atlas;
+  /** @type {ShaderProgramLoader} */
+  shader;
+  /** @type {boolean} */
+  doIds;
   
   constructor(game, gl) {
     super(game);
@@ -212,6 +217,10 @@ export class MeshRenderer extends GameComponent {
   }
 }
 
+/**
+ * @typedef {LoaderMerge & {shader: ShaderProgramLoader, atlas: AtlasLoader, promises: {[k: string]: Promise}}} _DRLoaderMergeT
+ */
+
 export class DisplayRenderer extends MeshRenderer {  
   constructor(game, gl) {
     super(game, gl);
@@ -220,10 +229,10 @@ export class DisplayRenderer extends MeshRenderer {
   }
 
   initLoaders() {
-    this.loader = new LoaderMerge({
+    this.loader = /** @type {_DRLoaderMergeT} */(new LoaderMerge({
       shader: new ShaderProgramLoader(this.gl, this.cnf.shader),
       atlas: new AtlasLoader(this.game),
-    }).startPromises();
+    }).startPromises());
     this.loader.promises.shader.then(() => {
       progress.addPercent(10);
     })
@@ -397,6 +406,10 @@ export class PickingIdRenderer extends MeshRenderer {
     );
   }
 
+  /**
+   * @param {number} x
+   * @param {number} y
+   */
   readBlockAtCanvasCoord(x, y) {
     this.renderFrame();
     return this.readPixelBlockFace(x, y);
@@ -406,6 +419,10 @@ export class PickingIdRenderer extends MeshRenderer {
     return this.readPixelBlockFace(this.canvas.width >> 1, this.canvas.height >> 1);
   }
 
+  /**
+   * @param {number} x
+   * @param {number} y
+   */
   readPixelBlockFace(x, y) {
     return this.idPacker.colorToBlockFace(this.readPixelColor(x, y));
   }
@@ -436,6 +453,10 @@ export class BlockfaceIdPacker extends GameComponent {
     return this.blockFaceFromId(this.colorToId(color));
   }
 
+  /**
+   * @param {[number, number, number]} pos
+   * @param {number} faceId
+   */
   idFromBlockFace(pos, faceId) {
     assert(
       Number.isInteger(faceId) && faceId >= 0 && faceId < 6, 
@@ -453,6 +474,9 @@ export class BlockfaceIdPacker extends GameComponent {
     return id;
   }
 
+  /**
+   * @param {number} id
+   */
   blockFaceFromId(id) {
     assert(id >= 0 && id < 2**32, "id must be a 32-bit UNSIGNED int");
     const faceId = id & 0xF;  // face = first 4 bits
@@ -502,7 +526,7 @@ export class BlockfaceIdPacker extends GameComponent {
 
 /** 
  * @param {{[k: string]: ElementBundler}} dest
- * @param {{[k: string]: BundleT}} src
+ * @param {{[k: string]: BundleT | ElementBundler}} src
  */
 function mergeMeshObj(dest, src) {
   for(const [name, data] of Object.entries(src)) {
