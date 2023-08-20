@@ -15,7 +15,7 @@ export function getGLContext(canvas) {
 /**
  * Get a string representation of error from `errno`
  * @param {number} errno
- * @param {WebGLRenderingContextBase} gl - the gl object to use
+ * @param {WebGLRenderingContextBase | typeof WebGLRenderingContext} gl - the gl object to use
  * @returns {string} string representation
  */
 export function glErrnoToMsg(errno, gl = WebGLRenderingContext) {
@@ -31,13 +31,13 @@ export function glErrnoToMsg(errno, gl = WebGLRenderingContext) {
   return lookup[errno];
 }
 
-export function initShaderProgram(gl, vsSource, fsSource) {
+export function initShaderProgram(/** @type {WebGLRenderingContext} */gl, vsSource, fsSource) {
   const vs = loadShader(gl, gl.VERTEX_SHADER, vsSource);
   const fs = loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
   return programFromShaders(gl, vs, fs);
 }
 
-export function programFromShaders(gl, vs, fs) {
+export function programFromShaders(/** @type {WebGLRenderingContext} */gl, vs, fs) {
   const shaderProgram = gl.createProgram();
   gl.attachShader(shaderProgram, vs);
   gl.attachShader(shaderProgram, fs);
@@ -52,7 +52,7 @@ export function programFromShaders(gl, vs, fs) {
   return shaderProgram;
 }
 
-export function loadShader(gl, type, source) {
+export function loadShader(/** @type {WebGLRenderingContext} */gl, type, source) {
   const shader = gl.createShader(type);
   // Send the source to the shader object
   gl.shaderSource(shader, source);
