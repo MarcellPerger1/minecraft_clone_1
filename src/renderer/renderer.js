@@ -64,6 +64,8 @@ export class RenderMgr extends GameComponent {
 export class MeshRenderer extends GameComponent {
   /** @type {WebGLRenderingContext} */
   gl;
+  /** @type {[number, number, number, number]} */
+  clearColor;
   
   constructor(game, gl) {
     super(game);
@@ -126,14 +128,13 @@ export class MeshRenderer extends GameComponent {
    * @param {[number, number]?} [offset=null]
    */
   setGLSize(size, offset = null) {
-    offset = (offset ?? [0, 0]).slice(0, 2);
+    offset ??= [0, 0];
     this.gl.viewport(...offset, ...size);
     this.gl.scissor(...offset, ...size);
   }
 
   clearCanvas() {
-    this.clearColor ??= [255, 0, 0, 255];
-    this.gl.clearColor(...this.clearColor);
+    this.gl.clearColor(...(this.clearColor ?? [0, 0, 0, 255]));
     this.gl.clearDepth(1.0);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
   }
@@ -191,7 +192,7 @@ export class MeshRenderer extends GameComponent {
   }
 
   _makeBuffersObj() {
-    /** @type {{position: ElementBundler, vertexData: ElementBundler, [k: string]: ElementBundler}} */
+    /** @type {{position?: Buffer, vertexData?: Buffer, [k: string]: Buffer | undefined}} */
     this.buffers = {};
   }
 
@@ -357,7 +358,7 @@ export class PickingIdRenderer extends MeshRenderer {
     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
     this.depthBuffer = this.gl.createRenderbuffer();
-    this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, this.gl.depthBuffer);
+    this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, this.depthBuffer);
     this.setRenderbufferSize();
     // create framebuffer
     this.fb = this.gl.createFramebuffer();
