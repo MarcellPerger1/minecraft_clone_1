@@ -150,6 +150,7 @@ export function loadTexture(gl, url, cnf = null) {
     image.onerror = function (event) {
       reject(event);
     };
+    // @ts-ignore TS doesn't know about this (yet)
     image.fetchPriority = prio;
     image.src = url;
   });
