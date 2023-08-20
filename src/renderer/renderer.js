@@ -405,13 +405,17 @@ export class PickingIdRenderer extends MeshRenderer {
     return this.idPacker.colorToBlockFace(this.readPixelColor(x, y));
   }
 
+  /**
+   * @param {number} x
+   * @param {number} y
+   */
   readPixelColor(x, y) {
     let dest = new Uint8Array(4);  // allocate 4 bytes for the color
     this.gl.readPixels(x, y, 1, 1, this.gl.RGBA, this.gl.UNSIGNED_BYTE, dest);
     return dest;
   }
 
-  getBlockIdColors(pos) {
+  blockPosToFaceColors(pos) {
     return Object.fromEntries(Object.entries(FACES).map(
       ([name, faceId]) => [name, this.idPacker.blockFaceToColor(pos, faceId)]
     ));
