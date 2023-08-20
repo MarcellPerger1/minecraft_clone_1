@@ -30,6 +30,7 @@ import { assert } from "../utils/assert.js";
 export class RenderMgr extends GameComponent {
   /** @type {WebGLRenderingContext} */
   gl;
+  /** @type {PickingIdRenderer} */
   pickingRenderer;
   
   constructor(game, do_init = true) {
@@ -303,6 +304,10 @@ export class DisplayRenderer extends MeshRenderer {
 export const FACES = {x0: 0, x1: 1, y0: 2, y1: 3, z0: 4, z1: 5};
 
 
+/**
+ * @typedef {import("./face_culling.js").IdsDataT} FacesIdDataT
+ */
+
 export class PickingIdRenderer extends MeshRenderer {
   // Each color represents a 32-bit unsigned integer id
   // With the RBGA channels being 4 bytes
@@ -453,11 +458,11 @@ export class PickingIdRenderer extends MeshRenderer {
 
   /**
    * @param {[number, number, number]} pos
+   * @returns {FacesIdDataT}
    */
   blockPosToFaceColors(pos) {
-    return Object.fromEntries(Object.entries(FACES).map(
-      ([name, faceId]) => [name, this.idPacker.blockFaceToColor(pos, faceId)]
-    ));
+    return /** @type {FacesIdDataT} */(Object.fromEntries(Object.entries(FACES).map(
+      ([name, faceId]) => [name, this.idPacker.blockFaceToColor(pos, faceId)])));
   }
 }
 
@@ -519,7 +524,11 @@ export class BlockfaceIdPacker extends GameComponent {
     return [pos, faceId];
   }
 
-  static idToColor(/** @type {number} */id) {
+  /**
+   * @param {number} id
+   * @returns {[number, number, number, number]}
+   */
+  static idToColor(id) {
     assert(id < 2**32, "id must fit into a 32-bit integer " +
            "to be able to be used as a color");
     assert(id >= 0, "id must not be negative");
@@ -527,10 +536,10 @@ export class BlockfaceIdPacker extends GameComponent {
     let b1 = (id >> 8) & 0xFF;
     let b2 = (id >> 16) & 0xFF;
     let b3 = (id >> 24) & 0xFF;
-    return [b0, b1, b2, b3].map(v=>v/0xFF);
+    return /** @type {[number, number, number, number]} */([b0, b1, b2, b3].map(v=>v/0xFF));
   }
   idToColor(/** @type {number} */id) {
-    return this.constructor.idToColor(id);
+    return BlockfaceIdPacker.idToColor(id);
   }
 
   static colorToId(/** @type {[number, number, number, number] | Uint8Array} */color) {
@@ -547,7 +556,7 @@ export class BlockfaceIdPacker extends GameComponent {
     return color[0] + (color[1] << 8) + (color[2] << 16) + v3;
   }
   colorToId(/** @type {[number, number, number, number] | Uint8Array} */color) {
-    return this.constructor.colorToId(color);
+    return BlockfaceIdPacker.colorToId(color);
   }
 }
 
