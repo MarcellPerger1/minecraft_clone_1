@@ -79,6 +79,7 @@ export class MeshRenderer extends GameComponent {
   }
 
   initProgramInfo() {
+    this.gl.useProgram(this.program);
     this.programInfo = new ShaderProgram(this.gl, this.program);
     this.uniforms = makeUniformsObj(this.gl, this.programInfo);
   }
@@ -292,6 +293,8 @@ export const FACES = {x0: 0, x1: 1, y0: 2, y1: 3, z0: 4, z1: 5};
 // This isn't working:
 // 1. The clearing works - changing the clear color results 
 //    in a change of id from 0. But the drawing doesn't work
+// It seems that setting the uMatrix is thing thing that fails
+// But why?
 export class PickingIdRenderer extends MeshRenderer {
   // Each color represents a 32-bit unsigned integer id
   // With the RBGA channels being 4 bytes
