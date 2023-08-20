@@ -50,6 +50,11 @@ export class ChunkRenderer extends GameComponent {
     }
   }
 
+  /**
+   * @param {[number, number, number]} pos
+   * @param {{side: string, top: string, bottom: string}} textures
+   * @param {import("./face_culling.js").IdsDataT} doIds
+   */
   addBlockTextures(pos, textures, doIds) {
     let ids = doIds ? this.getPickingIds(pos) : void 0;
     new CubeDataAdder(this.game, pos, {textures, ids}, this).addData();
