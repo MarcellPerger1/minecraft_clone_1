@@ -4,6 +4,11 @@ import { loadShader, programFromShaders } from "../utils/gl_utils.js";
 
 
 export class ShaderProgramLoader {
+  /** @type {WebGLShader} */
+  vs;
+  /** @type {WebGLShader} */
+  fs;
+
   constructor(gl, {vsPath, fsPath}) {
     this.gl = gl;
     this.vsPath = vsPath;
@@ -19,6 +24,10 @@ export class ShaderProgramLoader {
     return this.program;
   }
 
+  /**
+   * @param {string} path
+   * @param {number} sType
+   */
   async loadShader(path, sType) {
     assert(path != null, "path should not be null");
     const text = await fetchTextFile(path);
