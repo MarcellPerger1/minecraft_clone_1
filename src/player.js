@@ -1,6 +1,7 @@
 import { GameComponent } from "./game_component.js";
 import { KeyEvent } from "./keyinput.js";
 import { clamp, toRad } from "./utils/math.js";
+import { Blocks } from "./world.js";
 
 export class Player extends GameComponent {
   constructor(game) {
@@ -12,6 +13,14 @@ export class Player extends GameComponent {
   addListeners() {
     this.addMoveBindings();
     this.canvas.addEventListener("pointermove", this.pointer_move.bind(this));
+    this.canvas.addEventListener('pointerdown', () => {
+      if(!this.game.hasPointerLock) return;
+      const clickInfo = this.pickingRenderer.readCanvasCenter();
+      if(clickInfo == null) return;
+      const pos = clickInfo[0];
+      this.world.setBlock(pos, Blocks.air);
+      this.world.getChunkAt(pos).chunkRenderer.remakeMesh = true;
+    });
   }
 
   pointer_move(e) {
