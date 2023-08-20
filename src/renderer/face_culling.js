@@ -2,8 +2,10 @@ import { GameComponent } from "../game_component.js";
 import { CubeVertexData } from "./cube_data.js";
 
 /**
- * @typedef {import('./game.js').Game} Game
+ * @typedef {import('../game.js').Game} Game
  * @typedef {[number, number, number]} Vec3
+ * @typedef {[number, number, number, number]} ColorT
+ * @typedef {{x0: ColorT, x1: ColorT, y0: ColorT, y1: ColorT, z0: ColorT, z1: ColorT}} IdsDataT
  */
 
 export class CubeDataAdder extends GameComponent {
@@ -11,7 +13,7 @@ export class CubeDataAdder extends GameComponent {
    *
    * @param {GameComponent | Game} game
    * @param {Vec3} pos
-   * @param {{textures: {side: string, top: string, bottom: string}}} options
+   * @param {{textures: {side: string, top: string, bottom: string}, ids: IdsDataT}} options
    * @param {{addData: (d: any, t: boolean) => void}} renderTarget
    */
   constructor(game, pos, options, renderTarget) {
