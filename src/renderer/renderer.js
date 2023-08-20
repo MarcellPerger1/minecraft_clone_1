@@ -388,9 +388,9 @@ export class PickingIdRenderer extends MeshRenderer {
     );
   }
 
-  blockFromCanvasCoord(x, y) {
+  readBlockAtCanvasCoord(x, y) {
     this.renderFrame();
-    return this.readPixelBlockFace(0, 0);
+    return this.readPixelBlockFace(x, y);
   }
 
   readCanvasCenter() {
