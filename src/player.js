@@ -1,22 +1,43 @@
 import { GameComponent } from "./game_component.js";
 import { KeyEvent, button } from "./keyinput.js";
+import { faceToOffsetInfo } from "./renderer/renderer.js";
 import { clamp, toRad } from "./utils/math.js";
 import { Blocks } from "./world.js";
+
+// TODO: where should this go
+/**
+ * @param {[number, number, number]} pos 
+ * @param {import("./renderer/renderer.js").OffsetInfoT} offsetInfo 
+ * @returns {[number, number, number]}
+ */
+export function posFromOffset(pos, offsetInfo) {
+  pos = [...pos];  // copy it
+  const [axis, sign] = offsetInfo;
+  pos[axis] += sign;
+  return pos;
+}
 
 export class Player extends GameComponent {
   constructor(game) {
     super(game);
     this.rotation = Object.assign({}, this.cnf.player.startRot);
     this.position = this.cnf.player.startPos.slice();
+    this.blockInHand = Blocks.oak_log;
   }
 
   addListeners() {
     this.addMoveBindings();
     this.canvas.addEventListener("pointermove", this.pointer_move.bind(this));
     this.canvas.addEventListener('pointerdown', (event) => {
-      if (event.button != button.LEFT) return;
       if(!this.game.pointerLocked) return;
-      this.action_breakBlock();
+      switch (event.button) {
+        case button.LEFT:
+          this.action_breakBlock();
+          break;
+        case button.RIGHT:
+          this.action_placeBlock();
+          break;
+      }
     });
   }
 
@@ -25,6 +46,22 @@ export class Player extends GameComponent {
     if(clickInfo == null) return;
     const pos = clickInfo[0];
     this.world.setBlock(pos, Blocks.air);
+    this.renderMgr.invalidateBlockAndAdjacent(pos);
+  }
+
+  action_placeBlock() {
+    const clickInfo = this.pickingRenderer.readCanvasCenter();
+    if (clickInfo == null) return;
+    const [clickedPos, face] = clickInfo;
+    const offset = faceToOffsetInfo(face);
+    const pos = posFromOffset(clickedPos, offset);
+    if (!this.world.inRange(pos)) return;
+    if(this.world.getBlock(pos) != Blocks.air) {
+      console.warn("Trying to place block where there isn't air "+
+        "(are you placing it from inside the terrain");
+        return;
+    }
+    this.world.setBlock(pos, this.blockInHand);
     this.renderMgr.invalidateBlockAndAdjacent(pos);
   }
 
