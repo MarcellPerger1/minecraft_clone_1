@@ -2,7 +2,7 @@ import { GameComponent } from "../game_component.js";
 
 const FAR_DIST_SQ = 130;
 
-/** 
+/**
  * @typedef {{positions: number[], indices: number[], maxindex?: number, texCoords?: number[], aId?: number[]}} DataT
  */
 
@@ -20,7 +20,7 @@ export class CubeVertexData extends GameComponent {
   }
 
   /** @returns {[number, number]} */
-  getTexRangeX(/** @type {string} */texName) {
+  getTexRangeX(/** @type {string} */ texName) {
     const texData = this.displayRenderer.atlas.data[texName];
     const t0 = this.isFar ? texData.x0f : texData.x0;
     const t1 = this.isFar ? texData.x1f : texData.x1;
@@ -43,11 +43,11 @@ export class CubeVertexData extends GameComponent {
       indices: [0, 1, 2, 0, 2, 3],
       maxindex: 3,
     };
-    if(this.doTextures) {
+    if (this.doTextures) {
       const [t0, t1] = this.getTexRangeX(this.textures.side);
       data.texCoords = [t0, 1, t1, 1, t1, 0, t0, 0];
     }
-    if(this.doIds) {
+    if (this.doIds) {
       data.aId = this.getIdData(this.ids.x0);
     }
     return data;
@@ -62,11 +62,11 @@ export class CubeVertexData extends GameComponent {
       indices: [0, 1, 2, 0, 2, 3],
       maxindex: 3,
     };
-    if(this.doTextures) {
+    if (this.doTextures) {
       const [t0, t1] = this.getTexRangeX(this.textures.side);
       data.texCoords = [t1, 1, t1, 0, t0, 0, t0, 1];
     }
-    if(this.doIds) {
+    if (this.doIds) {
       data.aId = this.getIdData(this.ids.x1);
     }
     return data;
@@ -81,11 +81,11 @@ export class CubeVertexData extends GameComponent {
       indices: [0, 1, 2, 0, 2, 3],
       maxindex: 3,
     };
-    if(this.doTextures) {
+    if (this.doTextures) {
       const [t0, t1] = this.getTexRangeX(this.textures.side);
       data.texCoords = [t1, 1, t1, 0, t0, 0, t0, 1];
     }
-    if(this.doIds) {
+    if (this.doIds) {
       data.aId = this.getIdData(this.ids.z0);
     }
     return data;
@@ -100,11 +100,11 @@ export class CubeVertexData extends GameComponent {
       indices: [0, 1, 2, 0, 2, 3],
       maxindex: 3,
     };
-    if(this.doTextures) {
+    if (this.doTextures) {
       const [t0, t1] = this.getTexRangeX(this.textures.side);
       data.texCoords = [t0, 1, t1, 1, t1, 0, t0, 0];
     }
-    if(this.doIds) {
+    if (this.doIds) {
       data.aId = this.getIdData(this.ids.z1);
     }
     return data;
@@ -119,11 +119,11 @@ export class CubeVertexData extends GameComponent {
       indices: [0, 1, 2, 0, 2, 3],
       maxindex: 3,
     };
-    if(this.doTextures) {
+    if (this.doTextures) {
       const [t0, t1] = this.getTexRangeX(this.textures.top);
       data.texCoords = [t0, 0, t1, 0, t1, 1, t0, 1];
     }
-    if(this.doIds) {
+    if (this.doIds) {
       data.aId = this.getIdData(this.ids.y1);
     }
     return data;
@@ -138,11 +138,11 @@ export class CubeVertexData extends GameComponent {
       indices: [0, 1, 2, 0, 2, 3],
       maxindex: 3,
     };
-    if(this.doTextures) {
+    if (this.doTextures) {
       const [t0, t1] = this.getTexRangeX(this.textures.bottom);
       data.texCoords = [t0, 1, t1, 1, t1, 0, t0, 0];
     }
-    if(this.doIds) {
+    if (this.doIds) {
       data.aId = this.getIdData(this.ids.y0);
     }
     return data;

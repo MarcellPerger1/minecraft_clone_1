@@ -18,7 +18,10 @@ export class Camera {
   }
   getMatrix() {
     return mat4.mul(
-      mat4.create(), this.getProjectionMatrix(), this.getModelViewMatrix());
+      mat4.create(),
+      this.getProjectionMatrix(),
+      this.getModelViewMatrix()
+    );
   }
 
   getProjectionMatrix() {

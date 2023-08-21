@@ -5,7 +5,7 @@ export const button = Object.freeze({
   MIDDLE: 1,
   RIGHT: 2,
   BUTTON3: 3,
-  BUTTON4: 4
+  BUTTON4: 4,
 });
 
 export class KeyInput {

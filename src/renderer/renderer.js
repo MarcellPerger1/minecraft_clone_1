@@ -32,7 +32,7 @@ export class RenderMgr extends GameComponent {
   gl;
   /** @type {PickingIdRenderer} */
   pickingRenderer;
-  
+
   constructor(game, do_init = true) {
     super(game);
     if (do_init) {
@@ -52,7 +52,6 @@ export class RenderMgr extends GameComponent {
     await this.pickingRenderer.loadResources();
     this.renderer.init();
     this.pickingRenderer.init();
-    
   }
 
   renderFrame() {
@@ -60,17 +59,16 @@ export class RenderMgr extends GameComponent {
   }
 
   /**
-   * @param {[number, number, number]} pos 
+   * @param {[number, number, number]} pos
    */
   invalidateBlockAndAdjacent(pos) {
     if (!this.world.inRange(pos)) return;
     const targetChunk = this.world.getChunkAt(pos);
     targetChunk.chunkRenderer.invalidate();
     var adjacentChunks = targetChunk.getChunksAdjacentTo(pos);
-    adjacentChunks.map(c => c.chunkRenderer.invalidate());
+    adjacentChunks.map((c) => c.chunkRenderer.invalidate());
   }
 }
-
 
 /** Renderer that only handles drawing the polygons, no colors */
 export class MeshRenderer extends GameComponent {
@@ -84,7 +82,7 @@ export class MeshRenderer extends GameComponent {
   shader;
   /** @type {boolean} */
   doIds;
-  
+
   constructor(game, gl) {
     super(game);
     this.gl = gl;
@@ -118,7 +116,7 @@ export class MeshRenderer extends GameComponent {
   makeStateCurrent() {
     this.gl.useProgram(this.program);
     this.configGL();
-    // There is a Vertex Attrib Object (VAO): the internal object 
+    // There is a Vertex Attrib Object (VAO): the internal object
     // that keeps track of the attributes.
     // This is a global object and not associate with a program
     // so when the picking renderer is initialized after the normal
@@ -127,7 +125,7 @@ export class MeshRenderer extends GameComponent {
     // That is why we need to config the array buffers.
     // I would prefer to just load a VAO (vertex attrib object)
     // here but that requires an extension in WebGL 1
-    // or using WebGL 2. Instead, the VAO has to be updated with 
+    // or using WebGL 2. Instead, the VAO has to be updated with
     // our values before each render.
     // Useful link for visualising the WebGL state:
     // https://webglfundamentals.org/webgl/lessons/resources/webgl-state-diagram.html?exampleId=use-2-programs#no-help
@@ -202,7 +200,7 @@ export class MeshRenderer extends GameComponent {
   configArrayBuffers() {
     this.buffers.position.configArray("aVertexPosition", 3, this.gl.FLOAT);
   }
-  
+
   initBuffers() {
     this._makeBuffersObj();
     this.buffers.position = this.newBuffer();
@@ -233,7 +231,7 @@ export class MeshRenderer extends GameComponent {
  * @typedef {LoaderMerge & {shader: ShaderProgramLoader, atlas: AtlasLoader, promises: {[k: string]: Promise}}} _DRLoaderMergeT
  */
 
-export class DisplayRenderer extends MeshRenderer {  
+export class DisplayRenderer extends MeshRenderer {
   constructor(game, gl) {
     super(game, gl);
     this.clearColor = this.cnf.bgColor;
@@ -241,19 +239,21 @@ export class DisplayRenderer extends MeshRenderer {
   }
 
   initLoaders() {
-    this.loader = /** @type {_DRLoaderMergeT} */(new LoaderMerge({
-      shader: new ShaderProgramLoader(this.gl, this.cnf.shader),
-      atlas: new AtlasLoader(this.game),
-    }).startPromises());
+    this.loader = /** @type {_DRLoaderMergeT} */ (
+      new LoaderMerge({
+        shader: new ShaderProgramLoader(this.gl, this.cnf.shader),
+        atlas: new AtlasLoader(this.game),
+      }).startPromises()
+    );
     this.loader.promises.shader.then(() => {
       progress.addPercent(10);
-    })
+    });
   }
-  
+
   async loadResources() {
     this.initLoaders();
     await this.loader.loadResources();
-    ({atlas: this.atlas, shader: this.shader} = this.loader);
+    ({ atlas: this.atlas, shader: this.shader } = this.loader);
   }
 
   init() {
@@ -311,11 +311,17 @@ export class DisplayRenderer extends MeshRenderer {
   }
 }
 
-
-export const FACES = Object.freeze({x0: 0, x1: 1, y0: 2, y1: 3, z0: 4, z1: 5});
+export const FACES = Object.freeze({
+  x0: 0,
+  x1: 1,
+  y0: 2,
+  y1: 3,
+  z0: 4,
+  z1: 5,
+});
 
 /**
- * @param {number} face 
+ * @param {number} face
  * @returns {OffsetInfoT}
  */
 export function faceToOffsetInfo(face) {
@@ -323,9 +329,8 @@ export function faceToOffsetInfo(face) {
   assert([0, 1, 2].includes(axis));
   const dirn01 = face % 2;
   const sign = dirn01 == 0 ? -1 : 1;
-  return [/** @type {0 | 1 | 2} */(axis), sign];
+  return [/** @type {0 | 1 | 2} */ (axis), sign];
 }
-
 
 /**
  * @typedef {import("./face_culling.js").IdsDataT} FacesIdDataT
@@ -353,7 +358,7 @@ export class PickingIdRenderer extends MeshRenderer {
   async loadResources() {
     this.shader = new ShaderProgramLoader(this.gl, {
       vsPath: "./shaders/picking/vertex.glsl",
-      fsPath: "./shaders/picking/fragment.glsl"
+      fsPath: "./shaders/picking/fragment.glsl",
     });
     await this.shader.loadResources();
   }
@@ -381,9 +386,7 @@ export class PickingIdRenderer extends MeshRenderer {
 
   bufferDataFromBundler() {
     super.bufferDataFromBundler();
-    this.buffers.aId.setData(
-      new Float32Array(this.vertexData.main.aId)
-    );
+    this.buffers.aId.setData(new Float32Array(this.vertexData.main.aId));
   }
 
   // these renderbuffer methods are such mess
@@ -394,9 +397,21 @@ export class PickingIdRenderer extends MeshRenderer {
     // make attachments
     this.targetTexture = this.gl.createTexture();
     this.gl.bindTexture(this.gl.TEXTURE_2D, this.targetTexture);
-    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
-    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
-    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_MIN_FILTER,
+      this.gl.LINEAR
+    );
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_WRAP_S,
+      this.gl.CLAMP_TO_EDGE
+    );
+    this.gl.texParameteri(
+      this.gl.TEXTURE_2D,
+      this.gl.TEXTURE_WRAP_T,
+      this.gl.CLAMP_TO_EDGE
+    );
     this.depthBuffer = this.gl.createRenderbuffer();
     this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, this.depthBuffer);
     this.setRenderbufferSize();
@@ -405,30 +420,39 @@ export class PickingIdRenderer extends MeshRenderer {
     this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.fb);
     // attach renderbuffers
     this.gl.framebufferTexture2D(
-      this.gl.FRAMEBUFFER, this.gl.COLOR_ATTACHMENT0,
-      this.gl.TEXTURE_2D, this.targetTexture, 0);
+      this.gl.FRAMEBUFFER,
+      this.gl.COLOR_ATTACHMENT0,
+      this.gl.TEXTURE_2D,
+      this.targetTexture,
+      0
+    );
     this.gl.framebufferRenderbuffer(
-      this.gl.FRAMEBUFFER, this.gl.DEPTH_ATTACHMENT,
-      this.gl.RENDERBUFFER, this.depthBuffer);
+      this.gl.FRAMEBUFFER,
+      this.gl.DEPTH_ATTACHMENT,
+      this.gl.RENDERBUFFER,
+      this.depthBuffer
+    );
   }
 
   setRenderbufferSize() {
     this.gl.bindTexture(this.gl.TEXTURE_2D, this.targetTexture);
     this.gl.texImage2D(
       this.gl.TEXTURE_2D,
-      /* mipmap level */0,
-      /* internalFormat */this.gl.RGBA,
+      /* mipmap level */ 0,
+      /* internalFormat */ this.gl.RGBA,
       this.canvas.width,
       this.canvas.height,
-      /* border (must be 0) */0,
-      /* format */this.gl.RGBA,
-      /* type */this.gl.UNSIGNED_BYTE,
-      /* data */null
+      /* border (must be 0) */ 0,
+      /* format */ this.gl.RGBA,
+      /* type */ this.gl.UNSIGNED_BYTE,
+      /* data */ null
     );
     this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, this.depthBuffer);
     this.gl.renderbufferStorage(
-      this.gl.RENDERBUFFER, this.gl.DEPTH_COMPONENT16,
-      this.canvas.width, this.canvas.height
+      this.gl.RENDERBUFFER,
+      this.gl.DEPTH_COMPONENT16,
+      this.canvas.width,
+      this.canvas.height
     );
   }
 
@@ -446,7 +470,10 @@ export class PickingIdRenderer extends MeshRenderer {
    * @returns {BlockfaceInfoT?}
    */
   readCanvasCenter() {
-    return this.readBlockAtCanvasCoord(this.canvas.width >> 1, this.canvas.height >> 1);
+    return this.readBlockAtCanvasCoord(
+      this.canvas.width >> 1,
+      this.canvas.height >> 1
+    );
   }
 
   /**
@@ -459,9 +486,9 @@ export class PickingIdRenderer extends MeshRenderer {
   }
 
   /**
-   * 
-   * @param {number} x 
-   * @param {number} y 
+   *
+   * @param {number} x
+   * @param {number} y
    * @returns {Uint8Array}
    */
   _readRenderedPixelColor(x, y) {
@@ -475,7 +502,7 @@ export class PickingIdRenderer extends MeshRenderer {
    */
   _readPixelColor_invY(x, y) {
     // the (0, 0) coord refers to BOTTOM left, not top left here (hence the name `_invY`)
-    let dest = new Uint8Array(4);  // allocate 4 bytes for the color
+    let dest = new Uint8Array(4); // allocate 4 bytes for the color
     this.gl.readPixels(x, y, 1, 1, this.gl.RGBA, this.gl.UNSIGNED_BYTE, dest);
     return dest;
   }
@@ -485,8 +512,14 @@ export class PickingIdRenderer extends MeshRenderer {
    * @returns {FacesIdDataT}
    */
   blockPosToFaceColors(pos) {
-    return /** @type {FacesIdDataT} */(Object.fromEntries(Object.entries(FACES).map(
-      ([name, faceId]) => [name, this.idPacker.blockFaceToColor(pos, faceId)])));
+    return /** @type {FacesIdDataT} */ (
+      Object.fromEntries(
+        Object.entries(FACES).map(([name, faceId]) => [
+          name,
+          this.idPacker.blockFaceToColor(pos, faceId),
+        ])
+      )
+    );
   }
 }
 
@@ -518,18 +551,18 @@ export class BlockfaceIdPacker extends GameComponent {
    */
   idFromBlockFace(pos, faceId) {
     assert(
-      Number.isInteger(faceId) && faceId >= 0 && faceId < 6, 
+      Number.isInteger(faceId) && faceId >= 0 && faceId < 6,
       "faceId must be an integer between 0 and 5 (inclusive)"
     );
-    faceId &= 0xF;  // ensure that faceId only 4 bits long
+    faceId &= 0xf; // ensure that faceId only 4 bits long
     assert(this.world.inRange(pos), "pos must be in the world");
     // reserve 0 for nothing
     const posIdx = this.world.getBlockIdx(pos) + 1;
-    assert(posIdx < 2**(32-4), "posIdx must fit into 32-4=28 bits");
+    assert(posIdx < 2 ** (32 - 4), "posIdx must fit into 32-4=28 bits");
     // reserve 4 bits for faces
     const id = faceId + (posIdx << 4);
     assert(id > 0, "block face id must be positive (0 is for nothing)");
-    assert(id < 2**32, "id must fit in 4 bytes");
+    assert(id < 2 ** 32, "id must fit in 4 bytes");
     return id;
   }
 
@@ -538,11 +571,11 @@ export class BlockfaceIdPacker extends GameComponent {
    * @returns {BlockfaceInfoT?}
    */
   blockFaceFromId(id) {
-    assert(id >= 0 && id < 2**32, "id must be a 32-bit UNSIGNED int");
-    const faceId = id & 0xF;  // face = first 4 bits
-    let posIdx = id >> 4;  // block = other 28 bits
+    assert(id >= 0 && id < 2 ** 32, "id must be a 32-bit UNSIGNED int");
+    const faceId = id & 0xf; // face = first 4 bits
+    let posIdx = id >> 4; // block = other 28 bits
     // id 0 reserved for nothing
-    if(posIdx === 0) return null;
+    if (posIdx === 0) return null;
     posIdx -= 1;
     const pos = this.world.posFromIdx(posIdx);
     return [pos, faceId];
@@ -553,20 +586,26 @@ export class BlockfaceIdPacker extends GameComponent {
    * @returns {[number, number, number, number]}
    */
   static idToColor(id) {
-    assert(id < 2**32, "id must fit into a 32-bit integer " +
-           "to be able to be used as a color");
+    assert(
+      id < 2 ** 32,
+      "id must fit into a 32-bit integer " + "to be able to be used as a color"
+    );
     assert(id >= 0, "id must not be negative");
-    let b0 = id & 0xFF;
-    let b1 = (id >> 8) & 0xFF;
-    let b2 = (id >> 16) & 0xFF;
-    let b3 = (id >> 24) & 0xFF;
-    return /** @type {[number, number, number, number]} */([b0, b1, b2, b3].map(v=>v/0xFF));
+    let b0 = id & 0xff;
+    let b1 = (id >> 8) & 0xff;
+    let b2 = (id >> 16) & 0xff;
+    let b3 = (id >> 24) & 0xff;
+    return /** @type {[number, number, number, number]} */ (
+      [b0, b1, b2, b3].map((v) => v / 0xff)
+    );
   }
-  idToColor(/** @type {number} */id) {
+  idToColor(/** @type {number} */ id) {
     return BlockfaceIdPacker.idToColor(id);
   }
 
-  static colorToId(/** @type {[number, number, number, number] | Uint8Array} */color) {
+  static colorToId(
+    /** @type {[number, number, number, number] | Uint8Array} */ color
+  ) {
     assert(
       isAnyArray(color) && color.length == 4,
       "color must be an array of length 4"
@@ -576,33 +615,35 @@ export class BlockfaceIdPacker extends GameComponent {
     // but we need unsigned as you can't have negative id.
     // so just don't use bitwise operations for highest byte.
     // eg. 250<<24 results in `-1006...` instead of the expected `4194...`
-    let v3 = color[3] * 2**24;
+    let v3 = color[3] * 2 ** 24;
     return color[0] + (color[1] << 8) + (color[2] << 16) + v3;
   }
-  colorToId(/** @type {[number, number, number, number] | Uint8Array} */color) {
+  colorToId(
+    /** @type {[number, number, number, number] | Uint8Array} */ color
+  ) {
     return BlockfaceIdPacker.colorToId(color);
   }
 }
 
-/** 
+/**
  * @typedef {{positions: number[], texCoords: number[], indices: number[], maxindex?: number[]}} BundleT
  */
 
-/** 
+/**
  * @param {{[k: string]: ElementBundler}} dest
  * @param {{[k: string]: BundleT | ElementBundler}} src
  */
 function mergeMeshObj(dest, src) {
-  for(const [name, data] of Object.entries(src)) {
+  for (const [name, data] of Object.entries(src)) {
     if (dest[name]) dest[name].addData(data);
   }
 }
 
-/** 
+/**
  * @param {Object<string, ElementBundler>} mesh
  */
 function resetMeshObj(mesh) {
-  for(const bundle of Object.values(mesh)) {
+  for (const bundle of Object.values(mesh)) {
     bundle.reset();
   }
 }

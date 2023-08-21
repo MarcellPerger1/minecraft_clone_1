@@ -2,14 +2,13 @@ import { assert } from "../utils/assert.js";
 import { fetchTextFile } from "../utils/file_load.js";
 import { loadShader, programFromShaders } from "../utils/gl_utils.js";
 
-
 export class ShaderProgramLoader {
   /** @type {WebGLShader} */
   vs;
   /** @type {WebGLShader} */
   fs;
 
-  constructor(gl, {vsPath, fsPath}) {
+  constructor(gl, { vsPath, fsPath }) {
     this.gl = gl;
     this.vsPath = vsPath;
     this.fsPath = fsPath;
@@ -32,5 +31,5 @@ export class ShaderProgramLoader {
     assert(path != null, "path should not be null");
     const text = await fetchTextFile(path);
     return loadShader(this.gl, sType, text);
-  } 
+  }
 }

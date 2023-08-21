@@ -141,14 +141,18 @@ export class Chunk extends GameComponent {
     const targetChunkIdx = this.world.getChunkIndex(pos);
     assert(this.world.getChunkFromIndices(targetChunkIdx));
     var adjacentChunks = [];
-    for (const i of /** @type {const} */([0, 1, 2])) {
-      if (pos[i] == this.low[i]) { 
-        adjacentChunks.push(this.world.getAdjacentChunkInDirn(targetChunkIdx, i, -1));
+    for (const i of /** @type {const} */ ([0, 1, 2])) {
+      if (pos[i] == this.low[i]) {
+        adjacentChunks.push(
+          this.world.getAdjacentChunkInDirn(targetChunkIdx, i, -1)
+        );
       }
-      if (pos[i] == this.high[i] - 1) { 
-        adjacentChunks.push(this.world.getAdjacentChunkInDirn(targetChunkIdx, i, 1));
+      if (pos[i] == this.high[i] - 1) {
+        adjacentChunks.push(
+          this.world.getAdjacentChunkInDirn(targetChunkIdx, i, 1)
+        );
       }
     }
-    return adjacentChunks.filter(v => v != null);
+    return adjacentChunks.filter((v) => v != null);
   }
 }

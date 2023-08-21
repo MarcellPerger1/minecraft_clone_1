@@ -9,7 +9,11 @@ export class DynInfo extends GameComponent {
   }
 
   update() {
-    if(this.lastUpdateAt != null && performance.now() < this.lastUpdateAt + 1/30) return;
+    if (
+      this.lastUpdateAt != null &&
+      performance.now() < this.lastUpdateAt + 1 / 30
+    )
+      return;
     this.lastUpdateAt = performance.now();
     this.updatePosInfo();
     this.updateFacingInfo();

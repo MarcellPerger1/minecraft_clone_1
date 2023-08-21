@@ -36,9 +36,11 @@ export class World extends GameComponent {
     this.wantInRange(pos);
     const relPos = vec3.sub([], pos, this.low);
     // x is least significant, z is most significant in id
-    return relPos[0]
-      + relPos[1] * this.size[0]
-      + relPos[2] * this.size[0] * this.size[1];
+    return (
+      relPos[0] +
+      relPos[1] * this.size[0] +
+      relPos[2] * this.size[0] * this.size[1]
+    );
   }
 
   posFromIdx(idx) {
@@ -47,7 +49,7 @@ export class World extends GameComponent {
     const [y, x] = divmod(xy, this.size[0]);
     const relPos = [x, y, z];
     return vec3.add([], relPos, this.low);
-  } 
+  }
 
   checkChunkSize(cSize) {
     if (cSize.some((i) => i === 0)) {
@@ -88,14 +90,14 @@ export class World extends GameComponent {
     return this.chunks[ix][iy][iz];
   }
   /**
-   * @param {Vec3} indices 
+   * @param {Vec3} indices
    * @returns {Chunk?}
    */
   getChunkFromIndices(indices) {
     const [ix, iy, iz] = indices;
     return this.chunks[ix]?.[iy]?.[iz];
   }
-  
+
   /**
    * @param {Vec3} rootChunkIdx
    * @param {0 | 1 | 2} dirn_axis

@@ -6,12 +6,12 @@ import { Blocks } from "./world.js";
 
 // TODO: where should this go
 /**
- * @param {[number, number, number]} pos 
- * @param {import("./renderer/renderer.js").OffsetInfoT} offsetInfo 
+ * @param {[number, number, number]} pos
+ * @param {import("./renderer/renderer.js").OffsetInfoT} offsetInfo
  * @returns {[number, number, number]}
  */
 export function posFromOffset(pos, offsetInfo) {
-  pos = [...pos];  // copy it
+  pos = [...pos]; // copy it
   const [axis, sign] = offsetInfo;
   pos[axis] += sign;
   return pos;
@@ -28,8 +28,8 @@ export class Player extends GameComponent {
   addListeners() {
     this.addMoveBindings();
     this.canvas.addEventListener("pointermove", this.pointer_move.bind(this));
-    this.canvas.addEventListener('pointerdown', (event) => {
-      if(!this.game.pointerLocked) return;
+    this.canvas.addEventListener("pointerdown", (event) => {
+      if (!this.game.pointerLocked) return;
       switch (event.button) {
         case button.LEFT:
           this.action_breakBlock();
@@ -43,7 +43,7 @@ export class Player extends GameComponent {
 
   action_breakBlock() {
     const clickInfo = this.pickingRenderer.readCanvasCenter();
-    if(clickInfo == null) return;
+    if (clickInfo == null) return;
     const pos = clickInfo[0];
     this.world.setBlock(pos, Blocks.air);
     this.renderMgr.invalidateBlockAndAdjacent(pos);
@@ -56,10 +56,12 @@ export class Player extends GameComponent {
     const offset = faceToOffsetInfo(face);
     const pos = posFromOffset(clickedPos, offset);
     if (!this.world.inRange(pos)) return;
-    if(this.world.getBlock(pos) != Blocks.air) {
-      console.warn("Trying to place block where there isn't air "+
-        "(are you placing it from inside the terrain");
-        return;
+    if (this.world.getBlock(pos) != Blocks.air) {
+      console.warn(
+        "Trying to place block where there isn't air " +
+          "(are you placing it from inside the terrain"
+      );
+      return;
     }
     this.world.setBlock(pos, this.blockInHand);
     this.renderMgr.invalidateBlockAndAdjacent(pos);

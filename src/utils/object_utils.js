@@ -9,7 +9,6 @@ export function fromKeys(keys, value) {
   return Object.fromEntries(keys.map((k) => [k, value]));
 }
 
-
 /**
  * Return prototype for ctor or proto
  * @param {*} p - Prototype or constructor

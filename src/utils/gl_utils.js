@@ -2,14 +2,16 @@ import { isPowerOf2 } from "./math.js";
 
 export function getGLContext(canvas) {
   let gl = canvas.getContext("webgl");
-  if(gl) return gl;
+  if (gl) return gl;
   gl = canvas.getContext("experimental-webgl");
-  if(gl) {
+  if (gl) {
     console.warn("Using experimental-webgl, things might break.");
     return gl;
   }
-  throw new Error("Unable to initialize WebGL." + 
-                  "Your browser or machine may not support it.");
+  throw new Error(
+    "Unable to initialize WebGL." +
+      "Your browser or machine may not support it."
+  );
 }
 
 /**
@@ -31,13 +33,21 @@ export function glErrnoToMsg(errno, gl = WebGLRenderingContext) {
   return lookup[errno];
 }
 
-export function initShaderProgram(/** @type {WebGLRenderingContext} */gl, vsSource, fsSource) {
+export function initShaderProgram(
+  /** @type {WebGLRenderingContext} */ gl,
+  vsSource,
+  fsSource
+) {
   const vs = loadShader(gl, gl.VERTEX_SHADER, vsSource);
   const fs = loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
   return programFromShaders(gl, vs, fs);
 }
 
-export function programFromShaders(/** @type {WebGLRenderingContext} */gl, vs, fs) {
+export function programFromShaders(
+  /** @type {WebGLRenderingContext} */ gl,
+  vs,
+  fs
+) {
   const shaderProgram = gl.createProgram();
   gl.attachShader(shaderProgram, vs);
   gl.attachShader(shaderProgram, fs);
@@ -52,7 +62,11 @@ export function programFromShaders(/** @type {WebGLRenderingContext} */gl, vs, f
   return shaderProgram;
 }
 
-export function loadShader(/** @type {WebGLRenderingContext} */gl, type, source) {
+export function loadShader(
+  /** @type {WebGLRenderingContext} */ gl,
+  type,
+  source
+) {
   const shader = gl.createShader(type);
   // Send the source to the shader object
   gl.shaderSource(shader, source);

@@ -4,7 +4,7 @@ export var ASSERT_SETTINGS = {
 };
 
 /**
- * 
+ *
  * @param {unknown} condition Condition to assert
  * @param {string} [msg=null] Message
  * @returns {asserts condition}
