@@ -21,6 +21,10 @@ export class ChunkRenderer extends GameComponent {
     this.remakeMesh = false;
   }
 
+  invalidate() {
+    this.remakeMesh = true;
+  }
+
   resetMesh() {
     Object.values(this.mesh).forEach((b) => b.reset());
   }

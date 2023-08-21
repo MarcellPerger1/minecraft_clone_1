@@ -58,6 +58,17 @@ export class RenderMgr extends GameComponent {
   renderFrame() {
     this.renderer.renderFrame();
   }
+
+  /**
+   * @param {[number, number, number]} pos 
+   */
+  invalidateBlockAndAdjacent(pos) {
+    if (!this.world.inRange(pos)) return;
+    const targetChunk = this.world.getChunkAt(pos);
+    targetChunk.chunkRenderer.invalidate();
+    var adjacentChunks = targetChunk.getChunksAdjacentTo(pos);
+    adjacentChunks.map(c => c.chunkRenderer.invalidate());
+  }
 }
 
 
