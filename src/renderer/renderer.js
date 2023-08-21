@@ -411,7 +411,7 @@ export class PickingIdRenderer extends MeshRenderer {
   /**
    * @param {number} x
    * @param {number} y
-   * @returns {BlockfaceInfoT}
+   * @returns {BlockfaceInfoT?}
    */
   readBlockAtCanvasCoord(x, y) {
     this.renderFrame();
@@ -419,7 +419,7 @@ export class PickingIdRenderer extends MeshRenderer {
   }
 
   /**
-   * @returns {BlockfaceInfoT}
+   * @returns {BlockfaceInfoT?}
    */
   readCanvasCenter() {
     return this.readBlockAtCanvasCoord(this.canvas.width >> 1, this.canvas.height >> 1);
@@ -428,7 +428,7 @@ export class PickingIdRenderer extends MeshRenderer {
   /**
    * @param {number} x
    * @param {number} y
-   * @returns {BlockfaceInfoT}
+   * @returns {BlockfaceInfoT?}
    */
   _readRenderedPixelBlockface(x, y) {
     return this.idPacker.colorToBlockFace(this._readRenderedPixelColor(x, y));
@@ -482,7 +482,7 @@ export class BlockfaceIdPacker extends GameComponent {
 
   /**
    * @param {Uint8Array | [number, number, number, number]} color
-   * @returns {BlockfaceInfoT}
+   * @returns {BlockfaceInfoT?}
    */
   colorToBlockFace(color) {
     return this.blockFaceFromId(this.colorToId(color));
@@ -511,7 +511,7 @@ export class BlockfaceIdPacker extends GameComponent {
 
   /**
    * @param {number} id
-   * @returns {BlockfaceInfoT}
+   * @returns {BlockfaceInfoT?}
    */
   blockFaceFromId(id) {
     assert(id >= 0 && id < 2**32, "id must be a 32-bit UNSIGNED int");
