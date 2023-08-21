@@ -19,7 +19,7 @@ export class Player extends GameComponent {
       if(clickInfo == null) return;
       const pos = clickInfo[0];
       this.world.setBlock(pos, Blocks.air);
-      this.world.getChunkAt(pos).chunkRenderer.remakeMesh = true;
+      this.renderMgr.invalidateBlockAndAdjacent(pos);
     });
   }
 
