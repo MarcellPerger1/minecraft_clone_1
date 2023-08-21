@@ -15,6 +15,4 @@ export default async function fetch(path) {
   return response;
 }
 
-if (!globalThis.fetch) {
-  globalThis.fetch = fetch;
-}
+globalThis.fetch = fetch;
