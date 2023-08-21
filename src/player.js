@@ -1,5 +1,5 @@
 import { GameComponent } from "./game_component.js";
-import { KeyEvent } from "./keyinput.js";
+import { KeyEvent, button } from "./keyinput.js";
 import { clamp, toRad } from "./utils/math.js";
 import { Blocks } from "./world.js";
 
@@ -13,14 +13,19 @@ export class Player extends GameComponent {
   addListeners() {
     this.addMoveBindings();
     this.canvas.addEventListener("pointermove", this.pointer_move.bind(this));
-    this.canvas.addEventListener('pointerdown', () => {
+    this.canvas.addEventListener('pointerdown', (event) => {
+      if (event.button != button.LEFT) return;
       if(!this.game.pointerLocked) return;
-      const clickInfo = this.pickingRenderer.readCanvasCenter();
-      if(clickInfo == null) return;
-      const pos = clickInfo[0];
-      this.world.setBlock(pos, Blocks.air);
-      this.renderMgr.invalidateBlockAndAdjacent(pos);
+      this.action_breakBlock();
     });
+  }
+
+  action_breakBlock() {
+    const clickInfo = this.pickingRenderer.readCanvasCenter();
+    if(clickInfo == null) return;
+    const pos = clickInfo[0];
+    this.world.setBlock(pos, Blocks.air);
+    this.renderMgr.invalidateBlockAndAdjacent(pos);
   }
 
   pointer_move(e) {
