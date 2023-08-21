@@ -6,6 +6,10 @@ import { GameComponent } from "../game_component.js";
 import { Blocks } from "./block_type.js";
 import { Chunk } from "./chunk.js";
 
+/**
+ * @typedef {[number, number, number]} Vec3
+ */
+
 export class World extends GameComponent {
   constructor(game) {
     super(game);
@@ -72,6 +76,9 @@ export class World extends GameComponent {
     return full_index[direction] == this.nChunks[direction] - 1;
   }
 
+  /**
+   * @param {Vec3} pos
+   */
   getChunkIndex(pos) {
     return vec3.floor([], vec3.div([], pos, this.chunkSize));
   }
@@ -79,6 +86,26 @@ export class World extends GameComponent {
   getChunkAt(pos) {
     const [ix, iy, iz] = this.getChunkIndex(pos);
     return this.chunks[ix][iy][iz];
+  }
+  /**
+   * @param {Vec3} indices 
+   * @returns {Chunk?}
+   */
+  getChunkFromIndices(indices) {
+    const [ix, iy, iz] = indices;
+    return this.chunks[ix]?.[iy]?.[iz];
+  }
+  
+  /**
+   * @param {Vec3} rootChunkIdx
+   * @param {0 | 1 | 2} dirn_axis
+   * @param {1 | -1} dirn_sign
+   * @returns {Chunk?}
+   */
+  getAdjacentChunkInDirn(rootChunkIdx, dirn_axis, dirn_sign) {
+    /** @type {Vec3} */ const rootIdx = [...rootChunkIdx];
+    rootIdx[dirn_axis] += dirn_sign;
+    return this.getChunkFromIndices(rootIdx);
   }
 
   getBlock(at) {
