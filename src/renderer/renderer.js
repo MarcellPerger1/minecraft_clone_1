@@ -312,11 +312,24 @@ export class DisplayRenderer extends MeshRenderer {
 }
 
 
-export const FACES = {x0: 0, x1: 1, y0: 2, y1: 3, z0: 4, z1: 5};
+export const FACES = Object.freeze({x0: 0, x1: 1, y0: 2, y1: 3, z0: 4, z1: 5});
+
+/**
+ * @param {number} face 
+ * @returns {OffsetInfoT}
+ */
+export function faceToOffsetInfo(face) {
+  const axis = Math.floor(face / 2);
+  assert([0, 1, 2].includes(axis));
+  const dirn01 = face % 2;
+  const sign = dirn01 == 0 ? -1 : 1;
+  return [/** @type {0 | 1 | 2} */(axis), sign];
+}
 
 
 /**
  * @typedef {import("./face_culling.js").IdsDataT} FacesIdDataT
+ * @typedef {[0 | 1 | 2, -1 | 1]} OffsetInfoT
  */
 
 export class PickingIdRenderer extends MeshRenderer {
