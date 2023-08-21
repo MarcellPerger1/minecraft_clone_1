@@ -21,7 +21,15 @@ export class Chunk extends GameComponent {
     super(game);
 
     this.size = vec3.clone(size);
+    /**
+     * Inclusive
+     * @type {Vec3}
+     */
     this.low = vec3.clone(low);
+    /**
+     * Exclusive
+     * @type {Vec3}
+     */
     this.high = vec3.add(vec3.create(), this.low, this.size);
     this.origin = this.low;
     this.volume = this.size[0] * this.size[1] * this.size[2];
