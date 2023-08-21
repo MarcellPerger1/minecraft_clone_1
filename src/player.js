@@ -14,7 +14,7 @@ export class Player extends GameComponent {
     this.addMoveBindings();
     this.canvas.addEventListener("pointermove", this.pointer_move.bind(this));
     this.canvas.addEventListener('pointerdown', () => {
-      if(!this.game.hasPointerLock) return;
+      if(!this.game.pointerLocked) return;
       const clickInfo = this.pickingRenderer.readCanvasCenter();
       if(clickInfo == null) return;
       const pos = clickInfo[0];
