@@ -1,21 +1,9 @@
 import { GameComponent } from "./game_component.js";
 import { KeyEvent, button } from "./keyinput.js";
-import { faceToOffsetInfo } from "./renderer/renderer.js";
 import { clamp, toRad } from "./utils/math.js";
+import { OffsetInfo } from "./utils/offset_info.js";
 import { Blocks } from "./world.js";
 
-// TODO: where should this go
-/**
- * @param {[number, number, number]} pos
- * @param {import("./renderer/renderer.js").OffsetInfoT} offsetInfo
- * @returns {[number, number, number]}
- */
-export function posFromOffset(pos, offsetInfo) {
-  pos = [...pos]; // copy it
-  const [axis, sign] = offsetInfo;
-  pos[axis] += sign;
-  return pos;
-}
 
 export class Player extends GameComponent {
   constructor(game) {
@@ -53,8 +41,7 @@ export class Player extends GameComponent {
     const clickInfo = this.pickingRenderer.readCanvasCenter();
     if (clickInfo == null) return;
     const [clickedPos, face] = clickInfo;
-    const offset = faceToOffsetInfo(face);
-    const pos = posFromOffset(clickedPos, offset);
+    const pos = OffsetInfo.fromFaceNum(face).posRelTo(clickedPos);
     if (!this.world.inRange(pos)) return;
     if (this.world.getBlock(pos) != Blocks.air) {
       console.warn(
