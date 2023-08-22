@@ -52,7 +52,7 @@
   height: 100%;
 }
 
-.center {
+.center-pos-absolute {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -81,4 +81,16 @@
 
 .click-thru {
   pointer-events: none;
+}
+
+.crosshair-text-container {
+  color: white; 
+  font-family: monospace;
+}
+
+.flex-centerboth-diry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
