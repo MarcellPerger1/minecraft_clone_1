@@ -19,7 +19,7 @@ import { assert } from "../utils/assert.js";
  */
 
 // NOTE:
-// North = +z
+// North = +x
 // Up    = +y
 // East  = +z
 
