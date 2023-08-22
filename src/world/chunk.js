@@ -21,7 +21,15 @@ export class Chunk extends GameComponent {
     super(game);
 
     this.size = vec3.clone(size);
+    /**
+     * Inclusive
+     * @type {Vec3}
+     */
     this.low = vec3.clone(low);
+    /**
+     * Exclusive
+     * @type {Vec3}
+     */
     this.high = vec3.add(vec3.create(), this.low, this.size);
     this.origin = this.low;
     this.volume = this.size[0] * this.size[1] * this.size[2];
@@ -110,6 +118,9 @@ export class Chunk extends GameComponent {
     );
   }
 
+  /**
+   * @param {Vec3} pos
+   */
   wantInRange(pos, msg = "Position out of range") {
     assert(this.inRange(pos), msg);
   }
@@ -120,5 +131,28 @@ export class Chunk extends GameComponent {
       const block = this.blocks[i];
       yield [posVec, block];
     }
+  }
+
+  /**
+   * @param {Vec3} pos
+   */
+  getChunksAdjacentTo(pos) {
+    this.wantInRange(pos);
+    const targetChunkIdx = this.world.getChunkIndex(pos);
+    assert(this.world.getChunkFromIndices(targetChunkIdx) === this); // assert that we are the target chunk
+    var adjacentChunks = [];
+    for (const i of /** @type {const} */ ([0, 1, 2])) {
+      if (pos[i] == this.low[i]) {
+        adjacentChunks.push(
+          this.world.getAdjacentChunkInDirn(targetChunkIdx, i, -1)
+        );
+      }
+      if (pos[i] == this.high[i] - 1) {
+        adjacentChunks.push(
+          this.world.getAdjacentChunkInDirn(targetChunkIdx, i, 1)
+        );
+      }
+    }
+    return adjacentChunks.filter((v) => v != null);
   }
 }

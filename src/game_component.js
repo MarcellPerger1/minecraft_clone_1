@@ -28,10 +28,6 @@ export class GameComponent {
     return this.game.ki;
   }
 
-  get r() {
-    return this.game.r;
-  }
-
   get canvas() {
     return this.game.canvas;
   }
@@ -48,7 +44,19 @@ export class GameComponent {
     return this.game.world;
   }
 
+  get renderMgr() {
+    return this.game.renderMgr;
+  }
+
+  get displayRenderer() {
+    return this.game.renderMgr.renderer;
+  }
+
+  get pickingRenderer() {
+    return this.game.renderMgr.pickingRenderer;
+  }
+
   get gl() {
-    return this.r.gl;
+    return this.game.renderMgr.gl;
   }
 }

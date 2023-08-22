@@ -1,17 +1,56 @@
 import { GameComponent } from "./game_component.js";
-import { KeyEvent } from "./keyinput.js";
+import { KeyEvent, Button } from "./keyinput.js";
 import { clamp, toRad } from "./utils/math.js";
+import { OffsetInfo } from "./utils/offset_info.js";
+import { Blocks } from "./world.js";
 
 export class Player extends GameComponent {
   constructor(game) {
     super(game);
     this.rotation = Object.assign({}, this.cnf.player.startRot);
     this.position = this.cnf.player.startPos.slice();
+    this.blockInHand = Blocks.oak_log;
   }
 
   addListeners() {
     this.addMoveBindings();
     this.canvas.addEventListener("pointermove", this.pointer_move.bind(this));
+    this.canvas.addEventListener("pointerdown", (event) => {
+      if (!this.game.pointerLocked) return;
+      switch (event.button) {
+        case Button.LEFT:
+          this.action_breakBlock();
+          break;
+        case Button.RIGHT:
+          this.action_placeBlock();
+          break;
+      }
+    });
+  }
+
+  action_breakBlock() {
+    const clickInfo = this.pickingRenderer.readCanvasCenter();
+    if (clickInfo == null) return;
+    const pos = clickInfo[0];
+    this.world.setBlock(pos, Blocks.air);
+    this.renderMgr.invalidateBlockAndAdjacent(pos);
+  }
+
+  action_placeBlock() {
+    const clickInfo = this.pickingRenderer.readCanvasCenter();
+    if (clickInfo == null) return;
+    const [clickedPos, face] = clickInfo;
+    const pos = OffsetInfo.fromFaceNum(face).posRelTo(clickedPos);
+    if (!this.world.inRange(pos)) return;
+    if (this.world.getBlock(pos) != Blocks.air) {
+      console.warn(
+        "Trying to place block where there isn't air " +
+          "(are you placing it from inside the terrain?)"
+      );
+      return;
+    }
+    this.world.setBlock(pos, this.blockInHand);
+    this.renderMgr.invalidateBlockAndAdjacent(pos);
   }
 
   pointer_move(e) {
@@ -99,7 +138,7 @@ export class Player extends GameComponent {
       [],
       scaled,
       [0, 0, 0],
-      toRad(-this.r.camRot.h + 90)
+      toRad(-this.rotation.h + 90)
     );
     vec3.add(this.position, this.position, absMove);
   }

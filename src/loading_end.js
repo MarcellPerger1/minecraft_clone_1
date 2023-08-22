@@ -51,6 +51,6 @@ export class LoadingEndMgr extends GameComponent {
   }
 
   get overlayElems() {
-    return document.querySelectorAll(".overlay");
+    return document.querySelectorAll(".pbar-overlay");
   }
 }

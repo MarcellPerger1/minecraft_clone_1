@@ -16,19 +16,11 @@
   height: var(--canvas-height);
 }
 
-.overlay-container {
-  /* extends .canv-size */
-  width: var(--canvas-width);
-  height: var(--canvas-height);
-  /* extends .absolute-root */
-  position: relative;
-}
-
 .canv-bg {
   background: var(--canvas-bg);
 }
 
-.behind-overlay, .overlay{
+.behind-overlay, .pbar-overlay{
   width: 100%;
   height: 100%;
   position: absolute;
@@ -36,7 +28,7 @@
   left: 0;
 }
 
-.overlay {
+.pbar-overlay {
   z-index: 10;
   background-color: var(--overlay-color);
 }
@@ -52,7 +44,7 @@
   height: 100%;
 }
 
-.center {
+.center-pos-absolute {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -81,4 +73,14 @@
 
 .click-thru {
   pointer-events: none;
+}
+
+.crosshair-textfont {
+  color: white; 
+  font-family: monospace;
+}
+
+.flex-dir-y {
+  display: flex;
+  flex-direction: column;
 }

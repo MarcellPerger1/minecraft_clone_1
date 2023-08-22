@@ -1,26 +1,34 @@
-import { isObject } from "../utils/type_check.js";
-import { sortCoords } from "../utils/array_utils.js";
 import { GameComponent } from "../game_component.js";
 
 const FAR_DIST_SQ = 130;
 
+/**
+ * @typedef {{positions: number[], indices: number[], maxindex?: number, texCoords?: number[], aId?: number[]}} DataT
+ */
+
 export class CubeVertexData extends GameComponent {
-  constructor(game, p0, p1, textures) {
+  constructor(game, p0, options) {
     super(game);
-    // argument juggling
-    if (textures == null && isObject(p1)) {
-      textures = p1;
-      p1 = null;
-    }
-    if (p1 == null) {
-      this.p0 = p0;
-      this.p1 = vec3.add([], p0, [1, 1, 1]);
-    } else {
-      [this.p0, this.p1] = sortCoords(p0, p1);
-    }
+    this.p0 = p0;
+    this.p1 = vec3.add([], p0, [1, 1, 1]);
     /** @type {{side: string, top: string, bottom: string}} */
-    this.textures = textures;
+    this.textures = options.textures;
+    this.doTextures = Boolean(this.textures);
+    this.ids = options.ids;
+    this.doIds = Boolean(this.ids);
     this.isFar = vec3.sqrDist(this.player.position, this.p0) > FAR_DIST_SQ;
+  }
+
+  /** @returns {[number, number]} */
+  getTexRangeX(/** @type {string} */ texName) {
+    const texData = this.displayRenderer.atlas.data[texName];
+    const t0 = this.isFar ? texData.x0f : texData.x0;
+    const t1 = this.isFar ? texData.x1f : texData.x1;
+    return [t0, t1];
+  }
+
+  getIdData(idColor) {
+    return [...idColor, ...idColor, ...idColor, ...idColor];
   }
 
   // NOTE: only texture x coords needed on a per-texture basis
@@ -29,297 +37,114 @@ export class CubeVertexData extends GameComponent {
   side_x0() {
     const [x0, y0, z0] = this.p0;
     const [_x1, y1, z1] = this.p1;
-    const td = this.r.atlas.data[this.textures.side];
-
-    const t0 = this.isFar ? td.x0f : td.x0;
-    const t1 = this.isFar ? td.x1f : td.x1;
-    const sides = {
+    /** @type {DataT} */
+    const data = {
       positions: [x0, y0, z0, x0, y0, z1, x0, y1, z1, x0, y1, z0],
-      texCoords: [t0, 1, t1, 1, t1, 0, t0, 0],
       indices: [0, 1, 2, 0, 2, 3],
       maxindex: 3,
     };
-    return sides;
+    if (this.doTextures) {
+      const [t0, t1] = this.getTexRangeX(this.textures.side);
+      data.texCoords = [t0, 1, t1, 1, t1, 0, t0, 0];
+    }
+    if (this.doIds) {
+      data.aId = this.getIdData(this.ids.x0);
+    }
+    return data;
   }
 
   side_x1() {
     const [_x0, y0, z0] = this.p0;
     const [x1, y1, z1] = this.p1;
-    const td = this.r.atlas.data[this.textures.side];
-
-    const t0 = this.isFar ? td.x0f : td.x0;
-    const t1 = this.isFar ? td.x1f : td.x1;
-    const sides = {
+    /** @type {DataT} */
+    const data = {
       positions: [x1, y0, z0, x1, y1, z0, x1, y1, z1, x1, y0, z1],
-      texCoords: [t1, 1, t1, 0, t0, 0, t0, 1],
       indices: [0, 1, 2, 0, 2, 3],
       maxindex: 3,
     };
-    return sides;
+    if (this.doTextures) {
+      const [t0, t1] = this.getTexRangeX(this.textures.side);
+      data.texCoords = [t1, 1, t1, 0, t0, 0, t0, 1];
+    }
+    if (this.doIds) {
+      data.aId = this.getIdData(this.ids.x1);
+    }
+    return data;
   }
 
   side_z0() {
     const [x0, y0, z0] = this.p0;
     const [x1, y1, _z1] = this.p1;
-    const td = this.r.atlas.data[this.textures.side];
-
-    const t0 = this.isFar ? td.x0f : td.x0;
-    const t1 = this.isFar ? td.x1f : td.x1;
-    const sides = {
+    /** @type {DataT} */
+    const data = {
       positions: [x0, y0, z0, x0, y1, z0, x1, y1, z0, x1, y0, z0],
-      texCoords: [t1, 1, t1, 0, t0, 0, t0, 1],
       indices: [0, 1, 2, 0, 2, 3],
       maxindex: 3,
     };
-    return sides;
+    if (this.doTextures) {
+      const [t0, t1] = this.getTexRangeX(this.textures.side);
+      data.texCoords = [t1, 1, t1, 0, t0, 0, t0, 1];
+    }
+    if (this.doIds) {
+      data.aId = this.getIdData(this.ids.z0);
+    }
+    return data;
   }
 
   side_z1() {
     const [x0, y0, _z0] = this.p0;
     const [x1, y1, z1] = this.p1;
-    const td = this.r.atlas.data[this.textures.side];
-
-    const t0 = this.isFar ? td.x0f : td.x0;
-    const t1 = this.isFar ? td.x1f : td.x1;
-    const sides = {
+    /** @type {DataT} */
+    const data = {
       positions: [x0, y0, z1, x1, y0, z1, x1, y1, z1, x0, y1, z1],
-      texCoords: [t0, 1, t1, 1, t1, 0, t0, 0],
       indices: [0, 1, 2, 0, 2, 3],
       maxindex: 3,
     };
-    return sides;
-  }
-
-  top() {
-    const [x0, _y0, z0] = this.p0;
-    const [x1, y1, z1] = this.p1;
-    const td = this.r.atlas.data[this.textures.top];
-
-    const t0 = this.isFar ? td.x0f : td.x0;
-    const t1 = this.isFar ? td.x1f : td.x1;
-    const ret = {
-      positions: [x0, y1, z0, x0, y1, z1, x1, y1, z1, x1, y1, z0],
-      texCoords: [t0, 0, t1, 0, t1, 1, t0, 1],
-      indices: [0, 1, 2, 0, 2, 3],
-      maxindex: 3,
-    };
-    return ret;
-  }
-
-  bottom() {
-    const [x0, y0, z0] = this.p0;
-    const [x1, _y1, z1] = this.p1;
-    const td = this.r.atlas.data[this.textures.bottom];
-
-    const t0 = this.isFar ? td.x0f : td.x0;
-    const t1 = this.isFar ? td.x1f : td.x1;
-    const ret = {
-      positions: [x0, y0, z0, x1, y0, z0, x1, y0, z1, x0, y0, z1],
-      texCoords: [t0, 1, t1, 1, t1, 0, t0, 0],
-      indices: [0, 1, 2, 0, 2, 3],
-      maxindex: 3,
-    };
-    return ret;
-  }
-
-  side_y0() {
-    return this.bottom();
+    if (this.doTextures) {
+      const [t0, t1] = this.getTexRangeX(this.textures.side);
+      data.texCoords = [t0, 1, t1, 1, t1, 0, t0, 0];
+    }
+    if (this.doIds) {
+      data.aId = this.getIdData(this.ids.z1);
+    }
+    return data;
   }
 
   side_y1() {
-    return this.top();
-  }
-
-  sides() {
-    const [x0, y0, z0] = this.p0;
+    const [x0, _y0, z0] = this.p0;
     const [x1, y1, z1] = this.p1;
-    const sides = {
-      positions: [
-        // Front face
-        x0,
-        y0,
-        z1,
-        x1,
-        y0,
-        z1,
-        x1,
-        y1,
-        z1,
-        x0,
-        y1,
-        z1,
-
-        // Back face
-        x0,
-        y0,
-        z0,
-        x0,
-        y1,
-        z0,
-        x1,
-        y1,
-        z0,
-        x1,
-        y0,
-        z0,
-
-        // Right face
-        x1,
-        y0,
-        z0,
-        x1,
-        y1,
-        z0,
-        x1,
-        y1,
-        z1,
-        x1,
-        y0,
-        z1,
-
-        // Left face
-        x0,
-        y0,
-        z0,
-        x0,
-        y0,
-        z1,
-        x0,
-        y1,
-        z1,
-        x0,
-        y1,
-        z0,
-      ],
-      texCoords: [
-        // Front
-        0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0,
-        // Back
-        1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-        // Right
-        1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-        // Left
-        0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0,
-      ],
-      indices: [
-        0,
-        1,
-        2,
-        0,
-        2,
-        3, // front
-        4,
-        5,
-        6,
-        4,
-        6,
-        7, // back
-        8,
-        9,
-        10,
-        8,
-        10,
-        11, // right
-        12,
-        13,
-        14,
-        12,
-        14,
-        15, // left
-      ],
-      maxindex: 15,
+    /** @type {DataT} */
+    const data = {
+      positions: [x0, y1, z0, x0, y1, z1, x1, y1, z1, x1, y1, z0],
+      indices: [0, 1, 2, 0, 2, 3],
+      maxindex: 3,
     };
-    return sides;
+    if (this.doTextures) {
+      const [t0, t1] = this.getTexRangeX(this.textures.top);
+      data.texCoords = [t0, 0, t1, 0, t1, 1, t0, 1];
+    }
+    if (this.doIds) {
+      data.aId = this.getIdData(this.ids.y1);
+    }
+    return data;
   }
 
-  _allPosData() {
+  side_y0() {
     const [x0, y0, z0] = this.p0;
-    const [x1, y1, z1] = this.p1;
-    const positions = [
-      // Front face
-      x0,
-      y0,
-      z1,
-      x1,
-      y0,
-      z1,
-      x1,
-      y1,
-      z1,
-      x0,
-      y1,
-      z1,
-
-      // Back face
-      x0,
-      y0,
-      z0,
-      x0,
-      y1,
-      z0,
-      x1,
-      y1,
-      z0,
-      x1,
-      y0,
-      z0,
-
-      // Top face
-      x0,
-      y1,
-      z0,
-      x0,
-      y1,
-      z1,
-      x1,
-      y1,
-      z1,
-      x1,
-      y1,
-      z0,
-
-      // Bottom face
-      x0,
-      y0,
-      z0,
-      x1,
-      y0,
-      z0,
-      x1,
-      y0,
-      z1,
-      x0,
-      y0,
-      z1,
-
-      // Right face
-      x1,
-      y0,
-      z0,
-      x1,
-      y1,
-      z0,
-      x1,
-      y1,
-      z1,
-      x1,
-      y0,
-      z1,
-
-      // Left face
-      x0,
-      y0,
-      z0,
-      x0,
-      y0,
-      z1,
-      x0,
-      y1,
-      z1,
-      x0,
-      y1,
-      z0,
-    ];
-    return positions;
+    const [x1, _y1, z1] = this.p1;
+    /** @type {DataT} */
+    const data = {
+      positions: [x0, y0, z0, x1, y0, z0, x1, y0, z1, x0, y0, z1],
+      indices: [0, 1, 2, 0, 2, 3],
+      maxindex: 3,
+    };
+    if (this.doTextures) {
+      const [t0, t1] = this.getTexRangeX(this.textures.bottom);
+      data.texCoords = [t0, 1, t1, 1, t1, 0, t0, 0];
+    }
+    if (this.doIds) {
+      data.aId = this.getIdData(this.ids.y0);
+    }
+    return data;
   }
 }

@@ -1,17 +1,13 @@
 attribute vec4 aVertexPosition;
 attribute vec2 aTextureCoord;
-//attribute vec4 aVertexColor;
 
-uniform mat4 uModelViewMatrix;
-uniform mat4 uProjectionMatrix;
+uniform mat4 uMatrix;
 
 // these are then passed to the fragment shader (interpolated between vertices)
 varying highp vec2 vTextureCoord;
-//varying lowp vec4 vColor;
 
 
 void main(void) {
-  gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
-  //vColor = aVertexColor;
+  gl_Position = uMatrix * aVertexPosition;
   vTextureCoord = aTextureCoord;
 }

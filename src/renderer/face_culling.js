@@ -1,10 +1,11 @@
-import { unreachable } from "../utils/assert.js";
 import { GameComponent } from "../game_component.js";
 import { CubeVertexData } from "./cube_data.js";
 
 /**
- * @typedef {import('./game.js').Game} Game
+ * @typedef {import('../game.js').Game} Game
  * @typedef {[number, number, number]} Vec3
+ * @typedef {[number, number, number, number]} ColorT
+ * @typedef {{x0: ColorT, x1: ColorT, y0: ColorT, y1: ColorT, z0: ColorT, z1: ColorT}} IdsDataT
  */
 
 export class CubeDataAdder extends GameComponent {
@@ -12,49 +13,30 @@ export class CubeDataAdder extends GameComponent {
    *
    * @param {GameComponent | Game} game
    * @param {Vec3} pos
-   * @param {{side: string, top: string, bottom: string}} textureData
-   * @param {Object} renderTarget - TODO type=?
+   * @param {{textures: {side: string, top: string, bottom: string}, ids: IdsDataT}} options
+   * @param {{addData: (d: any, t: boolean) => void}} renderTarget
    */
-  constructor(game, pos, textureData, renderTarget) {
+  constructor(game, pos, options, renderTarget) {
     super(game);
     this.pos = pos;
-    this.textureData = textureData;
-    this.cData = new CubeVertexData(this.game, pos, this.textureData);
+    this.cData = new CubeVertexData(this.game, pos, options);
     this.block = this.world.getBlock(this.pos);
-    this.renderTarget = renderTarget ?? this.r;
+    this.renderTarget = renderTarget;
   }
 
   addData() {
     if (!this.block.visible) {
       return;
     }
+    // Yes, using the loop is faster than unrolling it
+    // for benchmark see https://jsperf.app/ledilu
+    // Using unrolled version is 31% slower.
     for (const [offset, name] of _OFFSET_NAMES) {
       if (this.shouldRenderSide(offset)) {
         let data = this.cData[name]();
         this.renderTarget.addData(data, this.block.transparent);
       }
     }
-  }
-
-  getOffsetTexture(offset) {
-    return this.textureData[this.getOffsetTextureName(offset)];
-  }
-
-  getOffsetTextureName(offset) {
-    switch (offset[1]) {
-      case 0:
-        return "side";
-      case -1:
-        return "bottom";
-      case 1:
-        return "top";
-      default:
-        unreachable();
-    }
-  }
-
-  addDataToRenderer(data, texture) {
-    this.renderTarget.addData(data, texture);
   }
 
   shouldRenderSide(offset) {

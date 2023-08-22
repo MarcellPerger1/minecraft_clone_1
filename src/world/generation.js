@@ -127,20 +127,7 @@ export class WorldGenerator extends GameComponent {
     this.w.setBlock([15, 0, 0], Blocks.grass);
     this.w.setBlock([0, 0, 15], Blocks.grass);
     this.w.setBlock([0, 3, 0], Blocks.grass);
+    progress.addPercent(8);
     return this.w;
   }
-}
-
-function _mash(v, bits) {
-  var rpt = 1 << bits;
-  var r =
-    (12345678.91011 * v +
-      12345.6789 * v * v -
-      123.456789 -
-      1234.56789 * v * v * v +
-      Math.cos(12.345 * v - 1.23 * v * v + 3.14) -
-      Math.pow((v + 3.1415) * Math.cos((v + 1.23) * (v - 2.718)), 7) * 27.18 +
-      Math.sin((v + 1.23) * (v - 3.14159) * v - 1234)) %
-    rpt;
-  return Math.floor(r > 0 ? r : r + rpt);
 }

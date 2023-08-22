@@ -1,20 +1,23 @@
 import { isPowerOf2 } from "./math.js";
 
-export function getGL(canv_id = "glCanvas") {
-  const canvas = document.getElementById(canv_id);
-  const gl = canvas.getContext("webgl");
-  if (gl == null) {
-    let msg =
-      "Unable to initialize WebGL. Your browser or machine may not support it.";
-    throw new Error(msg);
+export function getGLContext(canvas) {
+  let gl = canvas.getContext("webgl");
+  if (gl) return gl;
+  gl = canvas.getContext("experimental-webgl");
+  if (gl) {
+    console.warn("Using experimental-webgl, things might break.");
+    return gl;
   }
-  return gl;
+  throw new Error(
+    "Unable to initialize WebGL." +
+      "Your browser or machine may not support it."
+  );
 }
 
 /**
  * Get a string representation of error from `errno`
  * @param {number} errno
- * @param {WebGLRenderingContextBase} gl - the gl object to use
+ * @param {WebGLRenderingContextBase | typeof WebGLRenderingContext} gl - the gl object to use
  * @returns {string} string representation
  */
 export function glErrnoToMsg(errno, gl = WebGLRenderingContext) {
@@ -30,13 +33,21 @@ export function glErrnoToMsg(errno, gl = WebGLRenderingContext) {
   return lookup[errno];
 }
 
-export function initShaderProgram(gl, vsSource, fsSource) {
+export function initShaderProgram(
+  /** @type {WebGLRenderingContext} */ gl,
+  vsSource,
+  fsSource
+) {
   const vs = loadShader(gl, gl.VERTEX_SHADER, vsSource);
   const fs = loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
   return programFromShaders(gl, vs, fs);
 }
 
-export function programFromShaders(gl, vs, fs) {
+export function programFromShaders(
+  /** @type {WebGLRenderingContext} */ gl,
+  vs,
+  fs
+) {
   const shaderProgram = gl.createProgram();
   gl.attachShader(shaderProgram, vs);
   gl.attachShader(shaderProgram, fs);
@@ -51,7 +62,11 @@ export function programFromShaders(gl, vs, fs) {
   return shaderProgram;
 }
 
-export function loadShader(gl, type, source) {
+export function loadShader(
+  /** @type {WebGLRenderingContext} */ gl,
+  type,
+  source
+) {
   const shader = gl.createShader(type);
   // Send the source to the shader object
   gl.shaderSource(shader, source);
@@ -136,17 +151,20 @@ export function loadTexture(gl, url, cnf = null) {
       INITIAL_TEX_DATA
     );
     setTexParams(gl, w, h);
+    gl.bindTexture(gl.TEXTURE_2D, null);
 
     const image = new Image();
     image.onload = function () {
       gl.bindTexture(gl.TEXTURE_2D, texture);
       gl.texImage2D(gl.TEXTURE_2D, level, internFmt, srcFmt, srcType, image);
       setTexParams(gl, image.width, image.height);
+      gl.bindTexture(gl.TEXTURE_2D, null);
       resolve(texture);
     };
     image.onerror = function (event) {
       reject(event);
     };
+    // @ts-ignore TS doesn't know about this (yet)
     image.fetchPriority = prio;
     image.src = url;
   });

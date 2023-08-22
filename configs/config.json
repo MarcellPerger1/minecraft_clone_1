@@ -10,6 +10,6 @@
       "#nScale": [21.14, 4, 21.14]
     },
     "#seed": "something else",
-    "isTestWorld": false
+    "#isTestWorld": true
   }
 }

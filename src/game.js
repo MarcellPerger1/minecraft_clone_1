@@ -1,4 +1,4 @@
-import { Renderer } from "./renderer/renderer.js";
+import { RenderMgr } from "./renderer/renderer.js";
 import { getConfig } from "./config.js";
 import { KeyInput } from "./keyinput.js";
 import { Player } from "./player.js";
@@ -38,7 +38,7 @@ export class Game {
     /** @type {CSSStyleSheet} */
     this.styleSheet = document.getElementById("main-stylesheet").sheet;
     this.setCanvasSize();
-    this.r = this.renderer = new Renderer(this);
+    this.renderMgr = new RenderMgr(this);
     this.ki = this.keyinput = new KeyInput();
     this.player = new Player(this);
     this.w = this.world = new WorldGenerator(this).generate();
@@ -101,7 +101,7 @@ export class Game {
     /**
      * @type {Array<{loadResources: () => void}>}
      */
-    this.resourceLoaders = [this.r, currentVersionLoader];
+    this.resourceLoaders = [this.renderMgr, currentVersionLoader];
   }
 
   joinResourceLoaders() {
@@ -168,7 +168,7 @@ export class Game {
   }
 
   render() {
-    this.r.renderFrame();
+    this.renderMgr.renderFrame();
   }
 
   tickCallback() {

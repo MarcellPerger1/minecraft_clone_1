@@ -1,6 +1,6 @@
 import { isString, classOf } from "../utils/type_check.js";
 import { assert } from "../utils/assert.js";
-import { fromKeys } from "../utils/general.js";
+import { fromKeys } from "../utils/object_utils.js";
 import { setDefaults, assignNullSafe } from "../utils/array_utils.js";
 
 /**

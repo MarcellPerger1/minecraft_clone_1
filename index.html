@@ -36,14 +36,15 @@
   <link rel="prefetch" href="shaders/vertex-shader.glsl" as="fetch">
   <link rel="prefetch" href="res/atlas-index.json" as="fetch">
   <link rel="prefetch" href="res/atlas.png" as="image">
+  <!-- <script src="https://benvanik.github.io/WebGL-Inspector/core/embed.js" defer></script> -->
 </head>
 
 <body>
   <div id="game-content">
     <!-- Canvas-->
     <div class="canv-size absolute-root">
-      <div class="overlay">
-        <div class="center">
+      <div class="pbar-overlay">
+        <div class="center-pos-absolute">
           <div class="center-text-h">
             <label for="load-progress">
               Loading...
@@ -58,6 +59,13 @@
         </div>
       </div>
       <div class="behind-overlay">
+        <div class="behind-overlay center-flex click-thru">
+          <div class="crosshair-textfont center-text-h">
+            |<br>
+            --+--<br>
+            |
+          </div>
+        </div>
         <div>
           <canvas id="glCanvas" width="640" height="480" hidden></canvas>
           <div class="canv-size canv-bg" id="canvas-loading-bg"></div>

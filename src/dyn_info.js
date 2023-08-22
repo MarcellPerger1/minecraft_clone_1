@@ -2,7 +2,19 @@ import { GameComponent } from "./game_component.js";
 import { roundNearest } from "./utils/math.js";
 
 export class DynInfo extends GameComponent {
+  constructor(game) {
+    super(game);
+    /** @type {number?} */
+    this.lastUpdateAt = null;
+  }
+
   update() {
+    if (
+      this.lastUpdateAt != null &&
+      performance.now() < this.lastUpdateAt + 1 / 30
+    )
+      return;
+    this.lastUpdateAt = performance.now();
     this.updatePosInfo();
     this.updateFacingInfo();
     this.updateFps();

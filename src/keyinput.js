@@ -1,5 +1,13 @@
 import { charIsDigit } from "./utils/math.js";
 
+export const Button = Object.freeze({
+  LEFT: 0,
+  MIDDLE: 1,
+  RIGHT: 2,
+  BUTTON3: 3,
+  BUTTON4: 4,
+});
+
 export class KeyInput {
   constructor() {
     // funcs: [[event, func], ...]  (more flexible & extensible this way)

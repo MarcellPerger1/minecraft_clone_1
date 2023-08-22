@@ -1,4 +1,6 @@
+import { assert } from "../utils/assert.js";
 import { GameComponent } from "../game_component.js";
+
 import { CubeDataAdder } from "./face_culling.js";
 import { ElementBundler } from "./vertex_bundle.js";
 
@@ -15,40 +17,54 @@ export class ChunkRenderer extends GameComponent {
     this.chunk = chunk;
     this.mesh = {
       main: new ElementBundler(this),
-      transparent: new ElementBundler(this),
     };
     this.remakeMesh = false;
+  }
+
+  invalidate() {
+    this.remakeMesh = true;
   }
 
   resetMesh() {
     Object.values(this.mesh).forEach((b) => b.reset());
   }
 
-  updateMesh(recalculate = false) {
+  updateMesh(doIds, recalculate = false) {
     if (this.remakeMesh || recalculate) {
-      this.makeMesh();
+      this.makeMesh(doIds);
       this.remakeMesh = false;
     }
   }
 
-  makeMesh() {
+  makeMesh(doIds) {
     this.resetMesh();
     for (const [pos, block] of this.chunk) {
-      this.addBlock(pos, block);
+      this.addBlock(pos, block, doIds);
     }
   }
 
   addData(data, transparent = false) {
-    return this.mesh[transparent ? "transparent" : "main"].addData(data);
+    assert(!transparent, "transparency has not been implemented");
+    return this.mesh.main.addData(data);
   }
 
-  addBlock(pos, block) {
+  addBlock(pos, block, doIds) {
     if (block.visible) {
-      this.addBlockTextures(pos, block.textures);
+      this.addBlockTextures(pos, block.textures, doIds);
     }
   }
 
-  addBlockTextures(pos, tData) {
-    new CubeDataAdder(this.game, pos, tData, this).addData();
+  /**
+   * @param {[number, number, number]} pos
+   * @param {{side: string, top: string, bottom: string}} textures
+   * @param {import("./face_culling.js").IdsDataT} doIds
+   */
+  addBlockTextures(pos, textures, doIds) {
+    let ids = doIds ? this.getPickingIds(pos) : void 0;
+    new CubeDataAdder(this.game, pos, { textures, ids }, this).addData();
+  }
+
+  getPickingIds(pos) {
+    return this.pickingRenderer.getBlockIdColors(pos);
   }
 }

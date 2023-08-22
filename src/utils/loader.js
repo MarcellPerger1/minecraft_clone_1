@@ -15,15 +15,31 @@ export class LoaderMerge {
       }
     }
     this.components = args;
+    this.promises = null;
+    // TODO: this Object.assign looks rather scary,
+    // overwriting the attrbiutes even if they exist.
+    // And could cause an annoying bug
+    // where loaders overwrite attributes.
     Object.assign(this, args);
   }
 
+  startPromises() {
+    if (this.promises) return this; // already started
+    if (this.isFromObject) {
+      this.promises = Object.fromEntries(
+        Object.entries(this.components).map(([k, v]) => [k, v.loadResources()])
+      );
+    } else {
+      this.promises = this.components.map((v) => v.loadResources());
+    }
+    // allow chaining eg. a = new LoaderMerge(...).startPromises()
+    return this;
+  }
+
   loadResources() {
+    this.startPromises();
     return Promise.all(
-      (this.isFromObject
-        ? Object.values(this.components)
-        : this.components
-      ).map((c) => c.loadResources())
+      this.isFromObject ? Object.values(this.promises) : this.promises
     );
   }
 }
