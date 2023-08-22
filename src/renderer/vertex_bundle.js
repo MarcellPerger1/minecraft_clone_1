@@ -74,7 +74,6 @@ export class ElementBundler extends GameComponent {
   }
 }
 
-
 /**
  * @typedef {{positions: number[], texCoords: number[], indices: number[], maxindex?: number[]}} BundleT
  */
@@ -97,4 +96,3 @@ export function resetMeshObj(mesh) {
     bundle.reset();
   }
 }
-

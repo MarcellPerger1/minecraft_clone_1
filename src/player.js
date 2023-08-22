@@ -4,7 +4,6 @@ import { clamp, toRad } from "./utils/math.js";
 import { OffsetInfo } from "./utils/offset_info.js";
 import { Blocks } from "./world.js";
 
-
 export class Player extends GameComponent {
   constructor(game) {
     super(game);

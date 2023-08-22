@@ -139,7 +139,7 @@ export class Chunk extends GameComponent {
   getChunksAdjacentTo(pos) {
     this.wantInRange(pos);
     const targetChunkIdx = this.world.getChunkIndex(pos);
-    assert(this.world.getChunkFromIndices(targetChunkIdx) === this);  // assert that we are the target chunk
+    assert(this.world.getChunkFromIndices(targetChunkIdx) === this); // assert that we are the target chunk
     var adjacentChunks = [];
     for (const i of /** @type {const} */ ([0, 1, 2])) {
       if (pos[i] == this.low[i]) {

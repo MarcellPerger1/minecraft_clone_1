@@ -60,7 +60,6 @@ export class ControlsConfig extends BaseConfig {}
  */
 export class PlayerConfig extends BaseConfig {}
 
-
 /** @typedef {{vsPath: path, fsPath: path}} SingleShaderProgramConfigT */
 
 /**
