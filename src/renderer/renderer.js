@@ -33,11 +33,9 @@ export class RenderMgr extends GameComponent {
   /** @type {PickingIdRenderer} */
   pickingRenderer;
 
-  constructor(game, do_init = true) {
+  constructor(game) {
     super(game);
-    if (do_init) {
-      this.initGL();
-    }
+    this.initGL();
   }
 
   initGL() {
