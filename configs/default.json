@@ -77,7 +77,11 @@
   "shader": {
     "$class": "ShaderConfig",
     "vsPath": "./shaders/vertex-shader.glsl",
-    "fsPath": "./shaders/fragment-shader.glsl"
+    "fsPath": "./shaders/fragment-shader.glsl",
+    "picking": {
+      "vsPath": "./shaders/picking/vertex.glsl",
+      "fsPath": "./shaders/picking/fragment.glsl"
+    }
   },
   "atlas": {
     "$class": "AtlasConfig",

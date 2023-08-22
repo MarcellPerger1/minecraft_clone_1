@@ -60,11 +60,15 @@ export class ControlsConfig extends BaseConfig {}
  */
 export class PlayerConfig extends BaseConfig {}
 
+
+/** @typedef {{vsPath: path, fsPath: path}} SingleShaderProgramConfigT */
+
 /**
  * Shader Configs
  * @typedef {Object} ShaderConfigT
  * @property {path} vsPath
  * @property {path} fsPath
+ * @property {SingleShaderProgramConfigT} picking
  */
 export class ShaderConfig extends BaseConfig {}
 
