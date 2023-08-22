@@ -1,5 +1,5 @@
 import { GameComponent } from "./game_component.js";
-import { KeyEvent, button } from "./keyinput.js";
+import { KeyEvent, Button } from "./keyinput.js";
 import { clamp, toRad } from "./utils/math.js";
 import { OffsetInfo } from "./utils/offset_info.js";
 import { Blocks } from "./world.js";
@@ -19,10 +19,10 @@ export class Player extends GameComponent {
     this.canvas.addEventListener("pointerdown", (event) => {
       if (!this.game.pointerLocked) return;
       switch (event.button) {
-        case button.LEFT:
+        case Button.LEFT:
           this.action_breakBlock();
           break;
-        case button.RIGHT:
+        case Button.RIGHT:
           this.action_placeBlock();
           break;
       }

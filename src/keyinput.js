@@ -1,6 +1,6 @@
 import { charIsDigit } from "./utils/math.js";
 
-export const button = Object.freeze({
+export const Button = Object.freeze({
   LEFT: 0,
   MIDDLE: 1,
   RIGHT: 2,
