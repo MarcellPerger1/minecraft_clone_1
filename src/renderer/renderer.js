@@ -499,7 +499,7 @@ export class PickingIdRenderer extends MeshRenderer {
    * @param {[number, number, number]} pos
    * @returns {FacesIdDataT}
    */
-  blockPosToFaceColors(pos) {
+  getBlockIdColors(pos) {
     return /** @type {FacesIdDataT} */ (
       Object.fromEntries(
         Object.entries(FACES).map(([name, faceId]) => [

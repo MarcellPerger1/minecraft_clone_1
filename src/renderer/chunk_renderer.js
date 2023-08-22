@@ -65,6 +65,6 @@ export class ChunkRenderer extends GameComponent {
   }
 
   getPickingIds(pos) {
-    return this.pickingRenderer.blockPosToFaceColors(pos);
+    return this.pickingRenderer.getBlockIdColors(pos);
   }
 }
