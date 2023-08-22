@@ -46,7 +46,7 @@ export class Player extends GameComponent {
     if (this.world.getBlock(pos) != Blocks.air) {
       console.warn(
         "Trying to place block where there isn't air " +
-          "(are you placing it from inside the terrain"
+          "(are you placing it from inside the terrain?)"
       );
       return;
     }

@@ -67,7 +67,6 @@ function _applyCnfDefaults(cnf) {
 }
 
 function _filterObjs(objs) {
-  if (!isArray(objs)) console.log(objs);
   assert(
     isArray(objs),
     "deepMerge first arg must be an array; " +
