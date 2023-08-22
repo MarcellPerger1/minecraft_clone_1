@@ -94,12 +94,11 @@ function _construct(objs, cnf) {
   return res;
 }
 _construct.fromTag = function constructFromTag(obj, proto) {
-  if (isArray(obj)) {
-    return new obj.constructor(obj.length);
-  }
   let Ctor = obj.constructor;
-  let res;
   let ttag = toStringTag(obj);
+  if (isArray(obj)) {
+    return new Ctor(obj.length);
+  }
   switch (ttag) {
     case "Number":
     case "String":
@@ -112,7 +111,7 @@ _construct.fromTag = function constructFromTag(obj, proto) {
     case "Symbol":
       return Object(Symbol.prototype.valueOf.call(obj));
     case "RegExp":
-      res = new obj.constructor(obj.source, obj.flags);
+      var res = new obj.constructor(obj.source, obj.flags);
       res.lastIndex = obj.lastIndex;
       return res;
     case "Object":
