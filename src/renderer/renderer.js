@@ -29,9 +29,22 @@ import { assert } from "../utils/assert.js";
 // TODO: switch to typescript??
 export class RenderMgr extends GameComponent {
   /** @type {WebGLRenderingContext} */
-  gl;
+  _gl;
+  get gl() {
+    return this._gl;
+  }
+  set gl(value) {
+    this._gl = value;
+  }
+
   /** @type {PickingIdRenderer} */
-  pickingRenderer;
+  _pickingRenderer;
+  get pickingRenderer() {
+    return this._pickingRenderer;
+  }
+  set pickingRenderer(value) {
+    this._pickingRenderer = value;
+  }
 
   constructor(game) {
     super(game);
@@ -71,7 +84,13 @@ export class RenderMgr extends GameComponent {
 /** Renderer that only handles drawing the polygons, no colors */
 export class MeshRenderer extends GameComponent {
   /** @type {WebGLRenderingContext} */
-  gl;
+  _gl;
+  get gl() {
+    return this._gl;
+  }
+  set gl(value) {
+    this._gl = value;
+  }
   /** @type {[number, number, number, number]} */
   clearColor;
   /** @type {AtlasLoader} */
