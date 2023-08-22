@@ -73,3 +73,28 @@ export class ElementBundler extends GameComponent {
     );
   }
 }
+
+
+/**
+ * @typedef {{positions: number[], texCoords: number[], indices: number[], maxindex?: number[]}} BundleT
+ */
+
+/**
+ * @param {{[k: string]: ElementBundler}} dest
+ * @param {{[k: string]: BundleT | ElementBundler}} src
+ */
+export function mergeMeshObj(dest, src) {
+  for (const [name, data] of Object.entries(src)) {
+    if (dest[name]) dest[name].addData(data);
+  }
+}
+
+/**
+ * @param {Object<string, ElementBundler>} mesh
+ */
+export function resetMeshObj(mesh) {
+  for (const bundle of Object.values(mesh)) {
+    bundle.reset();
+  }
+}
+

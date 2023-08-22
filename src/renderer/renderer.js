@@ -9,7 +9,7 @@ import { ShaderProgram } from "./shader_program.js";
 import { Camera } from "./gl_camera.js";
 import { AtlasLoader } from "./atlas_data.js";
 import { ShaderProgramLoader } from "./shader_loader.js";
-import { ElementBundler } from "./vertex_bundle.js";
+import { ElementBundler, mergeMeshObj, resetMeshObj } from "./vertex_bundle.js";
 import { assert } from "../utils/assert.js";
 
 /**
@@ -635,28 +635,5 @@ export class BlockfaceIdPacker extends GameComponent {
     /** @type {[number, number, number, number] | Uint8Array} */ color
   ) {
     return BlockfaceIdPacker.colorToId(color);
-  }
-}
-
-/**
- * @typedef {{positions: number[], texCoords: number[], indices: number[], maxindex?: number[]}} BundleT
- */
-
-/**
- * @param {{[k: string]: ElementBundler}} dest
- * @param {{[k: string]: BundleT | ElementBundler}} src
- */
-function mergeMeshObj(dest, src) {
-  for (const [name, data] of Object.entries(src)) {
-    if (dest[name]) dest[name].addData(data);
-  }
-}
-
-/**
- * @param {Object<string, ElementBundler>} mesh
- */
-function resetMeshObj(mesh) {
-  for (const bundle of Object.values(mesh)) {
-    bundle.reset();
   }
 }
