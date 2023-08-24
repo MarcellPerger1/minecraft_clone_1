@@ -1,3 +1,4 @@
 {
-    "editor.acceptSuggestionOnCommitCharacter": false
+    "editor.acceptSuggestionOnCommitCharacter": false,
+    "editor.tabSize": 2
 }
