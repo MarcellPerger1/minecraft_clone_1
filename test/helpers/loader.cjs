@@ -30,5 +30,5 @@ process.emitWarning = (...args) => {
   if (_isExperiWarn(...args) && _shouldPreventExperiWarn(...args)) {
     return;
   }
-  return emitWarning(warning, ...args);
+  return emitWarning(...args);
 };
