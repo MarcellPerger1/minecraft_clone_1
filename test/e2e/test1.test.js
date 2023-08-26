@@ -80,7 +80,7 @@ describe("The canvas WebGL rendering", () => {
     canvasH.dispose();
     const browserCoverage = await page.coverage.stopJSCoverage();
     browser.close();
-    covToIstanbul.write(browserCoverage, {storagePath: './test/coverage-puppeteer'});
+    covToIstanbul.write(browserCoverage, {storagePath: './test/coverage-puppeteer'});  // todo use v8-to-istanbul instead to transform full thing!
     await fs.promises.mkdir("./test/coverage/ppt-raw-v8/", {recursive: true});
     fs.promises.writeFile("./test/coverage/ppt-raw-v8/out.json", JSON.stringify(browserCoverage));
   });
