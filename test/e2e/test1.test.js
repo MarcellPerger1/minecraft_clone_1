@@ -1,8 +1,11 @@
 import timersPromises from "node:timers/promises";
+import fs from 'node:fs';
 
 import {describe, it, beforeAll, expect} from "@jest/globals";
 import ppt, { TimeoutError } from 'puppeteer';
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
+import covToIstanbul from 'puppeteer-to-istanbul';
+import v8ToIstanbul from 'v8-to-istanbul';
 
 
 expect.extend({ toMatchImageSnapshot });
@@ -29,6 +32,7 @@ describe("The canvas WebGL rendering", () => {
       throw new Error(s);
     });
     console.log("New page done", performance.now() - start, 'ms');
+    await page.coverage.startJSCoverage({useBlockCoverage: true, includeRawScriptCoverage: true});
     await page.goto(`file://${cwd}/index.html`, {waitUntil: "load"});
     console.log("Navigated", performance.now() - start, 'ms');
     await page.setViewport({width: 1400, height: 1200});
@@ -74,7 +78,11 @@ describe("The canvas WebGL rendering", () => {
 
   afterAll(async () => {
     canvasH.dispose();
+    const browserCoverage = await page.coverage.stopJSCoverage();
     browser.close();
+    covToIstanbul.write(browserCoverage, {storagePath: './test/coverage-puppeteer'});
+    await fs.promises.mkdir("./test/coverage/ppt-raw-v8/", {recursive: true});
+    fs.promises.writeFile("./test/coverage/ppt-raw-v8/out.json", JSON.stringify(browserCoverage));
   });
 });
 

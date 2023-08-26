@@ -1,3 +1,7 @@
+# Own stuff start
+/test/coverage-*
+
+# Own stuff end
 
 # Logs
 logs

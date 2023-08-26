@@ -1,13 +1,13 @@
 /** @type {import('jest').Config} */
 export const config = {
   verbose: true,
-  coverageDirectory: "./test/coverage/",
+  coverageDirectory: "./test/coverage-jest/",
   collectCoverage: true,
   testMatch: [
-    "**/test/**/*.?(m)[jt]s?(x)", 
-    "!**/test/**/*.util.?(m)[jt]s?(x)",
-    "!**/test/(helpers|coverage)/**",
-    "**/?(*.)+(spec|test).?(m)[jt]s?(x)"
+    "**/test/**/*.?([mc])[jt]s?(x)", 
+    "!**/test/**/*.util.?([mc])[jt]s?(x)",
+    "!**/test/(helpers|coverage?(-*))/**",
+    "**/?(*.)+(spec|test).?([mc])[jt]s?(x)"
   ]
 };
 
