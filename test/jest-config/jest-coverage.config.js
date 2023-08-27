@@ -6,9 +6,10 @@ export const config = {
   testMatch: [
     "**/test/**/*.?([mc])[jt]s?(x)", 
     "!**/test/**/*.util.?([mc])[jt]s?(x)",
-    "!**/test/(helpers|coverage?(-*))/**",
+    "!**/test/(helpers|coverage?(-*)|jest-config)/**",
     "**/?(*.)+(spec|test).?([mc])[jt]s?(x)"
-  ]
+  ],
+  rootDir: "./"
 };
 
 export default config;

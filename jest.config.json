@@ -1,9 +1,0 @@
-{
-  "verbose": true,
-  "testMatch": [
-    "**/test/**/*.?([mc])[jt]s?(x)", 
-    "!**/test/**/*.util.?([mc])[jt]s?(x)",
-    "!**/test/(helpers|coverage?(-*))/**",
-    "**/?(*.)+(spec|test).?([mc])[jt]s?(x)"
-  ]
-}

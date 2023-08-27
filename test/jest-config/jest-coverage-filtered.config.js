@@ -1,7 +1,7 @@
 /** @type {import('jest').Config} */
 export const config = {
   verbose: true,
-  coverageDirectory: "./test/coverage/",
+  coverageDirectory: "./test/coverage-jest/",
   collectCoverage: true,
   collectCoverageFrom: [
     "./src/utils/deep_merge.js",
@@ -10,9 +10,10 @@ export const config = {
   testMatch: [
     "**/test/**/*.?(m)[jt]s?(x)", 
     "!**/test/**/*.util.?(m)[jt]s?(x)",
-    "!**/test/(helpers|coverage)/**",
+    "!**/test/(helpers|coverage?(-*)|jest-config)/**",
     "**/?(*.)+(spec|test).?(m)[jt]s?(x)"
-  ]
+  ],
+  rootDir: "./"
 };
 
 export default config;
