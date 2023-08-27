@@ -1,15 +1,9 @@
+import base from './jest.config.js';
+
 /** @type {import('jest').Config} */
-export const config = {
-  verbose: true,
-  coverageDirectory: "./test/coverage-jest/",
+export const config = Object.assign({}, base, {
   collectCoverage: true,
-  testMatch: [
-    "**/test/**/*.?([mc])[jt]s?(x)", 
-    "!**/test/**/*.util.?([mc])[jt]s?(x)",
-    "!**/test/(helpers|coverage?(-*)|jest-config)/**",
-    "**/?(*.)+(spec|test).?([mc])[jt]s?(x)"
-  ],
-  rootDir: "./"
-};
+  coverageDirectory: "./test/coverage-jest/",
+});
 
 export default config;
