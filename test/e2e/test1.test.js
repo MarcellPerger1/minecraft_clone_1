@@ -14,11 +14,9 @@ const cwd = process.cwd();
 
 
 describe("The canvas WebGL rendering", () => {
-  var /** @type {ppt.Browser} */browser, /** @type {ppt.Page} */page, start;
+  var /** @type {ppt.Browser} */browser, /** @type {ppt.Page} */page;
   beforeAll(async () => {
-    start = performance.now();
     browser = await ppt.launch({headless: 'new', args: ['--disable-web-security']});  // cors errors aagh!
-    console.log("Launched", performance.now() - start, 'ms');
     page = await browser.newPage();
     page.on('pageerror', (v) => {
       console.log("ERROR", v);
@@ -30,22 +28,16 @@ describe("The canvas WebGL rendering", () => {
       browser.close();
       throw new Error(s);
     });
-    console.log("New page done", performance.now() - start, 'ms');
     await page.coverage.startJSCoverage({useBlockCoverage: true, includeRawScriptCoverage: true});
     await page.goto(`file://${cwd}/index.html`, {waitUntil: "load"});
-    console.log("Navigated", performance.now() - start, 'ms');
     await page.setViewport({width: 1400, height: 1200});
-    console.log("Viewport-ed", performance.now() - start, 'ms');
   });
 
   var /** @type {ppt.ElementHandle} */canvasH;
   it("renders the starting state", async () => {
     canvasH = await page.waitForSelector("#glCanvas");
-    console.log("Done glCanvas", performance.now() - start, 'ms');
     await page.waitForSelector(".pbar-overlay", {hidden : true});
-    console.log("Done pbar-overlay", performance.now() - start, 'ms');
     await waitForTickNo(page, 2, 600);
-
     const actualData = /** @type {Buffer} */(await canvasH.screenshot());
     // @ts-ignore
     expect(actualData).toMatchImageSnapshot();
