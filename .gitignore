@@ -1,10 +1,10 @@
 # Own stuff start
-/test/coverage-*
+/test/coverage-*/
 /_temp/
 
 # jest-image-snapshot:
 # diff files (can change due to testing, not really needed)
-__image_snapshots__/__diff_output__
+__image_snapshots__/__diff_output__/
 
 # Own stuff end
 
