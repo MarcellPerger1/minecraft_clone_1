@@ -5,7 +5,6 @@ import {describe, it, beforeAll, expect} from "@jest/globals";
 import ppt, { TimeoutError } from 'puppeteer';
 import { toMatchImageSnapshot } from 'jest-image-snapshot';
 import covToIstanbul from 'puppeteer-to-istanbul';
-import v8ToIstanbul from 'v8-to-istanbul';
 
 
 expect.extend({ toMatchImageSnapshot });
@@ -80,9 +79,11 @@ describe("The canvas WebGL rendering", () => {
     canvasH.dispose();
     const browserCoverage = await page.coverage.stopJSCoverage();
     browser.close();
-    covToIstanbul.write(browserCoverage, {storagePath: './test/coverage-puppeteer'});  // todo use v8-to-istanbul instead to transform full thing!
-    await fs.promises.mkdir("./test/coverage/ppt-raw-v8/", {recursive: true});
-    fs.promises.writeFile("./test/coverage/ppt-raw-v8/out.json", JSON.stringify(browserCoverage));
+    // for just ppt coverage
+    covToIstanbul.write(browserCoverage, {storagePath: './test/coverage-puppeteer'});
+    // for merged coverage, also save the whole thing
+    await fs.promises.mkdir("./test/coverage-ppt-raw/", {recursive: true});
+    fs.promises.writeFile("./test/coverage-ppt-raw/out.json", JSON.stringify(browserCoverage));
   });
 });
 
