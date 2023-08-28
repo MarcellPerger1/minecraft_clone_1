@@ -44,25 +44,38 @@ async function normalizeIstanbul(data, file, text) {
   const {fnMap} = fileData;
   /** @type {libCoverage.FileCoverage | libCoverage.FileCoverageData} */
   let newFileData = {...fileData};
+  newFileData.fnMap = await remapFnMap(fnMap, file, text);
+  return {[filename]: newFileData};
+}
+
+
+// ----------- fnMap -------------
+
+// for explanation, see https://regex101.com/r/8YvGK5/4, JS version at https://regex101.com/r/IIBcVk/3
+// the reason its so long: computed function names
+const funcNameAndLpar_RE = /^([a-zA-Z_$][\w$]*|\[(?:[^\]'"`]|(['"`])(?:\\.|(?!\2)[^\\])*\2)*\])\s*\(/ds;
+const string_RE = /^(['"`])(?:\\.|(?!\1)[^\\])*\1/ds;
+
+/**
+ * @param {{[key: string]: libCoverage.FunctionMapping}} fnMap
+ * @param {fs.PathLike} file
+ * @param {string} text
+ * @returns {Promise<{[key: string]: libCoverage.FunctionMapping}>}
+ */
+async function remapFnMap(fnMap, file, text) {
   /** @type {{[key: string]: libCoverage.FunctionMapping}} */
   let newFnMap = {};
   for (let [fnKey, fnData] of Object.entries(fnMap)) {
     /** @type {libCoverage.FunctionMapping} */
-    let newData = {...fnData};
+    let newData = { ...fnData };
     const [newDecl, endLoc] = await remapFnDecl(fnData.decl, file, text);
     newData.decl = newDecl;
     const newLoc = await remapFnLoc(fnData.loc, file, text, endLoc);
     newData.loc = newLoc;
     newFnMap[fnKey] = newData;
   }
-  newFileData.fnMap = newFnMap;
-  return {[filename]: newFileData}
+  return newFnMap;
 }
-
-// for explanation, see https://regex101.com/r/8YvGK5/4, JS version at https://regex101.com/r/IIBcVk/3
-// the reason its so long: computed function names
-const funcNameAndLpar_RE = /^([a-zA-Z_$][\w$]*|\[(?:[^\]'"`]|(['"`])(?:\\.|(?!\2)[^\\])*\2)*\])\s*\(/ds;
-const string_RE = /^(['"`])(?:\\.|(?!\1)[^\\])*\1/ds;
 
 /**
  * @param {libCoverage.Range} decl
@@ -143,12 +156,12 @@ function findParenEnd(text, start, lines) {
 }
 
 /**
- * @param {string} text
+ * @param {string} _text
  * @param {libCoverage.Location} start
  * @param {readonly string[]} lines
  * @returns {libCoverage.Location}
  */
-function findStringEnd(text, start, lines) {
+function findStringEnd(_text, start, lines) {
   const restOfStartLine = lines[start.line - 1].slice(start.column);
   let m = restOfStartLine.match(string_RE);
   if(m) {
@@ -167,36 +180,42 @@ function findStringEnd(text, start, lines) {
   assert(false, 'string not closed');
 }
 
-const v8CovPpt = JSON.parse(await fs.promises.readFile('./test/coverage-ppt-raw/out.json', 'utf8'));
-assert(Array.isArray(v8CovPpt));
-const istCovPpt = await Promise.all(v8CovPpt.map((async (pptCov) => {
+
+/**
+ * @param {{ rawScriptCoverage?: import("inspector").Profiler.ScriptCoverage }} pptCov
+ */
+async function pptToIst(pptCov) {
   /** @type {import('inspector').Profiler.ScriptCoverage} */
   const rawCov = pptCov.rawScriptCoverage;
   assert(rawCov, "rawScriptCoverage not found out puppeteer coverage json (ensure it is using includeRawScriptCoverage)");
-  if(rawCov.url.startsWith('http:') || rawCov.url.startsWith('https:')) return;
+  const srcUrl = rawCov.url;
+  if(srcUrl.startsWith('http:') || srcUrl.startsWith('https:')) return null;
+  const srcPath = getLocalPath(rawCov.url);
 
-  const converter = v8ToIstanbul(rawCov.url, void 0, {source: await fs.promises.readFile(getLocalPath(rawCov.url), 'utf8')});  // todo support source map
+  const source = await fs.promises.readFile(srcPath, 'utf8');
+  const converter = v8ToIstanbul(rawCov.url, void 0, {source});  // todo support source map
   await converter.load();
   converter.applyCoverage(rawCov.functions);
   const ist = converter.toIstanbul();
-  const normalIst = await normalizeIstanbul(ist);
+  const normalIst = await normalizeIstanbul(ist, srcUrl, source);
   if (DEBUG) {
-    await fs.promises.mkdir('./_temp/')
+    await fs.promises.mkdir('./_temp/');
     await fs.promises.writeFile(`./_temp/${_pathToFilename(rawCov.url)}-v8.json`, JSON.stringify(rawCov));
     await fs.promises.writeFile(`./_temp/${_pathToFilename(rawCov.url)}-ist.json`, JSON.stringify(ist));
     await fs.promises.writeFile(`./_temp/${_pathToFilename(rawCov.url)}-n_ist.json`, JSON.stringify(normalIst));
   }
   return normalIst;
-})));
-
-
+}
 
 const mapJest = libCoverage.createCoverageMap(JSON.parse(await fs.promises.readFile('./test/coverage-jest/coverage-final.json', "utf8")));
 
+const v8CovPpt = JSON.parse(await fs.promises.readFile('./test/coverage-ppt-raw/out.json', 'utf8'));
+assert(Array.isArray(v8CovPpt));
+const istCovPpt = (await Promise.all(v8CovPpt.map(pptToIst))).filter(v => v != null);
 
 const covMap = libCoverage.createCoverageMap({});
 covMap.merge(mapJest);
-istCovPpt.filter(v => v != null).forEach(covMap.merge.bind(covMap));
+istCovPpt.forEach(covMap.merge, covMap);
 
 istanbulReports.create('lcov').execute(libReport.createContext({dir: './test/coverage-all', coverageMap: covMap, defaultSummarizer: "nested"}));
 istanbulReports.create('lcov').execute(libReport.createContext({

@@ -7,7 +7,7 @@ export const config = {
     "!**/test/(helpers|coverage?(-*)|jest-config)/**",
     "**/?(*.)+(spec|test).?([mc])[jt]s?(x)"
   ],
-  rootDir: "../../"
+  rootDir: "../../"  // TODO don't hard-code this, use path.relative
 };
 
 
