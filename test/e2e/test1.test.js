@@ -60,12 +60,28 @@ describe("The canvas WebGL rendering", () => {
   });
 
   it("Renders it correctly from the back", async () => {
-    await page.evaluate('game.player.rotation = {h: 240, v: -3}; game.player.position = [7.3, 4.9, 11.3]');
+    await page.evaluate('game.player.rotation = {h: 240, v: -3}; game.player.position = [7.3, 4.9, 11.3];');
     await waitForNextTick(page);
     const actualData = /** @type {Buffer} */(await canvasH.screenshot());
     // @ts-ignore
     expect(actualData).toMatchImageSnapshot();
   });
+
+  // pointerlock doesn't work for puppeteer
+  // eslint-disable-next-line jest/no-disabled-tests
+  it.skip("gets the pointerlock", async () => {
+    const canv_bbox = await canvasH.boundingBox();
+    await page.mouse.click(canv_bbox.x + canv_bbox.width / 2, canv_bbox.y + canv_bbox.height / 2, {button: "left"});
+    await waitForNextTick(page);
+    const hasPointerlock = await page.evaluate("game.hasPointerLock()");
+    expect(hasPointerlock).toBe(true);
+  });
+
+  it("can find block in center of canvas", async () => {
+    const blockAtCenter = await page.evaluate('game.renderMgr.pickingRenderer.readCanvasCenter()');
+    console.log(blockAtCenter);
+    expect(blockAtCenter).toStrictEqual([[1, 5, 2], 1]);
+  })
 
   afterAll(async () => {
     canvasH.dispose();

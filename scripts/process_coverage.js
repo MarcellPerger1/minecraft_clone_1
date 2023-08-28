@@ -180,6 +180,8 @@ function findStringEnd(_text, start, lines) {
   assert(false, 'string not closed');
 }
 
+// TODO later statementMap!
+
 
 /**
  * @param {{ rawScriptCoverage?: import("inspector").Profiler.ScriptCoverage }} pptCov
