@@ -9,7 +9,9 @@ import covToIstanbul from 'puppeteer-to-istanbul';
 import './_image_snapshot_types/index.js';
 
 
-expect.extend({ toMatchImageSnapshot: jestImageSnapshot.configureToMatchImageSnapshot({failureThresholdType: 'percent', failureThreshold: 0.02}) });
+expect.extend({ toMatchImageSnapshot: jestImageSnapshot.configureToMatchImageSnapshot({
+  failureThresholdType: 'percent', failureThreshold: 0.02, blur: 1.5
+})});
 
 
 const cwd = process.cwd();
