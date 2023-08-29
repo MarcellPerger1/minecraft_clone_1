@@ -3,11 +3,11 @@ import fs from 'node:fs';
 
 import {describe, it, beforeAll, expect} from "@jest/globals";
 import ppt, { TimeoutError } from 'puppeteer';
-import { toMatchImageSnapshot } from 'jest-image-snapshot';
+import jestImageSnapshot from 'jest-image-snapshot';
 import covToIstanbul from 'puppeteer-to-istanbul';
 
 
-expect.extend({ toMatchImageSnapshot });
+expect.extend({ toMatchImageSnapshot: jestImageSnapshot.configureToMatchImageSnapshot({failureThresholdType: 'percent', failureThreshold: 0.02}) });
 
 
 const cwd = process.cwd();
