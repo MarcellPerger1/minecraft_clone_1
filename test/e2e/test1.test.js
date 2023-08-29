@@ -6,7 +6,7 @@ import ppt, { TimeoutError } from 'puppeteer';
 import jestImageSnapshot from 'jest-image-snapshot';
 import covToIstanbul from 'puppeteer-to-istanbul';
 // for types:
-import './_image_snapshot_types/image_snapshot_types.js';
+import './_image_snapshot_types/index.js';
 
 
 expect.extend({ toMatchImageSnapshot: jestImageSnapshot.configureToMatchImageSnapshot({failureThresholdType: 'percent', failureThreshold: 0.02}) });
