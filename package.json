@@ -8,6 +8,7 @@
     "simplex-noise": "^3.0.1"
   },
   "devDependencies": {
+    "@types/jest-image-snapshot": "^6.2.0",
     "eslint": "^8.11.0",
     "eslint-plugin-jest": "^26.5.3",
     "istanbul-lib-coverage": "^3.2.0",

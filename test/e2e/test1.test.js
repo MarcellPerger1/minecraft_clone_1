@@ -5,6 +5,8 @@ import {describe, it, beforeAll, expect} from "@jest/globals";
 import ppt, { TimeoutError } from 'puppeteer';
 import jestImageSnapshot from 'jest-image-snapshot';
 import covToIstanbul from 'puppeteer-to-istanbul';
+// for types:
+import './_image_snapshot_types/image_snapshot_types.js';
 
 
 expect.extend({ toMatchImageSnapshot: jestImageSnapshot.configureToMatchImageSnapshot({failureThresholdType: 'percent', failureThreshold: 0.02}) });
@@ -39,7 +41,6 @@ describe("The canvas WebGL rendering", () => {
     await page.waitForSelector(".pbar-overlay", {hidden : true});
     await waitForTickNo(page, 2, 600);
     const actualData = /** @type {Buffer} */(await canvasH.screenshot());
-    // @ts-ignore
     expect(actualData).toMatchImageSnapshot();
   }, 7000);
 
@@ -47,7 +48,6 @@ describe("The canvas WebGL rendering", () => {
     await page.evaluate('game.player.position[0] += 2.3; game.player.position[1] += 0.4; game.player.position[2] += 1.0;');
     await waitForNextTick(page);
     const actualData = /** @type {Buffer} */(await canvasH.screenshot());
-    // @ts-ignore
     expect(actualData).toMatchImageSnapshot();
   });
 
@@ -55,7 +55,6 @@ describe("The canvas WebGL rendering", () => {
     await page.evaluate('game.player.rotation = {h: 57, v: 22};');
     await waitForNextTick(page);
     const actualData = /** @type {Buffer} */(await canvasH.screenshot());
-    // @ts-ignore
     expect(actualData).toMatchImageSnapshot();
   });
 
@@ -63,7 +62,6 @@ describe("The canvas WebGL rendering", () => {
     await page.evaluate('game.player.rotation = {h: 240, v: -3}; game.player.position = [7.3, 4.9, 11.3];');
     await waitForNextTick(page);
     const actualData = /** @type {Buffer} */(await canvasH.screenshot());
-    // @ts-ignore
     expect(actualData).toMatchImageSnapshot();
   });
 
@@ -81,7 +79,18 @@ describe("The canvas WebGL rendering", () => {
     const blockAtCenter = await page.evaluate('game.renderMgr.pickingRenderer.readCanvasCenter()');
     console.log(blockAtCenter);
     expect(blockAtCenter).toStrictEqual([[1, 5, 2], 1]);
-  })
+  });
+
+  // TODO test for actual breking
+  it("breaks the block at the center on left-click", async () => {
+    expect(await page.evaluate('game.world.getBlock([1, 5, 2]).name')).not.toBe('air');
+    await page.evaluate("game.hasPointerLock = () => true");
+    await canvasH.click({button:'left'});
+    await waitForNextTick(page);
+    await waitForPredicate(page, async () => await page.evaluate('game.world.getBlock([1, 5, 2]).name') == 'air');
+    expect(await page.evaluate('game.world.getBlock([1, 5, 2]).name')).toBe('air');
+    expect(await canvasH.screenshot()).toMatchImageSnapshot();
+  });
 
   afterAll(async () => {
     canvasH.dispose();
@@ -125,5 +134,20 @@ async function waitForTickNo(page, targetNo, timeout=500, interval=10) {
     if (now > startTime + timeout) throw new TimeoutError(`waitForTickNo took too long (longer than ${timeout}ms)`)
     const tickNo = /** @type {number} */(await page.evaluate('game.tickNo'));
     if(tickNo >= targetNo) return;
+  }
+}
+
+/**
+ * @param {ppt.Page} page
+ * @param {(page: ppt.Page) => Promise<boolean>} pred
+ * @param {number} [timeout=500] 
+ * @param {number} [interval=10]
+ * @returns {Promise<boolean>} Returns true if successful, false on timeout
+ */
+async function waitForPredicate(page, pred, timeout=500, interval=10) {
+  for await (const startTime of timersPromises.setInterval(interval, performance.now())) {
+    const now = performance.now();
+    if (now > startTime + timeout) { return false; }
+    if (await pred(page)) { return true; }
   }
 }
