@@ -104,6 +104,16 @@ describe("The canvas WebGL rendering", () => {
     expect(await canvasH.screenshot()).toMatchImageSnapshot();
   });
 
+  it("Remakes chunks on break (z and z adjacent)", async () => {
+    await page.evaluate('game.player.rotation = {h: 89, v: 90}; game.player.position = [7.4, 6.16, 7.58]');
+    await waitForNextTick(page);
+    await canvasH.click({button:'left'});
+    await waitForNextTick(page);
+    await waitForPredicate(page, async () => await page.evaluate('game.world.getBlock([7, 3, 7]).name') == 'air');
+    expect(await page.evaluate('game.world.getBlock([7, 3, 7]).name')).toBe('air');
+    expect(await canvasH.screenshot()).toMatchImageSnapshot();
+  })
+
   afterAll(async () => {
     canvasH.dispose();
     const browserCoverage = await page.coverage.stopJSCoverage();
