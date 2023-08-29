@@ -94,6 +94,16 @@ describe("The canvas WebGL rendering", () => {
     expect(await canvasH.screenshot()).toMatchImageSnapshot();
   });
 
+  it("Places block correctly on right-click", async () => {
+    await page.evaluate('game.player.rotation = {h: 291.2, v: 33.6}; game.player.position = [18.7, 5.9, 26];');
+    await waitForNextTick(page);
+    await canvasH.click({button: 'right'});
+    await waitForNextTick(page);
+    await waitForPredicate(page, async () => await page.evaluate('game.world.getBlock([20, 2, 21]).name') != 'air');
+    expect(await page.evaluate('game.world.getBlock([20, 2, 21]).name')).toBe('oak_log');
+    expect(await canvasH.screenshot()).toMatchImageSnapshot();
+  });
+
   afterAll(async () => {
     canvasH.dispose();
     const browserCoverage = await page.coverage.stopJSCoverage();
