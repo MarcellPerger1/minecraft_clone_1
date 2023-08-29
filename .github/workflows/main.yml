@@ -32,7 +32,7 @@ jobs:
         id: run_tests
         run: |
           chmod +x ./scripts/test.sh
-          npm test -- --colors
+          npm test -- --colors;
           echo "After test"
           if [ -n "$(ls -A ./test/e2e/__image_snapshots__/__diff_output__)" ]; then
             HAS_DIFF=1
