@@ -33,6 +33,10 @@ jobs:
         run: |
           chmod +x ./scripts/test.sh
           npm test -- --colors;
+      - name: Check if need to upload diff
+        if: ${{ always() }}
+        id: check_output
+        run: |
           echo "After test"
           if [ -n "$(ls -A ./test/e2e/__image_snapshots__/__diff_output__)" ]; then
             HAS_DIFF=1
@@ -43,7 +47,7 @@ jobs:
           echo "HAS_IMG_DIFF=$HAS_DIFF" >> "$GITHUB_OUTPUT"
       - name: Upload image diff
         uses: actions/upload-artifact@v3
-        if: ${{ failure() && steps.run_tests.outputs.HAS_IMG_DIFF == 1 }}
+        if: ${{ failure() && steps.check_output.outputs.HAS_IMG_DIFF == 1 }}
         with:
           name: image-snapshot-diff
           path: test/e2e/__image_snapshots__/__diff_output__
