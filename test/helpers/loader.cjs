@@ -30,5 +30,7 @@ process.emitWarning = (...args) => {
   if (_isExperiWarn(...args) && _shouldPreventExperiWarn(...args)) {
     return;
   }
+  // We were called with these so we can just pass them on
+  // @ts-ignore
   return emitWarning(...args);
 };
