@@ -38,7 +38,7 @@ jobs:
           else
             HAS_DIFF=0
           fi
-          echo "HAS_IMG_DIFF=$(HAS_DIFF)" >> "$GITHUB_OUTPUT"
+          echo "HAS_IMG_DIFF=$HAS_DIFF" >> "$GITHUB_OUTPUT"
       - name: Upload image diff
         uses: actions/upload-artifact@v3
         if: ${{ failure() && steps.run_tests.outputs.HAS_IMG_DIFF == 1 }}
