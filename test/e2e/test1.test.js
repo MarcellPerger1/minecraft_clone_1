@@ -10,7 +10,7 @@ import './_image_snapshot_types/index.js';
 
 
 expect.extend({ toMatchImageSnapshot: jestImageSnapshot.configureToMatchImageSnapshot({
-  failureThresholdType: 'percent', failureThreshold: 0.02, blur: 1.5
+  failureThresholdType: 'percent', failureThreshold: 0.035,
 })});
 
 
