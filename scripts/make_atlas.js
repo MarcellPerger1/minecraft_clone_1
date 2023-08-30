@@ -45,56 +45,41 @@ function drawNthImage(ctx, img, i) {
   ctx.drawImage(img, i * 16, 0);
 }
 
-function main() {
-  const root = getProjectRoot();
-  const resDir = path.resolve(root, "res/");
-  const texDir = path.resolve(root, "textures/");
-  var /** @type {nodeCanvas.Canvas} */canv;
-  var /** @type {nodeCanvas.CanvasRenderingContext2D} */ctx
-  var /** @type {number} */n;
-  var i = 0;
-  var data = [];
+async function main() {
   console.log("Finding textures...");
-  const ondrawn = getTexturePaths(texDir).then((paths) => {
-    n = paths.length;
-    console.log("Creating canvas...");
-    canv = nodeCanvas.createCanvas(n * 16, 16);
-    ctx = canv.getContext("2d");
-    console.log("Drawing images...");
-    return Promise.all(
-      paths.map((p) =>
-        nodeCanvas.loadImage(p).then((img) => {
-          drawNthImage(ctx, img, i++);
-          let nm = path.basename(p, ".min.png");
-          data.push(nm);
-        })
-      )
-    );
-  });
-  let ondone = Promise.all([
-    ondrawn.then((_) => {
+  const paths = await getTexturePaths("./textures/");
+
+  console.log("Creating canvas...");
+  var canv = nodeCanvas.createCanvas(paths.length * 16, 16);
+  var ctx = canv.getContext("2d");
+
+  console.log("Drawing images...");  
+  const namesList = await Promise.all(paths.map(async (imgPath, i) => {
+    const img = await nodeCanvas.loadImage(imgPath);
+    drawNthImage(ctx, img, i);
+    return path.basename(imgPath, ".min.png");
+  }));
+  await Promise.all([
+    (async () => {
       console.log("Creating atlas...");
-      return writeToPng(canv, path.join(resDir, "atlas.png"));
-    }),
-    ondrawn.then((_) => {
+      await writeToPng(canv, "./res/atlas.png");
+    })(),
+    (async () => {
       console.log("Indexing textures...");
-      let s = JSON.stringify(data);
-      return fs.promises.writeFile(path.join(resDir, "atlas-index.json"), s);
-    }),
+      await fs.promises.writeFile("./res/atlas-index.json", JSON.stringify(namesList));
+    })(),
   ]);
-  ondone.then((_) => {
-    console.log("Finished!");
-  });
+  console.log("Finished!");
 }
 
 /**
  * @param {nodeCanvas.Canvas} canv
- * @param {string} dir
+ * @param {string} file
  */
-function writeToPng(canv, dir) {
-  const out = fs.createWriteStream(dir);
+function writeToPng(canv, file) {
+  const out = fs.createWriteStream(file);
   const png_stream = canv.createPNGStream();
   return pipeline(png_stream, out);
 }
 
-main();
+await main();
