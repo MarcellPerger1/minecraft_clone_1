@@ -4,7 +4,6 @@ import { pipeline } from "node:stream/promises";
 
 import nodeCanvas from "canvas";
 
-
 /**
  * @param {string} dir
  */
@@ -45,12 +44,14 @@ async function main() {
   var canv = nodeCanvas.createCanvas(paths.length * 16, 16);
   var ctx = canv.getContext("2d");
 
-  console.log("Drawing images...");  
-  const namesList = await Promise.all(paths.map(async (imgPath, i) => {
-    const img = await nodeCanvas.loadImage(imgPath);
-    drawNthImage(ctx, img, i);
-    return path.basename(imgPath, ".min.png");
-  }));
+  console.log("Drawing images...");
+  const namesList = await Promise.all(
+    paths.map(async (imgPath, i) => {
+      const img = await nodeCanvas.loadImage(imgPath);
+      drawNthImage(ctx, img, i);
+      return path.basename(imgPath, ".min.png");
+    })
+  );
   await Promise.all([
     (async () => {
       console.log("Creating atlas...");
@@ -58,7 +59,10 @@ async function main() {
     })(),
     (async () => {
       console.log("Indexing textures...");
-      await fs.promises.writeFile("./res/atlas-index.json", JSON.stringify(namesList));
+      await fs.promises.writeFile(
+        "./res/atlas-index.json",
+        JSON.stringify(namesList)
+      );
     })(),
   ]);
   console.log("Finished!");
