@@ -249,15 +249,13 @@ const covMap = libCoverage.createCoverageMap({});
 covMap.merge(mapJest);
 istCovPpt.forEach(covMap.merge, covMap);
 
-istanbulReports
-  .create("lcov")
-  .execute(
-    libReport.createContext({
-      dir: "./test/coverage-all",
-      coverageMap: covMap,
-      defaultSummarizer: "nested",
-    })
-  );
+istanbulReports.create("lcov").execute(
+  libReport.createContext({
+    dir: "./test/coverage-all",
+    coverageMap: covMap,
+    defaultSummarizer: "nested",
+  })
+);
 istanbulReports.create("lcov").execute(
   libReport.createContext({
     dir: "./test/coverage-puppeteer",
