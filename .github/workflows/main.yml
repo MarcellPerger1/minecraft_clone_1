@@ -29,9 +29,28 @@ jobs:
           cache-dependency-path: ./package-lock.json
       - run: npm install
       - name: Run tests
+        id: run_tests
         run: |
           chmod +x ./scripts/test.sh
-          npm test -- --colors
+          npm test -- --colors;
+      - name: Check if need to upload diff
+        if: ${{ always() }}
+        id: check_output
+        run: |
+          echo "After test"
+          if [ -n "$(ls -A ./test/e2e/__image_snapshots__/__diff_output__)" ]; then
+            HAS_DIFF=1
+          else
+            HAS_DIFF=0
+          fi
+          echo $HAS_DIFF
+          echo "HAS_IMG_DIFF=$HAS_DIFF" >> "$GITHUB_OUTPUT"
+      - name: Upload image diff
+        uses: actions/upload-artifact@v3
+        if: ${{ failure() && steps.check_output.outputs.HAS_IMG_DIFF == 1 }}
+        with:
+          name: image-snapshot-diff
+          path: test/e2e/__image_snapshots__/__diff_output__
   
   linter:
     runs-on: ubuntu-latest

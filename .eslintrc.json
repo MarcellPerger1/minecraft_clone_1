@@ -11,6 +11,9 @@
   "ignorePatterns":[
     "**/libs/**"
   ],
+  "overrides": [
+    {"files": ["*.{js,mjs,cjs}"]}
+  ],
   "globals":{
     "mat4": "readonly",
     "vec3": "readonly",

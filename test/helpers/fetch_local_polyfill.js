@@ -1,6 +1,9 @@
 import { readFile } from "node:fs/promises";
 import { Response } from "node-fetch";
 
+/**
+ * @param {string} path
+ */
 export default async function fetch(path) {
   let data = null;
   let status = 200;
