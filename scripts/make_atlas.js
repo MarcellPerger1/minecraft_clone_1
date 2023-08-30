@@ -1,14 +1,20 @@
-import { promises as fsP, createWriteStream } from "fs";
-import { join, resolve, basename } from "path";
-import { pipeline } from "stream/promises";
+import fs from "node:fs";
+import path from "node:path";
+import { pipeline } from "node:stream/promises";
+import { fileURLToPath } from 'node:url';
+
 import { createCanvas, loadImage } from "canvas";
 
+
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+
+
 async function getTexturePaths(dir) {
-  let filenames = await fsP.readdir(dir);
+  let filenames = await fs.promises.readdir(dir);
   let paths = [];
   // todo recursive? command line switch??
   for (const fn of filenames) {
-    let p = join(dir, fn);
+    let p = path.join(dir, fn);
     if (isTextureFile(p)) {
       paths.push(p);
     }
@@ -24,7 +30,7 @@ function isTextureFile(f) {
  * @param trustCwd {boolean} is cwd set properly (ie. to project root)
  **/
 function getProjectRoot(trustCwd = true) {
-  return trustCwd ? resolve() : resolve(__dirname, "..");
+  return trustCwd ? path.resolve() : path.resolve(dirname, "..");
 }
 
 function drawNthImage(ctx, img, i) {
@@ -33,8 +39,8 @@ function drawNthImage(ctx, img, i) {
 
 function main() {
   const root = getProjectRoot();
-  const resDir = resolve(root, "res/");
-  const texDir = resolve(root, "textures/");
+  const resDir = path.resolve(root, "res/");
+  const texDir = path.resolve(root, "textures/");
   var canv, ctx, n;
   var i = 0;
   var data = [];
@@ -49,7 +55,7 @@ function main() {
       paths.map((p) =>
         loadImage(p).then((img) => {
           drawNthImage(ctx, img, i++);
-          let nm = basename(p, ".min.png");
+          let nm = path.basename(p, ".min.png");
           data.push(nm);
         })
       )
@@ -58,12 +64,12 @@ function main() {
   let ondone = Promise.all([
     ondrawn.then((_) => {
       console.log("Creating atlas...");
-      return writeToPng(canv, join(resDir, "atlas.png"));
+      return writeToPng(canv, path.join(resDir, "atlas.png"));
     }),
     ondrawn.then((_) => {
       console.log("Indexing textures...");
       let s = JSON.stringify(data);
-      return fsP.writeFile(join(resDir, "atlas-index.json"), s);
+      return fs.promises.writeFile(path.join(resDir, "atlas-index.json"), s);
     }),
   ]);
   ondone.then((_) => {
@@ -72,7 +78,7 @@ function main() {
 }
 
 function writeToPng(canv, dir) {
-  const out = createWriteStream(dir);
+  const out = fs.createWriteStream(dir);
   const png_stream = canv.createPNGStream();
   return pipeline(png_stream, out);
 }
