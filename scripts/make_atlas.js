@@ -1,12 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import { pipeline } from "node:stream/promises";
-import { fileURLToPath } from 'node:url';
 
 import nodeCanvas from "canvas";
-
-
-const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 
 /**
@@ -25,15 +21,11 @@ async function getTexturePaths(dir) {
   return paths;
 }
 
+/**
+ * @param {string} f
+ */
 function isTextureFile(f) {
   return f.endsWith(".min.png");
-}
-
-/**
- * @param {boolean} trustCwd is cwd set properly (ie. to project root)
- **/
-function getProjectRoot(trustCwd = true) {
-  return trustCwd ? path.resolve() : path.resolve(dirname, "..");
 }
 
 /**
