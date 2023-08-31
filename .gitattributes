@@ -3,3 +3,4 @@ node_modules/** linguist-generated
 res/** linguist-generated
 package-lock.json linguist-generated
 test/e2e/__image_snapshots__/** linguist-generated
+src/utils/ts/*.js linguist-generated
