@@ -123,7 +123,7 @@ jobs:
           chmod +x ./scripts/build_libs.sh
           ./scripts/build_libs.sh
       - name: Generate texture atlas
-        run: node ./scripts/make_atlas.cjs
+        run: node ./scripts/make_atlas.js
         
       - name: Commit texture atlas
         uses: stefanzweifel/git-auto-commit-action@v4
