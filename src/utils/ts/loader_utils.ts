@@ -3,7 +3,7 @@ type LoadersToPromisesT<L extends {[k: PropertyKey]: LoaderT}> = {[k in keyof L]
 
 export class LoaderMerge<L extends {[k: PropertyKey]: LoaderT}> {
   loaders: L;
-  promises: LoadersToPromisesT<L>;
+  promises?: LoadersToPromisesT<L>;
 
   constructor(loaders: L) {
     this.loaders = loaders;
