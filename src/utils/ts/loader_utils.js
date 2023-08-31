@@ -11,8 +11,11 @@ export class LoaderMerge {
         return this;
     }
     async loadResources() {
+        // aargh typescript!!
         this.startPromises();
-        return this.promises;
+        const promiseList = getEntries(this.promises).map(async ([k, v]) => [k, await v]);
+        const results = await Promise.all(promiseList);
+        return fromEntries(results);
     }
 }
 // mark attribs normally on `LoaderMerge` as reserved so they aren't

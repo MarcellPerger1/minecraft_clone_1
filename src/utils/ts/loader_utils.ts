@@ -1,5 +1,6 @@
 type LoaderT<T = any> = {loadResources(): Promise<T>};
 type LoadersToPromisesT<L extends {[k: PropertyKey]: LoaderT}> = {[k in keyof L]: L[k] extends LoaderT<infer RT> ? Promise<RT> : Promise<unknown>};
+type LoadersToValuesT<L extends {[k: PropertyKey]: LoaderT}> = {[k in keyof L]: L[k] extends LoaderT<infer RT> ? RT : unknown}
 
 export class LoaderMerge<L extends {[k: PropertyKey]: LoaderT}> {
   loaders: L;
@@ -17,9 +18,12 @@ export class LoaderMerge<L extends {[k: PropertyKey]: LoaderT}> {
     return this;
   }
 
-  async loadResources() {
+  async loadResources() : Promise<LoadersToValuesT<L>> {
+    // aargh typescript!!
     this.startPromises();
-    return this.promises;
+    const promiseList = getEntries(this.promises! as {[k: PropertyKey]: unknown}).map(async ([k, v]) => [k, await v]) as Promise<[PropertyKey, unknown]>[];
+    const results = await Promise.all(promiseList);
+    return fromEntries(results) as LoadersToValuesT<L>;
   }
 }
 
