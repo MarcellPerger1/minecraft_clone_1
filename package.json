@@ -20,6 +20,7 @@
     "prettier": "^2.8.7",
     "puppeteer": "^21.1.0",
     "puppeteer-to-istanbul": "^1.4.0",
+    "typescript": "^5.2.2",
     "v8-to-istanbul": "^9.1.0"
   },
   "scripts": {
