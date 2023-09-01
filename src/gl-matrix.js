@@ -1,5 +1,5 @@
 // Just re-export all the gl-matrix stuff
-import * as _ from  "./libs/gl-matrix/dist/gl-matrix.js";
+import * as _ from "./libs/gl-matrix/dist/gl-matrix.js";
 // @ts-ignore
 export const vec3 = self.vec3;
 // @ts-ignore
