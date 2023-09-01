@@ -1,4 +1,4 @@
-type LoaderT<T = any> = {loadResources(): Promise<T>};
+export type LoaderT<T = any> = {loadResources(): Promise<T>};
 type LoadersToPromisesT<L extends {[k: PropertyKey]: LoaderT}> = {[k in keyof L]: L[k] extends LoaderT<infer RT> ? Promise<RT> : Promise<unknown>};
 type LoadersToValuesT<L extends {[k: PropertyKey]: LoaderT}> = {[k in keyof L]: L[k] extends LoaderT<infer RT> ? RT : unknown}
 
@@ -33,7 +33,7 @@ const _RESERVED_KEYS = ["loaders", "promises", ...getAllPropNames(new LoaderMerg
 
 export function makeLoaderMerge<L extends {[k: PropertyKey]: LoaderT}>(loaders: L) : LoaderMerge<L> & L {
   let lm = new LoaderMerge(loaders);
-  const lm_loaders = lm.loaders;
+  const lm_loaders = {...lm.loaders};
   for(const k of _RESERVED_KEYS) {
     if(k in lm_loaders) {
       delete lm_loaders[k];

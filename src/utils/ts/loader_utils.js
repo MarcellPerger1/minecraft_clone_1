@@ -32,7 +32,7 @@ const _RESERVED_KEYS = [
 ];
 export function makeLoaderMerge(loaders) {
   let lm = new LoaderMerge(loaders);
-  const lm_loaders = lm.loaders;
+  const lm_loaders = { ...lm.loaders };
   for (const k of _RESERVED_KEYS) {
     if (k in lm_loaders) {
       delete lm_loaders[k];
