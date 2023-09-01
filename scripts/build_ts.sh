@@ -1,4 +1,3 @@
-#! bash
 # TODO: Do this in a way that doesn't require listing the dirs to be built (perhaps using find):
 # find ./src ./test ./scripts  
 #    -name node_modules -prune  
