@@ -1,4 +1,5 @@
 import { GameComponent } from "./game_component.js";
+import { vec3 } from "./gl-matrix.js";
 import { KeyEvent, Button } from "./keyinput.js";
 import { clamp, toRad } from "./utils/math.js";
 import { OffsetInfo } from "./utils/offset_info.js";

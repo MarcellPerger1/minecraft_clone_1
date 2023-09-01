@@ -128,4 +128,4 @@ jobs:
       - name: Commit texture atlas
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Build texture atlas
+          commit_message: "ci: Commit built files [generated]"

@@ -1,4 +1,5 @@
 import { GameComponent } from "../game_component.js";
+import { vec3 } from "../gl-matrix.js";
 
 const FAR_DIST_SQ = 130;
 

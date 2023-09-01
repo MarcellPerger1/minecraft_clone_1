@@ -1,4 +1,5 @@
 import { toRad } from "../utils/math.js";
+import { mat4, vec3 } from "../gl-matrix.js";
 
 export class Camera {
   constructor(gl, uniforms) {
