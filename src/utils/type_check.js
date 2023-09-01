@@ -11,7 +11,7 @@ export function isPureObject(x) {
 }
 
 /**
- * @param {*} x 
+ * @param {*} x
  * @returns {x is {}}
  */
 export function isObject(x) {

@@ -250,7 +250,6 @@ export class MeshRenderer extends GameComponent {
   }
 }
 
-
 export class DisplayRenderer extends MeshRenderer {
   constructor(game, gl) {
     super(game, gl);
