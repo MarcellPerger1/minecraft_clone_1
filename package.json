@@ -4,6 +4,7 @@
   "description": "A minecraft clone in browser using webgl",
   "main": "index.html",
   "dependencies": {
+    "gl-matrix": "^2.8.1",
     "simplex-noise": "^3.0.1"
   },
   "devDependencies": {
