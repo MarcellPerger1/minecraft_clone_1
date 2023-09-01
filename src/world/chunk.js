@@ -4,6 +4,7 @@ import { GameComponent } from "../game_component.js";
 
 import { Blocks } from "./block_type.js";
 import { ChunkRenderer } from "../renderer/chunk_renderer.js";
+import { vec3 } from "../gl-matrix.js";
 
 /**
  * @typedef {import('../game.js').Game} Game

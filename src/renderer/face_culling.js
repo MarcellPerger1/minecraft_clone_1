@@ -1,4 +1,5 @@
 import { GameComponent } from "../game_component.js";
+import { vec3 } from "../gl-matrix.js";
 import { CubeVertexData } from "./cube_data.js";
 
 /**

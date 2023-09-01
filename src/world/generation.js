@@ -5,6 +5,7 @@ import { World } from "./world.js";
 import { Blocks } from "./block_type.js";
 import { OctaveNoise } from "./octave_noise.js";
 import { TreePlacer } from "./tree_generation.js";
+import { vec3 } from "../gl-matrix.js";
 
 export class WorldGenerator extends GameComponent {
   constructor(game) {
