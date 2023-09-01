@@ -1,5 +1,3 @@
-#! bash
-
 # NOTE: replit doesn't serve node_modules/ so have to copy out
 
 remake_dir () {
