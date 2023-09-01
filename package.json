@@ -4,11 +4,11 @@
   "description": "A minecraft clone in browser using webgl",
   "main": "index.html",
   "dependencies": {
-    "canvas": "^2.9.1",
     "simplex-noise": "^3.0.1"
   },
   "devDependencies": {
     "@types/jest-image-snapshot": "^6.2.0",
+    "canvas": "^2.11.2",
     "eslint": "^8.11.0",
     "eslint-plugin-jest": "^26.5.3",
     "istanbul-lib-coverage": "^3.2.0",
