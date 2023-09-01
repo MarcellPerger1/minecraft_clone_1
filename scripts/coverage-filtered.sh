@@ -1,1 +1,1 @@
-chmod +x ./scripts/test.sh && ./scripts/test.sh -c ./test/jest-config/jest-coverage-filtered.config.js $@
+chmod +x ./scripts/test.sh && ./scripts/test.sh -c ./test/jest-config/jest-coverage-filtered.config.js "$@"

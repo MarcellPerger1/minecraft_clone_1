@@ -1,6 +1,6 @@
 import { isAnyArray } from "../utils/type_check.js";
 import { getGLContext } from "../utils/gl_utils.js";
-import { LoaderMerge } from "../utils/loader.js";
+import { makeLoaderMerge } from "../utils/ts/loader_utils.js";
 import { GameComponent } from "../game_component.js";
 
 import { Buffer } from "./buffers.js";
@@ -250,10 +250,6 @@ export class MeshRenderer extends GameComponent {
   }
 }
 
-/**
- * @typedef {LoaderMerge & {shader: ShaderProgramLoader, atlas: AtlasLoader, promises: {[k: string]: Promise}}} _DRLoaderMergeT
- */
-
 export class DisplayRenderer extends MeshRenderer {
   constructor(game, gl) {
     super(game, gl);
@@ -262,12 +258,10 @@ export class DisplayRenderer extends MeshRenderer {
   }
 
   initLoaders() {
-    this.loader = /** @type {_DRLoaderMergeT} */ (
-      new LoaderMerge({
-        shader: new ShaderProgramLoader(this.gl, this.cnf.shader),
-        atlas: new AtlasLoader(this.game),
-      }).startPromises()
-    );
+    this.loader = makeLoaderMerge({
+      shader: new ShaderProgramLoader(this.gl, this.cnf.shader),
+      atlas: new AtlasLoader(this.game),
+    }).startPromises();
     this.loader.promises.shader.then(() => {
       progress.addPercent(10);
     });

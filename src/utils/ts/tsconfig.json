@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "checkJs": true, 
+    "lib": ["ESNext", "DOM"], 
+    "target": "ESNext",
+    "strict": true,
+    "skipLibCheck": true,
+    "sourceMap": true
+  }
+}

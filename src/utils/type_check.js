@@ -10,6 +10,10 @@ export function isPureObject(x) {
   return x.constructor.name === "Object";
 }
 
+/**
+ * @param {*} x
+ * @returns {x is {}}
+ */
 export function isObject(x) {
   return x && !isArray(x) && x instanceof Object;
 }
@@ -23,6 +27,10 @@ export function isNumber(x) {
   return typeof x == "number" || x instanceof Number;
 }
 
+/**
+ * @param {*} x
+ * @returns {x is any[]}
+ */
 export function isArray(x) {
   return Array.isArray(x);
 }

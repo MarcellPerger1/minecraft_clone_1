@@ -1,1 +1,3 @@
 shell=bash
+# git automatically converts CRLF => LF on commit
+disable=SC1017
