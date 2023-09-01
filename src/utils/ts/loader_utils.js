@@ -38,7 +38,7 @@ export function makeLoaderMerge(loaders) {
       delete lm_loaders[k];
     }
   }
-  return Object.assign(lm, lm.loaders);
+  return Object.assign(lm, lm_loaders);
 }
 // These are just Object.entries and Object.fromEntries respectively but with better types
 function getEntries(o) {

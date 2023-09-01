@@ -39,7 +39,7 @@ export function makeLoaderMerge<L extends {[k: PropertyKey]: LoaderT}>(loaders: 
       delete lm_loaders[k];
     }
   }
-  return Object.assign(lm, lm.loaders);
+  return Object.assign(lm, lm_loaders);
 }
 
 
