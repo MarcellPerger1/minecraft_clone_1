@@ -1,44 +1,55 @@
 /**
- * A random() function, must return a numer in the interval [0,1), just like Math.random().
+ * A random() function, must return a number in the interval [0,1), just like Math.random().
  */
 export declare type RandomFn = () => number;
-/** Deterministic simplex noise generator suitable for 2D, 3D and 4D spaces. */
-export declare class SimplexNoise {
-    private p;
-    private perm;
-    private permMod12;
-    /**
-     * Creates a new `SimplexNoise` instance.
-     * This involves some setup. You can save a few cpu cycles by reusing the same instance.
-     * @param randomOrSeed A random number generator or a seed (string|number).
-     * Defaults to Math.random (random irreproducible initialization).
-     */
-    constructor(randomOrSeed?: RandomFn | string | number);
-    /**
-     * Samples the noise field in 2 dimensions
-     * @param x
-     * @param y
-     * @returns a number in the interval [-1, 1]
-     */
-    noise2D(x: number, y: number): number;
-    /**
-     * Samples the noise field in 3 dimensions
-     * @param x
-     * @param y
-     * @param z
-     * @returns a number in the interval [-1, 1]
-     */
-    noise3D(x: number, y: number, z: number): number;
-    /**
-     * Samples the noise field in 4 dimensions
-     * @param x
-     * @param y
-     * @param z
-     * @returns a number in the interval [-1, 1]
-     */
-    noise4D(x: number, y: number, z: number, w: number): number;
-}
-export default SimplexNoise;
+/**
+ * Samples the noise field in two dimensions
+ *
+ * Coordinates should be finite, bigger than -2^31 and smaller than 2^31.
+ * @param x
+ * @param y
+ * @returns a number in the interval [-1, 1]
+ */
+export declare type NoiseFunction2D = (x: number, y: number) => number;
+/**
+ * Creates a 2D noise function
+ * @param random the random function that will be used to build the permutation table
+ * @returns {NoiseFunction2D}
+ */
+export declare function createNoise2D(random?: RandomFn): NoiseFunction2D;
+/**
+ * Samples the noise field in three dimensions
+ *
+ * Coordinates should be finite, bigger than -2^31 and smaller than 2^31.
+ * @param x
+ * @param y
+ * @param z
+ * @returns a number in the interval [-1, 1]
+ */
+export declare type NoiseFunction3D = (x: number, y: number, z: number) => number;
+/**
+ * Creates a 3D noise function
+ * @param random the random function that will be used to build the permutation table
+ * @returns {NoiseFunction3D}
+ */
+export declare function createNoise3D(random?: RandomFn): NoiseFunction3D;
+/**
+ * Samples the noise field in four dimensions
+ *
+ * Coordinates should be finite, bigger than -2^31 and smaller than 2^31.
+ * @param x
+ * @param y
+ * @param z
+ * @param w
+ * @returns a number in the interval [-1, 1]
+ */
+export declare type NoiseFunction4D = (x: number, y: number, z: number, w: number) => number;
+/**
+ * Creates a 4D noise function
+ * @param random the random function that will be used to build the permutation table
+ * @returns {NoiseFunction4D}
+ */
+export declare function createNoise4D(random?: RandomFn): NoiseFunction4D;
 /**
  * Builds a random permutation table.
  * This is exported only for (internal) testing purposes.

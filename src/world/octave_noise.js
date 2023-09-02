@@ -1,4 +1,5 @@
-import SimplexNoise from "../libs/simplex-noise/dist/esm/simplex-noise.js";
+import { createNoise2D } from "../libs/simplex-noise/dist/esm/simplex-noise.js";
+import { alea } from "../alea/alea.js";
 
 import { SeedFork } from "./seed.js";
 
@@ -24,7 +25,7 @@ export class OctaveNoise {
     this.cnf = config;
     this.nMedianDefault = nMedianDefault;
     this.seeds = SeedFork.getSeeds(this.seed, this.name, this.cnf.layers);
-    this.noises = this.seeds.map((s) => new SimplexNoise(s));
+    this.noises = this.seeds.map((s) => createNoise2D(alea(s)));
   }
 
   noise2D(x, z) {
@@ -33,7 +34,7 @@ export class OctaveNoise {
     let ym = this.cnf.nScale[1];
     let zm = this.cnf.nScale[2];
     for (let i = 0; i < this.cnf.layers; i++) {
-      ny += ym * this.noises[i].noise2D(x / xm, z / zm);
+      ny += ym * this.noises[i](x / xm, z / zm);
       xm *= this.cnf.octaveMult[0];
       ym *= this.cnf.octaveMult[1];
       zm *= this.cnf.octaveMult[2];
