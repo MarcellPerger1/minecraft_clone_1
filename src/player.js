@@ -38,6 +38,7 @@ export class Player extends GameComponent {
   }
 
   action_placeBlock() {
+    if (this.blockInHand == Blocks.air) return;
     const clickInfo = this.pickingRenderer.readCanvasCenter();
     if (clickInfo == null) return;
     const [clickedPos, face] = clickInfo;
