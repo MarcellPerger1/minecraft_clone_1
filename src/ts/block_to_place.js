@@ -16,13 +16,22 @@ export class BlockToPlace {
       this.selectElem.appendChild(this.makeOptionForBlock(blockType));
       addedIds.add(blockType.name);
     }
+    this.selectElem.namedItem("oak_log").selected = true;
+    this._addOnchangeListener();
     return this;
   }
   makeOptionForBlock(block) {
     const elem = document.createElement("option");
     elem.value = block.name;
+    elem.setAttribute("name", block.name);
     elem.append(this._getDisplayName(block));
     return elem;
+  }
+  _addOnchangeListener() {
+    this.selectElem.addEventListener("change", () => {
+      const value = this.selectElem.value;
+      this.player.blockInHand = Blocks[value];
+    });
   }
   _getDisplayName(block) {
     return block.name; // later: convert snake_case to normal name
