@@ -1,3 +1,4 @@
+import { isObject } from "../utils/type_check.js";
 import { Blocks } from "../world/block_type.js";
 export class BlockToPlace {
   player;
@@ -11,7 +12,7 @@ export class BlockToPlace {
     placeholder.remove();
     let addedIds = new Set();
     for (const blockType of Object.values(Blocks)) {
-      if (addedIds.has(blockType.name)) continue;
+      if (!isObject(blockType) || addedIds.has(blockType.name)) continue;
       this.selectElem.appendChild(this.makeOptionForBlock(blockType));
       addedIds.add(blockType.name);
     }
