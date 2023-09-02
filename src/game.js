@@ -6,6 +6,7 @@ import { WorldGenerator } from "./world.js";
 import { LoadingEndMgr } from "./loading_end.js";
 import { DynInfo } from "./dyn_info.js";
 import { currentVersionLoader } from "./current_version_loader.js";
+import { BlockToPlace } from "./ts/block_to_place.js";
 
 /**
  * @typedef {import('./config.js').ConfigT} ConfigT
@@ -43,6 +44,7 @@ export class Game {
     this.player = new Player(this);
     this.w = this.world = new WorldGenerator(this).generate();
     this.info = new DynInfo(this);
+    this.blockToPlaceHandler = new BlockToPlace(this.player).loadBlocks();
     await this.loadResources();
   }
 
