@@ -123,7 +123,7 @@ jobs:
           chmod +x ./scripts/build_libs.sh
           ./scripts/build_libs.sh
       - name: Build `.ts` files
-        run: ./scripts/build_ts.sh
+        run: chmod +x ./scripts/build_ts.sh && /scripts/build_ts.sh
       - name: Generate texture atlas
         run: node ./scripts/make_atlas.js
         
