@@ -16,6 +16,7 @@ for d in "${dirs[@]}"; do
     else
       echo "Building $d"
       startt=$(date +%s%N)
+      chmod +x "$d/_build.sh"
       "$d/_build.sh"
       endt=$(date +%s%N)
       deltat=$(printf '%.2f' "$((endt - startt))e-9")
