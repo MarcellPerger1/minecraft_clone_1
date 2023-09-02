@@ -11,7 +11,7 @@ export class BlockToPlace {
   }
 
   loadBlocks() : this {
-    const placeholder = document.getElementById("loading-block-to-place");
+    const placeholder = document.getElementById("loading-block-to-place") as HTMLOptionElement;
     placeholder.remove();
 
     for(const blockType of Object.values(Blocks)) {
@@ -30,6 +30,4 @@ export class BlockToPlace {
   _getDisplayName(block: BlockType) : string {
     return block.name;  // later: convert snake_case to normal name
   }
-
-
 }
