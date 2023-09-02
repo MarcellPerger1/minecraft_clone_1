@@ -14,8 +14,11 @@ export class BlockToPlace {
     const placeholder = document.getElementById("loading-block-to-place") as HTMLOptionElement;
     placeholder.remove();
 
+    let addedIds = new Set<string>();
     for(const blockType of Object.values(Blocks)) {
+      if(addedIds.has(blockType.name)) continue;
       this.selectElem.appendChild(this.makeOptionForBlock(blockType));
+      addedIds.add(blockType.name);
     }
     return this;
   }
