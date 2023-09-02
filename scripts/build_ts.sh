@@ -19,7 +19,7 @@ for d in "${dirs[@]}"; do
       "$d/_build.sh"
       endt=$(date +%s%N)
       deltat=$(printf '%.2f' "$((endt - startt))e-9")
-      echo "Built $d in ${deltat}s"
+      echo "Built    $d in ${deltat}s"
     fi
   fi
 done
