@@ -5,3 +5,4 @@ rm -r "$thisdir/_out"
 # format the generated code
 shopt -s globstar
 npx prettier --write "$thisdir/**/*.js" --loglevel=warn
+sed -i 's/\.\.\/\.\.\//.\//g' "$thisdir"/*.js.map
