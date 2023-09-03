@@ -1,7 +1,7 @@
 import { deepMerge } from "../utils/deep_merge.js";
 import { LoaderContext } from "../config_loader.js";
 
-
+// TODO: add separate common_types.ts or similar for these
 type path = string;
 type RGBA_Tuple = [number, number, number, number];
 type Vec3 = [number, number, number];
