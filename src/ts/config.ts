@@ -7,13 +7,13 @@ type RGBA_Tuple = [number, number, number, number];
 type Vec3 = [number, number, number];
 type Vec2 = [number, number];
 type SeedType = number | string;
-type Rot3 = {h: number, v: number};
+type Rot3 = { h: number; v: number };
 
 export interface NoiseConfigT {
   nScale: Vec3;
   octaveMult: Vec3;
   layers: number;
-  nMedian: (number | 'auto');
+  nMedian: number | "auto";
 }
 
 export interface GenerationConfigT {
@@ -23,7 +23,7 @@ export interface GenerationConfigT {
   nTrees: number;
   chunkSize: Vec3;
   treeRadius: Vec2;
-  treeCollideAction: (string | 'avoid' | 'skip' | 'place');
+  treeCollideAction: string | "avoid" | "skip" | "place";
   baseTerrain: NoiseConfigT;
   stoneOffset: NoiseConfigT;
 }
@@ -64,7 +64,7 @@ export interface ConfigT {
   atlas: AtlasConfigT;
 }
 
-export async function getConfig(...extra: ConfigT[]) : Promise<ConfigT> {
+export async function getConfig(...extra: ConfigT[]): Promise<ConfigT> {
   let config = await new LoaderContext().loadConfigFile(
     "./configs/config.json"
   );
