@@ -4,6 +4,10 @@ import { removePrefix, trim } from "./utils/str_utils.js";
 import { deepMerge } from "./utils/deep_merge.js";
 import { fetchTextFile } from "./utils/file_load.js";
 
+/**
+ * @typedef {import('./config.js').ConfigT} ConfigT
+ */
+
 export class LoaderContext {
   constructor(configsRoot = "configs") {
     this.configsRoot = configsRoot;
@@ -13,7 +17,7 @@ export class LoaderContext {
    * @param {string} name
    * @param {boolean} inheritance - Use inheritance?
    * @param {Set<string>} loaderStack - Set of configs being loaded in the inheritance
-   * @returns {Promise<CNF_MOD.ConfigT>} the loaded config
+   * @returns {Promise<ConfigT>} the loaded config
    */
   async loadConfigFile(name, inheritance = true, loaderStack = null) {
     loaderStack = new Set(loaderStack);
@@ -33,7 +37,7 @@ export class LoaderContext {
   /**
    * Handle inheritance for Configs
    * @param {{$extends: (string|string[])}} config - the original config
-   * @returns {Promise<CNF_MOD.ConfigT>} the new config
+   * @returns {Promise<ConfigT>} the new config
    */
   async handleConfigInheritance(config, loaderStack) {
     let bases = this.getConfigBases(config);
@@ -199,7 +203,7 @@ export function stringifyJsonConfig(obj, space = 0) {
  * Load .json Config file
  * @param {string} path
  * @param {boolean} inheritance - Use inheritance?
- * @returns {Promise<CNF_MOD.ConfigT>} the loaded config
+ * @returns {Promise<ConfigT>} the loaded config
  */
 export async function loadConfigFile(
   path,
