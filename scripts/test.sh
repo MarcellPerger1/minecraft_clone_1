@@ -1,1 +1,1 @@
-./scripts/test_base.sh -c ./test/jest-config/jest.config.js --ci "$@"
+chmod +x ./scripts/test_base.sh && ./scripts/test_base.sh -c ./test/jest-config/jest.config.js --ci "$@"
