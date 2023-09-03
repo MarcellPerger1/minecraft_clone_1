@@ -401,10 +401,18 @@ const LONG_STR =
 
 function test_configClassHandling() {
   it("Ignores `$class` attribute", () => {
-    expect(parseJsonConfig(JSON.stringify({ $class: "Invalid" }))).toStrictEqual({ $class: "Invalid"});
-    expect(parseJsonConfig(JSON.stringify({ $class: "PlayerConfig" }))).toStrictEqual({ $class: "PlayerConfig"});
-    expect(parseJsonConfig(JSON.stringify({ $class: "NotA_Config" }))).toStrictEqual({ $class: "NotA_Config"});
-    expect(parseJsonConfig(JSON.stringify({ $class: LONG_STR + "Config" }))).toStrictEqual({ $class: LONG_STR + "Config"});
+    expect(
+      parseJsonConfig(JSON.stringify({ $class: "Invalid" }))
+    ).toStrictEqual({ $class: "Invalid" });
+    expect(
+      parseJsonConfig(JSON.stringify({ $class: "PlayerConfig" }))
+    ).toStrictEqual({ $class: "PlayerConfig" });
+    expect(
+      parseJsonConfig(JSON.stringify({ $class: "NotA_Config" }))
+    ).toStrictEqual({ $class: "NotA_Config" });
+    expect(
+      parseJsonConfig(JSON.stringify({ $class: LONG_STR + "Config" }))
+    ).toStrictEqual({ $class: LONG_STR + "Config" });
   });
 }
 
