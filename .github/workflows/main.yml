@@ -38,7 +38,7 @@ jobs:
         id: check_output
         run: |
           echo "After test"
-          if [ -n "$(ls -A ./test/e2e/__image_snapshots__/__diff_output__)" ]; then
+          if [ -a ./test/e2e/__image_snapshots__/__diff_output__ -a -n "$(ls -A ./test/e2e/__image_snapshots__/__diff_output__)" ]; then
             HAS_DIFF=1
           else
             HAS_DIFF=0
