@@ -172,8 +172,7 @@ function configJsonReviver(key, value) {
   if (isObject(value)) {
     value = _withSymbolKeys(value);
   }
-  let cnf_cls = _getConfigClass(key, value);
-  return cnf_cls ? new cnf_cls(value) : value;
+  return value;
 }
 
 function _withSymbolKeys(value) {
@@ -188,26 +187,6 @@ function _withSymbolKeys(value) {
     newval[k] = v;
   }
   return newval;
-}
-
-function _getConfigClass(_key, value) {
-  let /** @type {string} */ t_str = value?.$class;
-  if (!t_str) {
-    return null;
-  }
-  if (!t_str.endsWith("Config")) {
-    throw new TypeError("Not a Config class");
-  }
-  if (t_str.length > 64) {
-    throw new RangeError(
-      "Config classes should have reasonably short names ;-)"
-    );
-  }
-  let cnf_cls = CNF_MOD[t_str];
-  if (!cnf_cls) {
-    throw new ReferenceError("Cant find config class");
-  }
-  return cnf_cls;
 }
 
 export function parseJsonConfig(/**@type{string}*/ text) {
