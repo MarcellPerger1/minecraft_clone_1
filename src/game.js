@@ -1,5 +1,5 @@
 import { RenderMgr } from "./renderer/renderer.js";
-import { getConfig } from "./config.js";
+import { getConfig } from "./ts/config.js";
 import { KeyInput } from "./keyinput.js";
 import { Player } from "./player.js";
 import { WorldGenerator } from "./world.js";
@@ -9,7 +9,7 @@ import { currentVersionLoader } from "./current_version_loader.js";
 import { BlockToPlace } from "./ts/block_to_place.js";
 
 /**
- * @typedef {import('./config.js').ConfigT} ConfigT
+ * @typedef {import('./ts/config.js').ConfigT} ConfigT
  */
 
 /**

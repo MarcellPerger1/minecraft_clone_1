@@ -10,7 +10,6 @@ import {
   stringifyJsonConfig,
 } from "../src/config_loader.js";
 import { deepMerge } from "../src/utils/deep_merge.js";
-import { PlayerConfig } from "../src/config.js";
 
 function makeLoader(configsRoot = null) {
   configsRoot ??= "test/dummy_configs";

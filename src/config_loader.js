@@ -5,7 +5,7 @@ import { deepMerge } from "./utils/deep_merge.js";
 import { fetchTextFile } from "./utils/file_load.js";
 
 /**
- * @typedef {import('./config.js').ConfigT} ConfigT
+ * @typedef {import('./ts/config.js').ConfigT} ConfigT
  */
 
 export class LoaderContext {
