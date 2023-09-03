@@ -4,7 +4,9 @@ import { removePrefix, trim } from "./utils/str_utils.js";
 import { deepMerge } from "./utils/deep_merge.js";
 import { fetchTextFile } from "./utils/file_load.js";
 
-import * as CNF_MOD from "./config.js";
+/**
+ * @typedef {import('./ts/config.js').ConfigT} ConfigT
+ */
 
 export class LoaderContext {
   constructor(configsRoot = "configs") {
@@ -15,7 +17,7 @@ export class LoaderContext {
    * @param {string} name
    * @param {boolean} inheritance - Use inheritance?
    * @param {Set<string>} loaderStack - Set of configs being loaded in the inheritance
-   * @returns {Promise<CNF_MOD.ConfigT>} the loaded config
+   * @returns {Promise<ConfigT>} the loaded config
    */
   async loadConfigFile(name, inheritance = true, loaderStack = null) {
     loaderStack = new Set(loaderStack);
@@ -35,7 +37,7 @@ export class LoaderContext {
   /**
    * Handle inheritance for Configs
    * @param {{$extends: (string|string[])}} config - the original config
-   * @returns {Promise<CNF_MOD.ConfigT>} the new config
+   * @returns {Promise<ConfigT>} the new config
    */
   async handleConfigInheritance(config, loaderStack) {
     let bases = this.getConfigBases(config);
@@ -172,8 +174,7 @@ function configJsonReviver(key, value) {
   if (isObject(value)) {
     value = _withSymbolKeys(value);
   }
-  let cnf_cls = _getConfigClass(key, value);
-  return cnf_cls ? new cnf_cls(value) : value;
+  return value;
 }
 
 function _withSymbolKeys(value) {
@@ -190,26 +191,6 @@ function _withSymbolKeys(value) {
   return newval;
 }
 
-function _getConfigClass(_key, value) {
-  let /** @type {string} */ t_str = value?.$class;
-  if (!t_str) {
-    return null;
-  }
-  if (!t_str.endsWith("Config")) {
-    throw new TypeError("Not a Config class");
-  }
-  if (t_str.length > 64) {
-    throw new RangeError(
-      "Config classes should have reasonably short names ;-)"
-    );
-  }
-  let cnf_cls = CNF_MOD[t_str];
-  if (!cnf_cls) {
-    throw new ReferenceError("Cant find config class");
-  }
-  return cnf_cls;
-}
-
 export function parseJsonConfig(/**@type{string}*/ text) {
   return JSON.parse(text, configJsonReviver);
 }
@@ -222,7 +203,7 @@ export function stringifyJsonConfig(obj, space = 0) {
  * Load .json Config file
  * @param {string} path
  * @param {boolean} inheritance - Use inheritance?
- * @returns {Promise<CNF_MOD.ConfigT>} the loaded config
+ * @returns {Promise<ConfigT>} the loaded config
  */
 export async function loadConfigFile(
   path,
