@@ -1,2 +1,1 @@
-NODE_OPTIONS='--experimental-vm-modules --require=./test/helpers/loader.cjs' \
-  npx jest --verbose "$@"
+./scripts/test_base.sh -c ./test/jest-config/jest.config.js "$@"
