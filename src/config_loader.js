@@ -4,8 +4,6 @@ import { removePrefix, trim } from "./utils/str_utils.js";
 import { deepMerge } from "./utils/deep_merge.js";
 import { fetchTextFile } from "./utils/file_load.js";
 
-import * as CNF_MOD from "./config.js";
-
 export class LoaderContext {
   constructor(configsRoot = "configs") {
     this.configsRoot = configsRoot;
