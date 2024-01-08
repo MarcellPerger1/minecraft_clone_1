@@ -10,6 +10,7 @@ import "./_image_snapshot_types/index.js";
 
 expect.extend({
   toMatchImageSnapshot: jestImageSnapshot.configureToMatchImageSnapshot({
+    comparisonMethod: "ssim",
     failureThresholdType: "percent",
     failureThreshold: 0.035,
   }),
