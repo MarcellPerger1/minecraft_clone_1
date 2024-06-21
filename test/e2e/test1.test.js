@@ -23,7 +23,7 @@ describe("The canvas WebGL rendering", () => {
   beforeAll(async () => {
     browser = await ppt.launch({
       headless: "new",
-      args: ["--disable-web-security"],
+      args: ["--disable-web-security", "--use-gl=desktop"],
     }); // cors errors aagh!
     page = await browser.newPage();
     page.on("pageerror", (v) => {
