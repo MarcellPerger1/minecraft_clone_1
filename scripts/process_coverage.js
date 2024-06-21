@@ -43,7 +43,10 @@ function copyObject(obj) {
 async function normalizeIstanbul(data) {
   // try to avoid parsing it as much as possible
   const covEntries = Object.entries(data);
-  assert(covEntries.length == 1, "Must have exactly 1 file in coverage map/source map");  // TODO support multi-file source maps
+  assert(
+    covEntries.length == 1,
+    "Must have exactly 1 file in coverage map/source map"
+  ); // TODO support multi-file source maps
   const [origSource, fileData] = covEntries[0];
   let text = await fs.promises.readFile(origSource, "utf8");
   /** @type {libCoverage.FileCoverage | libCoverage.FileCoverageData} */
