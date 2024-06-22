@@ -26,31 +26,33 @@ function _pathToFilename(p) {
 }
 
 /**
+ * Shallow-copies object
+ * @param {T} obj
+ * @returns {T}
+ * @template T
+ */
+function copyObject(obj) {
+  return { ...obj };
+}
+
+/**
  * Normalize `data` (in istanbul format converted from V8) to match the normal instanbul output
  * @param {libCoverage.CoverageMapData} data
- * @param {fs.PathLike} [file]
- * @param {string} [text]
  * @returns {Promise<libCoverage.CoverageMapData>}
  */
-async function normalizeIstanbul(data, file, text) {
+async function normalizeIstanbul(data) {
   // try to avoid parsing it as much as possible
-  if (file == null) {
-    const filenames = Object.keys(data);
-    assert(
-      filenames.length == 1,
-      "When inferring file name, the coverage map must contain extactly 1 file"
-    );
-    file = filenames[0];
-  }
-  text ??= await fs.promises.readFile(file, "utf8");
   const covEntries = Object.entries(data);
-  assert(covEntries.length == 1, "Must have exactly 1 file in coverage map");
-  const [filename, fileData] = covEntries[0];
-  const { fnMap } = fileData;
+  assert(
+    covEntries.length == 1,
+    "Must have exactly 1 file in coverage map/source map"
+  ); // TODO support multi-file source maps
+  const [origSource, fileData] = covEntries[0];
+  let text = await fs.promises.readFile(origSource, "utf8");
   /** @type {libCoverage.FileCoverage | libCoverage.FileCoverageData} */
-  let newFileData = { ...fileData };
-  newFileData.fnMap = await remapFnMap(fnMap, file, text);
-  return { [filename]: newFileData };
+  let newFileData = copyObject(fileData);
+  newFileData.fnMap = await remapFnMap(fileData.fnMap, text);
+  return { [origSource]: newFileData };
 }
 
 // ----------- fnMap -------------
@@ -63,19 +65,18 @@ const string_RE = /^(['"`])(?:\\.|(?!\1)[^\\])*\1/ds;
 
 /**
  * @param {{[key: string]: libCoverage.FunctionMapping}} fnMap
- * @param {fs.PathLike} file
  * @param {string} text
  * @returns {Promise<{[key: string]: libCoverage.FunctionMapping}>}
  */
-async function remapFnMap(fnMap, file, text) {
+async function remapFnMap(fnMap, text) {
   /** @type {{[key: string]: libCoverage.FunctionMapping}} */
   let newFnMap = {};
   for (let [fnKey, fnData] of Object.entries(fnMap)) {
     /** @type {libCoverage.FunctionMapping} */
     let newData = { ...fnData };
-    const [newDecl, endLoc] = await remapFnDecl(fnData.decl, file, text);
+    const [newDecl, endLoc] = await remapFnDecl(fnData.decl, text);
     newData.decl = newDecl;
-    const newLoc = await remapFnLoc(fnData.loc, file, text, endLoc);
+    const newLoc = await remapFnLoc(fnData.loc, text, endLoc);
     newData.loc = newLoc;
     newFnMap[fnKey] = newData;
   }
@@ -84,11 +85,10 @@ async function remapFnMap(fnMap, file, text) {
 
 /**
  * @param {libCoverage.Range} decl
- * @param {fs.PathLike} _file
  * @param {string} text
  * @returns {Promise<[libCoverage.Range, libCoverage.Location | null]>}
  */
-async function remapFnDecl(decl, _file, text) {
+async function remapFnDecl(decl, text) {
   /** @type {libCoverage.Range} */
   let newDecl = { start: { ...decl.start }, end: { ...decl.end } };
   const line = decl.start.line;
@@ -114,12 +114,11 @@ async function remapFnDecl(decl, _file, text) {
 }
 /**
  * @param {libCoverage.Range} loc
- * @param {fs.PathLike} _file
  * @param {string} text
  * @param {libCoverage.Location | null} parenStart
  * @returns {Promise<libCoverage.Range>}
  */
-async function remapFnLoc(loc, _file, text, parenStart) {
+async function remapFnLoc(loc, text, parenStart) {
   /** @type {libCoverage.Range} */
   let newLoc = { start: { ...loc.start }, end: { ...loc.end } };
   const lines = text.split("\n");
@@ -205,11 +204,11 @@ async function pptToIst(pptCov) {
   const srcPath = getLocalPath(rawCov.url);
 
   const source = await fs.promises.readFile(srcPath, "utf8");
-  const converter = v8ToIstanbul(rawCov.url, void 0, { source }); // todo support source map
+  const converter = v8ToIstanbul(rawCov.url, void 0, { source });
   await converter.load();
   converter.applyCoverage(rawCov.functions);
   const ist = converter.toIstanbul();
-  const normalIst = await normalizeIstanbul(ist, srcUrl, source);
+  const normalIst = await normalizeIstanbul(ist);
   if (DEBUG) {
     await fs.promises.mkdir("./_temp/");
     await fs.promises.writeFile(

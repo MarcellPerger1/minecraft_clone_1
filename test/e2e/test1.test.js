@@ -22,8 +22,8 @@ describe("The canvas WebGL rendering", () => {
   var /** @type {ppt.Browser} */ browser, /** @type {ppt.Page} */ page;
   beforeAll(async () => {
     browser = await ppt.launch({
-      headless: "new",
-      args: ["--disable-web-security"],
+      headless: true,
+      args: ["--disable-web-security", "--use-gl=desktop"],
     }); // cors errors aagh!
     page = await browser.newPage();
     page.on("pageerror", (v) => {
@@ -80,7 +80,7 @@ describe("The canvas WebGL rendering", () => {
 
   // pointerlock doesn't work for puppeteer
   // eslint-disable-next-line jest/no-disabled-tests
-  it.skip("gets the pointerlock", async () => {
+  it("gets the pointerlock", async () => {
     const canv_bbox = await canvasH.boundingBox();
     await page.mouse.click(
       canv_bbox.x + canv_bbox.width / 2,
@@ -137,7 +137,7 @@ describe("The canvas WebGL rendering", () => {
     expect(await canvasH.screenshot()).toMatchImageSnapshot();
   });
 
-  it("Remakes chunks on break (z and z adjacent)", async () => {
+  it("Remakes chunks on break (x and z adjacent)", async () => {
     await page.evaluate(
       "game.player.rotation = {h: 89, v: 90}; game.player.position = [7.4, 6.16, 7.58]"
     );
