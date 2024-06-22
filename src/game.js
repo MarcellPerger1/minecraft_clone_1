@@ -31,13 +31,10 @@ export class Game {
   }
 
   async _init() {
-    /** @type {ConfigT} */
     this.cnf = await getConfig(this.cnf_arg);
     progress.addPercent(25);
-    /** @type {HTMLCanvasElement} */
-    this.canvas = document.getElementById("glCanvas");
-    /** @type {CSSStyleSheet} */
-    this.styleSheet = document.getElementById("main-stylesheet").sheet;
+    this.canvas = /** @type {HTMLCanvasElement} */(document.getElementById("glCanvas"));
+    this.styleSheet = /** @type {HTMLLinkElement} */(document.getElementById("main-stylesheet")).sheet;
     this.setCanvasSize();
     this.renderMgr = new RenderMgr(this);
     this.ki = this.keyinput = new KeyInput();
