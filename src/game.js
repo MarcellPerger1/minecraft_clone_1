@@ -7,6 +7,7 @@ import { LoadingEndMgr } from "./loading_end.js";
 import { DynInfo } from "./dyn_info.js";
 import { currentVersionLoader } from "./current_version_loader.js";
 import { BlockToPlace } from "./ts/block_to_place.js";
+import { instanceofFilter } from "./utils/ts/ts_utils.js";
 
 /**
  * @typedef {import('./ts/config.js').ConfigT} ConfigT
@@ -33,8 +34,12 @@ export class Game {
   async _init() {
     this.cnf = await getConfig(this.cnf_arg);
     progress.addPercent(25);
-    this.canvas = /** @type {HTMLCanvasElement} */(document.getElementById("glCanvas"));
-    this.styleSheet = /** @type {HTMLLinkElement} */(document.getElementById("main-stylesheet")).sheet;
+    this.canvas = /** @type {HTMLCanvasElement} */ (
+      document.getElementById("glCanvas")
+    );
+    this.styleSheet = /** @type {HTMLLinkElement} */ (
+      document.getElementById("main-stylesheet")
+    ).sheet;
     this.setCanvasSize();
     this.renderMgr = new RenderMgr(this);
     this.ki = this.keyinput = new KeyInput();
@@ -52,18 +57,18 @@ export class Game {
    * @returns {CSSStyleRule[]}
    */
   getStyleBySelectorAll(target, exact = true) {
+    // TODO This should NOT be in here!
     target = target.trim();
-    let fullMatch = Array.from(this.styleSheet.cssRules).filter((rule) => {
-      if (!(rule instanceof CSSStyleRule)) {
-        return false;
-      }
-      let selector = rule.selectorText;
-      if (!selector) {
-        return false;
-      }
-      selector = selector.trim();
-      return exact ? selector === target : selector.includes(target);
-    });
+    let fullMatch = Array.from(this.styleSheet.cssRules)
+      .filter(instanceofFilter(CSSStyleRule))
+      .filter((rule) => {
+        let selector = rule.selectorText;
+        if (!selector) {
+          return false;
+        }
+        selector = selector.trim();
+        return exact ? selector === target : selector.includes(target);
+      });
     return fullMatch;
   }
 
