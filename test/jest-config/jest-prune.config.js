@@ -5,7 +5,7 @@ export const config = Object.assign({}, base, {
   reporters: [
     "default",
     "jest-image-snapshot/src/outdated-snapshot-reporter.js",
-  ]
+  ],
 });
 
 export default config;
