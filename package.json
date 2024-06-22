@@ -28,6 +28,7 @@
     "test": "chmod +x ./scripts/test.sh && ./scripts/test.sh",
     "test:update": "./scripts/update_new_tests.sh",
     "test:update:all": "./scripts/update_tests.sh",
+    "test:update:all+prune": "./scripts/update_tests_prune.sh",
     "coverage": "chmod +x ./scripts/coverage.sh && ./scripts/coverage.sh",
     "coverage:filtered": "chmod +x ./scripts/coverage-filtered.sh && ./scripts/coverage-filtered.sh",
     "lint": "chmod +x ./scripts/linter.sh && ./scripts/linter.sh",
