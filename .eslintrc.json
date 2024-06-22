@@ -3,7 +3,10 @@
     "browser": true,
     "es2021": true
   },
-  "extends": "eslint:recommended",
+  "extends": [
+    "eslint:recommended",
+    "plugin:import/recommended"
+  ],
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module"
@@ -21,6 +24,11 @@
     "no-unused-vars": ["warn", {
       "varsIgnorePattern": "^_",
       "argsIgnorePattern": "^_"
-    }]
+    }],
+    "import/extensions": ["error", "always"],
+    "import/no-amd": ["error"],
+    "import/no-commonjs": ["error"],
+    // "import/no-extraneous-dependencies": ["error"],  // requires me to explicitly dev-deend on @jest/globals
+    "import/no-nodejs-modules": ["error"]
   }
 }
