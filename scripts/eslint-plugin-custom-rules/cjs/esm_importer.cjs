@@ -1,9 +1,16 @@
+const {Worker} = require('node:worker_threads');
 const deasync = require('deasync');
-const wt = require('node:worker_threads');
 const { deserialize } = require("./_serde.cjs");
 
-function importESM(/** @type {string} */id) {
-  let w = new wt.Worker(`${__dirname}/esm_importer.worker.mjs`);
+/**
+ * @param {string} path 
+ * @param {*} arg
+ * @param {(error: Error, data: any) => T} cb 
+ * @returns {T}
+ * @template T
+ */
+function functionWorker(path, arg, cb) {
+  let w = new Worker(path);
   var done = false;
   var data = null;
   var error = null;
@@ -18,16 +25,18 @@ function importESM(/** @type {string} */id) {
   w.on("exit", () => {
     done = true;
   });
-  w.postMessage(id);
-  deasync.loopWhile
-  while (!done) { deasync.sleep(10); }
+  w.postMessage(arg);
+  deasync.loopWhile(() => !done);
   w.terminate();
-  if (data == null && error == null)
-    throw new Error("Data was expected!");
-  if (error)
-    throw error;
-  if (data)
+  return cb(error, data);
+}
+
+function importESM(/** @type {string} */id) {
+  return functionWorker(`${__dirname}/esm_importer.worker.mjs`, id, (error, data) => {
+    if (error) throw error;
+    if (data == null) throw new Error("Worker should've returned some data!");
     return deserialize(data);
+  });
 }
 
 module.exports = {
