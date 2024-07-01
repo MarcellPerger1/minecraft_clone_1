@@ -505,6 +505,7 @@ function test_loadDefaults() {
   it("Loads from default.json file", async () => {
     let lc = new LoaderContext("test/dummy_configs");
     let result = await lc.loadConfigDefaults();
+    console.log(await readFile("./test/dummy_configs/default.json"));
     expect(result).toStrictEqual(
       parseJsonConfig(await readFile("./test/dummy_configs/default.json"))
     );
@@ -513,8 +514,8 @@ function test_loadDefaults() {
     let lc = new LoaderContext("test/dummy_configs");
     let loaderFn = (lc.loadConfigFile = jest.fn(() => ({})));
     await lc.loadConfigDefaults();
-    expect(loaderFn).toBeCalledTimes(1);
-    expect(loaderFn).toBeCalledWith(
+    expect(loaderFn).toHaveBeenCalledTimes(1);
+    expect(loaderFn).toHaveBeenCalledWith(
       "./test/dummy_configs/default.json",
       false,
       void 0
@@ -537,8 +538,8 @@ function test_loadByName(
     lc.loadConfigFile = jest.fn(async () => ref);
     let result = await loadFn(lc, "something");
     expect(result).toBe(ref);
-    expect(lc.loadConfigFile).toBeCalledTimes(1);
-    expect(lc.loadConfigFile).toBeCalledWith(
+    expect(lc.loadConfigFile).toHaveBeenCalledTimes(1);
+    expect(lc.loadConfigFile).toHaveBeenCalledWith(
       "./test/dummy_configs/something.json",
       void 0,
       void 0
@@ -550,8 +551,8 @@ function test_loadByName(
     lc.loadConfigFile = jest.fn(async () => ref);
     let result = await loadFn(lc, "nested_dir/inner");
     expect(result).toBe(ref);
-    expect(lc.loadConfigFile).toBeCalledTimes(1);
-    expect(lc.loadConfigFile).toBeCalledWith(
+    expect(lc.loadConfigFile).toHaveBeenCalledTimes(1);
+    expect(lc.loadConfigFile).toHaveBeenCalledWith(
       "./test/dummy_configs/nested_dir/inner.json",
       void 0,
       void 0
@@ -569,8 +570,8 @@ function test_loadConfigByName() {
     lc.loadConfigFile = jest.fn(async () => ref);
     let result = await lc.loadConfigByName("default");
     expect(result).toBe(ref);
-    expect(lc.loadConfigFile).toBeCalledTimes(1);
-    expect(lc.loadConfigFile).toBeCalledWith(
+    expect(lc.loadConfigFile).toHaveBeenCalledTimes(1);
+    expect(lc.loadConfigFile).toHaveBeenCalledWith(
       "./test/dummy_configs/default.json",
       false,
       void 0

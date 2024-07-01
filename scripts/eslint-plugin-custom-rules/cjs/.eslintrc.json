@@ -1,0 +1,9 @@
+{
+  "env": {
+    "node": true
+  },
+  "rules": {
+    "import/no-nodejs-modules": "off",
+    "import/no-commonjs": "off"
+  }
+}
