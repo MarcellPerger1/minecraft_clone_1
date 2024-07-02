@@ -1,6 +1,6 @@
 const { Worker } = require("node:worker_threads");
 const deasync = require("deasync");
-const { deserialize } = require("./_serde.cjs");
+const { deserialize } = require("./serialization.cjs");
 
 /**
  * @param {string} path
