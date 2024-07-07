@@ -10,7 +10,6 @@
   "devDependencies": {
     "@types/jest-image-snapshot": "^6.2.0",
     "canvas": "^2.11.2",
-    "deasync": "^0.1.30",
     "eslint": "^8.11.0",
     "eslint-plugin-custom-rules": "file:scripts/eslint-plugin-custom-rules",
     "eslint-plugin-import": "^2.29.1",
@@ -24,7 +23,6 @@
     "prettier": "^3.3.2",
     "puppeteer": "^22.12.0",
     "puppeteer-to-istanbul": "^1.4.0",
-    "serialize-javascript": "^6.0.2",
     "typescript": "^5.2.2",
     "v8-to-istanbul": "^9.1.0"
   },
