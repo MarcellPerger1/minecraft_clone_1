@@ -1,1 +1,1 @@
-export {default} from "./plugin.cjs";
+export { default } from "./plugin.cjs";
