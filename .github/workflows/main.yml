@@ -73,7 +73,7 @@ jobs:
       - name: Run eslint
         run: ./node_modules/.bin/eslint --max-warnings 0 ./
       - name: Run custom linters
-        run: node ./scripts/find_bad_import.js
+        run: node ./scripts/lint/find_bad_import.js
 
   check_formatted:
     runs-on: ubuntu-latest

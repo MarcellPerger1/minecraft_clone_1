@@ -33,7 +33,7 @@
     "test:update:all+prune": "./scripts/test/update_tests_prune.sh",
     "coverage": "./scripts/test/cov/coverage.sh",
     "coverage:filtered": "./scripts/test/cov/coverage-filtered.sh",
-    "lint": "./scripts/linter.sh",
+    "lint": "./scripts/lint/linter.sh",
     "format": "./scripts/format.sh",
     "format_check": "./scripts/format_check.sh",
     "build:atlas": "node ./scripts/make_atlas.js",
