@@ -1,5 +1,5 @@
 import { jest, expect, it, describe } from "@jest/globals";
-import { readFile } from "fs/promises";
+import { readFile } from "node:fs/promises";
 
 import "./helpers/fetch_local_polyfill.js";
 import {
@@ -16,8 +16,12 @@ function makeLoader(configsRoot = null) {
   return new LoaderContext(configsRoot);
 }
 
+async function readFileText(/** @type {string} */ path) {
+  return await readFile(path, { encoding: "utf8" });
+}
+
 async function _getConfig(rawPath) {
-  return parseJsonConfig(await readFile(rawPath));
+  return parseJsonConfig(await readFileText(rawPath));
 }
 
 async function _getConfigRel(path) {
@@ -506,15 +510,15 @@ function test_loadDefaults() {
     let lc = new LoaderContext("test/dummy_configs");
     let result = await lc.loadConfigDefaults();
     expect(result).toStrictEqual(
-      parseJsonConfig(await readFile("./test/dummy_configs/default.json"))
+      parseJsonConfig(await readFileText("./test/dummy_configs/default.json"))
     );
   });
   it("Loads config file without inheritance", async () => {
     let lc = new LoaderContext("test/dummy_configs");
     let loaderFn = (lc.loadConfigFile = jest.fn(() => ({})));
     await lc.loadConfigDefaults();
-    expect(loaderFn).toBeCalledTimes(1);
-    expect(loaderFn).toBeCalledWith(
+    expect(loaderFn).toHaveBeenCalledTimes(1);
+    expect(loaderFn).toHaveBeenCalledWith(
       "./test/dummy_configs/default.json",
       false,
       void 0
@@ -537,8 +541,8 @@ function test_loadByName(
     lc.loadConfigFile = jest.fn(async () => ref);
     let result = await loadFn(lc, "something");
     expect(result).toBe(ref);
-    expect(lc.loadConfigFile).toBeCalledTimes(1);
-    expect(lc.loadConfigFile).toBeCalledWith(
+    expect(lc.loadConfigFile).toHaveBeenCalledTimes(1);
+    expect(lc.loadConfigFile).toHaveBeenCalledWith(
       "./test/dummy_configs/something.json",
       void 0,
       void 0
@@ -550,8 +554,8 @@ function test_loadByName(
     lc.loadConfigFile = jest.fn(async () => ref);
     let result = await loadFn(lc, "nested_dir/inner");
     expect(result).toBe(ref);
-    expect(lc.loadConfigFile).toBeCalledTimes(1);
-    expect(lc.loadConfigFile).toBeCalledWith(
+    expect(lc.loadConfigFile).toHaveBeenCalledTimes(1);
+    expect(lc.loadConfigFile).toHaveBeenCalledWith(
       "./test/dummy_configs/nested_dir/inner.json",
       void 0,
       void 0
@@ -569,8 +573,8 @@ function test_loadConfigByName() {
     lc.loadConfigFile = jest.fn(async () => ref);
     let result = await lc.loadConfigByName("default");
     expect(result).toBe(ref);
-    expect(lc.loadConfigFile).toBeCalledTimes(1);
-    expect(lc.loadConfigFile).toBeCalledWith(
+    expect(lc.loadConfigFile).toHaveBeenCalledTimes(1);
+    expect(lc.loadConfigFile).toHaveBeenCalledWith(
       "./test/dummy_configs/default.json",
       false,
       void 0
@@ -648,7 +652,7 @@ function test_loadConfig_common(fn) {
   it("Processes config path berfore usage", async () => {
     let result = await fn("default", false, "test/dummy_configs");
     let expected = parseJsonConfig(
-      await readFile("./test/dummy_configs/default.json")
+      await readFileText("./test/dummy_configs/default.json")
     );
     expect(result).toStrictEqual(expected);
   });
@@ -723,7 +727,7 @@ function test_loadConfig_class() {
     lc.handleConfigInheritance = jest.fn((cnf) => cnf);
     let result = await lc.loadConfigFile("something", false);
     let expected = parseJsonConfig(
-      await readFile("./test/dummy_configs/something.json")
+      await readFileText("./test/dummy_configs/something.json")
     );
     expect(result).toStrictEqual(expected);
     expect(lc.handleConfigInheritance).not.toHaveBeenCalled();
@@ -734,7 +738,7 @@ function test_loadConfig_root() {
   it("Doesn't use inheritance if inheritance is false (root)", async () => {
     let result = await loadConfigFile("something", false, "test/dummy_configs");
     let expected = parseJsonConfig(
-      await readFile("./test/dummy_configs/something.json")
+      await readFileText("./test/dummy_configs/something.json")
     );
     expect(result).toStrictEqual(expected);
   });

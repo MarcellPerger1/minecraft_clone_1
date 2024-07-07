@@ -4,8 +4,9 @@
   "env": {
     "node": true, 
     "jest/globals": true
-  }, 
+  },
   "rules": {
-    "no-unused-vars": ["warn"]
+    "import/no-nodejs-modules": "off",
+    "no-unused-vars": "warn"
   }
 }

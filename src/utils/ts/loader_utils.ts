@@ -63,7 +63,7 @@ export function makeLoaderMerge<L extends { [k: PropertyKey]: LoaderT }>(
 // These are just Object.entries and Object.fromEntries respectively but with better types
 function getEntries<KT extends PropertyKey, VT>(o: { [k in KT]: VT }): [
   KT,
-  VT
+  VT,
 ][] {
   return Object.entries(o) as [KT, VT][];
 }

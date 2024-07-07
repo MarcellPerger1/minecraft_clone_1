@@ -1,0 +1,8 @@
+{
+  "type": "commonjs",
+  "exports": {
+    "require": "./plugin.cjs",
+    "import": "./plugin.mjs"
+  },
+  "name": "eslint-plugin-custom-rules"
+}

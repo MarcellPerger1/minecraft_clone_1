@@ -9,7 +9,7 @@ const FILE_EXT_RE = /\.([mc]?)(js|ts)(x?)/;
  * @prop {string} name
  * @prop {string} parent
  * @prop {fs.Dirent} dirent
- * @prop {(() => void) | undefined} ignore
+ * @prop {(() => void)} [ignore]
  */
 /**
  * @typedef {Object} WalkDirConfig
