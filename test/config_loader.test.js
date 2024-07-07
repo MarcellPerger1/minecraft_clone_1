@@ -1,5 +1,5 @@
 import { jest, expect, it, describe } from "@jest/globals";
-import { readFile } from "fs/promises";
+import { readFile } from "node:fs/promises";
 
 import "./helpers/fetch_local_polyfill.js";
 import {
