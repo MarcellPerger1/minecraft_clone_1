@@ -10,7 +10,8 @@ module.exports = {
     },
     messages: {
       preferNodeProtocol: "'{{ moduleName }}' is a builtin Node.js module so should be prefixed with `node:`",
-    }
+    },
+    fixable: "code"
   },
   create(context) {
     // TODO fixer
@@ -27,6 +28,11 @@ module.exports = {
             node: pathNode,
             data: {
               moduleName: impPath
+            },
+            fix(fixer) {
+              return fixer.replaceTextRange(
+                [pathNode.range[0] + 1, pathNode.range[1] - 1],  // Exclude the quotes from the range to be replaced
+                'node:' + impPath);
             },
           });
         }
