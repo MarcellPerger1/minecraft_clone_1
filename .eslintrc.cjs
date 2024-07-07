@@ -11,9 +11,6 @@ module.exports = {
   plugins: [
     "eslint-plugin-custom-rules"
   ],
-  // plugins: {
-  //   "custom": impDefault("./scripts/eslint_plugin/plugin.js")
-  // },
   parserOptions: {
     ecmaVersion: "latest",
     sourceType: "module"
@@ -44,7 +41,7 @@ module.exports = {
     "import/extensions": ["error", "always"],
     "import/no-amd": ["error"],
     "import/no-commonjs": ["error"],
-    // "import/no-extraneous-dependencies": ["error"],  // requires me to explicitly dev-deend on @jest/globals
+    // "import/no-extraneous-dependencies": ["error"],  // requires me to explicitly dev-depend on @jest/globals
     "import/no-nodejs-modules": ["error"],
     "custom-rules/prefer-node-protocol": ["warn"]  // Custom rule in scripts/eslint_rules
   }

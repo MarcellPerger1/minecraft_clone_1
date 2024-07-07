@@ -15,7 +15,6 @@ module.exports = {
     fixable: "code",
   },
   create(context) {
-    // TODO fixer
     return {
       ImportDeclaration(node) {
         let pathNode = node.source;
