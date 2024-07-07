@@ -16,8 +16,12 @@ function makeLoader(configsRoot = null) {
   return new LoaderContext(configsRoot);
 }
 
+async function readFileText(/** @type {string} */path) {
+  return await readFile(path, { encoding: "utf8" });
+}
+
 async function _getConfig(rawPath) {
-  return parseJsonConfig(await readFile(rawPath));
+  return parseJsonConfig(await readFileText(rawPath));
 }
 
 async function _getConfigRel(path) {
@@ -505,9 +509,8 @@ function test_loadDefaults() {
   it("Loads from default.json file", async () => {
     let lc = new LoaderContext("test/dummy_configs");
     let result = await lc.loadConfigDefaults();
-    console.log(await readFile("./test/dummy_configs/default.json"));
     expect(result).toStrictEqual(
-      parseJsonConfig(await readFile("./test/dummy_configs/default.json"))
+      parseJsonConfig(await readFileText("./test/dummy_configs/default.json"))
     );
   });
   it("Loads config file without inheritance", async () => {
@@ -649,7 +652,7 @@ function test_loadConfig_common(fn) {
   it("Processes config path berfore usage", async () => {
     let result = await fn("default", false, "test/dummy_configs");
     let expected = parseJsonConfig(
-      await readFile("./test/dummy_configs/default.json")
+      await readFileText("./test/dummy_configs/default.json")
     );
     expect(result).toStrictEqual(expected);
   });
@@ -724,7 +727,7 @@ function test_loadConfig_class() {
     lc.handleConfigInheritance = jest.fn((cnf) => cnf);
     let result = await lc.loadConfigFile("something", false);
     let expected = parseJsonConfig(
-      await readFile("./test/dummy_configs/something.json")
+      await readFileText("./test/dummy_configs/something.json")
     );
     expect(result).toStrictEqual(expected);
     expect(lc.handleConfigInheritance).not.toHaveBeenCalled();
@@ -735,7 +738,7 @@ function test_loadConfig_root() {
   it("Doesn't use inheritance if inheritance is false (root)", async () => {
     let result = await loadConfigFile("something", false, "test/dummy_configs");
     let expected = parseJsonConfig(
-      await readFile("./test/dummy_configs/something.json")
+      await readFileText("./test/dummy_configs/something.json")
     );
     expect(result).toStrictEqual(expected);
   });
