@@ -16,7 +16,7 @@ function makeLoader(configsRoot = null) {
   return new LoaderContext(configsRoot);
 }
 
-async function readFileText(/** @type {string} */path) {
+async function readFileText(/** @type {string} */ path) {
   return await readFile(path, { encoding: "utf8" });
 }
 
