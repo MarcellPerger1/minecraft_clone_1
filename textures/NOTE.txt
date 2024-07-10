@@ -7,5 +7,7 @@ grass textures from:
 stone texture from:
   https://static.wikia.nocookie.net/minecraft_gamepedia/images/d/dc/Stone_%28texture%29_JE5_BE3.png/revision/latest?cb=20201001141805
 
-lots of textures from:
+other textures from:
   https://minecraft.fandom.com/wiki/List_of_block_textures
+  Available under CC-BY-NC-SA, 
+  by Minecraft Wiki (Fandom) contributors
