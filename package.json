@@ -35,7 +35,7 @@
     "coverage:filtered": "./scripts/test/cov/coverage-filtered.sh",
     "lint": "./scripts/lint/linter.sh",
     "format": "./scripts/format/format.sh",
-    "format_check": "./scripts.format/format_check.sh",
+    "format_check": "./scripts/format/format_check.sh",
     "build:atlas": "node ./scripts/build/make_atlas.js",
     "build:ts": "./scripts/build/build_ts.sh",
     "build:libs": "./scripts/build/build_libs.sh",
