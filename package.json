@@ -28,9 +28,9 @@
   },
   "scripts": {
     "test": "./scripts/test/test.sh",
-    "test:update": "./scripts/test/update_new_tests.sh",
-    "test:update:all": "./scripts/test/update_tests.sh",
-    "test:update:all+prune": "./scripts/test/update_tests_prune.sh",
+    "test:update": "./scripts/test/update_new.sh",
+    "test:update:all": "./scripts/test/update_all.sh",
+    "test:update:all+prune": "./scripts/test/update_all_prune.sh",
     "coverage": "./scripts/test/cov/coverage.sh",
     "coverage:filtered": "./scripts/test/cov/coverage-filtered.sh",
     "lint": "./scripts/lint/linter.sh",
