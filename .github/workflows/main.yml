@@ -30,9 +30,7 @@ jobs:
       - run: npm install
       - name: Run tests
         id: run_tests
-        run: |
-          chmod +x ./scripts/test.sh
-          npm test -- --colors;
+        run: npm test -- --colors
       - name: Check if need to upload diff
         if: ${{ always() }}
         id: check_output
@@ -119,13 +117,11 @@ jobs:
       - name: Install npm pacakges
         run: npm ci
       - name: Build libs
-        run: |
-          chmod +x ./scripts/build_libs.sh
-          ./scripts/build_libs.sh
+        run: npm run build:libs
       - name: Build `.ts` files
-        run: chmod +x ./scripts/build_ts.sh && ./scripts/build_ts.sh
+        run: npm run build:ts
       - name: Generate texture atlas
-        run: node ./scripts/make_atlas.js
+        run: npm run build:atlas
         
       - name: Commit texture atlas
         uses: stefanzweifel/git-auto-commit-action@v5

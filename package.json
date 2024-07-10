@@ -36,9 +36,9 @@
     "lint": "./scripts/lint/linter.sh",
     "format": "./scripts/format/format.sh",
     "format_check": "./scripts.format/format_check.sh",
-    "build:atlas": "node ./scripts/make_atlas.js",
-    "build:ts": "./scripts/build_ts.sh",
-    "build:libs": "./scripts/build_libs.sh",
+    "build:atlas": "node ./scripts/build/make_atlas.js",
+    "build:ts": "./scripts/build/build_ts.sh",
+    "build:libs": "./scripts/build/build_libs.sh",
     "build:all": "npm run build:libs && npm run build:ts && npm run build:atlas"
   },
   "keywords": [
