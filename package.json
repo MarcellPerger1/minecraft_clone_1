@@ -11,7 +11,7 @@
     "@types/jest-image-snapshot": "^6.2.0",
     "canvas": "^2.11.2",
     "eslint": "^8.11.0",
-    "eslint-plugin-custom-rules": "file:scripts/eslint-plugin-custom-rules",
+    "eslint-plugin-custom-rules": "file:scripts/lint/eslint-plugin-custom-rules",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jest": "^28.6.0",
     "istanbul-lib-coverage": "^3.2.0",
