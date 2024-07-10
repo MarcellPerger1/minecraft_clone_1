@@ -1,7 +1,7 @@
 import timersPromises from "node:timers/promises";
 import fs from "node:fs";
 
-import { describe, it, beforeAll, expect } from "@jest/globals";
+import { describe, it, beforeAll, expect, jest } from "@jest/globals";
 import ppt, { TimeoutError } from "puppeteer";
 import jestImageSnapshot from "jest-image-snapshot";
 import covToIstanbul from "puppeteer-to-istanbul";
@@ -18,8 +18,122 @@ expect.extend({
 
 const cwd = process.cwd();
 
+
+class InitiatorFormatter {
+  constructor() {
+    this.s = "";
+    this.currIndent = 0;
+  }
+
+  reset() {
+    this.s = "";
+    this.currIndent = 0;
+  }
+
+  fmt(/** @type {ppt.HTTPRequest} */req) {
+    this.reset();
+    this._fmt(req);
+    return this.s;
+  }
+  print(/** @type {ppt.HTTPRequest} */req) {
+    console.log(this.fmt(req));
+  }
+
+  _fmt(/** @type {ppt.HTTPRequest} */req) {
+    let ini = req.initiator();
+    if(!ini) return this.println("Initiator unknown");
+    this.println("Initiator info:");
+    this.indented(() => {
+      this.println(`Type: ${ini.type}`);
+      this.fmtURL(ini);
+      if(ini.requestId) this.println(`Initiator request ID: ${ini.requestId}`);
+      if(ini.stack) this.fmtAllStacks(ini.stack);
+    })
+  }
+
+  indented(/** @type {() => void} */callback) {
+    this.currIndent += 2;
+    callback();
+    this.currIndent -= 2;
+  }
+
+  getIndent(/** @type {boolean} */doIndent) {
+    return doIndent ? " ".repeat(this.currIndent) : "";
+  }
+  println(/** @type {string} */line, { doIndent = true } = {}) {
+    this.s += this.getIndent(doIndent) + line + "\n";
+  }
+  beginLine(/** @type {string} */s="", { doIndent = true }) {
+    this.s += this.getIndent(doIndent) + s;
+  }
+  endLine(/** @type {string} */s="") {
+    this.s += s + "\n";
+  }
+
+  fmtURL(/** @type {ppt.Protocol.Network.Initiator} */ini) {
+    if(!ini.url) return;
+    // stringifyLocation uses .url, .columnNumber, .lineNumber
+    this.println(`Initaitor location: ${this.stringifyLocation(ini)}`);
+  }
+
+  getNumStacks(/** @type {ppt.Protocol.Runtime.StackTrace} */base) {
+    let curr = base;
+    let i = 0;
+    while(curr) {
+      if(i >= 10_000) return null;
+      i++;
+      curr = curr.parent;
+    }
+    return i;
+  }
+
+  fmtAllStacks(/** @type {ppt.Protocol.Runtime.StackTrace} */stack) {
+    this.println("Initiator stack:");
+    let i = 0;
+    this.indented(() => {
+      let curr = stack;
+      for(; i < 8 && curr; i++) {
+        this.fmtSingleStack(curr, i);
+        curr = curr.parent;
+      }
+    });
+    this.fmtMoreStacksMsg(stack, /*nDisplayed*/i);
+  }
+  fmtMoreStacksMsg(/** @type {ppt.Protocol.Runtime.StackTrace} */base, /** @type {number} */nDisplayed) {
+    if(nDisplayed < 8) return;
+    let nStacksTotal = this.getNumStacks(base);
+    this.println(`(And ${nStacksTotal ? nStacksTotal - nDisplayed : "9999+"} more stacks)`);
+  }
+  fmtSingleStack(/** @type {ppt.Protocol.Runtime.StackTrace} */stack, /** @type {number} */i) {
+    this.println(`Stack ${i} (${stack.description ?? "<no description>"}):`);
+    this.indented(() => stack.callFrames.forEach(this.fmtStackFrame, /*thisArg*/this));
+  }
+  fmtStackFrame(/** @type {ppt.Protocol.Runtime.CallFrame} */frame) {
+    if(frame.functionName) this.println(`at ${frame.functionName} (${this.stringifyLocation(frame)})`);
+    else this.println(`at ${this.stringifyLocation(frame)}`);
+  }
+
+  /**
+   * Stringify a location using its `.url`, `.lineNumber` and `.columnNumber` properties
+   */
+  stringifyLocation(/** @type {{url?: string, lineNumber?: number, columnNumber?: number}} */location) {
+    let url = location.url || "<unknown>";
+    let lineno = location.lineNumber == null ? null : location.lineNumber + 1;
+    let colno = location.columnNumber == null ? null : location.columnNumber + 1;
+    return (
+      lineno && colno ? `${url}:${lineno}:${colno}`
+      : lineno ? `${url}:${lineno}`
+      : `${url}`
+    );
+  }
+}
+function fmtInitiatorInfo(/** @type {ppt.HTTPRequest} */req) {
+  return new InitiatorFormatter().fmt(req);
+}
+
 describe("The canvas WebGL rendering", () => {
   var /** @type {ppt.Browser} */ browser, /** @type {ppt.Page} */ page;
+  var startupSuccess = false;
   beforeAll(async () => {
     browser = await ppt.launch({
       headless: true,
@@ -30,8 +144,8 @@ describe("The canvas WebGL rendering", () => {
       console.log("ERROR", v);
       throw v;
     });
-    page.on("requestfailed", (r) => {
-      var s = `Request to ${r.url()} failed`;
+    page.on("requestfailed", async (r) => {
+      var s = `Request to ${r.url()} failed.\n${fmtInitiatorInfo(r)}`;
       console.log(s);
       browser.close();
       throw new Error(s);
@@ -42,6 +156,7 @@ describe("The canvas WebGL rendering", () => {
     });
     await page.goto(`file://${cwd}/index.html`, { waitUntil: "load" });
     await page.setViewport({ width: 1400, height: 1200 });
+    startupSuccess = true;
   });
 
   var /** @type {ppt.ElementHandle} */ canvasH;
@@ -153,9 +268,14 @@ describe("The canvas WebGL rendering", () => {
       "air"
     );
     expect(await canvasH.screenshot()).toMatchImageSnapshot();
+    //await page.waitForSelector('qqqqqqqqwqq-qqq', {timeout: 600000});
   });
 
   afterAll(async () => {
+    if(!startupSuccess) {
+      browser.close();
+      return;
+    }
     canvasH.dispose();
     const browserCoverage = await page.coverage.stopJSCoverage();
     browser.close();
