@@ -5,7 +5,11 @@ export function sum(array, initval = 0) {
 }
 
 export function clamp(v, min, max) {
-  return min != null && v < min ? min : max != null && v > max ? max : v;
+  return (
+    min != null && v < min ? min
+    : max != null && v > max ? max
+    : v
+  );
 }
 
 export function isPowerOf2(value) {
@@ -66,7 +70,11 @@ export function mod(x, y) {
  * @returns {(-1 | 0 | 1)}
  */
 export function numCmp(a, b) {
-  return a == b ? 0 : a < b ? -1 : 1;
+  return (
+    a == b ? 0
+    : a < b ? -1
+    : 1
+  );
 }
 
 /**

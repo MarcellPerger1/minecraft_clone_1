@@ -6,5 +6,5 @@ if test $ret -eq 0
 then
   echo -e "${GREEN}No errors found.${NC}"
 else
-  exit $ret  
+  exit $ret
 fi

@@ -1,8 +1,7 @@
 export type LoaderT<T = any> = { loadResources(): Promise<T> };
 type LoadersToPromisesT<L extends { [k: PropertyKey]: LoaderT }> = {
-  [k in keyof L]: L[k] extends LoaderT<infer RT>
-    ? Promise<RT>
-    : Promise<unknown>;
+  [k in keyof L]: L[k] extends LoaderT<infer RT> ? Promise<RT>
+  : Promise<unknown>;
 };
 type LoadersToValuesT<L extends { [k: PropertyKey]: LoaderT }> = {
   [k in keyof L]: L[k] extends LoaderT<infer RT> ? RT : unknown;

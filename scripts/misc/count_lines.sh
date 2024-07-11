@@ -1,0 +1,1 @@
+./scripts/misc/list_code_files.sh | xargs wc -l | tail -n1

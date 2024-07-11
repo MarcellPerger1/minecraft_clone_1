@@ -85,8 +85,9 @@ async function handleFile(/**@type {WalkDirObj}*/ f) {
   let failures = [];
   let text = (await fs.promises.readFile(f.path)).toString();
   for (let [i, line] of text.split("\n").entries()) {
-    let searchFor = pathEq(f.parent, "src/utils")
-      ? ["utils/index.js"]
+    let searchFor =
+      pathEq(f.parent, "src/utils") ?
+        ["utils/index.js"]
       : ["./index.js", "utils/index.js"];
     let index = 0;
     for (let s of searchFor) {
