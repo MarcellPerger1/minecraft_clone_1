@@ -46,8 +46,8 @@ export class WorldGenerator extends GameComponent {
    * @returns {World}
    */
   generate() {
-    return this.gcnf.isTestWorld
-      ? this.generateTestWorld()
+    return this.gcnf.isTestWorld ?
+        this.generateTestWorld()
       : this.generateTerrain();
   }
 

@@ -136,11 +136,11 @@ class InitiatorFormatter {
     let lineno = location.lineNumber == null ? null : location.lineNumber + 1;
     let colno =
       location.columnNumber == null ? null : location.columnNumber + 1;
-    return lineno && colno
-      ? `${url}:${lineno}:${colno}`
-      : lineno
-        ? `${url}:${lineno}`
-        : `${url}`;
+    return (
+      lineno && colno ? `${url}:${lineno}:${colno}`
+      : lineno ? `${url}:${lineno}`
+      : `${url}`
+    );
   }
 }
 function fmtInitiatorInfo(/** @type {ppt.HTTPRequest} */ req) {

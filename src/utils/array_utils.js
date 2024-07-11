@@ -110,9 +110,9 @@ export function fromNested(shape, func, thisArg = null) {
   let inner = (i) => {
     path.push(i);
     let value =
-      path.length == shape.length
-        ? func.call(thisArg, path.slice())
-        : forRange(shape[path.length], inner);
+      path.length == shape.length ?
+        func.call(thisArg, path.slice())
+      : forRange(shape[path.length], inner);
     path.pop();
     return value;
   };
