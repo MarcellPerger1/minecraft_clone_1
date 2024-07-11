@@ -1,7 +1,7 @@
 import timersPromises from "node:timers/promises";
 import fs from "node:fs";
 
-import { describe, it, beforeAll, expect, jest } from "@jest/globals";
+import { describe, it, beforeAll, expect } from "@jest/globals";
 import ppt, { TimeoutError } from "puppeteer";
 import jestImageSnapshot from "jest-image-snapshot";
 import covToIstanbul from "puppeteer-to-istanbul";
