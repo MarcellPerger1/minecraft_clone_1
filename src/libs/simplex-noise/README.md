@@ -44,6 +44,7 @@ const { createNoise2D } = require('simplex-noise');
 ```javascript
 // initialize the noise function
 const noise2D = createNoise2D();
+// returns a value between -1 and 1
 console.log(noise2D(x, y));
 ```
 
@@ -119,7 +120,7 @@ const value2d = simplex.noise2D(x, y);
 // npm install -S alea
 import { createNoise2D } from 'simplex-noise';
 import alea from 'alea';
-const noise2D = createNoise2D(Alea('seed'));
+const noise2D = createNoise2D(alea('seed'));
 const value2d = noise2D(x, y);
 
 // IMPORTANT: If you use multiple noise functions (for example 2d and 3d)
@@ -141,6 +142,9 @@ const simplex = {
 ```
 
 ## Changelog
+
+### 4.0.2
+- Tweaked __PURE__ annotations to avoid warnings in rollup.js. Contributed by [Damien Seguin](https://github.com/dmnsgn).
 
 ### 4.0.1
 - Explicitly defined the return type of `createNoise4D` to be `NoiseFunction4D`.

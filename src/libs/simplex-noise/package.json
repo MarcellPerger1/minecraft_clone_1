@@ -1,6 +1,6 @@
 {
   "name": "simplex-noise",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "simplex-noise is a fast simplex noise implementation in Javascript. Works in node and in the browser.",
   "homepage": "https://github.com/jwagner/simplex-noise.js",
   "author": "Jonas Wagner <jonas@29a.ch> (http://29a.ch/)",
@@ -46,7 +46,8 @@
     "parcel": "^2.6.2",
     "pngjs": "^6.0.0",
     "source-map-loader": "^4.0.0",
-    "ts-node": "^10.9.1",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.16.2",
     "typedoc": "^0.23.8",
     "typescript": "^4.7.4",
     "webpack": "^5.73.0",
