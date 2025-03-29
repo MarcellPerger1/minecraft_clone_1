@@ -29,7 +29,7 @@ jobs:
           cache-dependency-path: ./package-lock.json
       - run: npm install
       - name: Fix Chrome sandbox issues
-        run: export CHROME_DEVEL_SANDBOX=/opt/google/chrome/chrome-sandbox
+        run: echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
       - name: Run tests
         id: run_tests
         run: npm test -- --colors
