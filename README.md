@@ -3,9 +3,7 @@ A minecraft clone using javascript &amp; webgl to learn js &amp; webgl.
 
 Help wanted with issues tagged `help_wanted`
 
-Play the game: 
-- Website: [https://marcellperger1.github.io/minecraft_clone_1/](https://marcellperger1.github.io/minecraft_clone_1/)
-- Repl (on replit): [https://replit.com/@MarcellPerger1/minecraftclone1](https://replit.com/@MarcellPerger1/minecraftclone1)
+Play the game on the website at: [https://marcellperger1.github.io/minecraft_clone_1/](https://marcellperger1.github.io/minecraft_clone_1/)
 
 ## WebAssembly
 - Some of this could eventually be written in WebAssembly 
