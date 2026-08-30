@@ -3,6 +3,10 @@ import { loadTexture } from "../utils/gl_utils.js";
 
 import { GameComponent } from "../game_component.js";
 
+// see issue #86 for discussion, seems to be better with 0 here??
+const TEX_OFFSET_CLOSE = 0; // 0.015
+const TEX_OFFSET_FAR = 0; // 0.05
+
 export class AtlasEntry {
   constructor(aData, name, i) {
     this.aData = aData; // backref to parent AtlasData object
@@ -12,10 +16,10 @@ export class AtlasEntry {
     this.y1 = 1;
     this.far = [];
     // see issue #86
-    this.x0 = this[0] = (this.i + 0.015) / this.aData.n;
-    this.x0f = this.far[0] = (this.i + 0.05) / this.aData.n;
-    this.x1 = this[1] = (this.i + 1 - 0.015) / this.aData.n;
-    this.x1f = this.far[1] = (this.i + 1 - 0.05) / this.aData.n;
+    this.x0 = this[0] = (this.i + TEX_OFFSET_CLOSE) / this.aData.n;
+    this.x0f = this.far[0] = (this.i + TEX_OFFSET_FAR) / this.aData.n;
+    this.x1 = this[1] = (this.i + 1 - TEX_OFFSET_CLOSE) / this.aData.n;
+    this.x1f = this.far[1] = (this.i + 1 - TEX_OFFSET_FAR) / this.aData.n;
   }
 }
 

@@ -2,7 +2,8 @@ import timersPromises from "node:timers/promises";
 import fs from "node:fs";
 
 import { describe, it, beforeAll, expect } from "@jest/globals";
-import ppt, { TimeoutError } from "puppeteer";
+import { TimeoutError } from "puppeteer";
+import * as ppt from "puppeteer";
 import jestImageSnapshot from "jest-image-snapshot";
 import covToIstanbul from "puppeteer-to-istanbul";
 // for types:
@@ -153,7 +154,7 @@ describe("The canvas WebGL rendering", () => {
   beforeAll(async () => {
     browser = await ppt.launch({
       headless: true,
-      args: ["--disable-web-security", "--use-gl=desktop"],
+      args: ["--disable-web-security"], // --use-gl et al seem to actually remove WebGL - weird!
     }); // cors errors aagh!
     page = await browser.newPage();
     page.on("pageerror", (v) => {
