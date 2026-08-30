@@ -4,8 +4,8 @@ import { loadTexture } from "../utils/gl_utils.js";
 import { GameComponent } from "../game_component.js";
 
 // see issue #86 for discussion, seems to be better with 0 here??
-const TEX_OFFSET_CLOSE = 0;  // 0.015
-const TEX_OFFSET_FAR = 0;  // 0.05
+const TEX_OFFSET_CLOSE = 0; // 0.015
+const TEX_OFFSET_FAR = 0; // 0.05
 
 export class AtlasEntry {
   constructor(aData, name, i) {

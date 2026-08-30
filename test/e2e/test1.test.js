@@ -154,7 +154,7 @@ describe("The canvas WebGL rendering", () => {
   beforeAll(async () => {
     browser = await ppt.launch({
       headless: true,
-      args: ["--disable-web-security"],  // --use-gl et al seem to actually remove WebGL - weird!
+      args: ["--disable-web-security"], // --use-gl et al seem to actually remove WebGL - weird!
     }); // cors errors aagh!
     page = await browser.newPage();
     page.on("pageerror", (v) => {
