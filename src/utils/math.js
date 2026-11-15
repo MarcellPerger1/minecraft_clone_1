@@ -18,8 +18,8 @@ export function isPowerOf2(value) {
 
 export function inRange(v, low, high, inclusive = null) {
   return (
-    (inclusive?.low ?? true ? low <= v : low < v) &&
-    (inclusive?.high ?? true ? high <= v : high < v)
+    ((inclusive?.low ?? true) ? low <= v : low < v) &&
+    ((inclusive?.high ?? true) ? high <= v : high < v)
   );
 }
 

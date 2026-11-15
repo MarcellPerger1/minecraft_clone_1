@@ -7,7 +7,7 @@ Which is based on example code by Stefan Gustavson (stegu@itn.liu.se).
 With Optimisations by Peter Eastman (peastman@drizzle.stanford.edu).
 Better rank ordering method by Stefan Gustavson in 2012.
 
- Copyright (c) 2022 Jonas Wagner
+ Copyright (c) 2024 Jonas Wagner
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -31,12 +31,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildPermutationTable = exports.createNoise4D = exports.createNoise3D = exports.createNoise2D = void 0;
 // these __PURE__ comments help uglifyjs with dead code removal
 //
-const F2 = 0.5 * ( /*#__PURE__*/Math.sqrt(3.0) - 1.0);
-const G2 = (3.0 - /*#__PURE__*/ Math.sqrt(3.0)) / 6.0;
+const SQRT3 = /*#__PURE__*/ Math.sqrt(3.0);
+const SQRT5 = /*#__PURE__*/ Math.sqrt(5.0);
+const F2 = 0.5 * (SQRT3 - 1.0);
+const G2 = (3.0 - SQRT3) / 6.0;
 const F3 = 1.0 / 3.0;
 const G3 = 1.0 / 6.0;
-const F4 = ( /*#__PURE__*/Math.sqrt(5.0) - 1.0) / 4.0;
-const G4 = (5.0 - /*#__PURE__*/ Math.sqrt(5.0)) / 20.0;
+const F4 = (SQRT5 - 1.0) / 4.0;
+const G4 = (5.0 - SQRT5) / 20.0;
 // I'm really not sure why this | 0 (basically a coercion to int)
 // is making this faster but I get ~5 million ops/sec more on the
 // benchmarks across the board or a ~10% speedup.
